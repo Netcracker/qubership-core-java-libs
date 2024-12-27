@@ -1,0 +1,1 @@
+# qubership-core-blue-green-state-monitor-quarkus
