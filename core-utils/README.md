@@ -23,6 +23,12 @@ A lightweight Java library providing TLS (Transport Layer Security) configuratio
 
 Add the dependency to your Maven project:
 
+```xml
+<dependency>
+    <groupId>org.qubership.cloud.security.core.utils</groupId>
+    <artifactId>tls-utils</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+</dependency>
 ```
 
 ## M2M Authentication
