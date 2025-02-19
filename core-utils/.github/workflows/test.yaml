@@ -7,8 +7,8 @@ jobs:
     mvn:
         uses: nookyo/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
         with:
-            maven_command: '--batch-mode deploy - Dgpg.skip=true'
-            server_id: 'github'
+            maven_command: "--batch-mode deploy - Dgpg.skip=true"
+            server_id: github
             java_version: 21
         secrets:
             maven_password: ${{ secrets.GITHUB_TOKEN }}
