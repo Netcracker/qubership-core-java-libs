@@ -1,4 +1,4 @@
-name: Sample Deploy to GIT
+name: Build and Publish artifact to GitHub Maven repo 
 
 on:
  workflow_dispatch:
