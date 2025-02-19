@@ -19,6 +19,14 @@
         <module>tls</module>
     </modules>
 
+    <distributionManagement>
+            <repository>
+                <id>github</id>
+                <name>GitHub OWNER Apache Maven Packages</name>
+                <url>https://maven.pkg.github.com/netcracker/qubership-core-utils</url>
+            </repository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <plugin>

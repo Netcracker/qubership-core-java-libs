@@ -1,0 +1,14 @@
+name: Sample Deploy to GIT
+
+on:
+ workflow_dispatch:
+
+jobs:
+    mvn:
+        uses: netcracker/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
+        with:
+            maven-command: "--batch-mode deploy -Dgpg.skip=true"
+            server-id: github
+            java-version: 17
+        secrets:
+            maven-token: ${{ secrets.GITHUB_TOKEN }}
