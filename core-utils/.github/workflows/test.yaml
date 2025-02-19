@@ -1,0 +1,16 @@
+name: Deploy to GIT
+
+on:
+ workflow_call
+
+jobs:
+    mvn:
+        uses: nookyo/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
+        with:
+            maven_command: '--batch-mode deploy - Dgpg.skip=true'
+            server_id: 'github'
+        secrets:
+            maven_password: ${{ secrets.GITHUB_TOKEN }}
+
+
+
