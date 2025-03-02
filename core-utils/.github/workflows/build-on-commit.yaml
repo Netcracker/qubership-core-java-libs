@@ -1,4 +1,4 @@
-name: Build and Publish artifact to GitHub Maven repo 
+name: Build on Commit
 
 on:
  - push
