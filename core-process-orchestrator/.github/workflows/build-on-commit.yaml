@@ -9,6 +9,6 @@ jobs:
         with:
             maven-command: "--batch-mode deploy -Dgpg.skip=true"
             server-id: github
-            java-version: 17
+            java-version: 21
         secrets:
             maven-token: ${{ secrets.GITHUB_TOKEN }}
