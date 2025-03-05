@@ -164,4 +164,11 @@
         </plugins>
     </build>
 
+	<distributionManagement>
+            <repository>
+                <id>github</id>
+                <url>https://maven.pkg.github.com/netcracker/qubership-core-process-orchestrator</url>
+            </repository>
+	</distributionManagement>
+
 </project>
