@@ -48,4 +48,11 @@
         </dependencies>
     </dependencyManagement>
 
+    <distributionManagement>
+            <repository>
+                <id>github</id>
+                <url>https://maven.pkg.github.com/netcracker/qubership-core-context-propagation</url>
+            </repository>
+    </distributionManagement>
+
 </project>
