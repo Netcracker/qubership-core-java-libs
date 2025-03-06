@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>context-propagation</artifactId>
+        <groupId>org.qubership.cloud</groupId>
+        <version>7.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>spring-context-aggregator</artifactId>
+    <packaging>pom</packaging>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <spring.version>6.2.0</spring.version>
+    </properties>
+    <modules>
+        <module>context-propagation-spring-rabbit</module>
+        <module>context-propagation-spring-kafka</module>
+        <module>context-propagation-spring-common</module>
+        <module>context-propagation-spring-resttemplate</module>
+        <module>context-propagation-spring-webclient</module>
+    </modules>
+
+</project>
