@@ -1,0 +1,11 @@
+---
+apiVersion: nc.maas.kafka/v1
+kind: topic-template
+spec:
+  replicationFactor: -1
+  configs:
+    max.message.bytes: 10000000
+    retention.ms: 604800000
+    retention.bytes: 5000000000
+  numPartitions: 1
+  name: cdc.dda.35cc8ce2-f360-4f29-82ff-cfaa2452e370.cloud-cdc-dev-2.nw_012_dda_pstgr_strm_1_jacobi_2_09mar121743_dsrc_cdc.source
