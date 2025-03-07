@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.qubership.cloud</groupId>
+        <artifactId>rest-libraries-parent</artifactId>
+        <version>6.0.0-SNAPSHOT</version>
+        <relativePath>../rest-libraries-parent/pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>consul-config-provider</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>consul-config-provider-common</module>
+        <module>consul-config-provider-spring-common</module>
+        <module>consul-config-provider-spring-resttemplate</module>
+        <module>consul-config-provider-spring-webclient</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.3.0</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>

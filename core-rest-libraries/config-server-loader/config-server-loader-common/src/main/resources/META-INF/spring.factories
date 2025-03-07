@@ -1,0 +1,12 @@
+# Bootstrap Configuration
+org.springframework.cloud.bootstrap.BootstrapConfiguration=\
+legacy.org.qubership.cloud.configserver.common.configuration.MicroserviceSourceLocatorConfiguration
+
+# Environment PostProcessor
+org.springframework.boot.env.EnvironmentPostProcessor=\
+org.qubership.cloud.configserver.common.configuration.BeforeConfigServerDataLoaderEnvironmentPostProcessor,\
+org.qubership.cloud.configserver.common.configuration.AfterConfigServerDataLoaderEnvironmentPostProcessor
+
+# Spring Boot Bootstrappers
+org.springframework.boot.BootstrapRegistryInitializer=\
+org.qubership.cloud.configserver.common.configuration.CustomConfigServerBootstrapper

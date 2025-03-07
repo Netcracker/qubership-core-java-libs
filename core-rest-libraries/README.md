@@ -1,1 +1,1 @@
-# qubership-core-rest-libraries
+#Rest libraries
