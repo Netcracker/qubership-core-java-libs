@@ -53,6 +53,4 @@
             <url>https://maven.pkg.github.com/netcracker/qubership-core-rest-libraries</url>
         </repository>
     </distributionManagement>
-
-
 </project>
