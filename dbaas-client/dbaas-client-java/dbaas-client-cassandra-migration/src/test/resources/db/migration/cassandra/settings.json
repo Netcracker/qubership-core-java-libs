@@ -1,0 +1,127 @@
+{
+  "1.0.0.0_00": {
+    "ignoreErrorPatterns": [
+      ".*conflicts with an existing column.*",
+      ".*already exists.*"
+    ],
+    "tableOperations": [
+      {
+        "tableName": "table0",
+        "operationType": "CREATE"
+      }
+    ]
+  },
+  "1.0.0.0_01": {
+    "ignoreErrorPatterns": [
+      ".*conflicts with an existing column.*",
+      ".*already exists.*"
+    ],
+    "tableOperations": [
+      {
+        "tableName": "table1",
+        "operationType": "CREATE"
+      },
+      {
+        "tableName": "table2",
+        "operationType": "CREATE"
+      },
+      {
+        "tableName": "table3",
+        "operationType": "CREATE"
+      }
+    ],
+    "previousStates": [
+      {
+        "checksum": "2864358315",
+        "invalid": true,
+        "changeReason": "Test description"
+      }
+    ]
+  },
+  "1.0.0.0_02": {
+    "ignoreErrorPatterns": [
+      ".*conflicts with an existing column.*",
+      ".*already exists.*"
+    ],
+    "tableOperations": [
+      {
+        "tableName": "table3",
+        "operationType": "CREATE"
+      },
+      {
+        "tableName": "table4",
+        "operationType": "CREATE"
+      },
+      {
+        "tableName": "table5",
+        "operationType": "CREATE"
+      }
+    ],
+    "previousStates": [
+      {
+        "checksum": "3030808735",
+        "changeReason": "Test description"
+      }
+    ]
+  },
+  "1.0.0.0_03": {
+    "ignoreErrorPatterns": [
+      ".*conflicts with an existing column.*",
+      ".*already exists.*"
+    ],
+    "tableOperations": [
+      {
+        "tableName": "table6",
+        "operationType": "CREATE"
+      },
+      {
+        "tableName": "table7",
+        "operationType": "CREATE"
+      },
+      {
+        "tableName": "table8",
+        "operationType": "CREATE"
+      }
+    ]
+  },
+  "2.0.0.0_01": {
+    "ignoreErrorPatterns": [
+      ".*conflicts with an existing column.*",
+      ".*already exists.*"
+    ],
+    "tableOperations": [
+      {
+        "tableName": "table6",
+        "operationType": "CREATE"
+      },
+      {
+        "tableName": "table7",
+        "operationType": "CREATE"
+      },
+      {
+        "tableName": "table8",
+        "operationType": "CREATE"
+      }
+    ]
+  },
+  "2.0.0.0_02": {
+    "ignoreErrorPatterns": [
+      ".*conflicts with an existing column.*",
+      ".*already exists.*"
+    ],
+    "tableOperations": [
+      {
+        "tableName": "table1",
+        "operationType": "UPDATE"
+      },
+      {
+        "tableName": "table2",
+        "operationType": "UPDATE"
+      },
+      {
+        "tableName": "table3",
+        "operationType": "UPDATE"
+      }
+    ]
+  }
+}

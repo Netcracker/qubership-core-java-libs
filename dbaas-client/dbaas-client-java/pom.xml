@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>dbaas-client-root</artifactId>
+        <groupId>org.qubership.cloud</groupId>
+        <version>8.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>dbaas-client-java</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>dbaas-client-java-parent</module>
+        <module>dbaas-client-spring-parent</module>
+        <module>dbaas-client-base</module>
+        <module>dbaas-client-core</module>
+        <module>dbaas-client-postgres-base</module>
+        <module>dbaas-client-postgres-starter</module>
+        <module>dbaas-client-postgres-flyway</module>
+        <module>dbaas-client-mongo-starter</module>
+        <module>dbaas-client-opensearch-starter</module>
+        <module>dbaas-client-opensearch-base</module>
+        <module>dbaas-client-sample-tests</module>
+        <module>dbaas-client-light</module>
+        <module>dbaas-client-cassandra-base</module>
+        <module>dbaas-client-cassandra-migration</module>
+        <module>dbaas-client-cassandra-starter</module>
+        <module>dbaas-client-clickhouse-base</module>
+        <module>dbaas-client-clickhouse-starter</module>
+        <module>dbaas-client-restclient</module>
+        <module>dbaas-client-arangodb-base</module>
+        <module>dbaas-client-arangodb-starter</module>
+        <module>dbaas-client-redis-base</module>
+        <module>dbaas-client-redis-starter</module>
+        <module>dbaas-client-test-parent</module>
+        <module>dbaas-client-test-parent/dbaas-client-test-bom</module>
+    </modules>
+</project>
