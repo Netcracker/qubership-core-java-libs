@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.qubership.cloud.quarkus</groupId>
+    <version>6.0.0-SNAPSHOT</version>
+    <artifactId>cloud-core-context-propagation</artifactId>
+
+    <name>Cloud-Core Context Propagation</name>
+    <packaging>pom</packaging>
+
+    <properties>
+        <quarkus.version>3.15.1</quarkus.version>
+        <maven.compiler.release>17</maven.compiler.release>
+    </properties>
+
+    <modules>
+        <module>bom</module>
+        <module>build-parent</module>
+        <module>context-propagation</module>
+        <module>framework-contexts</module>
+        <module>integration-tests</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Quarkus Extensions Dependencies are coming from quarkus-bom-deployment (that also imports quarkus-bom) -->
+            <dependency>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <distributionManagement>
+            <repository>
+                <id>github</id>
+                <url>https://maven.pkg.github.com/netcracker/qubership-core-context-propagation-quarkus</url>
+            </repository>
+    </distributionManagement>
+
+</project>
