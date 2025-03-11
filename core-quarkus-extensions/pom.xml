@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.qubership.cloud.quarkus</groupId>
+    <version>7.0.0-SNAPSHOT</version>
+    <artifactId>cloud-core-quarkus</artifactId>
+    <packaging>pom</packaging>
+
+    <properties>
+        <lombok.version>1.18.36</lombok.version>
+        <quarkus.version>3.15.1</quarkus.version>
+        <maven.compiler.release>17</maven.compiler.release>
+    </properties>
+
+    <modules>
+        <module>context</module>
+        <module>build-parent</module>
+        <module>stomp-ws-server</module>
+        <module>security</module>
+        <module>config-sources</module>
+        <module>dbaas-client</module>
+        <module>cloud-core-quarkus-bom</module>
+        <module>routes-registrator</module>
+        <module>maas-client</module>
+        <module>rest-api-deprecation-switcher</module>
+        <module>log-manager</module>
+    </modules>
+    
+    <dependencyManagement>
+        <dependencies>
+            <!-- Quarkus Extensions Dependencies are coming from quarkus-bom-deployment (that also imports quarkus-bom) -->
+            <dependency>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/netcracker/*</url>
+            <snapshots/>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/netcracker/qubership-core-quarkus-extensions</url>
+        </repository>
+    </distributionManagement>
+</project>

@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.qubership.cloud.quarkus</groupId>
+        <artifactId>cloud-core-quarkus-bom-parent</artifactId>
+        <version>7.0.0-SNAPSHOT</version>
+        <relativePath>../cloud-core-quarkus-bom-parent/pom.xml</relativePath>
+    </parent>
+    <artifactId>cloud-core-quarkus-bom-internal</artifactId>
+    <packaging>pom</packaging>
+
+    <properties>
+        <!-- Qubership -->
+        <context.propagation.core.version>7.0.0-SNAPSHOT</context.propagation.core.version>
+        <dbaas-client.version>8.0.0-SNAPSHOT</dbaas-client.version>
+        <nc.context-quarkus.version>6.0.0-SNAPSHOT</nc.context-quarkus.version>
+        <tls-utils.version>2.0.0-SNAPSHOT</tls-utils.version>
+
+        <!-- Dev tools -->
+        <freemarker.version>2.3.33</freemarker.version>
+
+        <!-- Align various dependencies that are not really part of the bom-->
+        <findbugs.version>3.0.2</findbugs.version>
+        <jsoup.version>1.18.3</jsoup.version>
+        <wagon-provider-api.version>3.5.3</wagon-provider-api.version>
+
+        <!-- need to be updated together-->
+        <okhttp.version>4.12.0</okhttp.version>
+        <okio.version>3.9.1</okio.version>
+
+        <!--Test-->
+        <mockito.version>5.14.2</mockito.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Qubership -->
+            <dependency>
+                <groupId>org.qubership.cloud.quarkus</groupId>
+                <artifactId>context-propagation-deployment</artifactId>
+                <version>${nc.context-quarkus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.qubership.cloud.quarkus</groupId>
+                <artifactId>context-propagation</artifactId>
+                <version>${nc.context-quarkus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.qubership.cloud</groupId>
+                <artifactId>context-propagation-core</artifactId>
+                <version>${context.propagation.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.qubership.cloud</groupId>
+                <artifactId>framework-contexts</artifactId>
+                <version>${context.propagation.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.qubership.cloud</groupId>
+                <artifactId>dbaas-client-light</artifactId>
+                <version>${dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.qubership.cloud.security.core.utils</groupId>
+                <artifactId>tls-utils</artifactId>
+                <version>${tls-utils.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.qubership.cloud</groupId>
+                <artifactId>dbaas-client-base</artifactId>
+                <version>${dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.qubership.cloud</groupId>
+                <artifactId>dbaas-client-postgres-base</artifactId>
+                <version>${dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.qubership.cloud</groupId>
+                <artifactId>dbaas-client-opensearch-base</artifactId>
+                <version>${dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.qubership.cloud</groupId>
+                <artifactId>dbaas-client-cassandra-base</artifactId>
+                <version>${dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.qubership.cloud</groupId>
+                <artifactId>dbaas-client-cassandra-migration</artifactId>
+                <version>${dbaas-client.version}</version>
+            </dependency>
+            <!-- Dev tools -->
+            <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.17.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-devtools-common</artifactId>
+                <version>${quarkus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-platform-descriptor-api</artifactId>
+                <version>${quarkus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-platform-descriptor-resolver-json</artifactId>
+                <version>${quarkus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-platform-descriptor-json</artifactId>
+                <version>${quarkus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-creator</artifactId>
+                <version>${quarkus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>${freemarker.version}</version>
+            </dependency>
+
+            <!-- Miscellaneous -->
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-rest-client</artifactId>
+                <version>${quarkus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-war-launcher-runner</artifactId>
+                <version>${quarkus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-legacy-launcher</artifactId>
+                <version>${quarkus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>${findbugs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-provider-api</artifactId>
+                <version>${wagon-provider-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>${okhttp.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okio</groupId>
+                <artifactId>okio</artifactId>
+                <version>${okio.version}</version>
+            </dependency>
+            <!--Remove after upgrading to Quarkus v3-->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>2.0.16</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>33.3.1-jre</version>
+            </dependency>
+            <!--Test-->
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>3.26.3</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>consul</artifactId>
+                <version>1.20.4</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

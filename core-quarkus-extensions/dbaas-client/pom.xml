@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>cloud-core-quarkus</artifactId>
+        <groupId>org.qubership.cloud.quarkus</groupId>
+        <version>7.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>dbaas-client</artifactId>
+    <packaging>pom</packaging>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+
+    <modules>
+        <module>dbaas-common</module>
+        <module>dbaas-datasource</module>
+        <module>dbaas-mongoclient</module>
+        <module>dbaas-cassandra-client</module>
+        <module>dbaas-opensearch-client</module>
+        <module>dbaas-client-test</module>
+    </modules>
+
+</project>
