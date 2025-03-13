@@ -1,3 +1,9 @@
+![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-core-error-handling&metric=coverage)
+![duplicated_lines_density](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-core-error-handling&metric=duplicated_lines_density)
+![vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-core-error-handling&metric=vulnerabilities)
+![bugs](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-core-error-handling&metric=bugs)
+![code_smells](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-core-error-handling&metric=code_smells)
+
 # core-error-handling
 
 Java libs that handle exception with error codes
