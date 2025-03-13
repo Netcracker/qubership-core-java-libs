@@ -13,7 +13,14 @@
         <module>microservice-restclient-test-utils</module>
         <module>microservice-restclient-webclient</module>
         <module>microservice-restclient-resttemplate</module>
+        <module>microservice-restclient-report-aggregate</module>
     </modules>
+
+    <properties>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/microservice-restclient-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+    </properties>
 
     <distributionManagement>
         <repository>
