@@ -10,7 +10,14 @@
     <modules>
         <module>core-error-handling-runtime</module>
         <module>core-error-handling-rest</module>
+        <module>core-error-handling-report-aggregate</module>
     </modules>
+
+    <properties>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../test-aggregator/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+    </properties>
 
     <build>
         <pluginManagement>
