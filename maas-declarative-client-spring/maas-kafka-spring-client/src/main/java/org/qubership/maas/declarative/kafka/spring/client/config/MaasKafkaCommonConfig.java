@@ -1,0 +1,118 @@
+package org.qubership.maas.declarative.kafka.spring.client.config;
+
+import org.qubership.cloud.maas.bluegreen.kafka.Record;
+import org.qubership.maas.declarative.kafka.client.api.context.propagation.ContextPropagationService;
+import org.qubership.maas.declarative.kafka.client.api.filter.ConsumerRecordFilter;
+import org.qubership.maas.declarative.kafka.client.impl.client.consumer.filter.Chain;
+import org.qubership.maas.declarative.kafka.client.impl.client.consumer.filter.impl.ContextPropagationFilter;
+import org.qubership.maas.declarative.kafka.client.impl.client.creator.KafkaClientCreationService;
+import org.qubership.maas.declarative.kafka.client.impl.client.notification.api.MaasKafkaClientStateChangeNotificationService;
+import org.qubership.maas.declarative.kafka.client.impl.client.notification.impl.MaasKafkaClientStateChangeNotificationServiceImpl;
+import org.qubership.maas.declarative.kafka.client.impl.common.context.propagation.DefaultContextPropagationServiceImpl;
+import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;
+import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.impl.DefaultInternalMaasTopicCredentialsExtractorImpl;
+import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.impl.InternalMaasTopicCredExtractorAggregatorImpl;
+import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.provider.api.InternalMaasCredExtractorProvider;
+import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.provider.impl.DefaultInternalMaasTopicCredentialsExtractorProviderImpl;
+import org.qubership.maas.declarative.kafka.client.impl.definition.api.MaasKafkaClientDefinitionService;
+import org.qubership.maas.declarative.kafka.client.impl.definition.impl.MaasKafkaClientDefinitionServiceImpl;
+import org.qubership.maas.declarative.kafka.spring.client.impl.MaasKafkaClientConfigPlatformServiceImpl;
+import org.qubership.maas.declarative.kafka.spring.client.impl.SpringKafkaClientCreationServiceImpl;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.context.Context;
+import io.opentelemetry.context.Scope;
+import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
+import io.opentelemetry.instrumentation.kafka.internal.KafkaInstrumenterFactory;
+import io.opentelemetry.instrumentation.kafka.internal.KafkaProcessRequest;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
+
+import static org.qubership.maas.declarative.kafka.client.impl.client.consumer.filter.impl.ContextPropagationFilter.CONTEXT_PROPAGATION_ORDER;
+
+@Configuration
+public class MaasKafkaCommonConfig {
+
+    // cred extractor
+    @Bean
+    InternalMaasTopicCredentialsExtractor topicCredentialsExtractor(
+            List<InternalMaasCredExtractorProvider> credExtractorProviders
+    ) {
+        return new InternalMaasTopicCredExtractorAggregatorImpl(credExtractorProviders);
+    }
+
+    @Bean
+    InternalMaasCredExtractorProvider defaultExtractorProvider() {
+        return new DefaultInternalMaasTopicCredentialsExtractorProviderImpl(
+                new DefaultInternalMaasTopicCredentialsExtractorImpl()
+        );
+    }
+
+    // kafka client creation
+    @Bean
+    @ConditionalOnMissingBean(KafkaClientCreationService.class)
+    KafkaClientCreationService defaultKafkaClientCreationService(@Value("${management.tracing.enabled:true}") boolean tracingEnabled,
+                                                                 @Autowired BeanFactory beanFactory,
+                                                                 @Value("${maas.kafka.monitoring.enabled:true}") boolean monitoringEnabled,
+                                                                 @Autowired(required = false) MeterRegistry meterRegistry,
+                                                                 @Autowired(required = false) OpenTelemetry openTelemetry
+
+    ) {
+        return new SpringKafkaClientCreationServiceImpl(tracingEnabled, beanFactory, meterRegistry, openTelemetry);
+    }
+
+    // definition
+    @Bean
+    MaasKafkaClientDefinitionService maasKafkaClientDefinitionService(MaasKafkaClientConfigKeeper configKeeper) {
+        return new MaasKafkaClientDefinitionServiceImpl(new MaasKafkaClientConfigPlatformServiceImpl(configKeeper));
+    }
+
+    // context propagation
+    @Bean
+    ContextPropagationService defaultContextPropagationService() {
+        return new DefaultContextPropagationServiceImpl();
+    }
+
+    // client change state notification
+    @Bean
+    MaasKafkaClientStateChangeNotificationService maasKafkaClientStateChangeNotificationService() {
+        return new MaasKafkaClientStateChangeNotificationServiceImpl();
+    }
+
+    @Bean
+    public ContextPropagationFilter contextPropagationFilter(ContextPropagationService contextPropagationService) {
+        return new ContextPropagationFilter(contextPropagationService);
+    }
+
+    @Bean("maasTracingFilter")
+    @ConditionalOnProperty(name = "management.tracing.enabled", havingValue = "true", matchIfMissing = true)
+    public ConsumerRecordFilter maasTracingFilter(OpenTelemetry openTelemetry) {
+        return new ConsumerRecordFilter() {
+            final KafkaInstrumenterFactory instrumenterFactory = new KafkaInstrumenterFactory(openTelemetry, "maas-declarative-kafka");
+            final Instrumenter<KafkaProcessRequest, Void> consumerProcessInstrumenter = instrumenterFactory.createConsumerProcessInstrumenter();
+
+            @Override
+            public void doFilter(Record<?, ?> rec, Chain<Record<?, ?>> next) {
+                KafkaProcessRequest kafkaProcessRequest = KafkaProcessRequest.create(rec.getConsumerRecord(), null);
+                Context current = consumerProcessInstrumenter.start(Context.current(), kafkaProcessRequest);
+                try (Scope ignored = current.makeCurrent()) {
+                    next.doFilter(rec);
+                } finally {
+                    consumerProcessInstrumenter.end(current, kafkaProcessRequest, null, null);
+                }
+            }
+
+            @Override
+            public int order() {
+                return CONTEXT_PROPAGATION_ORDER + 1;
+            }
+        };
+    }
+}

@@ -1,0 +1,9 @@
+dev.local.config.org.qubership.maas.declarative.kafka.spring.client.MaasKafkaLocalDevConfigProps
+dev.local.config.org.qubership.maas.declarative.kafka.spring.client.MaasKafkaLocalDevConfig
+config.org.qubership.maas.declarative.kafka.spring.client.MaasKafkaClientConfigKeeper
+config.org.qubership.maas.declarative.kafka.spring.client.MaasKafkaClientFactoryConfig
+config.org.qubership.maas.declarative.kafka.spring.client.MaasKafkaClientStateManagerConfig
+config.org.qubership.maas.declarative.kafka.spring.client.MaasKafkaCommonConfig
+config.org.qubership.maas.declarative.kafka.spring.client.MaasKafkaProdClientConfig
+config.org.qubership.maas.declarative.kafka.spring.client.MaasKafkaProps
+config.org.qubership.maas.declarative.kafka.spring.client.MaasKafkaTopicServiceConfig
