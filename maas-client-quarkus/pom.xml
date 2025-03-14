@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+	<packaging>pom</packaging>
+	<artifactId>maas-client-quarkus-parent</artifactId>
+	<groupId>org.qubership.cloud.quarkus</groupId>
+	<version>8.0.0-SNAPSHOT</version>
+
+	<modules>
+		<module>maas-client-quarkus-bom</module>
+		<module>maas-client-quarkus-common</module>
+		<module>maas-client-quarkus-rabbit</module>
+		<module>maas-client-quarkus-kafka</module>
+	</modules>
+
+
+	<properties>
+		<maven.compiler.release>17</maven.compiler.release>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<quarkus.version>3.15.2</quarkus.version>
+		<quarkus.core.extention.version>7.0.0-SNAPSHOT</quarkus.core.extention.version>
+
+		<cloud-core.maas-client.version>11.0.0-SNAPSHOT</cloud-core.maas-client.version>
+
+		<surefire-plugin.version>3.2.5</surefire-plugin.version>
+		<lombok.version>1.18.26</lombok.version>
+		<!--Qubership -->
+		<nc.quarkus.security.version>${project.version}</nc.quarkus.security.version>
+		<!-- These properties are needed in order for them to be resolvable by the generated projects -->
+		<!-- Quarkus uses jboss-parent and it comes with 3.8.0-jboss-2, we don't want that in the templates -->
+		<compiler-plugin.version>3.13.0</compiler-plugin.version>
+		<maven.repo.local>${user.home}/.m2/repository</maven.repo.local>
+
+		<!-- These properties are needed in order for them to be resolvable by the documentation -->
+		<!-- The Graal version we suggest using in documentation - as that's
+           what we work with by self downloading it: -->
+		<graal-sdk.version-for-documentation>19.3.1</graal-sdk.version-for-documentation>
+
+		<!--
+        Supported Maven versions, interpreted as a version range
+         -->
+		<supported-maven-versions>[3.6.2,)</supported-maven-versions>
+
+		<maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
+		<jacoco.plugin.version>0.8.7</jacoco.plugin.version>
+		<jandex-maven-plugin.version>3.1.8</jandex-maven-plugin.version>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>docker url default value</id>
+			<activation>
+				<property>
+					<name>!env.TEST_DOCKER_URL</name>
+				</property>
+			</activation>
+			<properties>
+				<env.TEST_DOCKER_URL>unix:///var/run/docker.sock</env.TEST_DOCKER_URL>
+			</properties>
+		</profile>
+	</profiles>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.qubership.cloud.quarkus</groupId>
+				<artifactId>cloud-core-quarkus-bom-internal</artifactId>
+				<version>${quarkus.core.extention.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+			<dependency>
+				<groupId>org.qubership.cloud.quarkus</groupId>
+				<artifactId>cloud-core-quarkus-bom-publish</artifactId>
+				<version>${quarkus.core.extention.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${compiler-plugin.version}</version>
+					<configuration>
+						<release>17</release>
+					</configuration>
+				</plugin>
+				<plugin>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>${surefire-plugin.version}</version>
+					<configuration>
+						<systemProperties>
+							<java.util.logging.manager>org.jboss.logmanager.LogManager
+							</java.util.logging.manager>
+							<maven.repo.local>${maven.repo.local}</maven.repo.local>
+							<quarkus.keycloak.devservices.enabled>false</quarkus.keycloak.devservices.enabled>
+						</systemProperties>
+						<environmentVariables>
+							<DOCKER_HOST>${env.TEST_DOCKER_URL}</DOCKER_HOST>
+						</environmentVariables>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>io.quarkus</groupId>
+					<artifactId>quarkus-maven-plugin</artifactId>
+					<version>${quarkus.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>io.quarkus</groupId>
+					<artifactId>quarkus-extension-maven-plugin</artifactId>
+					<version>${quarkus.version}</version>
+					<executions>
+						<execution>
+							<id>generate-extension-descriptor</id>
+							<goals>
+								<goal>extension-descriptor</goal>
+							</goals>
+							<phase>process-resources</phase>
+							<configuration>
+								<deployment>
+									${project.groupId}:${project.artifactId}-deployment:${project.version}
+								</deployment>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>${maven-enforcer-plugin.version}</version>
+					<executions>
+						<execution>
+							<id>enforce</id>
+							<configuration>
+								<rules>
+									<dependencyConvergence />
+									<requireMavenVersion>
+										<version>${supported-maven-versions}</version>
+									</requireMavenVersion>
+									<bannedDependencies>
+										<excludes>
+											<!-- Use Jakarta artifacts instead of JBoss specific ones -->
+											<exclude>
+												org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec
+											</exclude>
+											<exclude>
+												org.jboss.spec.javax.annotation:jboss-annotations-api_1.3_spec
+											</exclude>
+											<exclude>
+												org.jboss.spec.javax.transaction:jboss-transaction-api_1.2_spec
+											</exclude>
+											<exclude>
+												org.jboss.spec.javax.transaction:jboss-transaction-api_1.3_spec
+											</exclude>
+											<exclude>
+												org.jboss.spec.javax.servlet:jboss-servlet-api_4.0_spec
+											</exclude>
+											<exclude>
+												org.jboss.spec.javax.security.jacc:jboss-jacc-api_1.5_spec
+											</exclude>
+											<exclude>
+												org.jboss.spec.javax.security.auth.message:jboss-jaspi-api_1.1_spec
+											</exclude>
+											<exclude>
+												org.jboss.spec.javax.websocket:jboss-websocket-api_1.1_spec
+											</exclude>
+											<exclude>
+												org.jboss.spec.javax.interceptor:jboss-interceptors-api_1.2_spec
+											</exclude>
+											<!-- Exclude javax dependencies in favor of Jakarta -->
+											<exclude>javax.activation:activation</exclude>
+											<exclude>javax.activation:javax.activation-api</exclude>
+											<exclude>javax.enterprise:cdi-api</exclude>
+											<exclude>javax.json:javax.json-api</exclude>
+											<exclude>javax.json.bind:javax.json.bind-api</exclude>
+											<exclude>org.glassfish:javax.json</exclude>
+											<exclude>org.glassfish:javax.el</exclude>
+											<exclude>javax.persistence:javax.persistence-api
+											</exclude>
+											<exclude>javax.persistence:persistence-api</exclude>
+											<exclude>
+												javax.security.enterprise:javax.security.enterprise-api
+											</exclude>
+											<exclude>javax.servlet:servlet-api</exclude>
+											<exclude>javax.servlet:javax.servlet-api</exclude>
+											<exclude>javax.transaction:jta</exclude>
+											<exclude>javax.transaction:javax.transaction-api
+											</exclude>
+											<exclude>javax.validation:validation-api</exclude>
+											<exclude>javax.xml.bind:jaxb-api</exclude>
+											<exclude>javax.websocket:javax.websocket-api</exclude>
+											<exclude>javax.ws.rs:javax.ws.rs-api</exclude>
+											<!-- use our jboss-logmanager -->
+											<exclude>org.jboss.logging:jboss-logmanager</exclude>
+											<!-- We don't want all the API's in one jar-->
+											<exclude>javax:javaee-api</exclude>
+											<!-- Prevent incompatible config from coming in -->
+											<exclude>org.wildfly.client:wildfly-client-config
+											</exclude>
+											<exclude>org.jboss.marshalling:jboss-marshalling-osgi
+											</exclude>
+											<exclude>
+												org.jboss.spec.javax.servlet:jboss-servlet-api_3.1_spec
+											</exclude>
+											<!-- Ensure none of the deps use netty-all. This forces deps to use more fine grained netty artifacts -->
+											<exclude>io.netty:netty-all</exclude>
+											<!-- Ban Log4J (use org.jboss.logmanager:log4j-jboss-logmanager instead) -->
+											<exclude>log4j:log4j</exclude>
+											<exclude>org.apache.logging.log4j:log4j-core</exclude>
+											<exclude>org.apache.logging.log4j:log4j-slf4j-impl
+											</exclude>
+											<!-- Ban commons-logging (use org.jboss.logging:commons-logging-jboss-logging instead) -->
+											<exclude>commons-logging:commons-logging</exclude>
+											<exclude>commons-logging:commons-logging-api</exclude>
+											<exclude>org.springframework:spring-jcl</exclude>
+											<exclude>org.slf4j:jcl-over-slf4j</exclude>
+											<!-- Ban SLF4j implementations (use org.jboss.slf4j:slf4j-jboss-logging instead) -->
+											<exclude>org.slf4j:slf4j-simple</exclude>
+											<exclude>org.slf4j:slf4j-nop</exclude>
+											<exclude>org.slf4j:slf4j-jdk14</exclude>
+											<exclude>org.slf4j:slf4j-log4j12</exclude>
+											<exclude>org.slf4j:slf4j-log4j13</exclude>
+										</excludes>
+										<includes>
+											<!-- this is for REST Assured -->
+											<include>javax.xml.bind:jaxb-api:*:*:test</include>
+										</includes>
+									</bannedDependencies>
+								</rules>
+							</configuration>
+							<goals>
+								<goal>enforce</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>io.smallrye</groupId>
+					<artifactId>jandex-maven-plugin</artifactId>
+					<version>${jandex-maven-plugin.version}</version>
+					<executions>
+						<execution>
+							<id>make-index</id>
+							<goals>
+								<goal>jandex</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>com.google.code.maven-replacer-plugin</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>1.5.3</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>3.3.1</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.12</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<dataFile>target/jacoco.exec</dataFile>
+					<outputDirectory>target/jacoco-ut</outputDirectory>
+				</configuration>
+			</plugin>
+			<!-- deploy sources -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- mandatory plugin to support annotation processing -->
+			<plugin>
+				<groupId>io.smallrye</groupId>
+				<artifactId>jandex-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/netcracker/*</url>
+			<snapshots/>
+		</repository>
+	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/netcracker/qubership-maas-client-quarkus</url>
+		</repository>
+	</distributionManagement>
+
+</project>
