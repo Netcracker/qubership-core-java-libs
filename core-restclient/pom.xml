@@ -16,12 +16,6 @@
         <module>microservice-restclient-report-aggregate</module>
     </modules>
 
-    <properties>
-        <sonar.coverage.jacoco.xmlReportPaths>
-            ${project.basedir}/microservice-restclient-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
-        </sonar.coverage.jacoco.xmlReportPaths>
-    </properties>
-
     <distributionManagement>
         <repository>
             <id>github</id>
