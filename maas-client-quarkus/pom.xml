@@ -12,8 +12,8 @@
 		<module>maas-client-quarkus-common</module>
 		<module>maas-client-quarkus-rabbit</module>
 		<module>maas-client-quarkus-kafka</module>
-	</modules>
-
+        <module>maas-client-quarkus-report-aggregate</module>
+    </modules>
 
 	<properties>
 		<maven.compiler.release>17</maven.compiler.release>
@@ -48,6 +48,9 @@
 		<maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
 		<jacoco.plugin.version>0.8.7</jacoco.plugin.version>
 		<jandex-maven-plugin.version>3.1.8</jandex-maven-plugin.version>
+		<sonar.coverage.jacoco.xmlReportPaths>
+			${project.basedir}/../maas-client-quarkus-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
+		</sonar.coverage.jacoco.xmlReportPaths>
 	</properties>
 
 	<profiles>

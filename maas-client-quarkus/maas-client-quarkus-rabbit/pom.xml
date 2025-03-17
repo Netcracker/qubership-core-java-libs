@@ -12,6 +12,12 @@
 	<packaging>pom</packaging>
 	<artifactId>maas-client-quarkus-rabbit-parent</artifactId>
 
+	<properties>
+		<sonar.coverage.jacoco.xmlReportPaths>
+			${project.basedir}/../../maas-client-quarkus-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
+		</sonar.coverage.jacoco.xmlReportPaths>
+	</properties>
+
 	<modules>
 		<module>runtime</module>
 		<module>deployment</module>
