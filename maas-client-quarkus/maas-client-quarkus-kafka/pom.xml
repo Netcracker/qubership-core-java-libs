@@ -12,12 +12,6 @@
 	<packaging>pom</packaging>
 	<artifactId>maas-client-quarkus-kafka-parent</artifactId>
 
-	<properties>
-		<sonar.coverage.jacoco.xmlReportPaths>
-			${project.basedir}/../../maas-client-quarkus-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
-		</sonar.coverage.jacoco.xmlReportPaths>
-	</properties>
-
 	<modules>
 		<module>runtime</module>
 		<module>deployment</module>
@@ -220,14 +214,9 @@
 					<execution>
 						<goals>
 							<goal>prepare-agent</goal>
-							<goal>report</goal>
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<dataFile>target/jacoco.exec</dataFile>
-					<outputDirectory>target/jacoco-ut</outputDirectory>
-				</configuration>
 			</plugin>
 			<!-- deploy sources -->
 			<plugin>
