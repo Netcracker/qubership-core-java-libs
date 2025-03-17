@@ -1,3 +1,9 @@
+![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-maas-declarative-client-quarkus&metric=coverage)
+![duplicated_lines_density](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-maas-declarative-client-quarkus&metric=duplicated_lines_density)
+![vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-maas-declarative-client-quarkus&metric=vulnerabilities)
+![bugs](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-maas-declarative-client-quarkus&metric=bugs)
+![code_smells](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-maas-declarative-client-quarkus&metric=code_smells)
+
 # Maas Quarkus Kafka
 
 This module adds ability to work with Kafka via declarative approach or directly using MaaS API.

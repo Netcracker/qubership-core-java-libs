@@ -29,10 +29,15 @@
 
         <maas-declarative-kafka-client.version>5.0.0-SNAPSHOT</maas-declarative-kafka-client.version>
         <maas-client-quarkus-kafka.version>8.0.0-SNAPSHOT</maas-client-quarkus-kafka.version>
+
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../maas-kafka-quarkus-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <modules>
         <module>maas-kafka-quarkus-client</module>
+        <module>maas-kafka-quarkus-client-report-aggregate</module>
     </modules>
 
     <dependencyManagement>
@@ -252,14 +257,9 @@
                     <execution>
                         <goals>
                             <goal>prepare-agent</goal>
-                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <dataFile>target/jacoco.exec</dataFile>
-                    <outputDirectory>target/jacoco-ut</outputDirectory>
-                </configuration>
             </plugin>
         </plugins>
     </build>
