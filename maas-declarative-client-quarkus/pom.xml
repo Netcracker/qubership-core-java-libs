@@ -31,7 +31,7 @@
         <maas-client-quarkus-kafka.version>8.0.0-SNAPSHOT</maas-client-quarkus-kafka.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
-            ${project.basedir}/../maas-kafka-quarkus-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
+            ${project.basedir}/../../maas-kafka-quarkus-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
