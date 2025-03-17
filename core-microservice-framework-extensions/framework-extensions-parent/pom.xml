@@ -26,6 +26,9 @@
         <junit.jupiter.version>5.11.0</junit.jupiter.version>
         <junit.pioneer.version>2.2.0</junit.pioneer.version>
         <maven.surefire.plugin.version>3.3.0</maven.surefire.plugin.version>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../framework-extensions-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <dependencies>
@@ -67,14 +70,9 @@
                     <execution>
                         <goals>
                             <goal>prepare-agent</goal>
-                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <dataFile>target/jacoco.exec</dataFile>
-                    <outputDirectory>target/jacoco-ut</outputDirectory>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

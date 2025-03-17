@@ -15,6 +15,7 @@
         <module>framework-extension-springdoc-swagger</module>
         <module>framework-extension-health-indicators</module>
         <module>framework-extension-bom</module>
+        <module>framework-extensions-report-aggregate</module>
     </modules>
 
     <repositories>
