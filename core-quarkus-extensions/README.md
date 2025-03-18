@@ -1,3 +1,9 @@
+![Coverage](https://sonarcloud.io/api/project_badges/measure?metric=coverage&project=Netcracker_qubership-core-quarkus-extensions)
+![duplicated_lines_density](https://sonarcloud.io/api/project_badges/measure?metric=duplicated_lines_density&project=Netcracker_qubership-core-quarkus-extensions)
+![vulnerabilities](https://sonarcloud.io/api/project_badges/measure?metric=vulnerabilities&project=Netcracker_qubership-core-quarkus-extensions)
+![bugs](https://sonarcloud.io/api/project_badges/measure?metric=bugs&project=Netcracker_qubership-core-quarkus-extensions)
+![code_smells](https://sonarcloud.io/api/project_badges/measure?metric=code_smells&project=Netcracker_qubership-core-quarkus-extensions)
+
 # Cloud Core Quarkus
 
 **cloud-core-quarkus-extensions** library provides common functionality for Quarkus based microservices

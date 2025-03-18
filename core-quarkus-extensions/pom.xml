@@ -24,6 +24,7 @@
         <module>maas-client</module>
         <module>rest-api-deprecation-switcher</module>
         <module>log-manager</module>
+        <module>report-aggregate</module>
     </modules>
     
     <dependencyManagement>

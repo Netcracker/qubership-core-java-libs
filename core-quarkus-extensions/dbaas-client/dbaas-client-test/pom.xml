@@ -13,6 +13,10 @@
 
     <properties>
         <junit.version>5.10.0</junit.version>
+
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../../report-aggregate/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <dependencies>

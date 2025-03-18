@@ -279,14 +279,9 @@
                     <execution>
                         <goals>
                             <goal>prepare-agent</goal>
-                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <dataFile>target/jacoco.exec</dataFile>
-                    <outputDirectory>target/jacoco-ut</outputDirectory>
-                </configuration>
             </plugin>
             <!-- deploy sources -->
             <plugin>
