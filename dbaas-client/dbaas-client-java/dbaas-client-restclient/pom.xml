@@ -15,6 +15,12 @@
         <module>dbaas-client-webclient</module>
     </modules>
 
+    <properties>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../../../dbaas-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>

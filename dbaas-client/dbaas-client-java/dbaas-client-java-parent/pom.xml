@@ -13,6 +13,9 @@
     <packaging>pom</packaging>
     <properties>
         <slf4j-api.version>2.0.16</slf4j-api.version>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../../dbaas-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <dependencyManagement>

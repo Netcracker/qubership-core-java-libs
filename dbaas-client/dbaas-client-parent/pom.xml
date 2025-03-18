@@ -17,6 +17,9 @@
         <maven.surefire.version>3.3.0</maven.surefire.version>
 
         <io.grpc.version>1.69.0</io.grpc.version>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../dbaas-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <profiles>
@@ -43,14 +46,9 @@
                     <execution>
                         <goals>
                             <goal>prepare-agent</goal>
-                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <dataFile>target/jacoco.exec</dataFile>
-                    <outputDirectory>target/jacoco-ut</outputDirectory>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -12,6 +12,7 @@
         <module>dbaas-client-parent</module>
         <module>dbaas-client-bom-parent</module>
         <module>dbaas-client-java</module>
+        <module>dbaas-client-report-aggregate</module>
     </modules>
 
 
