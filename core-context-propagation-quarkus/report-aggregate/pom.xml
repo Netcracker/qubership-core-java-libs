@@ -11,7 +11,7 @@
     </parent>
     <packaging>pom</packaging>
 
-    <artifactId>report-aggregate</artifactId>
+    <artifactId>cloud-core-context-propagation-report-aggregate</artifactId>
 
     <properties>
         <sonar.coverage.jacoco.xmlReportPaths>
