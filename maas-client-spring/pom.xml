@@ -16,12 +16,16 @@
         <cloud-core.context-propagation.version>7.0.0-SNAPSHOT</cloud-core.context-propagation.version>
         <cloud-core.maas-client.version>11.0.0-SNAPSHOT</cloud-core.maas-client.version>
         <jacoco.plugin.version>0.8.12</jacoco.plugin.version>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../maas-client-spring-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <modules>
         <module>maas-client-spring</module>
         <module>maas-client-spring-rabbit</module>
         <module>maas-client-spring-kafka</module>
+        <module>maas-client-spring-report-aggregate</module>
     </modules>
 
     <dependencyManagement>
@@ -94,14 +98,9 @@
                     <execution>
                         <goals>
                             <goal>prepare-agent</goal>
-                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <dataFile>target/jacoco.exec</dataFile>
-                    <outputDirectory>target/jacoco-ut</outputDirectory>
-                </configuration>
             </plugin>
         </plugins>
     </build>
