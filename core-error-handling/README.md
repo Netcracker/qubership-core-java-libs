@@ -1,8 +1,8 @@
-![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-core-error-handling&metric=coverage)
-![duplicated_lines_density](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-core-error-handling&metric=duplicated_lines_density)
-![vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-core-error-handling&metric=vulnerabilities)
-![bugs](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-core-error-handling&metric=bugs)
-![code_smells](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-core-error-handling&metric=code_smells)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?metric=coverage&project=Netcracker_qubership-core-error-handling)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-error-handling)
+[![duplicated_lines_density](https://sonarcloud.io/api/project_badges/measure?metric=duplicated_lines_density&project=Netcracker_qubership-core-error-handling)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-error-handling)
+[![vulnerabilities](https://sonarcloud.io/api/project_badges/measure?metric=vulnerabilities&project=Netcracker_qubership-core-error-handling)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-error-handling)
+[![bugs](https://sonarcloud.io/api/project_badges/measure?metric=bugs&project=Netcracker_qubership-core-error-handling)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-error-handling)
+[![code_smells](https://sonarcloud.io/api/project_badges/measure?metric=code_smells&project=Netcracker_qubership-core-error-handling)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-error-handling)
 
 # core-error-handling
 
