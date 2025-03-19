@@ -13,6 +13,9 @@
         <maven.compiler.target>17</maven.compiler.target>
         <jacoco.plugin.version>0.8.12</jacoco.plugin.version>
         <jandex.version>3.2.3</jandex.version>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../context-propagation-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <modules>
@@ -23,6 +26,7 @@
         <module>sample-context-tests</module>
         <module>context-propagation-bom</module>
         <module>context-propagation-test-extensions</module>
+        <module>context-propagation-report-aggregate</module>
     </modules>
 
     <build>
@@ -58,16 +62,10 @@
                     <execution>
                         <goals>
                             <goal>prepare-agent</goal>
-                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <dataFile>target/jacoco.exec</dataFile>
-                    <outputDirectory>target/jacoco-ut</outputDirectory>
-                </configuration>
             </plugin>
-
         </plugins>
     </build>
 
