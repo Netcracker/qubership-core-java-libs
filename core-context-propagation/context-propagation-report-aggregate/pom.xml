@@ -69,32 +69,6 @@
             <artifactId>context-propagation-spring-webclient</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.qubership.cloud</groupId>
-            <artifactId>eeeeeeeeeeeeeeeeeeeee</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.qubership.cloud</groupId>
-            <artifactId>eeeeeeeeeeeeeeeeeeeee</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.qubership.cloud</groupId>
-            <artifactId>eeeeeeeeeeeeeeeeeeeee</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.qubership.cloud</groupId>
-            <artifactId>eeeeeeeeeeeeeeeeeeeee</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.qubership.cloud</groupId>
-            <artifactId>eeeeeeeeeeeeeeeeeeeee</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
     </dependencies>
 
 </project>
