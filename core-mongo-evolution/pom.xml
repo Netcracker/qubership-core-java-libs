@@ -11,6 +11,7 @@
     <modules>
         <module>mongo-evolution-java</module>
         <module>mongo-evolution-spring</module>
+        <module>mongo-evolution-report-aggregate</module>
     </modules>
 
     <repositories>
