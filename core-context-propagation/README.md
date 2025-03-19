@@ -1,8 +1,8 @@
-![Coverage](https://sonarcloud.io/api/project_badges/measure?metric=coverage&project=Netcracker_qubership-core-context-propagation)
-![duplicated_lines_density](https://sonarcloud.io/api/project_badges/measure?metric=duplicated_lines_density&project=Netcracker_qubership-core-context-propagation)
-![vulnerabilities](https://sonarcloud.io/api/project_badges/measure?metric=vulnerabilities&project=Netcracker_qubership-core-context-propagation)
-![bugs](https://sonarcloud.io/api/project_badges/measure?metric=bugs&project=Netcracker_qubership-core-context-propagation)
-![code_smells](https://sonarcloud.io/api/project_badges/measure?metric=code_smells&project=Netcracker_qubership-core-context-propagation)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?metric=coverage&project=Netcracker_qubership-core-context-propagation)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-context-propagation)
+[![duplicated_lines_density](https://sonarcloud.io/api/project_badges/measure?metric=duplicated_lines_density&project=Netcracker_qubership-core-context-propagation)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-context-propagation)
+[![vulnerabilities](https://sonarcloud.io/api/project_badges/measure?metric=vulnerabilities&project=Netcracker_qubership-core-context-propagation)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-context-propagation)
+[![bugs](https://sonarcloud.io/api/project_badges/measure?metric=bugs&project=Netcracker_qubership-core-context-propagation)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-context-propagation)
+[![code_smells](https://sonarcloud.io/api/project_badges/measure?metric=code_smells&project=Netcracker_qubership-core-context-propagation)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-context-propagation)
 
 # Context propagation
 
