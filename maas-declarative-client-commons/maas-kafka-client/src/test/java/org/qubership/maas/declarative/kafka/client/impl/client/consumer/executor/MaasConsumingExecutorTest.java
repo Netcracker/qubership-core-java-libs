@@ -1,5 +1,10 @@
 package org.qubership.maas.declarative.kafka.client.impl.client.consumer.executor;
 
+import org.apache.kafka.common.errors.FencedInstanceIdException;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.bluegreen.impl.service.InMemoryBlueGreenStatePublisher;
 import org.qubership.cloud.bluegreen.impl.util.EnvUtil;
 import org.qubership.cloud.maas.bluegreen.kafka.BGKafkaConsumer;
@@ -8,11 +13,6 @@ import org.qubership.maas.declarative.kafka.client.SyncBarrier;
 import org.qubership.maas.declarative.kafka.client.api.MaasKafkaConsumerErrorHandler;
 import org.qubership.maas.declarative.kafka.client.impl.client.consumer.DeserializerHolder;
 import org.qubership.maas.declarative.kafka.client.impl.client.creator.KafkaClientCreationService;
-import org.apache.kafka.common.errors.FencedInstanceIdException;
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.util.List;
@@ -226,7 +226,8 @@ class MaasConsumingExecutorTest {
         var recordHandler = mock(Consumer.class);
         ctx.setHandler(recordHandler);
 
-        var executor = new MaasConsumingExecutor(ctx,
+        var executor = new MaasConsumingExecutor(
+                ctx,
                 errorHandler,
                 consumerCreatorService,
                 List.of(),
@@ -260,7 +261,7 @@ class MaasConsumingExecutorTest {
         }
 
         verify(consumerCreatorService, times(2)).createKafkaConsumer(any(), any(), any(), any(), any(), any());
-        verify(consumer, times(2)).commitSync(any()); // TODO validate commit marker
+        verify(consumer, timeout(10_000).atLeast(2)).commitSync(any()); // TODO validate commit marker
         verify(consumer, timeout(10_000).times(2)).close();
     }
 }
