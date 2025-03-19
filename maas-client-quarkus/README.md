@@ -1,8 +1,8 @@
-![Coverage](https://sonarcloud.io/api/project_badges/measure?metric=coverage&project=Netcracker_qubership-maas-client-quarkus)
-![duplicated_lines_density](https://sonarcloud.io/api/project_badges/measure?metric=duplicated_lines_density&project=Netcracker_qubership-maas-client-quarkus)
-![vulnerabilities](https://sonarcloud.io/api/project_badges/measure?metric=vulnerabilities&project=Netcracker_qubership-maas-client-quarkus)
-![bugs](https://sonarcloud.io/api/project_badges/measure?metric=bugs&project=Netcracker_qubership-maas-client-quarkus)
-![code_smells](https://sonarcloud.io/api/project_badges/measure?metric=code_smells&project=Netcracker_qubership-maas-client-quarkus)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?metric=coverage&project=Netcracker_qubership-maas-client-quarkus)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-maas-client-quarkus)
+[![duplicated_lines_density](https://sonarcloud.io/api/project_badges/measure?metric=duplicated_lines_density&project=Netcracker_qubership-maas-client-quarkus)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-maas-client-quarkus)
+[![vulnerabilities](https://sonarcloud.io/api/project_badges/measure?metric=vulnerabilities&project=Netcracker_qubership-maas-client-quarkus)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-maas-client-quarkus)
+[![bugs](https://sonarcloud.io/api/project_badges/measure?metric=bugs&project=Netcracker_qubership-maas-client-quarkus)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-maas-client-quarkus)
+[![code_smells](https://sonarcloud.io/api/project_badges/measure?metric=code_smells&project=Netcracker_qubership-maas-client-quarkus)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-maas-client-quarkus)
 
 # MaaS Client
 
