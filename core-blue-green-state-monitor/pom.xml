@@ -12,11 +12,15 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <testcontainers.version>1.20.4</testcontainers.version>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../blue-green-state-monitor-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <modules>
         <module>blue-green-state-monitor-java</module>
         <module>blue-green-state-monitor-spring</module>
+        <module>blue-green-state-monitor-report-aggregate</module>
     </modules>
 
     <profiles>
@@ -89,14 +93,9 @@
                         <execution>
                             <goals>
                                 <goal>prepare-agent</goal>
-                                <goal>report</goal>
                             </goals>
                         </execution>
                     </executions>
-                    <configuration>
-                        <dataFile>target/jacoco.exec</dataFile>
-                        <outputDirectory>target/jacoco-ut</outputDirectory>
-                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
