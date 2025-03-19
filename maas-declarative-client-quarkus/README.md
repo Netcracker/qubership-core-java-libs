@@ -1,8 +1,8 @@
-![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-maas-declarative-client-quarkus&metric=coverage)
-![duplicated_lines_density](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-maas-declarative-client-quarkus&metric=duplicated_lines_density)
-![vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-maas-declarative-client-quarkus&metric=vulnerabilities)
-![bugs](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-maas-declarative-client-quarkus&metric=bugs)
-![code_smells](https://sonarcloud.io/api/project_badges/measure?project=Netcracker_qubership-maas-declarative-client-quarkus&metric=code_smells)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?metric=coverage&project=Netcracker_qubership-maas-declarative-client-quarkus)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-maas-declarative-client-quarkus)
+[![duplicated_lines_density](https://sonarcloud.io/api/project_badges/measure?metric=duplicated_lines_density&project=Netcracker_qubership-maas-declarative-client-quarkus)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-maas-declarative-client-quarkus)
+[![vulnerabilities](https://sonarcloud.io/api/project_badges/measure?metric=vulnerabilities&project=Netcracker_qubership-maas-declarative-client-quarkus)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-maas-declarative-client-quarkus)
+[![bugs](https://sonarcloud.io/api/project_badges/measure?metric=bugs&project=Netcracker_qubership-maas-declarative-client-quarkus)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-maas-declarative-client-quarkus)
+[![code_smells](https://sonarcloud.io/api/project_badges/measure?metric=code_smells&project=Netcracker_qubership-maas-declarative-client-quarkus)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-maas-declarative-client-quarkus)
 
 # Maas Quarkus Kafka
 
