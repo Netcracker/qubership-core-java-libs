@@ -1,3 +1,9 @@
+![Coverage](https://sonarcloud.io/api/project_badges/measure?metric=coverage&project=Netcracker_qubership-core-process-orchestrator)
+![duplicated_lines_density](https://sonarcloud.io/api/project_badges/measure?metric=duplicated_lines_density&project=Netcracker_qubership-core-process-orchestrator)
+![vulnerabilities](https://sonarcloud.io/api/project_badges/measure?metric=vulnerabilities&project=Netcracker_qubership-core-process-orchestrator)
+![bugs](https://sonarcloud.io/api/project_badges/measure?metric=bugs&project=Netcracker_qubership-core-process-orchestrator)
+![code_smells](https://sonarcloud.io/api/project_badges/measure?metric=code_smells&project=Netcracker_qubership-core-process-orchestrator)
+
 # Process Orchestration Framework
 
 A Java-based process orchestration framework that provides task scheduling, execution management, and process flow control capabilities.
