@@ -8,6 +8,7 @@
         <artifactId>mongo-evolution-aggregator</artifactId>
         <version>7.0.0-SNAPSHOT</version>
     </parent>
+	<packaging>pom</packaging>
 
     <artifactId>mongo-evolution-report-aggregate</artifactId>
 
