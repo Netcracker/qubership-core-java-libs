@@ -8,6 +8,7 @@
         <artifactId>maas-client-quarkus-parent</artifactId>
         <version>8.0.0-SNAPSHOT</version>
     </parent>
+	<packaging>pom</packaging>
 
     <artifactId>maas-client-quarkus-report-aggregate</artifactId>
 
