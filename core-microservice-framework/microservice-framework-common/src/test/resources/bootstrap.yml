@@ -1,0 +1,18 @@
+config.custom_microservice_locator.disable: true
+cloud:
+  microservice:
+    name: test-app
+    namespace: test-namespace
+spring:
+  application:
+    name: test-app
+    cloud_namespace: test-namespace
+  cloud:
+    config:
+      uri: ${CONFIG_SERVER:http://config-server:8080}
+      fail-fast: true
+      retry:
+        maxInterval: 60000
+        maxAttempts: 50
+        initialInterval: 2000
+      enabled: false

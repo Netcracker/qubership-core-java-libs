@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d %-5p %thread %X{requestId:-no_request_id} %X{tenantId:-no_tenant_id} %X{accessTokenHash:-no_access_token_hash} %c{1} - %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.qubership.cloud" level="INFO"/>
+
+    <!-- Hide secure properties -->
+    <logger name="org.qubership.cloud.microserviceframework.application.MicroserviceApplicationEnvironment" level="INFO" />
+
+    <root level="${log.level:-INFO}">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>
