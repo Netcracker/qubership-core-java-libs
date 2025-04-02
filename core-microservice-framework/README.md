@@ -1,3 +1,9 @@
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?metric=coverage&project=Netcracker_qubership-core-microservice-framework)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-microservice-framework)
+[![duplicated_lines_density](https://sonarcloud.io/api/project_badges/measure?metric=duplicated_lines_density&project=Netcracker_qubership-core-microservice-framework)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-microservice-framework)
+[![vulnerabilities](https://sonarcloud.io/api/project_badges/measure?metric=vulnerabilities&project=Netcracker_qubership-core-microservice-framework)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-microservice-framework)
+[![bugs](https://sonarcloud.io/api/project_badges/measure?metric=bugs&project=Netcracker_qubership-core-microservice-framework)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-microservice-framework)
+[![code_smells](https://sonarcloud.io/api/project_badges/measure?metric=code_smells&project=Netcracker_qubership-core-microservice-framework)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-microservice-framework)
+
 microservice framework library
 ------------------------------
 

@@ -21,6 +21,9 @@
         <lombok.version>1.18.36</lombok.version>
         <jackson.version>2.18.2</jackson.version>
         <microservice.dependencies.version>11.0.0-SNAPSHOT</microservice.dependencies.version>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../microservice-framework-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <dependencyManagement>
@@ -145,14 +148,9 @@
                     <execution>
                         <goals>
                             <goal>prepare-agent</goal>
-                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <dataFile>target/jacoco.exec</dataFile>
-                    <outputDirectory>target/jacoco-ut</outputDirectory>
-                </configuration>
             </plugin>
         </plugins>
     </build>
