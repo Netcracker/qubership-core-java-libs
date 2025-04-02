@@ -22,6 +22,7 @@
         <module>microservice-framework-common</module>
         <module>microservice-framework-resttemplate</module>
         <module>microservice-framework-webclient</module>
+        <module>microservice-framework-report-aggregate</module>
     </modules>
 
     <build>
