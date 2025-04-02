@@ -81,10 +81,10 @@ class ContextProviderLoader {
         return providerClasses;
     }
 
-    private static String getPrefixPath() {
-        String prefixPath = System.getProperty(LOOKUP_CONTEXT_PROVIDERS_PATH, "org.qubership.cloud");
+    private static String[] getPrefixPath() {
+        String prefixPath = System.getProperty(LOOKUP_CONTEXT_PROVIDERS_PATH, "org.qubership.cloud,com");
         log.debug("Prefix path: {} will be used to find all context providers under this path", prefixPath);
-        return prefixPath;
+        return prefixPath.split(",");
     }
 
     static List<ContextProvider<?>> initProviders(Set<Class<?>> providerClasses) {
