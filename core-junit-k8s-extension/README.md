@@ -1,3 +1,9 @@
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?metric=coverage&project=Netcracker_qubership-core-arquillian-cube-extension)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-arquillian-cube-extension)
+[![duplicated_lines_density](https://sonarcloud.io/api/project_badges/measure?metric=duplicated_lines_density&project=Netcracker_qubership-core-arquillian-cube-extension)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-arquillian-cube-extension)
+[![vulnerabilities](https://sonarcloud.io/api/project_badges/measure?metric=vulnerabilities&project=Netcracker_qubership-core-arquillian-cube-extension)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-arquillian-cube-extension)
+[![bugs](https://sonarcloud.io/api/project_badges/measure?metric=bugs&project=Netcracker_qubership-core-arquillian-cube-extension)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-arquillian-cube-extension)
+[![code_smells](https://sonarcloud.io/api/project_badges/measure?metric=code_smells&project=Netcracker_qubership-core-arquillian-cube-extension)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-arquillian-cube-extension)
+
 ## JUnit-5 extension to connect to Kubernetes in integration tests
 
 <!-- TOC -->
