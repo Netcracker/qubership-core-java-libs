@@ -49,7 +49,7 @@ class ContextProviderLoader {
     }
 
     private static Set<Class<?>> loadProvidersByReflection() {
-        Reflections reflections = new Reflections(getPrefixPath(), new TypeAnnotationsScanner());
+        Reflections reflections = new Reflections("org.qubership.cloud", "com", new TypeAnnotationsScanner());
         Set<Class<?>> providerClasses = reflections.getTypesAnnotatedWith(RegisterProvider.class, true);
         return providerClasses;
     }
