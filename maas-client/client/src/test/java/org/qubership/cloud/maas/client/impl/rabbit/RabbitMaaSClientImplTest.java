@@ -111,6 +111,7 @@ class RabbitMaaSClientImplTest {
                 request()
                         .withMethod("POST")
                         .withPath("/api/v2/rabbit/vhost/get-by-classifier")
+                        .withQueryStringParameter("extended", "true")
                         .withHeader("authorization", "Bearer faketoken")
                         .withBody(
                                 json("{\"name\": \"commands\", \"namespace\": \"core-dev\"}",
@@ -123,7 +124,8 @@ class RabbitMaaSClientImplTest {
                                 "    \"vhost\": {\n" +
                                 "        \"cnn\": \"ampq://rabbit-cluster:4321/maas.core-dev.123456\",\n" +
                                 "        \"username\": \"scott\",\n" +
-                                "        \"password\": \"plain:tiger\"\n" +
+                                "        \"password\": \"plain:tiger\",\n" +
+                                "        \"apiUrl\": \"http://rabbit-cluster:15672/api\"\n" +
                                 "    },\n" +
                                 "    \"entities\": {\n" +
                                 "        \"exchanges\": [\n" +
@@ -143,6 +145,7 @@ class RabbitMaaSClientImplTest {
         assertEquals("ampq://rabbit-cluster:4321/maas.core-dev.123456", vhost.getCnn());
         assertEquals("scott", vhost.getUsername());
         assertEquals("tiger", vhost.getPassword());
+        assertEquals("http://rabbit-cluster:15672/api", vhost.getApiUrl());
     }
 
     @Test

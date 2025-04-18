@@ -62,7 +62,7 @@ public class RabbitMaaSClientImpl implements RabbitMaaSClient {
     @Override
     public VHost getVirtualHost(Classifier classifier) {
         log.info("Get vhost by: {}", classifier);
-        return restClient.request(apiProvider.getRabbitVhostGetByClassifierUrl())
+        return restClient.request(apiProvider.getRabbitVhostGetByClassifierUrl(true))
                 .post(classifier)
                 .expect(HTTP_OK)
                 .supressError(HTTP_NOT_FOUND, body -> log.info("Virtual Host not found by {}", classifier))

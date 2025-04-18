@@ -52,8 +52,12 @@ public class ApiUrlProvider {
         return rv;
     }
 
-    public String getRabbitVhostGetByClassifierUrl() {
-        return getBaseUrl() + "/rabbit/vhost/get-by-classifier";
+    public String getRabbitVhostGetByClassifierUrl(boolean extended) {
+        String rv = getBaseUrl() + "/rabbit/vhost/get-by-classifier";
+        if (extended) {
+            rv = rv + "?extended=true";
+        }
+        return rv;
     }
 
     private String getBaseUrl() {
