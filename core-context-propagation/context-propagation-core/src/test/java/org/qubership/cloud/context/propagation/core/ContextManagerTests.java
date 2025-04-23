@@ -1,5 +1,6 @@
 package org.qubership.cloud.context.propagation.core;
 
+import org.junit.jupiter.api.*;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
 import org.qubership.cloud.context.propagation.core.providers.explicitregistration.ContextProviderWithoutAnnotation;
 import org.qubership.cloud.context.propagation.core.providers.initlevels.CheckInitLevelOne;
@@ -10,9 +11,6 @@ import org.qubership.cloud.context.propagation.core.providers.requestCount.Reque
 import org.qubership.cloud.context.propagation.core.providers.xversion.XVersionContextObject;
 import org.qubership.cloud.context.propagation.core.providers.xversion.XVersionProvider;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +27,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ContextManagerTests {
 
     private static final Logger log = LoggerFactory.getLogger(ContextManagerTests.class);
+
+    private static String originalRegistrationPath;
+
+    @BeforeAll
+    static void saveOriginalRegistrationPath() {
+        originalRegistrationPath = System.getProperty(LOOKUP_CONTEXT_PROVIDERS_PATH);
+    }
+
+    @AfterAll
+    static void restoreOriginalRegistrationPath() {
+        setRegistrationPath(originalRegistrationPath);
+    }
 
     @BeforeEach
     void setUp() throws Exception {
@@ -69,8 +79,13 @@ class ContextManagerTests {
         Assertions.assertTrue(contextProviderWithoutAnnotationExists);
     }
 
-    private void setRegistrationPath(String path) {
-        System.setProperty(LOOKUP_CONTEXT_PROVIDERS_PATH, path);
+    private static void setRegistrationPath(String path) {
+        if (path == null) {
+            System.clearProperty(LOOKUP_CONTEXT_PROVIDERS_PATH);
+        }
+        else {
+            System.setProperty(LOOKUP_CONTEXT_PROVIDERS_PATH, path);
+        }
     }
 
     @Test
