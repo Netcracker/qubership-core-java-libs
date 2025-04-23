@@ -14,7 +14,7 @@ public abstract class AbstractTenantStrategy extends AbstractStrategy<TenantCont
 
     public abstract Strategy<TenantContextObject> getStrategy();
     private static final IncomingContextData nullContextData = null;
-    private static final TenantContextObject DEFAULT_VALUE = new TenantContextObject(nullContextData);
+    public static final TenantContextObject DEFAULT_VALUE = new TenantContextObject(nullContextData);
     public static final String TENANT_ID = "tenantId";
 
 

@@ -3,7 +3,7 @@ package org.qubership.cloud.framework.contexts.tenant.context;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
 import org.qubership.cloud.framework.contexts.tenant.TenantNotFoundException;
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
+import static org.qubership.cloud.framework.contexts.tenant.DefaultTenantProvider.TENANT_CONTEXT_NAME;
 
 import java.util.Optional;
 
