@@ -1,8 +1,8 @@
 package org.qubership.cloud.framework.contexts.tenant;
 
-import org.qubership.cloud.context.propagation.core.ContextProvider;
+import org.qubership.cloud.context.propagation.core.supports.providers.AbstractContextProvider;
 
-public abstract class BaseTenantProvider implements ContextProvider<TenantContextObject> {
+public abstract class BaseTenantProvider extends AbstractContextProvider<TenantContextObject> {
     public static final int DEFAULT_LEVEL = 0;
     public static final int TENANT_LEVEL = DEFAULT_LEVEL - 1;
     public static final String TENANT_CONTEXT_NAME = "tenant";
