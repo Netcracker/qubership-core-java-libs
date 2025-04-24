@@ -87,7 +87,7 @@ public class BGStatePublisherSpringDemo {
 ~~~ java 
 import model.api.org.qubership.cloud.bluegreen.BlueGreenState;
 import service.api.org.qubership.cloud.bluegreen.BlueGreenStatePublisher;
-import config.spring.org.qubership.cloud.bluegreen.EnableBlueGreenStatePublisher;
+import org.qubership.cloud.bluegreen.EnableBlueGreenStatePublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -174,7 +174,7 @@ public class MicroserviceMutexServiceDemo {
 ### Usage with disabled AutoConfiguration example:
 ~~~ java 
 import service.api.org.qubership.cloud.bluegreen.MicroserviceMutexService;
-import config.spring.org.qubership.cloud.bluegreen.BlueGreenMicroserviceMutexConfiguration;
+import org.qubership.cloud.bluegreen.BlueGreenMicroserviceMutexConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
