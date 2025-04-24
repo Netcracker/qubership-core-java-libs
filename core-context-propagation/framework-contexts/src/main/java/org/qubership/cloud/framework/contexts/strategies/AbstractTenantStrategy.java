@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 public abstract class AbstractTenantStrategy extends AbstractStrategy<TenantContextObject> {
 
-    public abstract Strategy<TenantContextObject> getStrategy();
+    protected abstract Strategy<TenantContextObject> getStrategy();
     private static final IncomingContextData nullContextData = null;
     public static final TenantContextObject DEFAULT_VALUE = new TenantContextObject(nullContextData);
     public static final String TENANT_ID = "tenantId";
