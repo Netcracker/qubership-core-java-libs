@@ -1,4 +1,4 @@
-org.qubership.cloud.bluegreen.InMemoryConfig
-org.qubership.cloud.bluegreen.BlueGreenStatePublisherConfiguration
-org.qubership.cloud.bluegreen.BlueGreenMicroserviceMutexConfiguration
-org.qubership.cloud.bluegreen.BlueGreenGlobalMutexConfiguration
+org.qubership.cloud.bluegreen.spring.config.InMemoryConfig
+org.qubership.cloud.bluegreen.spring.config.BlueGreenStatePublisherConfiguration
+org.qubership.cloud.bluegreen.spring.config.BlueGreenMicroserviceMutexConfiguration
+org.qubership.cloud.bluegreen.spring.config.BlueGreenGlobalMutexConfiguration
