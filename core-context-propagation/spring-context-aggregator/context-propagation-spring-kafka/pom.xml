@@ -3,7 +3,7 @@
     <parent>
         <artifactId>spring-context-aggregator</artifactId>
         <groupId>org.qubership.cloud</groupId>
-        <version>7.0.0</version>
+        <version>7.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>org.qubership.cloud</groupId>
             <artifactId>framework-contexts</artifactId>
-            <version>7.0.0</version>
+            <version>7.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
