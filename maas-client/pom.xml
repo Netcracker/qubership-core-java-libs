@@ -37,6 +37,14 @@
         <module>report-aggregate</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-maas-client.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-maas-client.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-maas-client</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
         <pluginManagement>
             <plugins>
