@@ -25,6 +25,14 @@
         <module>microservice-framework-report-aggregate</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-microservice-framework.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-microservice-framework.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-microservice-framework</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
         <plugins>
             <plugin>
