@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.qubership.cloud</groupId>
         <artifactId>core-error-handling</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>3.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
