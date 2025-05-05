@@ -1,5 +1,9 @@
 package org.qubership.cloud.framework.contexts.xrequestid;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
@@ -8,8 +12,6 @@ import org.qubership.cloud.framework.contexts.data.ContextDataResponse;
 import org.qubership.cloud.framework.contexts.data.SimpleIncomingContextData;
 import org.qubership.cloud.framework.contexts.helper.AbstractContextTestWithProperties;
 import org.qubership.cloud.headerstracking.filters.context.RequestIdContext;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,8 +23,16 @@ import static org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContex
 class XRequestIdContextObjectPropagationTest extends AbstractContextTestWithProperties {
     public static final String X_REQUEST_ID = "X-Request-Id";
 
-    static {
-        propertiesToSet.put("headers.allowed", CUSTOM_HEADER);
+    static Map<String, String> properties = Map.of("headers.allowed", CUSTOM_HEADER);
+
+    @BeforeAll
+    protected static void setup() {
+        AbstractContextTestWithProperties.parentSetup(properties);
+    }
+
+    @AfterAll
+    protected static void cleanup() {
+        AbstractContextTestWithProperties.parentCleanup(properties);
     }
 
     @Test

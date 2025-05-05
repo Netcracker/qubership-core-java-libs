@@ -1,5 +1,9 @@
 package org.qubership.cloud.framework.contexts.acceptlanuages;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.framework.contexts.acceptlanguage.AcceptLanguageContextObject;
@@ -9,20 +13,26 @@ import org.qubership.cloud.framework.contexts.data.ContextDataResponse;
 import org.qubership.cloud.framework.contexts.data.SimpleIncomingContextData;
 import org.qubership.cloud.framework.contexts.helper.AbstractContextTestWithProperties;
 import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.qubership.cloud.framework.contexts.data.ContextDataRequest.CUSTOM_HEADER;
 import static jakarta.ws.rs.core.HttpHeaders.ACCEPT_LANGUAGE;
+import static org.qubership.cloud.framework.contexts.data.ContextDataRequest.CUSTOM_HEADER;
 
 class AcceptLanguageContextObjectPropagationTest extends AbstractContextTestWithProperties {
 
     private final String TEST_LANGUAGES = "en; ru;";
 
-    static {
-        propertiesToSet.put("headers.allowed", CUSTOM_HEADER);
+    static Map<String, String> properties = Map.of("headers.allowed", CUSTOM_HEADER);
+
+    @BeforeAll
+    protected static void setup() {
+        AbstractContextTestWithProperties.parentSetup(properties);
+    }
+
+    @AfterAll
+    protected static void cleanup() {
+        AbstractContextTestWithProperties.parentCleanup(properties);
     }
 
     @Test

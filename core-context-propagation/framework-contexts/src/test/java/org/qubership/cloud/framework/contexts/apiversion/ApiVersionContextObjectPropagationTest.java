@@ -1,5 +1,9 @@
 package org.qubership.cloud.framework.contexts.apiversion;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
@@ -7,8 +11,6 @@ import org.qubership.cloud.framework.contexts.data.ContextDataRequest;
 import org.qubership.cloud.framework.contexts.data.SimpleIncomingContextData;
 import org.qubership.cloud.framework.contexts.helper.AbstractContextTestWithProperties;
 import org.qubership.cloud.headerstracking.filters.context.ApiVersionContext;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,10 +24,17 @@ class ApiVersionContextObjectPropagationTest extends AbstractContextTestWithProp
     private static final String DEFAULT_VERSION = "v1";
     private static final String URL_HEADER = "cloud-core.context-propagation.url";
 
-    static {
-        propertiesToSet.put("headers.allowed", CUSTOM_HEADER);
+    static Map<String, String> properties = Map.of("headers.allowed", CUSTOM_HEADER);
+
+    @BeforeAll
+    protected static void setup() {
+        AbstractContextTestWithProperties.parentSetup(properties);
     }
 
+    @AfterAll
+    protected static void cleanup() {
+        AbstractContextTestWithProperties.parentCleanup(properties);
+    }
 
     @Test
     public void getDefaultValue() {

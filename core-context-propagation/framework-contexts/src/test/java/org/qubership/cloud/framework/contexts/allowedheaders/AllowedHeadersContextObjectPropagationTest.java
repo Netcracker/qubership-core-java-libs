@@ -1,5 +1,9 @@
 package org.qubership.cloud.framework.contexts.allowedheaders;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.framework.contexts.data.ContextDataRequest;
@@ -7,8 +11,6 @@ import org.qubership.cloud.framework.contexts.data.ContextDataResponse;
 import org.qubership.cloud.framework.contexts.data.SimpleIncomingContextData;
 import org.qubership.cloud.framework.contexts.helper.AbstractContextTestWithProperties;
 import org.qubership.cloud.headerstracking.filters.context.AllowedHeadersContext;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,9 +19,16 @@ import java.util.Map;
 class AllowedHeadersContextObjectPropagationTest extends AbstractContextTestWithProperties {
     public static final String ALLOWED_HEADER = "allowed_header";
     private static final String CUSTOM_HEADER = "Custom-header-1";
+    static Map<String, String> properties = Map.of("headers.allowed", CUSTOM_HEADER);
 
-    static {
-        propertiesToSet.put("headers.allowed", CUSTOM_HEADER);
+    @BeforeAll
+    protected static void setup() {
+        AbstractContextTestWithProperties.parentSetup(properties);
+    }
+
+    @AfterAll
+    protected static void cleanup() {
+        AbstractContextTestWithProperties.parentCleanup(properties);
     }
 
     @Test
