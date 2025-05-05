@@ -18,6 +18,14 @@
         <module>framework-extensions-report-aggregate</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-microservice-framework-extensions.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-microservice-framework-extensions.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-microservice-framework-extensions</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <repositories>
         <repository>
             <id>github</id>
