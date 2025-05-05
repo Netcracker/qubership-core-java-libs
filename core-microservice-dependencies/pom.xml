@@ -11,6 +11,14 @@
         <module>cloud-core-java-bom</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-microservice-dependencies.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-microservice-dependencies.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-microservice-dependencies</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <repositories>
         <repository>
             <id>github</id>
