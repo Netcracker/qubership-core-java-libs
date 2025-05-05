@@ -15,6 +15,13 @@
         <module>dbaas-client-report-aggregate</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-dbaas-client.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-dbaas-client.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-dbaas-client</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <reporting>
         <plugins>
