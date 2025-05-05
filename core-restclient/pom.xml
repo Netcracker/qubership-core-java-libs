@@ -16,6 +16,14 @@
         <module>microservice-restclient-report-aggregate</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-restclient.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-restclient.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-restclient</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <distributionManagement>
         <repository>
             <id>github</id>
