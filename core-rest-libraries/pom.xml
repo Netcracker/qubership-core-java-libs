@@ -26,6 +26,14 @@
         <module>report-aggregate</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-rest-libraries.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-rest-libraries.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-rest-libraries</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
         <plugins>
             <plugin>
