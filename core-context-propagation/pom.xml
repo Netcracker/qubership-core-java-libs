@@ -29,6 +29,14 @@
         <module>context-propagation-report-aggregate</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-context-propagation.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-context-propagation.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-context-propagation</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
         <plugins>
             <plugin>
