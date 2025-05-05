@@ -23,6 +23,14 @@
         <module>blue-green-state-monitor-report-aggregate</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-blue-green-state-monitor.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-blue-green-state-monitor.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-blue-green-state-monitor</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <profiles>
         <profile>
             <id>docker url default value</id>
