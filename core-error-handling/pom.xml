@@ -13,6 +13,14 @@
         <module>core-error-handling-report-aggregate</module>
     </modules>
 
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-error-handling.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-error-handling.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-error-handling</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <properties>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../core-error-handling-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
