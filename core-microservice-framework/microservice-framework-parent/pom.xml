@@ -20,7 +20,7 @@
         <spring.webmvc.version>6.1.13</spring.webmvc.version>
         <lombok.version>1.18.36</lombok.version>
         <jackson.version>2.18.2</jackson.version>
-        <microservice.dependencies.version>11.0.0-SNAPSHOT</microservice.dependencies.version>
+        <microservice.dependencies.version>11.0.0</microservice.dependencies.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../microservice-framework-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
