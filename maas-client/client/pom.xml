@@ -22,7 +22,6 @@
             <groupId>org.qubership.cloud</groupId>
             <artifactId>blue-green-state-monitor-java-plain</artifactId>
             <version>${blue-green-monitor.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
