@@ -4,7 +4,7 @@
 
     <groupId>org.qubership.cloud</groupId>
     <artifactId>cloud-core-java-bom-parent</artifactId>
-    <version>11.0.0-SNAPSHOT</version>
+    <version>11.0.0</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -16,14 +16,14 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-microservice-dependencies.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-core-microservice-dependencies</url>
-        <tag>HEAD</tag>
+        <tag>cloud-core-java-bom-parent-11.0.0</tag>
     </scm>
 
     <repositories>
         <repository>
             <id>github</id>
             <url>https://maven.pkg.github.com/netcracker/*</url>
-            <snapshots/>
+            <snapshots />
         </repository>
     </repositories>
 
