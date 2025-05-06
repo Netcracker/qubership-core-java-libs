@@ -13,7 +13,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-boot.version>3.3.4</spring-boot.version>
         <spring-cloud.version>2023.0.4</spring-cloud.version>
-        <cloud-core.context-propagation.version>7.0.0-SNAPSHOT</cloud-core.context-propagation.version>
         <cloud-core.maas-client.version>11.0.0-SNAPSHOT</cloud-core.maas-client.version>
         <jacoco.plugin.version>0.8.12</jacoco.plugin.version>
         <sonar.coverage.jacoco.xmlReportPaths>
@@ -50,6 +49,14 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.qubership.cloud.maas.client</groupId>
+                <artifactId>maas-client-bom</artifactId>
+                <version>${cloud-core.maas-client.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

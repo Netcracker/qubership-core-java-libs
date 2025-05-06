@@ -21,7 +21,6 @@
         <dependency>
             <groupId>org.qubership.cloud.maas.client</groupId>
             <artifactId>rabbit-blue-green</artifactId>
-            <version>${cloud-core.maas-client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

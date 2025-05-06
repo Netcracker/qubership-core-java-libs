@@ -29,7 +29,6 @@
         <dependency>
             <groupId>org.qubership.cloud.maas.client</groupId>
             <artifactId>deployment-version-tracker</artifactId>
-            <version>${cloud-core.maas-client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.qubership.cloud.security.core.utils</groupId>
