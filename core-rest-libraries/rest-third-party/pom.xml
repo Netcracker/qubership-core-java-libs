@@ -63,6 +63,11 @@
             </dependency>
             <dependency>
                 <groupId>org.qubership.cloud</groupId>
+                <artifactId>context-propagation-spring-common</artifactId>
+                <version>${qubership.context.framework}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.qubership.cloud</groupId>
                 <artifactId>context-propagation-spring-resttemplate</artifactId>
                 <version>${qubership.context.framework}</version>
             </dependency>
