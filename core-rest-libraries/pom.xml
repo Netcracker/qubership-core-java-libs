@@ -5,7 +5,7 @@
     <groupId>org.qubership.cloud</groupId>
     <artifactId>rest-libraries</artifactId>
     <packaging>pom</packaging>
-    <version>6.0.1-SNAPSHOT</version>
+    <version>6.0.1</version>
 
     <properties>
         <java.version>17</java.version>
@@ -31,7 +31,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-rest-libraries.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-core-rest-libraries</url>
-        <tag>HEAD</tag>
+        <tag>rest-libraries-6.0.1</tag>
     </scm>
 
     <build>
