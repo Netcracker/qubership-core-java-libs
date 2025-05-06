@@ -5,7 +5,7 @@
     <groupId>org.qubership.cloud</groupId>
     <artifactId>core-error-handling</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0</version>
+    <version>3.0.1-SNAPSHOT</version>
 
     <modules>
         <module>core-error-handling-runtime</module>
@@ -18,7 +18,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-error-handling.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-core-error-handling</url>
-        <tag>core-error-handling-3.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
