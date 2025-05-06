@@ -1,14 +1,14 @@
 package org.qubership.cloud.dbaas.client.it.mongodb;
 
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.dbaas.client.config.EnableDbaasMongo;
-import org.qubership.cloud.dbaas.client.it.mongodb.access.ServiceDataAccessConfiguration;
-import org.qubership.cloud.dbaas.client.it.mongodb.access.TenantDataAccessConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.qubership.cloud.context.propagation.core.ContextManager;
+import org.qubership.cloud.dbaas.client.config.EnableDbaasMongo;
+import org.qubership.cloud.dbaas.client.it.mongodb.access.ServiceDataAccessConfiguration;
+import org.qubership.cloud.dbaas.client.it.mongodb.access.TenantDataAccessConfiguration;
+import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -21,9 +21,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.UUID;
 
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 
 @ExtendWith(SpringExtension.class)

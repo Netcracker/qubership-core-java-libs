@@ -1,18 +1,20 @@
 package org.qubership.cloud.dbaas.client.management.classifier;
 
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
-import org.qubership.cloud.context.propagation.core.ContextManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
+import org.qubership.cloud.context.propagation.core.ContextManager;
+import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
 import static org.qubership.cloud.dbaas.client.DbaasConst.*;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 @Slf4j
 public class TenantDbaaSClassifierBuilderTest {

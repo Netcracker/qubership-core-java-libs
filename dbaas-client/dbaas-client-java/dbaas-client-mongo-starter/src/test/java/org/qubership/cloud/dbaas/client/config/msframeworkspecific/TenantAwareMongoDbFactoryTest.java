@@ -1,17 +1,17 @@
 package org.qubership.cloud.dbaas.client.config.msframeworkspecific;
 
 import com.mongodb.client.MongoClient;
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.dbaas.client.config.msframeworkspecific.testconfig.TestConstants;
 import org.qubership.cloud.dbaas.client.config.msframeworkspecific.testconfig.TestMongoDbConfiguration;
 import org.qubership.cloud.dbaas.client.entity.connection.MongoDBConnection;
 import org.qubership.cloud.dbaas.client.entity.database.MongoDatabase;
 import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -20,11 +20,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.TreeMap;
 
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
-import static org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration.TENANT_MONGO_TEMPLATE;
-import static org.qubership.cloud.dbaas.client.config.msframeworkspecific.testconfig.TestMongoDbConfiguration.TENANT_ID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration.TENANT_MONGO_TEMPLATE;
+import static org.qubership.cloud.dbaas.client.config.msframeworkspecific.testconfig.TestMongoDbConfiguration.TENANT_ID;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestMongoDbConfiguration.class)

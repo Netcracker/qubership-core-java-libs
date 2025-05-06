@@ -1,6 +1,10 @@
 package org.qubership.cloud.dbaas.client.config.msframeworkspecific;
 
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.dbaas.client.DbaasConst;
 import org.qubership.cloud.dbaas.client.config.MSInfoProvider;
@@ -9,11 +13,7 @@ import org.qubership.cloud.dbaas.client.entity.database.type.MongoDBType;
 import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
 import org.qubership.cloud.dbaas.client.management.DatabasePool;
 import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
+import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Import;
@@ -24,15 +24,15 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Map;
 
-import static org.qubership.cloud.dbaas.client.config.msframeworkspecific.testconfig.TestMongoDbConfiguration.*;
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.qubership.cloud.dbaas.client.DbaasConst.SCOPE;
 import static org.qubership.cloud.dbaas.client.DbaasConst.SERVICE;
 import static org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration.SERVICE_MONGO_TEMPLATE;
 import static org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration.TENANT_MONGO_TEMPLATE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.qubership.cloud.dbaas.client.config.msframeworkspecific.testconfig.TestMongoDbConfiguration.TENANT_ID;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 public class MongoDbClassifierTest {
     private static final String LOCALDEV_KEY = "localdev";

@@ -1,15 +1,15 @@
 package org.qubership.cloud.dbaas.client;
 
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.dbaas.client.test.configuration.MongoTestContainerConfiguration;
-import org.qubership.cloud.dbaas.client.test.configuration.TestMongoRepositoriesConfiguration;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.qubership.cloud.context.propagation.core.ContextManager;
+import org.qubership.cloud.dbaas.client.test.configuration.MongoTestContainerConfiguration;
+import org.qubership.cloud.dbaas.client.test.configuration.TestMongoRepositoriesConfiguration;
+import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -29,11 +29,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.UUID;
 
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
-import static org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration.*;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 public class CustomMongoConverterTest {
     private static final UUID ENTITY_ID = UUID.fromString("6b81580f-9cae-458f-a3b5-08050129bc79");

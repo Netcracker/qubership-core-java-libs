@@ -1,6 +1,9 @@
 package org.qubership.cloud.dbaas.client.metrics;
 
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.dbaas.client.config.metrics.PostgresMetricsConfiguration;
 import org.qubership.cloud.dbaas.client.entity.database.PostgresDatabase;
@@ -11,11 +14,7 @@ import org.qubership.cloud.dbaas.client.management.classifier.ServiceDbaaSClassi
 import org.qubership.cloud.dbaas.client.management.classifier.TenantDbaaSClassifierBuilder;
 import org.qubership.cloud.dbaas.client.testconfiguration.TestMicrometerConfiguration;
 import org.qubership.cloud.dbaas.client.testconfiguration.TestPostgresConfig;
-import io.micrometer.core.instrument.Meter;
-import io.micrometer.core.instrument.MeterRegistry;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,12 +23,9 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
-import static org.qubership.cloud.dbaas.client.DbaasConst.SCOPE;
-import static org.qubership.cloud.dbaas.client.DbaasConst.SERVICE;
-import static org.qubership.cloud.dbaas.client.DbaasConst.TENANT;
-import static org.qubership.cloud.dbaas.client.DbaasConst.TENANT_ID;
+import static org.qubership.cloud.dbaas.client.DbaasConst.*;
 import static org.qubership.cloud.dbaas.client.metrics.DatabaseMetricProperties.CLASSIFIER_TAG_PREFIX;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 @SpringBootTest(properties = {"dbaas.postgres.datasource.initializationFailTimeout=-1"})
 @ContextConfiguration(classes = {TestMicrometerConfiguration.class, TestPostgresConfig.class, PostgresMetricsConfiguration.class})

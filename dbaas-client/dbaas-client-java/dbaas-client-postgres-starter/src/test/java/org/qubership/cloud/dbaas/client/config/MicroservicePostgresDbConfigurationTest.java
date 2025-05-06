@@ -1,13 +1,13 @@
 package org.qubership.cloud.dbaas.client.config;
 
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.dbaas.client.DbaasConst;
-import org.qubership.cloud.dbaas.client.management.DbaasPostgresProxyDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.qubership.cloud.context.propagation.core.ContextManager;
+import org.qubership.cloud.dbaas.client.DbaasConst;
+import org.qubership.cloud.dbaas.client.management.DbaasPostgresProxyDataSource;
+import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.DirtiesContext;
@@ -17,12 +17,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import javax.sql.DataSource;
 import java.util.Map;
 
-import static org.qubership.cloud.dbaas.client.config.DbaasPostgresConfiguration.*;
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
-import static org.qubership.cloud.dbaas.client.DbaasConst.SCOPE;
-import static org.qubership.cloud.dbaas.client.DbaasConst.SERVICE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.qubership.cloud.dbaas.client.DbaasConst.SCOPE;
+import static org.qubership.cloud.dbaas.client.DbaasConst.SERVICE;
+import static org.qubership.cloud.dbaas.client.config.DbaasPostgresConfiguration.SERVICE_POSTGRES_DATASOURCE;
+import static org.qubership.cloud.dbaas.client.config.DbaasPostgresConfiguration.TENANT_POSTGRES_DATASOURCE;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = PostgresDbTestContext.class)

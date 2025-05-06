@@ -1,14 +1,11 @@
 package org.qubership.cloud.dbaas.client.management.classifier;
 
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
+import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
 import static org.qubership.cloud.dbaas.client.DbaasConst.*;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 
 public class TenantDbaaSClassifierBuilder extends DbaaSChainClassifierBuilder {

@@ -1,12 +1,5 @@
 package org.qubership.cloud.dbaas.client.opensearch.restclient;
 
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.opensearch.DbaasOpensearchClient;
-import org.qubership.cloud.dbaas.client.opensearch.config.DbaaSOpensearchConfigurationProperty;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchProperties;
-import org.qubership.cloud.dbaas.client.opensearch.restclient.configuration.OpensearchTestConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
@@ -38,7 +31,14 @@ import org.opensearch.client.opensearch.indices.OpenSearchIndicesClient;
 import org.opensearch.client.opensearch.ingest.OpenSearchIngestClient;
 import org.opensearch.client.opensearch.snapshot.OpenSearchSnapshotClient;
 import org.opensearch.client.opensearch.tasks.OpenSearchTasksClient;
+import org.qubership.cloud.context.propagation.core.ContextManager;
+import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
+import org.qubership.cloud.dbaas.client.opensearch.DbaasOpensearchClient;
+import org.qubership.cloud.dbaas.client.opensearch.config.DbaaSOpensearchConfigurationProperty;
 import org.qubership.cloud.dbaas.client.opensearch.config.DbaasOpensearchConfiguration;
+import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchProperties;
+import org.qubership.cloud.dbaas.client.opensearch.restclient.configuration.OpensearchTestConfiguration;
+import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,9 +52,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.qubership.cloud.dbaas.client.opensearch.restclient.configuration.OpensearchTestConfiguration.*;
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.qubership.cloud.dbaas.client.opensearch.restclient.configuration.OpensearchTestConfiguration.TEST_INDEX;
+import static org.qubership.cloud.dbaas.client.opensearch.restclient.configuration.OpensearchTestConfiguration.TEST_PREFIX;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 @SpringBootTest(properties = {"dbaas.api.opensearch.service.delimiter=-",
         "dbaas.api.opensearch.service.prefix=test",

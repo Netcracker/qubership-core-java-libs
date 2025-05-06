@@ -1,6 +1,11 @@
 package org.qubership.cloud.dbaas.client.config;
 
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.dbaas.client.entity.DatabaseCreateRequest;
 import org.qubership.cloud.dbaas.client.entity.DbaasApiProperties;
@@ -9,15 +14,10 @@ import org.qubership.cloud.dbaas.client.entity.database.PostgresDatabase;
 import org.qubership.cloud.dbaas.client.entity.settings.PostgresSettings;
 import org.qubership.cloud.dbaas.client.management.DatabasePool;
 import org.qubership.cloud.dbaas.client.management.PostgresDatasourceCreator;
+import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
 import org.qubership.cloud.restclient.HttpMethod;
 import org.qubership.cloud.restclient.MicroserviceRestClient;
 import org.qubership.cloud.restclient.entity.RestClientResponseEntity;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,10 +32,11 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.qubership.cloud.dbaas.client.config.DbaasPostgresConfiguration.*;
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.qubership.cloud.dbaas.client.config.DbaasPostgresConfiguration.SERVICE_POSTGRES_DATASOURCE;
+import static org.qubership.cloud.dbaas.client.config.DbaasPostgresConfiguration.TENANT_POSTGRES_DATASOURCE;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {PostgresqlApiPropertiesTest.TestConfig.class},
