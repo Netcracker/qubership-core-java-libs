@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.qubership.cloud</groupId>
         <artifactId>microservice-framework-parent</artifactId>
-        <version>7.0.0</version>
+        <version>7.0.1-SNAPSHOT</version>
         <relativePath>../microservice-framework-parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>microservice-framework-report-aggregate</artifactId>
-    <version>7.0.0</version>
+    <version>7.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
