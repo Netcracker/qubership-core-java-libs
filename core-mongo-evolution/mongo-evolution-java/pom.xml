@@ -4,7 +4,7 @@
 
     <groupId>org.qubership.cloud</groupId>
     <artifactId>mongo-evolution</artifactId>
-    <version>7.0.0-SNAPSHOT</version>
+    <version>7.0.0</version>
 
     <name>mongo-evolution-java</name>
     <description>Common mongo-evolution library which is free from any frameworks</description>
@@ -151,7 +151,7 @@
         <repository>
             <id>github</id>
             <url>https://maven.pkg.github.com/netcracker/*</url>
-            <snapshots/>
+            <snapshots />
         </repository>
     </repositories>
 
