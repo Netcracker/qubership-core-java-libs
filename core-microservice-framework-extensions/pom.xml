@@ -4,7 +4,7 @@
 
     <groupId>org.qubership.cloud</groupId>
     <artifactId>framework-extensions-root</artifactId>
-    <version>6.0.0-SNAPSHOT</version>
+    <version>6.0.0</version>
     <packaging>pom</packaging>
     <name>framework-extensions</name>
     <description>Common framework extensions library</description>
@@ -23,14 +23,14 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-microservice-framework-extensions.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-core-microservice-framework-extensions</url>
-        <tag>HEAD</tag>
+        <tag>framework-extensions-root-6.0.0</tag>
     </scm>
 
     <repositories>
         <repository>
             <id>github</id>
             <url>https://maven.pkg.github.com/netcracker/*</url>
-            <snapshots/>
+            <snapshots />
         </repository>
     </repositories>
 
