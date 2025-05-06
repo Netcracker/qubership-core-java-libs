@@ -16,12 +16,10 @@
         <dependency>
             <groupId>org.qubership.cloud</groupId>
             <artifactId>context-propagation-core</artifactId>
-            <version>${cloud-core.context-propagation.version}</version>
         </dependency>
         <dependency>
             <groupId>org.qubership.cloud</groupId>
             <artifactId>blue-green-state-monitor-java-plain</artifactId>
-            <version>${blue-green-monitor.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

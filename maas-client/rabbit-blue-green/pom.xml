@@ -38,7 +38,6 @@
         <dependency>
             <groupId>org.qubership.cloud</groupId>
             <artifactId>blue-green-state-monitor-java-plain</artifactId>
-            <version>${blue-green-monitor.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.fridujo</groupId>

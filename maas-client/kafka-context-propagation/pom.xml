@@ -21,12 +21,10 @@
         <dependency>
             <groupId>org.qubership.cloud</groupId>
             <artifactId>context-propagation-core</artifactId>
-            <version>${cloud-core.context-propagation.version}</version>
         </dependency>
         <dependency>
             <groupId>org.qubership.cloud</groupId>
             <artifactId>framework-contexts</artifactId>
-            <version>${cloud-core.context-propagation.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

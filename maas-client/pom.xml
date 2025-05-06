@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.qubership.cloud.maas.client</groupId>
@@ -44,6 +45,26 @@
         <url>https://github.com/Netcracker/qubership-maas-client</url>
         <tag>HEAD</tag>
     </scm>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.qubership.cloud</groupId>
+                <artifactId>blue-green-state-monitor-java-plain</artifactId>
+                <version>${blue-green-monitor.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.qubership.cloud</groupId>
+                <artifactId>context-propagation-core</artifactId>
+                <version>${cloud-core.context-propagation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.qubership.cloud</groupId>
+                <artifactId>framework-contexts</artifactId>
+                <version>${cloud-core.context-propagation.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <pluginManagement>
