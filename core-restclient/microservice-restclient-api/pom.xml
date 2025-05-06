@@ -4,7 +4,7 @@
     <parent>
         <artifactId>microservice-restclient-parent</artifactId>
         <groupId>org.qubership.cloud</groupId>
-        <version>6.0.1-SNAPSHOT</version>
+        <version>6.0.1</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
     <artifactId>microservice-restclient-api</artifactId>
