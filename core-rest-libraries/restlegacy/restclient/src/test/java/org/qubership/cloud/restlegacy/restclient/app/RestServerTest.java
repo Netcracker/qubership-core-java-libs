@@ -22,7 +22,7 @@ import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.Set;
 
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

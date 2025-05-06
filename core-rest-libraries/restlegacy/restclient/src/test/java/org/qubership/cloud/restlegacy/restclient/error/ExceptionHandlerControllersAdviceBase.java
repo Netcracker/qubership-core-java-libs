@@ -17,7 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Iterator;
 
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 import static org.qubership.cloud.restlegacy.restclient.error.RetryStatisticsMatcher.*;
 import static org.qubership.cloud.restlegacy.restclient.error.TestExceptionHandlingRestController.*;
 import static org.hamcrest.Matchers.*;
