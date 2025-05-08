@@ -309,6 +309,14 @@
 		</plugins>
 	</build>
 
+	<scm>
+		<connection>scm:git:https://github.com/Netcracker/qubership-maas-client-quarkus.git</connection>
+		<developerConnection>scm:git:https://github.com/Netcracker/qubership-maas-client-quarkus.git
+		</developerConnection>
+		<url>https://github.com/Netcracker/qubership-maas-client-quarkus</url>
+		<tag>HEAD</tag>
+	</scm>
+
 	<repositories>
 		<repository>
 			<id>github</id>
