@@ -4,7 +4,7 @@
     <parent>
         <artifactId>dbaas-client-sample-tests</artifactId>
         <groupId>org.qubership.cloud</groupId>
-        <version>8.0.2-SNAPSHOT</version>
+        <version>8.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>cassandra-sample-test</artifactId>
