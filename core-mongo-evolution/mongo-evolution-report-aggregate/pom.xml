@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.qubership.cloud</groupId>
         <artifactId>mongo-evolution-aggregator</artifactId>
-        <version>7.0.2</version>
+        <version>7.0.3-SNAPSHOT</version>
     </parent>
 	<packaging>pom</packaging>
 
