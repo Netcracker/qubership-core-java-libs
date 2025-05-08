@@ -13,13 +13,13 @@
     <properties>
         <io.micrometer.verion>1.14.1</io.micrometer.verion>
         <java.version>17</java.version>
-        <mongo.evolution.version>7.0.1</mongo.evolution.version>
-        <rest.libraries.version>6.0.1</rest.libraries.version>
-        <dbaas.client.version>8.0.0</dbaas.client.version>
-        <framework.extension.version>6.0.1</framework.extension.version>
+        <mongo.evolution.version>7.0.2</mongo.evolution.version>
+        <rest.libraries.version>6.0.2</rest.libraries.version>
+        <dbaas.client.version>8.0.1</dbaas.client.version>
+        <framework.extension.version>6.0.2</framework.extension.version>
         <context.propagation.version>7.0.2</context.propagation.version>
-        <maas-client.version>11.0.0</maas-client.version>
-        <core-error-handling.version>3.0.1</core-error-handling.version>
+        <maas-client.version>11.0.1</maas-client.version>
+        <core-error-handling.version>3.0.2</core-error-handling.version>
     </properties>
 
     <dependencyManagement>
