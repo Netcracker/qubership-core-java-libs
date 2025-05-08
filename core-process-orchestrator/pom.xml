@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.qubership.core</groupId>
     <artifactId>process-engine</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
     <name>Process Engine</name>
     <properties>
         <compiler-plugin.version>3.11.0</compiler-plugin.version>
