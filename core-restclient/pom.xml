@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.qubership.cloud</groupId>
-    <version>6.0.3-SNAPSHOT</version>
+    <version>6.0.2-SNAPSHOT</version>
     <artifactId>microservice-restclient-aggregator</artifactId>
     <packaging>pom</packaging>
     <modules>
