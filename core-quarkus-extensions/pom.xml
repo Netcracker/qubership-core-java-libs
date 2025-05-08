@@ -40,6 +40,14 @@
         </dependencies>
     </dependencyManagement>
 
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-quarkus-extensions.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-quarkus-extensions.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-quarkus-extensions</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <repositories>
         <repository>
             <id>github</id>
