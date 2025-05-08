@@ -55,7 +55,7 @@ public class KafkaContextPropagation {
 		final Map<String, Object> headers;
 
 		public HeadersAdapter(Iterable<Header> headers) {
-			this.headers = new HashMap<>();
+			this.headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 			for(Header header : headers) {
 				this.headers.put(header.key(), new String(header.value(), StandardCharsets.UTF_8));
 			}

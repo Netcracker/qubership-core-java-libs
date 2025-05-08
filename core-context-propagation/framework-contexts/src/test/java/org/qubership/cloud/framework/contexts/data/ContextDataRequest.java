@@ -5,12 +5,13 @@ import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextD
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static jakarta.ws.rs.core.HttpHeaders.ACCEPT_LANGUAGE;
 
 public class ContextDataRequest implements IncomingContextData {
 
-    Map<String, Object> contextDataMap = new HashMap<>();
+    Map<String, Object> contextDataMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     public static final String CUSTOM_HEADER = "Custom-header-1";
     private static final String WRONG_CUSTOM_HEADER = "Custom-header-2";

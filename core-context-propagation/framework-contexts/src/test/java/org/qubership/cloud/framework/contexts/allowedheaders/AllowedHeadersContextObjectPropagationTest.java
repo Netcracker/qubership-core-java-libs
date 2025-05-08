@@ -19,7 +19,8 @@ import java.util.Map;
 class AllowedHeadersContextObjectPropagationTest extends AbstractContextTestWithProperties {
     public static final String ALLOWED_HEADER = "allowed_header";
     private static final String CUSTOM_HEADER = "Custom-header-1";
-    static Map<String, String> properties = Map.of("headers.allowed", CUSTOM_HEADER);
+    // set lowered `Custom-Header-1` to check case-insensitivity
+    static Map<String, String> properties = Map.of("headers.allowed", "custom-header-1");
 
     @BeforeAll
     protected static void setup() {

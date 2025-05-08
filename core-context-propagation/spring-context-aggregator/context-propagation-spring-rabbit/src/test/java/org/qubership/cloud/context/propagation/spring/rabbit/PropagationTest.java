@@ -3,8 +3,10 @@ package org.qubership.cloud.context.propagation.spring.rabbit;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.spring.rabbit.annotation.EnableRabbitContextPropagation;
 import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
+import org.qubership.cloud.headerstracking.filters.context.AllowedHeadersContext;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
+import jakarta.ws.rs.core.HttpHeaders;
 import org.apache.qpid.server.SystemLauncher;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,7 +26,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.handler.annotation.Headers;
 
-import jakarta.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URI;
@@ -47,6 +48,9 @@ public class PropagationTest {
 	final static int port = getFreePort();
 	final static URI cnnUri = URI.create("amqp://localhost:" + port);
 	final static CountDownLatch awaitLatch = new CountDownLatch(1);
+
+	private static final String CUSTOM_HEADER = "X-Custom-Header-1";
+	private static final String CUSTOM_HEADER_VALUE = "case-insensitive-test-value";
 
 	@Autowired
 	RabbitTemplate template;
@@ -71,12 +75,19 @@ public class PropagationTest {
 			channel.queueDeclare("orders", true, false, false, null);
 			channel.queueBind("orders", "orders", "invoice");
 		}
+		System.setProperty("headers.allowed", CUSTOM_HEADER);
 	}
+
+    @AfterAll
+    static void teardown() {
+        System.clearProperty("headers.allowed");
+    }
 
 	@Test
 	@Timeout(value = 20, unit = TimeUnit.SECONDS)
 	public void test() throws InterruptedException {
 		AcceptLanguageContext.set("ZULU");
+		AllowedHeadersContext.set(Map.of(CUSTOM_HEADER, CUSTOM_HEADER_VALUE));
 		template.convertAndSend("orders", "invoice", "rye wheat");
 		ContextManager.clearAll();
 
@@ -120,6 +131,10 @@ public class PropagationTest {
 
 			// test restored context
 			assertEquals("ZULU", AcceptLanguageContext.get());
+
+			// test that custom header key is case-insensitive in restored context
+			assertEquals(CUSTOM_HEADER_VALUE, AllowedHeadersContext.getHeaders().
+					get(CUSTOM_HEADER.toLowerCase()));
 
 			// finish test
 			awaitLatch.countDown();

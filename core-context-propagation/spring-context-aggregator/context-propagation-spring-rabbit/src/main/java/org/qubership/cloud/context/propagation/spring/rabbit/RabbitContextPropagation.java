@@ -6,10 +6,7 @@ import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextD
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Delivery;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
@@ -83,7 +80,8 @@ public class RabbitContextPropagation {
 		final Map<String, Object> headers;
 
 		public MessageIncomingContextData(Map<String, Object> src) {
-			this.headers = src;
+			this.headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+			this.headers.putAll(src);
 		}
 
 		@Override

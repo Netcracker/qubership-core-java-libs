@@ -1,13 +1,15 @@
 package org.qubership.cloud.framework.contexts.allowedheaders;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.framework.contexts.data.ContextDataRequest;
 import org.qubership.cloud.framework.contexts.data.ContextDataResponse;
 import org.qubership.cloud.framework.contexts.helper.AbstractContextTestWithProperties;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
@@ -20,6 +22,16 @@ public class AllowedHeadersPropertyTest extends AbstractContextTestWithPropertie
 
     @SystemStub
     private EnvironmentVariables environmentVariables = new EnvironmentVariables(HEADERS_ENV, CUSTOM_HEADER);
+
+    @BeforeAll
+    static void setup() {
+        System.clearProperty("headers.allowed");
+    }
+
+    @AfterAll
+    static void tearDown() {
+        System.setProperty("headers.allowed", CUSTOM_HEADER);
+    }
 
     @Test
     public void initAllowedHeadersContext() {
