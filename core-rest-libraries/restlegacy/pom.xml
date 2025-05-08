@@ -5,7 +5,7 @@
 
     <groupId>org.qubership.cloud</groupId>
     <artifactId>restlegacy</artifactId>
-    <version>6.0.2</version>
+    <version>6.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
