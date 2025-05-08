@@ -13,7 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <cloud-core.context-propagation.version>7.0.2</cloud-core.context-propagation.version>
         <testcontainers.version>1.20.4</testcontainers.version>
-        <blue-green-monitor.version>1.0.1</blue-green-monitor.version>
+        <blue-green-monitor.version>1.0.2</blue-green-monitor.version>
 
         <jackson.version>2.18.2</jackson.version>
         <sonar.coverage.jacoco.xmlReportPaths>
