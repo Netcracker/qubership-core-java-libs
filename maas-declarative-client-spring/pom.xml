@@ -4,7 +4,7 @@
 
     <groupId>org.qubership.cloud.maas.declarative</groupId>
     <artifactId>maas-declarative-kafka-client-spring-bom</artifactId>
-    <version>6.0.1-SNAPSHOT</version>
+    <version>6.0.1</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -178,7 +178,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-maas-declarative-client-spring.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-maas-declarative-client-spring</url>
-        <tag>HEAD</tag>
+        <tag>maas-declarative-kafka-client-spring-bom-6.0.1</tag>
     </scm>
 
     <distributionManagement>
