@@ -151,6 +151,14 @@
         </pluginManagement>
     </build>
 
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-blue-green-state-monitor-quarkus.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-blue-green-state-monitor-quarkus.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-blue-green-state-monitor-quarkus</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <repositories>
         <repository>
             <id>github</id>
