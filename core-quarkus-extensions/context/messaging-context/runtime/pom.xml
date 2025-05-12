@@ -37,7 +37,7 @@
         <dependency>
             <groupId>org.qubership.cloud.maas.client</groupId>
             <artifactId>kafka-context-propagation</artifactId>
-            <version>${kafka-context-propagation.version}</version>
+            <version>${maas-client.version}</version>
         </dependency>
 
         <dependency>
