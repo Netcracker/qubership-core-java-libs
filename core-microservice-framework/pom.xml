@@ -4,7 +4,7 @@
 
     <groupId>org.qubership.cloud</groupId>
     <artifactId>microservice-framework-aggregator</artifactId>
-    <version>7.0.1-SNAPSHOT</version>
+    <version>7.0.1</version>
     <packaging>pom</packaging>
     <name>microservice-framework-aggregator</name>
     <description>Common microservice framework library</description>
@@ -30,7 +30,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-microservice-framework.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-core-microservice-framework</url>
-        <tag>HEAD</tag>
+        <tag>microservice-framework-aggregator-7.0.1</tag>
     </scm>
 
     <build>
