@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.qubership.core</groupId>
     <artifactId>process-engine</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
     <name>Process Engine</name>
     <properties>
         <compiler-plugin.version>3.11.0</compiler-plugin.version>
@@ -166,7 +166,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-process-orchestrator.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-core-process-orchestrator</url>
-        <tag>HEAD</tag>
+        <tag>process-engine-1.0.2</tag>
     </scm>
 
     <distributionManagement>
