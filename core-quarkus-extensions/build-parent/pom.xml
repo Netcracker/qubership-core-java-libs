@@ -257,7 +257,7 @@
                 </plugin>
                 <plugin>
                     <groupId>com.google.code.maven-replacer-plugin</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
+                    <artifactId>maven-replacer-plugin</artifactId>
                     <version>1.5.3</version>
                 </plugin>
                 <plugin>
