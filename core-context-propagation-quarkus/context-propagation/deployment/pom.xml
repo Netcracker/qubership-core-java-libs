@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.qubership.cloud.quarkus</groupId>
         <artifactId>context-propagation-parent</artifactId>
-        <version>6.0.0</version>
+        <version>6.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
