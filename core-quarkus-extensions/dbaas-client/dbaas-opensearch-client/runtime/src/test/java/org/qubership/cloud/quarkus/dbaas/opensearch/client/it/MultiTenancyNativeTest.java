@@ -1,11 +1,5 @@
 package org.qubership.cloud.quarkus.dbaas.opensearch.client.it;
 
-import org.qubership.cloud.framework.contexts.tenant.TenantProvider;
-import org.qubership.cloud.framework.contexts.tenant.context.TenantContext;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.dbaas.client.opensearch.DbaasOpensearchClient;
-import org.qubership.cloud.quarkus.dbaas.opensearch.client.DbaasOpensearchConfiguration;
-import org.qubership.cloud.quarkus.dbaas.opensearch.client.it.configuration.ContainerLogicalDbProvider;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
@@ -20,6 +14,12 @@ import org.opensearch.client.opensearch.core.IndexResponse;
 import org.opensearch.client.opensearch.indices.CreateIndexRequest;
 import org.opensearch.client.opensearch.indices.ExistsRequest;
 import org.opensearch.client.transport.endpoints.BooleanResponse;
+import org.qubership.cloud.context.propagation.core.ContextManager;
+import org.qubership.cloud.dbaas.client.opensearch.DbaasOpensearchClient;
+import org.qubership.cloud.framework.contexts.tenant.DefaultTenantProvider;
+import org.qubership.cloud.framework.contexts.tenant.context.TenantContext;
+import org.qubership.cloud.quarkus.dbaas.opensearch.client.DbaasOpensearchConfiguration;
+import org.qubership.cloud.quarkus.dbaas.opensearch.client.it.configuration.ContainerLogicalDbProvider;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -43,7 +43,7 @@ public class MultiTenancyNativeTest {
 
     @BeforeAll
     public static void initContext() {
-        ContextManager.register(Collections.singletonList(new TenantProvider()));
+        ContextManager.register(Collections.singletonList(new DefaultTenantProvider()));
     }
 
     @Test

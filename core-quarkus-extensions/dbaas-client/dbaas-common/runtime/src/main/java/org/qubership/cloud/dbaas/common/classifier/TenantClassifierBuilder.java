@@ -1,16 +1,16 @@
 package org.qubership.cloud.dbaas.common.classifier;
 
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.dbaas.client.DbaasConst;
 import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
 import org.qubership.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;
+import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
 
 import java.util.Map;
 
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
 import static org.qubership.cloud.dbaas.client.DbaasConst.SCOPE;
 import static org.qubership.cloud.dbaas.client.DbaasConst.TENANT_ID;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 public class TenantClassifierBuilder extends DbaaSChainClassifierBuilder {
 

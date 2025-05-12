@@ -1,15 +1,15 @@
 package org.qubership.cloud.quarkus.dbaas.mongoclient;
 
 import com.mongodb.client.MongoClient;
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
+import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
 import org.qubership.cloud.quarkus.dbaas.mongoclient.classifier.TenantClassifierBuilder;
 import org.qubership.cloud.quarkus.dbaas.mongoclient.entity.connection.MongoDBConnection;
 import org.qubership.cloud.quarkus.dbaas.mongoclient.entity.database.MongoDatabase;
 import org.qubership.cloud.quarkus.dbaas.mongoclient.service.MongoClientCreation;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -17,13 +17,13 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
-import static org.qubership.cloud.quarkus.dbaas.mongoclient.CommonMongoTestPart.prepareMongoDbConnection;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
+import static org.qubership.cloud.quarkus.dbaas.mongoclient.CommonMongoTestPart.prepareMongoDbConnection;
 
 public class DbaaSTenantMongoClientTest {
 

@@ -1,7 +1,14 @@
 package org.qubership.cloud.core.quarkus.dbaas.datasource.testcontainers;
 
-import org.qubership.cloud.framework.contexts.tenant.TenantProvider;
-import org.qubership.cloud.framework.contexts.tenant.context.TenantContext;
+import io.quarkus.narayana.jta.QuarkusTransaction;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
+import org.flywaydb.core.Flyway;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.core.quarkus.dbaas.datasource.service.DbaaSPostgresDbCreationService;
 import org.qubership.cloud.core.quarkus.dbaas.datasource.testcontainers.configuration.ContainerLogicalDbProvider;
@@ -12,24 +19,15 @@ import org.qubership.cloud.core.quarkus.dbaas.datasource.testcontainers.entity.P
 import org.qubership.cloud.core.quarkus.dbaas.datasource.testcontainers.service.PersonService;
 import org.qubership.cloud.dbaas.client.entity.database.DatasourceConnectorSettings;
 import org.qubership.cloud.dbaas.client.entity.database.PostgresDatabase;
-import io.quarkus.narayana.jta.QuarkusTransaction;
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
+import org.qubership.cloud.framework.contexts.tenant.DefaultTenantProvider;
+import org.qubership.cloud.framework.contexts.tenant.context.TenantContext;
 
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
+import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-
-import javax.sql.DataSource;
 
 import static org.qubership.cloud.core.quarkus.dbaas.datasource.CommonTestUtils.getServiceClassifier;
 import static org.qubership.cloud.core.quarkus.dbaas.datasource.testcontainers.configuration.TestUtils.FIRST_TENANT_ID;
@@ -52,7 +50,7 @@ public class TransactionsTest {
 
     @BeforeAll
     public static void initContext() {
-        ContextManager.register(Collections.singletonList(new TenantProvider()));
+        ContextManager.register(Collections.singletonList(new DefaultTenantProvider()));
     }
 
     @AfterEach

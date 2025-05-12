@@ -1,26 +1,26 @@
 package org.qubership.cloud.quarkus.dbaas.opensearch.client;
 
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
-import org.qubership.cloud.framework.contexts.tenant.TenantProvider;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchIndexConnection;
-import org.qubership.cloud.dbaas.common.classifier.DbaaSClassifierFactory;
-import org.qubership.cloud.quarkus.dbaas.opensearch.client.service.OpensearchDbaaSApiClient;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensearch.client.opensearch.OpenSearchClient;
+import org.qubership.cloud.context.propagation.core.ContextManager;
+import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchIndexConnection;
+import org.qubership.cloud.dbaas.common.classifier.DbaaSClassifierFactory;
+import org.qubership.cloud.framework.contexts.tenant.DefaultTenantProvider;
+import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
+import org.qubership.cloud.quarkus.dbaas.opensearch.client.service.OpensearchDbaaSApiClient;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 class TenantOpensearchClientTest {
     private static DbaasOpensearchClientImpl dbaaSOpensearchClient;
@@ -32,7 +32,7 @@ class TenantOpensearchClientTest {
 
     @BeforeAll
     static void init() {
-        ContextManager.register(Collections.singletonList(new TenantProvider()));
+        ContextManager.register(Collections.singletonList(new DefaultTenantProvider()));
     }
 
     @BeforeEach

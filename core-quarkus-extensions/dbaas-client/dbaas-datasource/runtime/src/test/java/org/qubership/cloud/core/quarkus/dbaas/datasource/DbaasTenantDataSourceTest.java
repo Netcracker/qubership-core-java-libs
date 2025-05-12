@@ -1,17 +1,17 @@
 package org.qubership.cloud.core.quarkus.dbaas.datasource;
 
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
-import org.qubership.cloud.framework.contexts.tenant.TenantProvider;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.core.quarkus.dbaas.datasource.classifier.TenantClassifierBuilder;
-import org.qubership.cloud.core.quarkus.dbaas.datasource.service.DbaaSPostgresDbCreationService;
-import org.qubership.cloud.dbaas.client.entity.connection.PostgresDBConnection;
-import org.qubership.cloud.dbaas.client.entity.database.PostgresDatabase;
 import io.agroal.api.AgroalDataSource;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
+import org.qubership.cloud.context.propagation.core.ContextManager;
+import org.qubership.cloud.core.quarkus.dbaas.datasource.classifier.TenantClassifierBuilder;
+import org.qubership.cloud.core.quarkus.dbaas.datasource.service.DbaaSPostgresDbCreationService;
+import org.qubership.cloud.dbaas.client.entity.connection.PostgresDBConnection;
+import org.qubership.cloud.dbaas.client.entity.database.PostgresDatabase;
+import org.qubership.cloud.framework.contexts.tenant.DefaultTenantProvider;
+import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -19,12 +19,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 public class DbaasTenantDataSourceTest {
     private static DbaaSDataSource dbaasDataSource;
@@ -32,7 +32,7 @@ public class DbaasTenantDataSourceTest {
 
     @BeforeAll
     public static void initContext() {
-        ContextManager.register(Collections.singletonList(new TenantProvider()));
+        ContextManager.register(Collections.singletonList(new DefaultTenantProvider()));
     }
 
     @BeforeEach

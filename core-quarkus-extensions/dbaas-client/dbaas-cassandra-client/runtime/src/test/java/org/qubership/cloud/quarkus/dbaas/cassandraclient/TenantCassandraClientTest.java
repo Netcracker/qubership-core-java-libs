@@ -1,31 +1,27 @@
 package org.qubership.cloud.quarkus.dbaas.cassandraclient;
 
 import com.datastax.oss.driver.api.core.CqlSession;
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
-import org.qubership.cloud.framework.contexts.tenant.TenantProvider;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
 import org.qubership.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
 import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
+import org.qubership.cloud.framework.contexts.tenant.DefaultTenantProvider;
+import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
 import org.qubership.cloud.quarkus.dbaas.cassandraclient.classifier.TenantClassifierBuilder;
 import org.qubership.cloud.quarkus.dbaas.cassandraclient.service.CassandraClientCreation;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
-import static org.qubership.cloud.quarkus.dbaas.cassandraclient.CommonTestMethods.prepareCassandraDBConnection;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
+import static org.qubership.cloud.quarkus.dbaas.cassandraclient.CommonTestMethods.prepareCassandraDBConnection;
 
 class TenantCassandraClientTest {
 
@@ -36,7 +32,7 @@ class TenantCassandraClientTest {
 
     @BeforeAll
     static void init() {
-        ContextManager.register(Collections.singletonList(new TenantProvider()));
+        ContextManager.register(Collections.singletonList(new DefaultTenantProvider()));
     }
 
     @BeforeEach

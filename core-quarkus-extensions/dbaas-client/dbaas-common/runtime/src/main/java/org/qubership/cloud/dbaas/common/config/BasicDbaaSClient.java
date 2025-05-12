@@ -13,7 +13,7 @@ import org.qubership.cloud.security.core.utils.tls.TlsUtils;
 
 import java.util.Optional;
 
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 @ApplicationScoped
 @Slf4j

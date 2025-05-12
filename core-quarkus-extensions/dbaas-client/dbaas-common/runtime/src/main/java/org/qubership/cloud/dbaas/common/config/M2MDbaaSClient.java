@@ -1,20 +1,20 @@
 package org.qubership.cloud.dbaas.common.config;
 
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.dbaas.client.DbaaSClientOkHttpImpl;
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.quarkus.security.auth.M2MManager;
-import org.qubership.cloud.security.core.auth.Token;
-import org.qubership.cloud.security.core.utils.tls.TlsUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import org.qubership.cloud.context.propagation.core.ContextManager;
+import org.qubership.cloud.dbaas.client.DbaaSClientOkHttpImpl;
+import org.qubership.cloud.dbaas.client.DbaasClient;
+import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
+import org.qubership.cloud.quarkus.security.auth.M2MManager;
+import org.qubership.cloud.security.core.auth.Token;
+import org.qubership.cloud.security.core.utils.tls.TlsUtils;
 
 import java.util.Optional;
 
-import static org.qubership.cloud.framework.contexts.tenant.TenantProvider.TENANT_CONTEXT_NAME;
 import static org.qubership.cloud.dbaas.common.config.DbaasClientConfig.DEFAULT_DBAAS_AGENT_ADDRESS;
+import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 @ApplicationScoped
 public class M2MDbaaSClient {

@@ -1,7 +1,12 @@
 package org.qubership.cloud.core.quarkus.dbaas.datasource.testcontainers;
 
-import org.qubership.cloud.framework.contexts.tenant.TenantProvider;
-import org.qubership.cloud.framework.contexts.tenant.context.TenantContext;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.core.quarkus.dbaas.datasource.service.DbaaSPostgresDbCreationService;
 import org.qubership.cloud.core.quarkus.dbaas.datasource.testcontainers.configuration.ContainerLogicalDbProvider;
@@ -12,22 +17,13 @@ import org.qubership.cloud.core.quarkus.dbaas.datasource.testcontainers.entity.P
 import org.qubership.cloud.core.quarkus.dbaas.datasource.testcontainers.service.PersonService;
 import org.qubership.cloud.dbaas.client.entity.database.PostgresDatabase;
 import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.qubership.cloud.framework.contexts.tenant.DefaultTenantProvider;
+import org.qubership.cloud.framework.contexts.tenant.context.TenantContext;
 
 import java.sql.SQLException;
 import java.util.Collections;
 
-import static org.qubership.cloud.core.quarkus.dbaas.datasource.testcontainers.configuration.TestUtils.FIRST_TENANT_ID;
-import static org.qubership.cloud.core.quarkus.dbaas.datasource.testcontainers.configuration.TestUtils.MICROSERVICE_CLASSIFIER_BUILDER;
-import static org.qubership.cloud.core.quarkus.dbaas.datasource.testcontainers.configuration.TestUtils.SECOND_TENANT_ID;
-import static org.qubership.cloud.core.quarkus.dbaas.datasource.testcontainers.configuration.TestUtils.TENANT_CLASSIFIER_BUILDER;
+import static org.qubership.cloud.core.quarkus.dbaas.datasource.testcontainers.configuration.TestUtils.*;
 
 @SkipOnDemand
 @QuarkusTestResource(PostgresqlContainerResource.class)
@@ -45,7 +41,7 @@ public class MultiTenancyTest {
 
     @BeforeAll
     public static void initContext() {
-        ContextManager.register(Collections.singletonList(new TenantProvider()));
+        ContextManager.register(Collections.singletonList(new DefaultTenantProvider()));
     }
 
     @AfterEach
