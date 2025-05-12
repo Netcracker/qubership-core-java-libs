@@ -77,10 +77,9 @@ public class RabbitContextPropagation {
 	}
 
 	static class MessageIncomingContextData implements IncomingContextData {
-		final Map<String, Object> headers;
+		final Map<String, Object> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
 		public MessageIncomingContextData(Map<String, Object> src) {
-			this.headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 			this.headers.putAll(src);
 		}
 

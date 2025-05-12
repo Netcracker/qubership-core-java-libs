@@ -6,10 +6,9 @@ import java.util.TreeMap;
 
 public class DeserializedIncomingContextData implements IncomingContextData {
 
-    private Map<String, Object> data;
+    private final Map<String, Object> data = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     public DeserializedIncomingContextData(Map<String, Object> data) {
-        this.data = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         this.data.putAll(data);
     }
 

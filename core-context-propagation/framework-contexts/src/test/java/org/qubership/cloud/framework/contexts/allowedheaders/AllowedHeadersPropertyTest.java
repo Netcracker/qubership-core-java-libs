@@ -17,20 +17,26 @@ import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 @ExtendWith(SystemStubsExtension.class)
 public class AllowedHeadersPropertyTest extends AbstractContextTestWithProperties {
     public static final String HEADERS_ENV = "headers_allowed";
+    public static final String HEADERS_PROPERTY = "headers.allowed";
     private static final String CUSTOM_HEADER = "Custom-header-1";
     public static final String ALLOWED_HEADER = "allowed_header";
+
+    private static String headersPropertyBackup;
 
     @SystemStub
     private EnvironmentVariables environmentVariables = new EnvironmentVariables(HEADERS_ENV, CUSTOM_HEADER);
 
     @BeforeAll
     static void setup() {
-        System.clearProperty("headers.allowed");
+        headersPropertyBackup = System.getProperty(HEADERS_PROPERTY);
+        System.clearProperty(HEADERS_PROPERTY);
     }
 
     @AfterAll
     static void tearDown() {
-        System.setProperty("headers.allowed", CUSTOM_HEADER);
+        if (headersPropertyBackup != null) {
+            System.setProperty("headers.allowed", headersPropertyBackup);
+        }
     }
 
     @Test

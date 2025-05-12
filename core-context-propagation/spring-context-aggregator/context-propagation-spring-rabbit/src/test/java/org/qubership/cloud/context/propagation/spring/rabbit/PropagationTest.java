@@ -75,7 +75,7 @@ public class PropagationTest {
 			channel.queueDeclare("orders", true, false, false, null);
 			channel.queueBind("orders", "orders", "invoice");
 		}
-		System.setProperty("headers.allowed", CUSTOM_HEADER);
+		System.setProperty("headers.allowed", CUSTOM_HEADER.toLowerCase());
 	}
 
     @AfterAll

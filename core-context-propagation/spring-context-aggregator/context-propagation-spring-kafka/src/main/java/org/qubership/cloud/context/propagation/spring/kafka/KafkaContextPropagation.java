@@ -52,10 +52,9 @@ public class KafkaContextPropagation {
 	}
 
 	static class HeadersAdapter implements IncomingContextData {
-		final Map<String, Object> headers;
+		final Map<String, Object> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
 		public HeadersAdapter(Iterable<Header> headers) {
-			this.headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 			for(Header header : headers) {
 				this.headers.put(header.key(), new String(header.value(), StandardCharsets.UTF_8));
 			}

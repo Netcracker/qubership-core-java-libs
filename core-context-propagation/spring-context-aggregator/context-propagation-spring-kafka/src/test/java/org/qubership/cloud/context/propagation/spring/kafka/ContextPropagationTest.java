@@ -50,7 +50,7 @@ public class ContextPropagationTest {
 
 	@BeforeAll
 	static void setup() {
-		System.setProperty("headers.allowed", CUSTOM_HEADER);
+		System.setProperty("headers.allowed", CUSTOM_HEADER.toLowerCase());
 	}
 
 	@AfterAll
