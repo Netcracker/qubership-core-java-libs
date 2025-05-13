@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <testcontainers.version>1.20.4</testcontainers.version>
         <quarkus.version>3.15.2</quarkus.version>
-        <quarkus.core.extention.version>7.0.0-SNAPSHOT</quarkus.core.extention.version>
+        <quarkus.core.extention.version>7.0.0</quarkus.core.extention.version>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../aggregator-for-jacoco/target/jacoco-ut/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
         <surefire-plugin.version>3.3.0</surefire-plugin.version>
