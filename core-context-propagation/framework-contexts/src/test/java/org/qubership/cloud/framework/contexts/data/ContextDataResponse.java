@@ -2,7 +2,6 @@ package org.qubership.cloud.framework.contexts.data;
 
 import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
