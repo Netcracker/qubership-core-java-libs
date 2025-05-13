@@ -10,9 +10,12 @@ class DeserializedIncomingContextDataTest {
     @Test
     void getIncomingData() {
         DeserializedIncomingContextData incomingContextData =
-                new DeserializedIncomingContextData(Map.of("serField", "serData"));
+                new DeserializedIncomingContextData(Map.of(
+                        "serField", "serData",
+                        "X-Test-Case-Header","case-insensitive-header-value"));
 
         Assertions.assertEquals("serData", incomingContextData.get("serField"));
+        Assertions.assertEquals("case-insensitive-header-value", incomingContextData.get("x-test-case-header"));
     }
 
     @Test

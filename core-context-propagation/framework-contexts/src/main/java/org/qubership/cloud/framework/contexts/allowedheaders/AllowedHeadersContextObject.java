@@ -10,17 +10,14 @@ import org.qubership.cloud.context.propagation.core.contexts.SerializableDataCon
 import org.qubership.cloud.context.propagation.core.contexts.common.RequestContextObject;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AllowedHeadersContextObject implements SerializableContext,
         DefaultValueAwareContext<Map<String, String>>, ResponsePropagatableContext, SerializableDataContext {
 
     private List<String> allowedHeaders = Collections.emptyList();
 
-    private Map<String, String> headers = new HashMap<>();
+    private Map<String, String> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     public AllowedHeadersContextObject(@Nullable IncomingContextData contextData, List<String> allowedHeaders) {
         this.allowedHeaders = allowedHeaders;
