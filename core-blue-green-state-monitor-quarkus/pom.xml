@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.qubership.cloud.quarkus</groupId>
     <artifactId>blue-green-state-monitor-java-quarkus-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <packaging>pom</packaging>
 
@@ -156,14 +156,14 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-blue-green-state-monitor-quarkus.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-core-blue-green-state-monitor-quarkus</url>
-        <tag>HEAD</tag>
+        <tag>blue-green-state-monitor-java-quarkus-parent-1.0.0</tag>
     </scm>
 
     <repositories>
         <repository>
             <id>github</id>
             <url>https://maven.pkg.github.com/netcracker/*</url>
-            <snapshots/>
+            <snapshots />
         </repository>
     </repositories>
 
