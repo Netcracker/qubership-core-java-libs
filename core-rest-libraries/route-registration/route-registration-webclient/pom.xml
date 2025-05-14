@@ -20,10 +20,5 @@
             <artifactId>webclient</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.qubership.cloud</groupId>
-            <artifactId>route-registration-common-spring</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>
