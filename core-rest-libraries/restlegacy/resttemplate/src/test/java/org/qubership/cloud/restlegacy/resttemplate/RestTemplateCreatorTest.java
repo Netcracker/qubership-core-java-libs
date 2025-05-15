@@ -5,12 +5,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.qubership.cloud.security.common.restclient.OAuthRestTemplateProvider;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
@@ -59,14 +58,7 @@ public class RestTemplateCreatorTest {
     @Test
     public void createRestTemplateWithM2M() {
         RestTemplate expectedRestTemplate = getExpectedRestTemplate();
-        ClientRegistration clientRegistration = ClientRegistration.withRegistrationId("test-id")
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .clientId("test")
-                .tokenUri("http://localhost")
-                .build();
-//        Mockito.when(oAuthRestTemplateProvider.getOAuthRestTemplate())
-//                .thenReturn(new MicroserviceClientOAuthRestTemplate(Mockito.mock(OAuth2AuthorizedClientManager.class),
-//                        clientRegistration));
+        Mockito.when(oAuthRestTemplateProvider.getOAuthRestTemplate()).thenReturn(expectedRestTemplate);
 
         RestTemplate restTemplate = restTemplateCreator.withM2M().create();
         Assert.assertEquals(expectedRestTemplate.getInterceptors(), restTemplate.getInterceptors());
