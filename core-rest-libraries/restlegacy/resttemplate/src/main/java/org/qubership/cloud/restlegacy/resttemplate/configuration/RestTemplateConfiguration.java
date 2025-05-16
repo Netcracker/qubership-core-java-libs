@@ -1,5 +1,6 @@
 package org.qubership.cloud.restlegacy.resttemplate.configuration;
 
+import jakarta.validation.constraints.NotNull;
 import org.qubership.cloud.context.propagation.spring.resttemplate.annotation.EnableResttemplateContextProvider;
 import org.qubership.cloud.restclient.MicroserviceRestClient;
 import org.qubership.cloud.restclient.resttemplate.MicroserviceRestTemplate;
@@ -16,7 +17,6 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
 
-import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +52,7 @@ public class RestTemplateConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(OAuthRestTemplateProvider.class)
     public OAuthRestTemplateProvider oAuthRestTemplateProvider(RestTemplateBuilder restTemplateBuilder) {
         return restTemplateBuilder::build;
     }
