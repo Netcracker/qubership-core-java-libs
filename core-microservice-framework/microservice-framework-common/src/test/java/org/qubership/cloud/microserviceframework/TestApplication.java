@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cloud.config.client.ConfigClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +20,8 @@ import static org.mockito.Mockito.mock;
 @EnableAutoConfiguration(exclude = {
         ElasticsearchDataAutoConfiguration.class,
         ConfigClientAutoConfiguration.class,
-        MongoAutoConfiguration.class
+        MongoAutoConfiguration.class,
+        RestClientAutoConfiguration.class
 })
 public class TestApplication extends BaseApplicationCommon {
     @Bean
