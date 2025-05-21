@@ -1,6 +1,7 @@
 package org.qubership.cloud.microserviceframework.webclient.sample;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,8 +19,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.util.concurrent.TimeUnit;
+
+import static org.awaitility.Awaitility.await;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
+@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {TestApplication.class, RouteConfig.class},
         properties = {
@@ -43,9 +48,19 @@ public class ApplicationTests {
 
     @Test
     public void controlPlaneTest() {
-        Mockito.verify(controlPlaneClient, Mockito.times(1)).sendRequest(Mockito.argThat(new RegistrationRequestMatcher(GatewayNameKey.PUBLIC)));
-        Mockito.verify(controlPlaneClient, Mockito.times(1)).sendRequest(Mockito.argThat(new RegistrationRequestMatcher(GatewayNameKey.PRIVATE)));
-        Mockito.verify(controlPlaneClient, Mockito.times(1)).sendRequest(Mockito.argThat(new RegistrationRequestMatcher(GatewayNameKey.INTERNAL)));
+        log.info("controlPlaneTest started");
+        await()
+                .atMost(5, TimeUnit.SECONDS)
+                .pollInterval(100, TimeUnit.MILLISECONDS)
+                .untilAsserted(() -> {
+                    Mockito.verify(controlPlaneClient, Mockito.times(1))
+                            .sendRequest(Mockito.argThat(new RegistrationRequestMatcher(GatewayNameKey.PUBLIC)));
+                    Mockito.verify(controlPlaneClient, Mockito.times(1))
+                            .sendRequest(Mockito.argThat(new RegistrationRequestMatcher(GatewayNameKey.PRIVATE)));
+                    Mockito.verify(controlPlaneClient, Mockito.times(1))
+                            .sendRequest(Mockito.argThat(new RegistrationRequestMatcher(GatewayNameKey.INTERNAL)));
+                });
+        log.info("controlPlaneTest finished");
     }
 
     @RequiredArgsConstructor
