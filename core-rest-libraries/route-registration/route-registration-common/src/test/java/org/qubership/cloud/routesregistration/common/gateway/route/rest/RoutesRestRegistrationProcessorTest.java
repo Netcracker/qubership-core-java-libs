@@ -1,6 +1,7 @@
 package org.qubership.cloud.routesregistration.common.gateway.route.rest;
 
 import io.reactivex.schedulers.Schedulers;
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.qubership.cloud.routesregistration.common.gateway.route.*;
@@ -49,7 +50,7 @@ public class RoutesRestRegistrationProcessorTest {
 
         processor.postRoutes(buildTestRoutes("default"));
 
-        countDownLatch.await(2, TimeUnit.MINUTES);
+        Assert.assertTrue(countDownLatch.await(2, TimeUnit.MINUTES));
         expectedRequests.forEach(request ->
                 Mockito.verify(controlPlaneClient, times(1))
                         .sendRequest(request));
