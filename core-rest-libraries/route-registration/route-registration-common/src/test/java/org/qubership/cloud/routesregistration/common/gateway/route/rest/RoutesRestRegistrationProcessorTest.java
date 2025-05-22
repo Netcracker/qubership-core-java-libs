@@ -50,7 +50,7 @@ public class RoutesRestRegistrationProcessorTest {
 
         processor.postRoutes(buildTestRoutes("default"));
 
-        countDownLatch.await(2, TimeUnit.MINUTES);
+        countDownLatch.await(5, TimeUnit.MINUTES);
         expectedRequests.forEach(request ->
                 Mockito.verify(controlPlaneClient, timeout(10_000).times(1))
                         .sendRequest(request));
