@@ -46,14 +46,15 @@ public class RoutesRestRegistrationProcessorTest {
         final CountDownLatch countDownLatch = new CountDownLatch(7);
         Mockito.doAnswer(invocationOnMock -> {
             countDownLatch.countDown();
+            Thread.sleep(1_000);
             return null;
         }).when(controlPlaneClient).sendRequest(any());
 
         processor.postRoutes(buildTestRoutes("default"));
 
-        Assert.assertTrue(countDownLatch.await(5, TimeUnit.MINUTES));
+        Assert.assertTrue(countDownLatch.await(2, TimeUnit.MINUTES));
         expectedRequests.forEach(request ->
-                Mockito.verify(controlPlaneClient, timeout(10_000).times(1))
+                Mockito.verify(controlPlaneClient, times(1))
                         .sendRequest(request));
     }
 

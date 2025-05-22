@@ -1,5 +1,6 @@
 package org.qubership.cloud.routesregistration.common.gateway.route;
 
+import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import nl.altindag.log.LogCaptor;
@@ -22,8 +23,8 @@ public class RouteRetryManagerTest {
         LogCaptor logCaptor = LogCaptor.forClass(RouteRetryManager.class);
 
         AtomicInteger run2Cnt = new AtomicInteger(0);
-
-        RouteRetryManager routeRetryManager = new RouteRetryManager(Schedulers.newThread(), new RoutesRegistrationDelayProvider());
+        Scheduler scheduler = Schedulers.newThread();
+        RouteRetryManager routeRetryManager = new RouteRetryManager(scheduler, new RoutesRegistrationDelayProvider());
         routeRetryManager.execute(
                 Map.of(1,
                         List.of(
@@ -48,6 +49,6 @@ public class RouteRetryManagerTest {
                         .anyMatch(throwable -> throwable.isPresent() && throwable.get() instanceof Error
                                 && throwable.get().getMessage().contains("This is Error from runnable task"))
         );
-        routeRetryManager.disposeResources();
+        scheduler.shutdown();
     }
 }
