@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.qubership.cloud.routesregistration.common.gateway.route.rest.RegistrationRequestFactoryTest.*;
 
@@ -51,7 +52,7 @@ public class RoutesRestRegistrationProcessorTest {
 
         countDownLatch.await(2, TimeUnit.MINUTES);
         expectedRequests.forEach(request ->
-                Mockito.verify(controlPlaneClient, times(1))
+                Mockito.verify(controlPlaneClient, timeout(10_000).times(1))
                         .sendRequest(request));
     }
 
