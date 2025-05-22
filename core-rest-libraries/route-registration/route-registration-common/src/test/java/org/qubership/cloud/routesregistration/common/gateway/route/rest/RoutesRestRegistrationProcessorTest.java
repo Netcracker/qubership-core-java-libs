@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.qubership.cloud.routesregistration.common.gateway.route.rest.RegistrationRequestFactoryTest.*;
 
