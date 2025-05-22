@@ -46,7 +46,6 @@ public class RoutesRestRegistrationProcessorTest {
         final CountDownLatch countDownLatch = new CountDownLatch(7);
         Mockito.doAnswer(invocationOnMock -> {
             countDownLatch.countDown();
-            Thread.sleep(1_000);
             return null;
         }).when(controlPlaneClient).sendRequest(any());
 
