@@ -13,7 +13,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        
+
         <microservice.restclient.version>6.0.2</microservice.restclient.version>
         <qubership.context.framework>7.0.2</qubership.context.framework>
 
