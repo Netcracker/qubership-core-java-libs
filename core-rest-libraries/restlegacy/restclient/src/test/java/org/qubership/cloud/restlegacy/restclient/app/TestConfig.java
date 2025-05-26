@@ -19,11 +19,6 @@ import java.util.Properties;
 public class TestConfig {
 
     @Bean
-    public OAuthRestTemplateProvider oAuthRestTemplateProvider(RestTemplateBuilder restTemplateBuilder) {
-        return restTemplateBuilder::build;
-    }
-
-    @Bean
     public RestTemplateBuilder restTemplateBuilder() {
         return new RestTemplateBuilder();
     }
