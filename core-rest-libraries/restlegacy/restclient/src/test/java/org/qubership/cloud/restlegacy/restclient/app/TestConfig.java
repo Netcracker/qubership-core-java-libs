@@ -3,8 +3,6 @@ package org.qubership.cloud.restlegacy.restclient.app;
 import org.qubership.cloud.restlegacy.restclient.ApiGatewayClient;
 import org.qubership.cloud.restlegacy.restclient.retry.RetryTemplateBuilder;
 import org.qubership.cloud.restlegacy.resttemplate.configuration.RestTemplateConfiguration;
-import org.qubership.cloud.security.common.restclient.OAuthRestTemplateProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
