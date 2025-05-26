@@ -8,6 +8,7 @@ updates:
     spring:
       patterns:
       - org.springframework.*
+      - org.springframework:*
     quarkus:
       patterns:
       - io.quarkus.*
