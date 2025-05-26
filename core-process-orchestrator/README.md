@@ -1,3 +1,4 @@
+[![Maven build](https://github.com/Netcracker/qubership-core-process-orchestrator/actions/workflows/maven-build.yaml/badge.svg)](https://github.com/Netcracker/qubership-core-process-orchestrator/actions/workflows/maven-build.yaml)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?metric=coverage&project=Netcracker_qubership-core-process-orchestrator)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-process-orchestrator)
 [![duplicated_lines_density](https://sonarcloud.io/api/project_badges/measure?metric=duplicated_lines_density&project=Netcracker_qubership-core-process-orchestrator)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-process-orchestrator)
 [![vulnerabilities](https://sonarcloud.io/api/project_badges/measure?metric=vulnerabilities&project=Netcracker_qubership-core-process-orchestrator)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-core-process-orchestrator)
