@@ -1,34 +1,28 @@
 package org.qubership.cloud.restlegacy.restclient;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.qubership.cloud.restlegacy.restclient.configuration.ClientsTestConfiguration;
 import org.qubership.cloud.restlegacy.resttemplate.RestTemplateFactory;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ClientsTestConfiguration.class)
-public class ApiGatewayClientTest {
+@SpringBootTest(classes = ClientsTestConfiguration.class)
+class ApiGatewayClientTest {
 
     private static String relativeURL;
     private static String url;
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
@@ -36,14 +30,14 @@ public class ApiGatewayClientTest {
     @Autowired
     private RestTemplateFactory restTemplateFactory;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         relativeURL = "/relativeUrl";
         url = "http://api-gateway/api/v1/some-app" + relativeURL;
     }
 
     @Test
-    public void testPost() throws Exception {
+    void testPost() throws Exception {
         Object requestObject = new Object();
         when(restTemplate.postForEntity(url, requestObject, Object.class))
                 .thenReturn(new ResponseEntity<Object>(new Object(), HttpStatus.OK));
@@ -52,7 +46,7 @@ public class ApiGatewayClientTest {
     }
 
     @Test
-    public void testPut() throws Exception {
+    void testPut() throws Exception {
         Object requestObject = new Object();
         Mockito.doNothing().when(restTemplate).put(url, requestObject);
         apiGatewayClient.put(relativeURL, requestObject);
@@ -61,7 +55,7 @@ public class ApiGatewayClientTest {
 
 
     @Test
-    public void testPatch() {
+    void testPatch() {
         Object requestObject = new Object();
 
         apiGatewayClient.patch(relativeURL, requestObject, Object.class);
@@ -70,7 +64,7 @@ public class ApiGatewayClientTest {
     }
 
     @Test
-    public void testPostWithResponseTypeDefined() throws Exception {
+    void testPostWithResponseTypeDefined() throws Exception {
         Object requestObject = new Object();
         when(restTemplate.postForEntity(url, requestObject, String.class))
                 .thenReturn(new ResponseEntity<String>("Test", HttpStatus.OK));
@@ -79,7 +73,7 @@ public class ApiGatewayClientTest {
     }
 
     @Test
-    public void testGet() {
+    void testGet() {
         when(restTemplate.getForEntity(url, Object.class))
                 .thenReturn(new ResponseEntity<Object>(new Object(), HttpStatus.OK));
         apiGatewayClient.get(relativeURL);
@@ -87,7 +81,7 @@ public class ApiGatewayClientTest {
     }
 
     @Test
-    public void testGetWithResponseTypeDefined() throws Exception {
+    void testGetWithResponseTypeDefined() throws Exception {
         when(restTemplate.getForEntity(url, String.class))
                 .thenReturn(new ResponseEntity<String>("Test", HttpStatus.OK));
         apiGatewayClient.get(relativeURL, String.class);
@@ -95,7 +89,7 @@ public class ApiGatewayClientTest {
     }
 
     @Test
-    public void testGetWithResponseTypeAndEntityDefined() throws Exception {
+    void testGetWithResponseTypeAndEntityDefined() throws Exception {
         HttpEntity<String> entity = new HttpEntity<>("Test body");
         when(restTemplate.exchange(url, HttpMethod.GET, entity, String.class))
                 .thenReturn(new ResponseEntity<>("Test", HttpStatus.OK));
@@ -104,10 +98,9 @@ public class ApiGatewayClientTest {
     }
 
     @Test
-    public void testGetWith503() {
+    void testGetWith503() {
         when(restTemplate.getForEntity(url, String.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.SERVICE_UNAVAILABLE));
-        expectedException.expect(RestClientException.class);
-        apiGatewayClient.get(relativeURL, String.class);
+        assertThrows(RestClientException.class, () -> apiGatewayClient.get(relativeURL, String.class));
     }
 }

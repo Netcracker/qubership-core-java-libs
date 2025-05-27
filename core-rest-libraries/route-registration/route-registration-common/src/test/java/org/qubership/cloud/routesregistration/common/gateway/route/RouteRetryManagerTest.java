@@ -5,7 +5,7 @@ import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import nl.altindag.log.LogCaptor;
 import nl.altindag.log.model.LogEvent;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
@@ -16,10 +16,10 @@ import static org.awaitility.Awaitility.await;
 
 
 @Slf4j
-public class RouteRetryManagerTest {
+class RouteRetryManagerTest {
 
     @Test
-    public void roteRetryManagerTest_ErrorMessageIsWrittenInLogs() throws InterruptedException, IllegalAccessException, NoSuchFieldException {
+    void roteRetryManagerTest_ErrorMessageIsWrittenInLogs() throws InterruptedException, IllegalAccessException, NoSuchFieldException {
         Scheduler scheduler = Schedulers.newThread();
         try {
             LogCaptor logCaptor = LogCaptor.forClass(RouteRetryManager.class);

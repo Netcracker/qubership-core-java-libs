@@ -1,17 +1,16 @@
 package org.qubership.cloud.configserver.common;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.qubership.cloud.configserver.common.configuration.CustomConfigServerDataLoader;
 import org.qubership.cloud.restclient.MicroserviceRestClient;
 import org.qubership.cloud.restclient.entity.RestClientResponseEntity;
 import org.qubership.cloud.restclient.exception.MicroserviceRestClientException;
 import org.qubership.cloud.restclient.exception.MicroserviceRestClientResponseException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.context.config.ConfigData;
 import org.springframework.boot.context.config.ConfigDataLoaderContext;
@@ -25,30 +24,28 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.env.MockEnvironment;
-import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.Collections;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CustomConfigServerLoaderTest {
+import static org.junit.jupiter.api.Assertions.*;
+
+@ExtendWith(MockitoExtension.class)
+class CustomConfigServerLoaderTest {
 
     private CustomConfigServerDataLoader customConfigServerDataLoader;
     private RestClientResponseEntity<Environment> restClientResponseEntity;
 
     @Mock
-    ConfigClientProperties configClientProperties;
-
-    @Mock
     MicroserviceRestClient microserviceRestClient;
 
-    @Before
-    public void before() {
+    @BeforeEach
+    void before() {
         customConfigServerDataLoader = new CustomConfigServerDataLoader();
     }
 
     @Test
-    public void locateMainActivityTest() throws Exception {
+    void locateMainActivityTest() {
 
         Environment environment = new Environment("test", "dev");
         environment.setVersion("test-version");
@@ -58,7 +55,7 @@ public class CustomConfigServerLoaderTest {
 
         Mockito.doReturn(restClientResponseEntity)
                 .when(microserviceRestClient).doRequest(Mockito.any(),
-                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+                        Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 
 
         ConfigData configData = getConfigData(microserviceRestClient, createConfigClientProperties());
@@ -66,17 +63,17 @@ public class CustomConfigServerLoaderTest {
         byte count = 0;
         for (PropertySource propertySource : configData.getPropertySources()) {
             if (propertySource.getName().equals("configClient")) {
-                Assert.assertEquals("test-state", propertySource.getProperty("config.client.state"));
-                Assert.assertEquals("test-version", propertySource.getProperty("config.client.version"));
+                assertEquals("test-state", propertySource.getProperty("config.client.state"));
+                assertEquals("test-version", propertySource.getProperty("config.client.version"));
                 count++;
             }
             if (propertySource.getName().equals("configserver:test")) {
-                Assert.assertEquals("testValue", propertySource.getProperty("testKey"));
+                assertEquals("testValue", propertySource.getProperty("testKey"));
                 count++;
             }
         }
 
-        Assert.assertEquals(2, count);
+        assertEquals(2, count);
 
     }
 
@@ -111,39 +108,39 @@ public class CustomConfigServerLoaderTest {
         return testBindHandler;
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void throwHttpException() {
+    @Test
+    void throwHttpException() {
         HttpHeaders httpHeader = new HttpHeaders();
         httpHeader.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         Mockito.doThrow(new HttpServerErrorException(HttpStatus.BAD_REQUEST, "", httpHeader, "httpBody".getBytes(), null))
                 .when(microserviceRestClient).doRequest(Mockito.any(),
-                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+                        Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
         ConfigClientProperties configClientProperties = createConfigClientProperties();
         configClientProperties.setFailFast(true);
-        getConfigData(microserviceRestClient, configClientProperties);
+        assertThrows(IllegalStateException.class, () -> getConfigData(microserviceRestClient, configClientProperties));
     }
 
     @Test
-    public void catchMicroserviceRestClientResponseException() {
+    void catchMicroserviceRestClientResponseException() {
         Mockito.doThrow(new MicroserviceRestClientResponseException("test", 400, "test-body".getBytes(), Collections.emptyMap())).when(microserviceRestClient).doRequest(Mockito.any(),
                 Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-        Assert.assertNull(getConfigData(microserviceRestClient, createConfigClientProperties()));
+        assertNull(getConfigData(microserviceRestClient, createConfigClientProperties()));
     }
 
     @Test
-    public void testWillRetryTwelveTimesIfConfigserverIsNotAvailableAndMicroserviceRestClientResponseException() {
+    void testWillRetryTwelveTimesIfConfigserverIsNotAvailableAndMicroserviceRestClientResponseException() {
         Mockito.doThrow(new MicroserviceRestClientResponseException("test", 400, "test-body".getBytes(), Collections.emptyMap())).when(microserviceRestClient).doRequest(Mockito.any(),
                 Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-        Assert.assertNull(getConfigData(microserviceRestClient, createConfigClientProperties()));
+        assertNull(getConfigData(microserviceRestClient, createConfigClientProperties()));
         Mockito.verify(microserviceRestClient, Mockito.times(12)).doRequest(Mockito.any(),
                 Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test
-    public void testWillRetryTwelveTimesIfConfigserverIsNotAvailableAndMicroserviceRestClientException() {
+    void testWillRetryTwelveTimesIfConfigserverIsNotAvailableAndMicroserviceRestClientException() {
         Mockito.doThrow(new MicroserviceRestClientException("Error during request")).when(microserviceRestClient).doRequest(Mockito.any(),
                 Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-        Assert.assertNull(getConfigData(microserviceRestClient, createConfigClientProperties()));
+        assertNull(getConfigData(microserviceRestClient, createConfigClientProperties()));
         Mockito.verify(microserviceRestClient, Mockito.times(12)).doRequest(Mockito.any(),
                 Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
     }

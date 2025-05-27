@@ -1,18 +1,20 @@
 package org.qubership.cloud.routesregistration.common.annotation.processing;
 
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.routesregistration.common.gateway.route.RouteEntry;
 import org.qubership.cloud.routesregistration.common.gateway.route.RouteType;
-import org.junit.Assert;
-import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
 
-public class MicroserviceRoutesBuilderTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class MicroserviceRoutesBuilderTest {
     private static final String TEST_MICROSERVICE = "test-microservice";
 
     @Test
-    public void testRoutesAreBuilt() {
+    void testRoutesAreBuilt() {
         RouteAnnotationInfo privateRouteAnnotation = RouteAnnotationInfo.builder().routeType(RouteType.PRIVATE).build();
         RouteAnnotationInfo internalRouteAnnotation = RouteAnnotationInfo.builder().routeType(RouteType.INTERNAL).build();
 
@@ -30,14 +32,14 @@ public class MicroserviceRoutesBuilderTest {
                         .build());
 
         Collection<RouteEntry> routes = microserviceRoutesBuilder.build();
-        Assert.assertEquals(2, routes.size());
-        Assert.assertTrue(routes.contains(RouteEntry.builder()
+        assertEquals(2, routes.size());
+        assertTrue(routes.contains(RouteEntry.builder()
                 .from("/test-path")
                 .to("/test-path")
                 .allowed(true)
                 .type(RouteType.PRIVATE)
                 .build()));
-        Assert.assertTrue(routes.contains(RouteEntry.builder()
+        assertTrue(routes.contains(RouteEntry.builder()
                 .from("/test-path")
                 .to("/test-path")
                 .allowed(true)

@@ -1,5 +1,7 @@
 package org.qubership.cloud.restlegacy.restclient.error.v2.v2_1;
 
+import org.hamcrest.*;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.restlegacy.restclient.app.TestConfig;
 import org.qubership.cloud.restlegacy.restclient.error.ExceptionHandlerControllersAdviceBase;
 import org.qubership.cloud.restlegacy.restclient.error.TestExceptionHandlingConfiguration;
@@ -7,17 +9,12 @@ import org.qubership.cloud.restlegacy.restclient.error.v2.ControllerWithCustomEx
 import org.qubership.cloud.restlegacy.restclient.error.v2.ControllerWithV1ExceptionModel;
 import org.qubership.cloud.restlegacy.restclient.error.v2.CustomExceptionHandler;
 import org.qubership.cloud.restlegacy.restclient.error.v2.ExceptionHandlingV2MainConfiguration;
-import org.hamcrest.*;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.http.MediaType;
 import org.springframework.retry.RetryStatistics;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.time.ZoneId;
@@ -25,6 +22,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.qubership.cloud.restlegacy.restclient.error.TestExceptionHandlingRestController.*;
 import static org.qubership.cloud.restlegacy.restclient.error.v2.Constants.ERROR_HANDLER_VERSION_CONDITION_PROPERTY;
 import static org.qubership.cloud.restlegacy.restclient.error.v2.Constants.VERSION_2_1;
@@ -33,15 +33,10 @@ import static org.qubership.cloud.restlegacy.restclient.error.v2.ControllerWithC
 import static org.qubership.cloud.restlegacy.restclient.error.v2.ControllerWithV1ExceptionModel.*;
 import static org.qubership.cloud.restlegacy.restclient.error.v2.v2_1.ErrorMessageCodes.*;
 import static org.qubership.cloud.restlegacy.restclient.error.v2.v2_1.MessageParameterTypes.*;
-import static java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = {TestConfig.class,
                 TestExceptionHandlingConfiguration.class,
@@ -50,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 ControllerWithCustomException.class},
         properties = {ERROR_HANDLER_VERSION_CONDITION_PROPERTY + "=" + VERSION_2_1})
 @AutoConfigureJsonTesters
-public class ExceptionHandlerErrorCodeControllersAdviceTest extends ExceptionHandlerControllersAdviceBase {
+class ExceptionHandlerErrorCodeControllersAdviceTest extends ExceptionHandlerControllersAdviceBase {
 
     @Autowired
     private JacksonTester<SimpleErrorMessageResponse> simpleMessageJsonTester;
@@ -63,7 +58,7 @@ public class ExceptionHandlerErrorCodeControllersAdviceTest extends ExceptionHan
     }
 
     private static Matcher<ErrorMessage> hasErrorMessageCode(final String messageCode) {
-        return new TypeSafeDiagnosingMatcher<ErrorMessage>() {
+        return new TypeSafeDiagnosingMatcher<>() {
             @Override
             public void describeTo(Description description) {
                 description.appendText(", has messageCode ").appendText(messageCode);
@@ -93,7 +88,7 @@ public class ExceptionHandlerErrorCodeControllersAdviceTest extends ExceptionHan
     }
 
     private static Matcher<ObjectValidationErrorResponse> hasObjectValidationMessage(Matcher<ErrorMessage> matcher) {
-        return new FeatureMatcher<ObjectValidationErrorResponse, ErrorMessage>
+        return new FeatureMatcher<>
                 (matcher, "has validationErrors", "validationErrors") {
             @Override
             protected ErrorMessage featureValueOf(final ObjectValidationErrorResponse actual) {
@@ -103,7 +98,7 @@ public class ExceptionHandlerErrorCodeControllersAdviceTest extends ExceptionHan
     }
 
     private static Matcher<FieldValidationMessage> equalToMessageCode(final String failedField, final String messageCode) {
-        return new TypeSafeDiagnosingMatcher<FieldValidationMessage>() {
+        return new TypeSafeDiagnosingMatcher<>() {
             @Override
             protected boolean matchesSafely(final FieldValidationMessage item, final Description mismatchDescription) {
                 boolean result = true;
@@ -129,7 +124,7 @@ public class ExceptionHandlerErrorCodeControllersAdviceTest extends ExceptionHan
 
     private static Matcher<SimpleErrorMessageResponse> hasErrorMessage(final Matcher<String> messageCodeMatcher,
                                                                        final Matcher<Map<? extends String, ? extends MessageParameter>> messageParametersMatcher) {
-        return new TypeSafeDiagnosingMatcher<SimpleErrorMessageResponse>() {
+        return new TypeSafeDiagnosingMatcher<>() {
             @Override
             protected boolean matchesSafely(final SimpleErrorMessageResponse simpleErrorMessageResponse, final Description description) {
                 final ErrorMessage errorMessage = simpleErrorMessageResponse.getErrorMessage();
@@ -191,20 +186,20 @@ public class ExceptionHandlerErrorCodeControllersAdviceTest extends ExceptionHan
     }
 
     @Test
-    public void useV2VersionOfErrorHandlingIfItIsSpecifiedDirectly() {
+    void useV2VersionOfErrorHandlingIfItIsSpecifiedDirectly() {
         assertNotNull(context.getBean(ExceptionHandlingV2MainConfiguration.class));
         assertNotNull(context.getBean(ExceptionHandlingV2_1Configuration.class));
     }
 
     @Test
-    public void wePropagateOnlyHttCodeFromErrorTypeToResponseIfThrowLegacyErrorException() throws Exception {
+    void wePropagateOnlyHttCodeFromErrorTypeToResponseIfThrowLegacyErrorException() throws Exception {
         mockMvc.perform(get(THROW_LEGACY_ERROR_EXCEPTION_WITH_404))
                 .andExpect(body().isSimpleMessageError(hasMessageCode(INTERNAL_SERVER_ERROR_CODE)))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void propagateUserMessageCodeWithParamsToResponseIfGenericDisplayedExceptionWasThrown() throws Exception {
+    void propagateUserMessageCodeWithParamsToResponseIfGenericDisplayedExceptionWasThrown() throws Exception {
         mockMvc.perform(get(THROW_GENERIC_DISPLAYED_EXCEPTION_V2_1_METHOD))
                 .andExpect(status().isInternalServerError())
                 .andExpect(body().isSimpleMessageError(allOf(
@@ -216,7 +211,7 @@ public class ExceptionHandlerErrorCodeControllersAdviceTest extends ExceptionHan
     }
 
     @Test
-    public void weSendDateMessageParameterInRFC1123() throws Exception {
+    void weSendDateMessageParameterInRFC1123() throws Exception {
         String expectedDateValue = MESSAGE_DATE_PARAMETER_VALUE.toInstant().atZone(ZoneId.systemDefault()).format(RFC_1123_DATE_TIME);
         mockMvc.perform(get(THROW_EXCEPTION_WITH_DATE_PARAMETER_METHOD))
                 .andExpect(status().isInternalServerError())
@@ -224,7 +219,7 @@ public class ExceptionHandlerErrorCodeControllersAdviceTest extends ExceptionHan
     }
 
     @Test
-    public void propagateSpecialUserMessageWithEntityNameAndIdToResponseIfObjectNotFoundWasThrown() throws Exception {
+    void propagateSpecialUserMessageWithEntityNameAndIdToResponseIfObjectNotFoundWasThrown() throws Exception {
         mockMvc.perform(get(THROW_ENTITY_NOT_FOUND_METHOD))
                 .andExpect(body().isSimpleMessageError(allOf(
                         hasMessageCode(ENTITY_NOT_FOUND_ERROR_CODE),
@@ -233,78 +228,74 @@ public class ExceptionHandlerErrorCodeControllersAdviceTest extends ExceptionHan
     }
 
     @Test
-    public void propagateGeneralInternalErrorMessageToResponseIfErrorClassDoesNotExtendsGenericDisplayedException() throws Exception {
+    void propagateGeneralInternalErrorMessageToResponseIfErrorClassDoesNotExtendsGenericDisplayedException() throws Exception {
         mockMvc.perform(get(THROW_NOT_DISPLAYED_MESSAGE_EXCEPTION_METHOD))
                 .andExpect(status().isInternalServerError())
                 .andExpect(body().isSimpleMessageError(hasMessageCode(INTERNAL_SERVER_ERROR_CODE)));
     }
 
     @Test
-    public void propagateGeneralInternalErrorMessageToResponseIfStandardJavaExceptionWasThrown() throws Exception {
+    void propagateGeneralInternalErrorMessageToResponseIfStandardJavaExceptionWasThrown() throws Exception {
         mockMvc.perform(get(THROW_ILLEGAL_STATE_EXCEPTION_METHOD))
                 .andExpect(body().isSimpleMessageError(hasMessageCode(INTERNAL_SERVER_ERROR_CODE)));
     }
 
     @Test
-    public void propagateConflictErrorMessageToResponseIfOptimisticLockingFailureExceptionWasThrown() throws Exception {
+    void propagateConflictErrorMessageToResponseIfOptimisticLockingFailureExceptionWasThrown() throws Exception {
         mockMvc.perform(get(THROW_OPTIMISTIC_LOCKING_EXCEPTION_METHOD))
                 .andExpect(body().isSimpleMessageError(hasMessageCode(OPTIMISTIC_LOCKING_ERROR_CODE)));
     }
 
     @Test
-    public void propagateAccessDeniedErrorMessageToResponseIfAccessDeniedExceptionWasThrown() throws Exception {
+    void propagateAccessDeniedErrorMessageToResponseIfAccessDeniedExceptionWasThrown() throws Exception {
         mockMvc.perform(get(THROW_ACCESS_DENIED_EXCEPTION_METHOD))
                 .andExpect(status().isForbidden())
                 .andExpect(body().isSimpleMessageError(hasMessageCode(ACCESS_DENIED_ERROR_CODE)));
     }
 
     @Test
-    public void sendInternalErrorMessageToResponseIfUnsupportedOperationExceptionWasThrown() throws Exception {
+    void sendInternalErrorMessageToResponseIfUnsupportedOperationExceptionWasThrown() throws Exception {
         mockMvc.perform(get(THROW_UNSUPPORTED_OPERATION_EXCEPTION_METHOD))
                 .andExpect(status().isBadRequest())
                 .andExpect(body().isSimpleMessageError(hasMessageCode(INTERNAL_SERVER_ERROR_CODE)));
     }
 
     @Test
-    public void propagateDefaultOperationValidationErrorMessageToResponseIfOnlyHaveFieldValidationErrors() throws Exception {
+    void propagateDefaultOperationValidationErrorMessageToResponseIfOnlyHaveFieldValidationErrors() throws Exception {
         mockMvc.perform(get(THROW_OBJECT_VALIDATION_EXCEPTION).content("{}").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(body().isSimpleMessageError(hasMessageCode(OPERATION_VALIDATION_ERROR_CODE)));
     }
 
     @Test
-    public void addFieldValidationDetailsInResponseIfValidationFailed() throws Exception {
-
+    void addFieldValidationDetailsInResponseIfValidationFailed() throws Exception {
         mockMvc.perform(get(THROW_OBJECT_VALIDATION_EXCEPTION).content("{}").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(body().isObjectValidationError(hasValidationErrors(contains(equalToMessageCode(FAILED_FIELD, VALIDATION_FIELD_FAILED)))));
     }
 
     @Test
-    public void addObjectValidationMessageInResponseIfEntireObjectWasRejected() throws Exception {
-
+    void addObjectValidationMessageInResponseIfEntireObjectWasRejected() throws Exception {
         mockMvc.perform(get(THROW_ENTIRE_OBJECT_VALIDATION_EXCEPTION).content("{}").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(body().isObjectValidationError(hasObjectValidationMessage(hasErrorMessageCode(VALIDATION_OBJECT_FAILED))));
     }
 
     @Test
-    public void dontRetryRequestToSystemThatUsesV1ModelIfFailWasInTransitiveService() throws Exception {
-
+    void dontRetryRequestToSystemThatUsesV1ModelIfFailWasInTransitiveService() {
         restClient.safelySendRequest(SYSTEM_WITH_V1_MODEL + TRANSITIVE_FAILED_REQUEST);
 
         final RetryStatistics statisticForRequest = getStatisticForRequest(SYSTEM_WITH_V1_MODEL + TRANSITIVE_FAILED_REQUEST);
-        assertThat(statisticForRequest, abortedAfterFirstError());
+        MatcherAssert.assertThat(statisticForRequest, abortedAfterFirstError());
     }
 
     @Test
-    public void retryRequestToSystemThatUsesV1ModelIfFailWasInDirectService() throws Exception {
-
+    void retryRequestToSystemThatUsesV1ModelIfFailWasInDirectService() {
         restClient.safelySendRequest(SYSTEM_WITH_V1_MODEL + DIRECTLY_FAILED_REQUEST);
 
         final RetryStatistics statisticForRequest = getStatisticForRequest(SYSTEM_WITH_V1_MODEL + DIRECTLY_FAILED_REQUEST);
-        assertThat(statisticForRequest, abortedAfterSeveralAttempts());
+        MatcherAssert.assertThat(statisticForRequest, abortedAfterSeveralAttempts());
     }
 
     @Test
-    public void populateTransitiveMessageCodeWithParamsFromAlwaysFailedTransitiveRestRequest() throws Exception {
+    void populateTransitiveMessageCodeWithParamsFromAlwaysFailedTransitiveRestRequest() throws Exception {
         mockMvc.perform(get(REDIRECT_TO_TRANSITIVE_SERVICE_THAT_FAILS_ALWAYS_V2_1))
                 .andExpect(status().isInternalServerError())
                 .andExpect(body().isSimpleMessageError(allOf(
@@ -312,14 +303,14 @@ public class ExceptionHandlerErrorCodeControllersAdviceTest extends ExceptionHan
                         hasMessageParameter(TRANSITIVE_LEVEL_METHOD_MESSAGE_PARAM_NAME, TRANSITIVE_LEVEL_METHOD_MESSAGE_PARAM_VALUE, STRING))));
 
         final RetryStatistics statisticForFirstLevelService = getStatisticForRequest(FIRST_TRANSITIVE_LEVEL_METHOD_THAT_REDIRECTS_TO_ALWAYS_FAILED_METHOD_V2_1);
-        assertThat(statisticForFirstLevelService, abortedAfterFirstError());
+        MatcherAssert.assertThat(statisticForFirstLevelService, abortedAfterFirstError());
 
         final RetryStatistics statisticForSecondLevelService = getStatisticForRequest(SECOND_TRANSITIVE_LEVEL_METHOD_THAT_FAILS_ALWAYS_V2_1);
-        assertThat(statisticForSecondLevelService, abortedAfterSeveralAttempts());
+        MatcherAssert.assertThat(statisticForSecondLevelService, abortedAfterSeveralAttempts());
     }
 
     @Test
-    public void thereIsAbilityToCreateCustomExceptionHandlerAndSendCustomDataInResponse() throws Exception {
+    void thereIsAbilityToCreateCustomExceptionHandlerAndSendCustomDataInResponse() throws Exception {
         mockMvc.perform(get(THROW_CUSTOM_EXEPTION_WITH_CUSTOM_DATA))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().string(containsString(CUSTOM_DATA_FROM_CUSTOM_EXCEPTION)));
@@ -344,7 +335,7 @@ public class ExceptionHandlerErrorCodeControllersAdviceTest extends ExceptionHan
                 String contentAsString = result.getResponse().getContentAsString();
                 SimpleErrorMessageResponse actual = simpleMessageJsonTester.parseObject(contentAsString);
 
-                Assert.assertThat(actual, matcher);
+                MatcherAssert.assertThat(actual, matcher);
             };
         }
 
@@ -353,7 +344,7 @@ public class ExceptionHandlerErrorCodeControllersAdviceTest extends ExceptionHan
                 String contentAsString = result.getResponse().getContentAsString();
                 ObjectValidationErrorResponse actual = objectValidationJsonTester.parseObject(contentAsString);
 
-                Assert.assertThat(actual, matcher);
+                MatcherAssert.assertThat(actual, matcher);
             };
         }
 

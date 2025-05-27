@@ -2,19 +2,18 @@ package org.qubership.cloud.restlegacy.restclient.errors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.restlegacy.restclient.error.ErrorsDescription;
 import org.qubership.cloud.restlegacy.restclient.error.ProxyErrorException;
-import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class ErrorDescriptionMapperTest {
-
+class ErrorDescriptionMapperTest {
     private final String ERROR_CODE = "errorCode";
     private final String ERROR_MESSAGE = "errorMessage";
     private final String FIELD_NAME = "fieldName";
@@ -39,7 +38,7 @@ public class ErrorDescriptionMapperTest {
             "}";
 
     @Test
-    public void testUnknownField() throws JsonProcessingException {
+    void testUnknownField() {
         final HttpClientErrorException cause = new HttpClientErrorException(HttpStatus.SERVICE_UNAVAILABLE, null, errorDescriptionWithUnknowField.getBytes(), null);
         ProxyErrorException ex = new ProxyErrorException(cause, "");
 
@@ -50,13 +49,13 @@ public class ErrorDescriptionMapperTest {
         ErrorsDescription.ErrorDescription error = errorsDescription.getErrors().get(0);
 
         assertEquals(ERROR_MESSAGE, error.getErrorMessage());
-        assertEquals(PARAMETERS, error.getParameters());
+        assertArrayEquals(PARAMETERS, error.getParameters());
         assertEquals(ERROR_CODE, error.getErrorCode());
         assertEquals(FIELD_NAME, error.getFieldName());
     }
 
     @Test
-    public void testErrorsDescriptionFieldsInResponse() throws JsonProcessingException {
+    void testErrorsDescriptionFieldsInResponse() throws JsonProcessingException {
         final HttpClientErrorException cause = new HttpClientErrorException(HttpStatus.SERVICE_UNAVAILABLE, null, errorDescriptionWithUnknowField.getBytes(), null);
         ProxyErrorException ex = new ProxyErrorException(cause, "");
         assertNotNull(ex.getResponseEntity().getBody());

@@ -1,11 +1,11 @@
 package org.qubership.cloud.routesregistration.common.spring.gateway.route;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.qubership.cloud.routesregistration.common.gateway.route.RouteEntry;
 import org.qubership.cloud.routesregistration.common.gateway.route.RoutesRestRegistrationProcessor;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 import java.util.Collections;
@@ -14,8 +14,8 @@ import java.util.Set;
 
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class RoutesRegistrationApplicationListenerTest {
+@ExtendWith(MockitoExtension.class)
+class RoutesRegistrationApplicationListenerTest {
 
     @Mock
     private RouteAnnotationProcessor routeAnnotationProcessor;
@@ -23,7 +23,7 @@ public class RoutesRegistrationApplicationListenerTest {
     private RoutesRestRegistrationProcessor routesRestRegistrationProcessor;
 
     @Test
-    public void testRegisterRoutes() throws Exception {
+    void testRegisterRoutes() throws Exception {
         RoutesRegistrationApplicationListener routesRegistrationApplicationListener
                 = new RoutesRegistrationApplicationListener(routeAnnotationProcessor, routesRestRegistrationProcessor);
         final ContextRefreshedEvent event = mock(ContextRefreshedEvent.class);
@@ -39,5 +39,4 @@ public class RoutesRegistrationApplicationListenerTest {
         verify(routesRestRegistrationProcessor, times(1))
                 .postRoutes(anySet());
     }
-
 }

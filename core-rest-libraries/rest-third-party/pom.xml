@@ -27,7 +27,6 @@
         <mockito.version>5.14.2</mockito.version>
 
         <org.powermock.version>2.0.9</org.powermock.version>
-        <junit.verson>4.13.2</junit.verson>
 
         <!-- Misc -->
         <okhttp3.version>4.12.0</okhttp3.version>
@@ -148,14 +147,14 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.verson}</version>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
+                <artifactId>mockito-junit-jupiter</artifactId>
                 <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>

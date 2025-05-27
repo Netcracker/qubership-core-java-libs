@@ -1,26 +1,26 @@
 package org.qubership.cloud.restlegacy.resttemplate;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.qubership.cloud.security.common.restclient.OAuthRestTemplateProvider;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-public class RestTemplateCreatorTest {
+@ExtendWith(MockitoExtension.class)
+class RestTemplateCreatorTest {
 
     List<ClientHttpRequestInterceptor> clientHttpRequestInterceptorList;
     @Mock
@@ -28,10 +28,10 @@ public class RestTemplateCreatorTest {
     private RestTemplateCreator restTemplateCreator;
 
     @Mock
-    RestTemplateBuilder restTemplateBuilder;
+    private RestTemplateBuilder restTemplateBuilder;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         clientHttpRequestInterceptorList = Collections.singletonList(mock(ClientHttpRequestInterceptor.class));
 
         RestTemplateFactory restTemplateFactory = new RestTemplateFactory(oAuthRestTemplateProvider,
@@ -48,19 +48,19 @@ public class RestTemplateCreatorTest {
 
 
     @Test
-    public void createRestTemplate() {
+    void createRestTemplate() {
         RestTemplate expectedRestTemplate = getExpectedRestTemplate();
         when(restTemplateBuilder.build()).thenReturn(new RestTemplate());
         RestTemplate restTemplate = restTemplateCreator.create();
-        Assert.assertEquals(expectedRestTemplate.getInterceptors(), restTemplate.getInterceptors());
+        assertEquals(expectedRestTemplate.getInterceptors(), restTemplate.getInterceptors());
     }
 
     @Test
-    public void createRestTemplateWithM2M() {
+    void createRestTemplateWithM2M() {
         RestTemplate expectedRestTemplate = getExpectedRestTemplate();
         Mockito.when(oAuthRestTemplateProvider.getOAuthRestTemplate()).thenReturn(expectedRestTemplate);
 
         RestTemplate restTemplate = restTemplateCreator.withM2M().create();
-        Assert.assertEquals(expectedRestTemplate.getInterceptors(), restTemplate.getInterceptors());
+        assertEquals(expectedRestTemplate.getInterceptors(), restTemplate.getInterceptors());
     }
 }

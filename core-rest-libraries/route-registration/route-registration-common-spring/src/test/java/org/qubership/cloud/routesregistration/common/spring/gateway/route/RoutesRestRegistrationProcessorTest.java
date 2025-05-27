@@ -3,6 +3,13 @@ package org.qubership.cloud.routesregistration.common.spring.gateway.route;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.reactivex.Scheduler;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.restclient.MicroserviceRestClient;
 import org.qubership.cloud.routesregistration.common.gateway.route.ControlPlaneClient;
 import org.qubership.cloud.routesregistration.common.gateway.route.RouteEntry;
@@ -11,20 +18,12 @@ import org.qubership.cloud.routesregistration.common.gateway.route.RoutesRestReg
 import org.qubership.cloud.routesregistration.common.gateway.route.rest.RegistrationRequestFactory;
 import org.qubership.cloud.routesregistration.common.gateway.route.transformation.RouteTransformer;
 import org.qubership.cloud.routesregistration.common.gateway.route.v3.domain.RouteConfigurationRequestV3;
-import io.reactivex.Scheduler;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
-import org.junit.*;
-import org.junit.rules.Timeout;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,15 +33,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = {
         RoutesTestConfiguration.class,
         RoutesRestRegistrationProcessorTest.TestRegistrationConfiguration.class},
         properties = {"apigateway.routes.registration.enabled=true"})
-public class RoutesRestRegistrationProcessorTest {
+class RoutesRestRegistrationProcessorTest {
 
     private RoutesRestRegistrationProcessor routesRestRegistrationProcessor;
     @Autowired
@@ -62,7 +59,7 @@ public class RoutesRestRegistrationProcessorTest {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public static MockWebServer server;
+    public MockWebServer server;
 
     @Value("${cloud.microservice.name}")
     private String serviceName;
@@ -73,11 +70,8 @@ public class RoutesRestRegistrationProcessorTest {
      */
     private static final int POST_ROUTES_CALLS_NUMBER = 3;
 
-    @Rule
-    public final Timeout TEST_TIMEOUT = Timeout.seconds(120);
-
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         rxScheduler.start();
         server = new MockWebServer();
         server.start();
@@ -93,14 +87,14 @@ public class RoutesRestRegistrationProcessorTest {
         beanFactory.autowireBean(routesRestRegistrationProcessor);
     }
 
-    @After
-    public void tearDown() throws IOException {
+    @AfterEach
+    void tearDown() throws IOException {
         rxScheduler.shutdown();
         server.shutdown();
     }
 
     @Test
-    public void postRoutes() throws Exception {
+    void postRoutes() throws Exception {
         Collection<RouteEntry> routes = routeAnnotationProcessor.scanForRoutes();
 
         startRoutesPostingThreads(routes);
@@ -114,7 +108,7 @@ public class RoutesRestRegistrationProcessorTest {
         for (int i = 0; i < postRequestsCount; i++) {
             recordedRequests.add(server.takeRequest(2, TimeUnit.MINUTES));
         }
-        Assert.assertEquals(postRequestsCount, server.getRequestCount());
+        assertEquals(postRequestsCount, server.getRequestCount());
 
         List<RouteConfigurationRequestV3> recordedRequestBodies = readRequests(recordedRequests);
 

@@ -2,11 +2,8 @@ package org.qubership.cloud.restlegacy.restclient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 import org.qubership.cloud.restlegacy.restclient.configuration.ClientsTestConfiguration;
@@ -15,11 +12,10 @@ import org.qubership.cloud.restlegacy.restclient.error.ProxyErrorException;
 import org.qubership.cloud.restlegacy.restclient.error.ProxyRethrowException;
 import org.qubership.cloud.restlegacy.resttemplate.RestTemplateFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.retry.support.RetryTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -27,17 +23,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.UUID;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ClientsTestConfiguration.class)
-public class RestClientTest {
+@SpringBootTest(classes = ClientsTestConfiguration.class)
+class RestClientTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
     @Autowired
     private RetryTemplate retryTemplate;
     @Autowired
@@ -47,14 +40,14 @@ public class RestClientTest {
     @Autowired
     private RestTemplateFactory restTemplateFactory;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         reset(retryTemplate, restTemplate);
         Whitebox.setInternalState(restClient, "restTemplateFactory", restTemplateFactory);
     }
 
     @Test
-    public void testPost() throws Throwable {
+    void testPost() throws Throwable {
         final Object objectToPost = new Object();
 
         restClient.post("someUrl", objectToPost);
@@ -64,7 +57,7 @@ public class RestClientTest {
     }
 
     @Test
-    public void testPostWithResponseType() throws Throwable {
+    void testPostWithResponseType() throws Throwable {
         final Object objectToPost = new Object();
 
         restClient.post("someUrl", objectToPost, String.class);
@@ -74,7 +67,7 @@ public class RestClientTest {
     }
 
     @Test
-    public void testGet() throws Throwable {
+    void testGet() throws Throwable {
         restClient.get("someUrl");
 
         verify(retryTemplate).execute(any());
@@ -82,7 +75,7 @@ public class RestClientTest {
     }
 
     @Test
-    public void testGetWithResponseType() throws Throwable {
+    void testGetWithResponseType() throws Throwable {
         restClient.get("someUrl", String.class);
 
         verify(retryTemplate).execute(any());
@@ -90,7 +83,7 @@ public class RestClientTest {
     }
 
     @Test
-    public void testPut() throws Throwable {
+    void testPut() throws Throwable {
         final Object objectToPut = new Object();
         restClient.put("someUrl", objectToPut);
 
@@ -99,7 +92,7 @@ public class RestClientTest {
     }
 
     @Test
-    public void testDelete() throws Throwable {
+    void testDelete() throws Throwable {
         restClient.delete("someUrl");
 
         verify(retryTemplate).execute(any());
@@ -107,7 +100,7 @@ public class RestClientTest {
     }
 
     @Test
-    public void testPatch() throws Throwable {
+    void testPatch() throws Throwable {
         Object request = new Object();
         restClient.patch("someUrl", request, Object.class);
 
@@ -116,7 +109,7 @@ public class RestClientTest {
     }
 
     @Test
-    public void testHead() throws Throwable {
+    void testHead() throws Throwable {
         restClient.head("someUrl");
 
         verify(retryTemplate).execute(any());
@@ -124,7 +117,7 @@ public class RestClientTest {
     }
 
     @Test
-    public void testOptions() throws Throwable {
+    void testOptions() throws Throwable {
         restClient.options("someUrl");
 
         verify(retryTemplate).execute(any());
@@ -132,96 +125,88 @@ public class RestClientTest {
     }
 
     @Test
-    public void testExceptionIsWrappedInProxyErrorExceptionOnPost() throws Exception {
+    void testExceptionIsWrappedInProxyErrorExceptionOnPost() throws Exception {
         final HttpClientErrorException cause = new HttpClientErrorException(HttpStatus.SERVICE_UNAVAILABLE);
         when(restTemplate.postForEntity(anyString(), any(), any())).thenThrow(cause);
 
-        expectedException.expect(ProxyErrorException.class);
-        expectedException.expectCause(is(cause));
-        restClient.post("someUrl", new Object());
+        Exception ex = assertThrows(ProxyErrorException.class, () -> restClient.post("someUrl", new Object()));
+        assertEquals(cause, ex.getCause());
     }
 
     @Test
-    public void testExceptionIsWrappedInProxyRethrowExceptionOnPost() throws Exception {
+    void testExceptionIsWrappedInProxyRethrowExceptionOnPost() throws Exception {
         final HttpClientErrorException cause = new HttpClientErrorException(HttpStatus.SERVICE_UNAVAILABLE, null, getErrorDescription().getBytes(), null);
         when(restTemplate.postForEntity(anyString(), any(), any())).thenThrow(cause);
 
-        expectedException.expect(ProxyRethrowException.class);
-        restClient.post("someUrl", new Object());
+        assertThrows(ProxyRethrowException.class, () -> restClient.post("someUrl", new Object()));
     }
 
 
     @Test
-    public void testExceptionIsWrapperInProxyErrorExceptionOnGet() throws Exception {
+    void testExceptionIsWrapperInProxyErrorExceptionOnGet() throws Exception {
         final HttpClientErrorException cause = new HttpClientErrorException(HttpStatus.SERVICE_UNAVAILABLE);
         when(restTemplate.getForEntity(anyString(), any())).thenThrow(cause);
 
-        expectedException.expect(ProxyErrorException.class);
-        expectedException.expectCause(is(cause));
-        restClient.get("someUrl");
+        Exception ex = assertThrows(ProxyErrorException.class, () -> restClient.get("someUrl"));
+        assertEquals(cause, ex.getCause());
     }
 
     @Test
-    public void testExceptionIsWrapperInProxyRethrowExceptionOnGet() throws Exception {
+    void testExceptionIsWrapperInProxyRethrowExceptionOnGet() throws Exception {
         final HttpClientErrorException cause = new HttpClientErrorException(HttpStatus.SERVICE_UNAVAILABLE, null, getErrorDescription().getBytes(), null);
         when(restTemplate.getForEntity(anyString(), any())).thenThrow(cause);
 
-        expectedException.expect(ProxyRethrowException.class);
-        restClient.get("someUrl");
+        assertThrows(ProxyRethrowException.class, () -> restClient.get("someUrl"));
     }
 
     @Test
-    public void testExceptionIsWrappedInProxyErrorExceptionOnPut() throws Exception {
+    void testExceptionIsWrappedInProxyErrorExceptionOnPut() throws Exception {
         final HttpClientErrorException cause = new HttpClientErrorException(HttpStatus.SERVICE_UNAVAILABLE);
         doThrow(cause).when(restTemplate).put(anyString(), any());
 
-        expectedException.expect(ProxyErrorException.class);
-        expectedException.expectCause(is(cause));
-        restClient.put("someUrl", new Object());
+        Exception ex = assertThrows(ProxyErrorException.class, () -> restClient.put("someUrl", new Object()));
+        assertEquals(cause, ex.getCause());
     }
 
     @Test
-    public void testExceptionIsWrappedInProxyRethrowExceptionOnPut() throws Exception {
+    void testExceptionIsWrappedInProxyRethrowExceptionOnPut() throws Exception {
         final HttpClientErrorException cause = new HttpClientErrorException(HttpStatus.SERVICE_UNAVAILABLE, null, getErrorDescription().getBytes(), null);
         doThrow(cause).when(restTemplate).put(anyString(), any());
 
-        expectedException.expect(ProxyRethrowException.class);
-        restClient.put("someUrl", new Object());
+        assertThrows(ProxyRethrowException.class, () -> restClient.put("someUrl", new Object()));
     }
 
     @Test
-    public void testExceptionIsWrappedInProxyErrorExceptionOnDelete() throws Exception {
+    void testExceptionIsWrappedInProxyErrorExceptionOnDelete() throws Exception {
         final HttpClientErrorException cause = new HttpClientErrorException(HttpStatus.SERVICE_UNAVAILABLE);
         doThrow(cause).when(restTemplate).delete(anyString());
 
-        expectedException.expect(ProxyErrorException.class);
-        expectedException.expectCause(is(cause));
-        restClient.delete("someUrl");
+        Exception ex = assertThrows(ProxyErrorException.class, () -> restClient.delete("someUrl"));
+        assertEquals(cause, ex.getCause());
     }
 
     @Test
-    public void testExceptionIsWrappedInProxyRethrowExceptionOnDelete() throws Exception {
+    void testExceptionIsWrappedInProxyRethrowExceptionOnDelete() throws Exception {
         final HttpClientErrorException cause = new HttpClientErrorException(HttpStatus.SERVICE_UNAVAILABLE, null, getErrorDescription().getBytes(), null);
         doThrow(cause).when(restTemplate).delete(anyString());
 
-        expectedException.expect(ProxyRethrowException.class);
-        restClient.delete("someUrl");
+        assertThrows(ProxyRethrowException.class, () -> restClient.delete("someUrl"));
     }
 
     @Test
-    public void testUserRestTemplate() throws Exception {
+    void testUserRestTemplate() {
         RestTemplate clientRestTemplate = restClient.getRestTemplate();
         assertEquals(restTemplateFactory.getRestTemplate(), clientRestTemplate);
     }
 
     @Test
-    public void testDefaultRestTemplate() throws Exception {
+    void testDefaultRestTemplate() {
         RestTemplate clientRestTemplate = restClient.getRestTemplate();
         assertEquals(restTemplate, clientRestTemplate);
     }
 
     @Test
-    public void testAddClientHttpRequestInterceptor() {
+    void testAddClientHttpRequestInterceptor() {
         ClientHttpRequestInterceptor testClientHttpInterceptor = (httpRequest, bytes, clientHttpRequestExecution) -> null;
         restClient.addClientHttpRequestInterceptor(testClientHttpInterceptor);
 
@@ -230,7 +215,7 @@ public class RestClientTest {
     }
 
     @Test
-    public void testAddClientHttpRequestInterceptorM2MTrue() {
+    void testAddClientHttpRequestInterceptorM2MTrue() {
         ClientHttpRequestInterceptor testClientHttpInterceptor = (httpRequest, bytes, clientHttpRequestExecution) -> null;
         restClient.addClientHttpRequestInterceptor(testClientHttpInterceptor);
 

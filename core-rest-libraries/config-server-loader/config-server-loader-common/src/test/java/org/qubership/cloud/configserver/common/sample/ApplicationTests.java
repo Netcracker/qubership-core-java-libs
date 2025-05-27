@@ -16,21 +16,18 @@
 
 package org.qubership.cloud.configserver.common.sample;
 
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.configserver.common.configuration.TestConfiguration;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.cloud.config.client.ConfigClientAutoConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Application.class, TestConfiguration.class},
         // Normally spring.cloud.config.enabled:true is the default but since we have the
         // config
@@ -52,10 +49,9 @@ public class ApplicationTests {
     private int port;
 
     @Test
-    public void contextLoads() {
+    void contextLoads() {
         String res = new TestRestTemplate().getForObject(
                 "http://localhost:" + this.port + "/test", String.class);
-        Assert.assertEquals("test_value", res);
+        assertEquals("test_value", res);
     }
-
 }

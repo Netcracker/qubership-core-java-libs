@@ -1,39 +1,35 @@
 package org.qubership.cloud.routesregistration.common.gateway.route;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
-public class RoutesRegistrationDelayProviderTest {
+class RoutesRegistrationDelayProviderTest {
 
     private RoutesRegistrationDelayProvider routesRegistrationDelayProvider;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         routesRegistrationDelayProvider = new RoutesRegistrationDelayProvider();
     }
 
     @Test
-    public void testIsRegistrationActive_default() {
+    void testIsRegistrationActive_default() {
         boolean isActiveRegistration = routesRegistrationDelayProvider.isRegistrationActive();
         assertTrue(isActiveRegistration);
     }
 
     @Test
-    public void testPauseRegistration() {
+    void testPauseRegistration() {
         long timeBeforeWait = System.currentTimeMillis();
         routesRegistrationDelayProvider.pauseRegistration();
-        Assert.assertTrue((System.currentTimeMillis() - timeBeforeWait) >= 1000);
+        assertTrue((System.currentTimeMillis() - timeBeforeWait) >= 1000);
     }
 
     @Test
-    public void getProgressiveGatewayTimeoutTest() {
+    void getProgressiveGatewayTimeoutTest() {
         assertEquals(1000, routesRegistrationDelayProvider.getTimeout());
         assertEquals(2000, routesRegistrationDelayProvider.getTimeout());
         for (int i = 0; i <= 11; i++) {

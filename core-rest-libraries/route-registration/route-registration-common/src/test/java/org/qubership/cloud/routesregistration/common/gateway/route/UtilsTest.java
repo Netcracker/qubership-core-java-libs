@@ -1,13 +1,14 @@
 package org.qubership.cloud.routesregistration.common.gateway.route;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class UtilsTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class UtilsTest {
 
     @Test
-    public void formatMicroserviceInternalURLTest(){
+    void formatMicroserviceInternalURLTest() {
         String result = Utils.formatMicroserviceInternalURL("cloudTest", "nameTest", "portTest", "/contextTest", false);
-        Assert.assertEquals("http://cloudTest:portTest/contextTest", result);
+        assertEquals("http://cloudTest:portTest/contextTest", result);
     }
 }

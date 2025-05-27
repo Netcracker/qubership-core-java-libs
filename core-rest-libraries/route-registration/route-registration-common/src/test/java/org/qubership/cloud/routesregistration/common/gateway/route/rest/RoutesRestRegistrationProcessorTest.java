@@ -1,8 +1,7 @@
 package org.qubership.cloud.routesregistration.common.gateway.route.rest;
 
 import io.reactivex.schedulers.Schedulers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.qubership.cloud.routesregistration.common.gateway.route.*;
 import org.qubership.cloud.routesregistration.common.gateway.route.transformation.RouteTransformer;
@@ -15,14 +14,15 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.qubership.cloud.routesregistration.common.gateway.route.rest.RegistrationRequestFactoryTest.*;
 
-public class RoutesRestRegistrationProcessorTest {
+class RoutesRestRegistrationProcessorTest {
 
     @Test
-    public void postRoutes() throws InterruptedException {
+    void postRoutes() throws InterruptedException {
         RouteRetryManager retryManager = new RouteRetryManager(Schedulers.computation(), new RoutesRegistrationDelayProvider());
         ControlPlaneClient controlPlaneClient = Mockito.mock(ControlPlaneClient.class);
         RouteTransformer routeTransformer = new RouteTransformer(MICROSERVICE_NAME);
@@ -50,7 +50,7 @@ public class RoutesRestRegistrationProcessorTest {
 
         processor.postRoutes(buildTestRoutes("default"));
 
-        Assert.assertTrue(countDownLatch.await(2, TimeUnit.MINUTES));
+        assertTrue(countDownLatch.await(2, TimeUnit.MINUTES));
         expectedRequests.forEach(request ->
                 Mockito.verify(controlPlaneClient, times(1))
                         .sendRequest(request));

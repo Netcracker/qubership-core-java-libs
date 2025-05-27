@@ -2,7 +2,6 @@ package org.qubership.cloud.configserver.common.configuration;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.BootstrapContext;
 import org.springframework.boot.ConfigurableBootstrapContext;
@@ -15,6 +14,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @Slf4j
 public class BootstrapStateEventListeners {
 
@@ -24,6 +25,7 @@ public class BootstrapStateEventListeners {
         public ContextRefreshedEventListener(int maxAmountOfRefreshes) {
             super(maxAmountOfRefreshes);
         }
+
         @Override
         public void onApplicationEvent(ContextRefreshedEvent event) {
             super.assertNumberOfRefreshes();
@@ -35,11 +37,12 @@ public class BootstrapStateEventListeners {
         public EnvironmentChangedAfterRefreshEventListener(int maxAmountOfRefreshes) {
             super(maxAmountOfRefreshes);
         }
+
         @Override
         public void onApplicationEvent(EnvironmentChangeEvent event) {
             super.assertNumberOfRefreshes();
             Object eventCreator = event.getSource(); // Raised by ContextRefresher but ContextRefresher set source to ConfigurableApplicationContext
-            Assert.assertTrue(eventCreator instanceof ConfigurableApplicationContext);
+            assertInstanceOf(ConfigurableApplicationContext.class, eventCreator);
             ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) eventCreator;
             // In spring-cloud-context:3.0.3 they use RefreshBootstrapRegistryInitializer to put old BootstrapContext on close event
             // https://github.com/spring-cloud/spring-cloud-commons/commit/9efc70b69497113d8964539b7dc6c98314bc83fb
@@ -49,7 +52,7 @@ public class BootstrapStateEventListeners {
                 bootstrapContext = bootstrapContextAfterRefresh;
             } catch (NoSuchBeanDefinitionException e) {
                 log.error(e.toString());
-                Assert.fail("Cannot find old bootstrapContext in app context, so after RefreshEvent copy of" +
+                fail("Cannot find old bootstrapContext in app context, so after RefreshEvent copy of" +
                         " bootstrapContext" + " will be used without our LoaderInterceptor");
             }
             assertInterceptorRegisteredInBootstrapContext(bootstrapContext);
@@ -68,11 +71,11 @@ public class BootstrapStateEventListeners {
     }
 
     static void assertInterceptorRegisteredInBootstrapContext(BootstrapContext context) {
-        Assert.assertNotNull(context);
-        Assert.assertTrue(context.isRegistered(ConfigServerBootstrapper.LoaderInterceptor.class));
+        assertNotNull(context);
+        assertTrue(context.isRegistered(ConfigServerBootstrapper.LoaderInterceptor.class));
 
         ConfigServerBootstrapper.LoaderInterceptor interceptor = context.get(ConfigServerBootstrapper.LoaderInterceptor.class);
-        Assert.assertTrue(interceptor instanceof CustomConfigServerBootstrapper.CustomLoaderInterceptor);
+        assertInstanceOf(CustomConfigServerBootstrapper.CustomLoaderInterceptor.class, interceptor);
     }
 
     @AllArgsConstructor
@@ -82,7 +85,7 @@ public class BootstrapStateEventListeners {
 
         public void assertNumberOfRefreshes() {
             numberOfRefreshes.incrementAndGet();
-            Assert.assertTrue(getNumberOfRefreshes() <= maxAmountOfRefreshes);
+            assertTrue(getNumberOfRefreshes() <= maxAmountOfRefreshes);
         }
 
         public int getNumberOfRefreshes() {

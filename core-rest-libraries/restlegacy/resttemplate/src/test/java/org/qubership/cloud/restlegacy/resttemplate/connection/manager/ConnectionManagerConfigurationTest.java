@@ -1,38 +1,34 @@
 package org.qubership.cloud.restlegacy.resttemplate.connection.manager;
 
-import org.qubership.cloud.restlegacy.resttemplate.configuration.ConnectionManagerConfiguration;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
-import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.qubership.cloud.restlegacy.resttemplate.configuration.ConnectionManagerConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {ConnectionManagerConfiguration.class})
-@TestPropertySource(properties = {
-        "core.connection.manager.maxConnectionsPerRoute=12",
-        "core.connection.manager.maxConnectionsTotal=22"
-})
-public class ConnectionManagerConfigurationTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@SpringBootTest(classes = {ConnectionManagerConfiguration.class},
+        properties = {
+                "core.connection.manager.maxConnectionsPerRoute=12",
+                "core.connection.manager.maxConnectionsTotal=22"
+        }
+)
+class ConnectionManagerConfigurationTest {
 
     @Autowired
     @Qualifier("coreConnectionManager")
     HttpClientConnectionManager httpClientConnectionManager;
 
-
     @Test
-    public void maxTotalTest(){
-        Assertions.assertEquals(22,((PoolingHttpClientConnectionManager) httpClientConnectionManager).getMaxTotal());
+    void maxTotalTest() {
+        assertEquals(22, ((PoolingHttpClientConnectionManager) httpClientConnectionManager).getMaxTotal());
     }
 
     @Test
-    public void maxPerRoutTest(){
-        Assertions.assertEquals(12,((PoolingHttpClientConnectionManager) httpClientConnectionManager).getDefaultMaxPerRoute());
+    void maxPerRoutTest() {
+        assertEquals(12, ((PoolingHttpClientConnectionManager) httpClientConnectionManager).getDefaultMaxPerRoute());
     }
-
 }

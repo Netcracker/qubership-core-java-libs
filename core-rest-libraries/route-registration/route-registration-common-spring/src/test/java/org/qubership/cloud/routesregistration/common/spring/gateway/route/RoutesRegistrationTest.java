@@ -2,6 +2,12 @@ package org.qubership.cloud.routesregistration.common.spring.gateway.route;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.reactivex.Scheduler;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.restclient.MicroserviceRestClient;
 import org.qubership.cloud.routesregistration.common.gateway.route.ControlPlaneClient;
 import org.qubership.cloud.routesregistration.common.gateway.route.RouteRetryManager;
@@ -9,33 +15,20 @@ import org.qubership.cloud.routesregistration.common.gateway.route.RoutesRestReg
 import org.qubership.cloud.routesregistration.common.gateway.route.rest.RegistrationRequestFactory;
 import org.qubership.cloud.routesregistration.common.gateway.route.transformation.RouteTransformer;
 import org.qubership.cloud.routesregistration.common.gateway.route.v3.domain.RouteConfigurationRequestV3;
-import io.reactivex.Scheduler;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.Timeout;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest(classes = RoutesTestConfiguration.class,
         properties = {"apigateway.routes.registration.enabled=true"})
-public class RoutesRegistrationTest {
-
-    @Rule
-    public final Timeout TEST_TIMEOUT = Timeout.seconds(1000000);
+class RoutesRegistrationTest {
 
     private static final String LOCALDEV_NAMESPACE_ENV = "LOCALDEV_NAMESPACE";
     private static final String DEFAULT_DEPLOYMENT_VERSION = "v1";
@@ -92,15 +85,15 @@ public class RoutesRegistrationTest {
         assertEquals(expectedVersion, requestEntity.getVirtualServices().get(0).getRouteConfiguration().getVersion());
     }
 
-    @Before
-    public void setUp() throws IOException {
+    @BeforeEach
+    void setUp() throws IOException {
         server = new MockWebServer();
         server.start();
         rxScheduler.start();
     }
 
     @Test
-    public void testRoutesNamespaceInLocalDev() throws Exception {
+    void testRoutesNamespaceInLocalDev() throws Exception {
         System.setProperty(LOCALDEV_NAMESPACE_ENV, LOCALDEV_NAMESPACE);
         resetTestContext(CLOUD_NAMESPACE, DEFAULT_DEPLOYMENT_VERSION);
 
@@ -118,7 +111,7 @@ public class RoutesRegistrationTest {
     }
 
     @Test
-    public void testRoutesNamespaceInCloud() throws Exception {
+    void testRoutesNamespaceInCloud() throws Exception {
         System.clearProperty(LOCALDEV_NAMESPACE_ENV);
         resetTestContext(CLOUD_NAMESPACE, DEFAULT_DEPLOYMENT_VERSION);
 
@@ -137,7 +130,7 @@ public class RoutesRegistrationTest {
 
 
     @Test
-    public void testVersionedRoutesRegistration() throws Exception {
+    void testVersionedRoutesRegistration() throws Exception {
         System.clearProperty(LOCALDEV_NAMESPACE_ENV);
         resetTestContext(CLOUD_NAMESPACE, V2_DEPLOYMENT_VERSION);
 
@@ -154,8 +147,8 @@ public class RoutesRegistrationTest {
         }
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         rxScheduler.shutdown();
     }
 }

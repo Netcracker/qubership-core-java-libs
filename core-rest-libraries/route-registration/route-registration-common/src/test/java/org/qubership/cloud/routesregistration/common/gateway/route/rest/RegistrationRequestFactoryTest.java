@@ -1,6 +1,6 @@
 package org.qubership.cloud.routesregistration.common.gateway.route.rest;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.routesregistration.common.gateway.route.Constants;
 import org.qubership.cloud.routesregistration.common.gateway.route.RouteEntry;
 import org.qubership.cloud.routesregistration.common.gateway.route.RouteType;
@@ -12,9 +12,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class RegistrationRequestFactoryTest {
+class RegistrationRequestFactoryTest {
     static final String MICROSERVICE_URL = "http://test-ms-v1:8080";
     static final String MICROSERVICE_NAME = "test-ms";
     static final String ROOT_PATH = "/api/v1/test-ms";
@@ -31,7 +31,7 @@ public class RegistrationRequestFactoryTest {
     private RegistrationRequestFactory registrationRequestFactory;
 
     @Test
-    public void createRegistrationRequests() {
+    void createRegistrationRequests() {
         registrationRequestFactory = new RegistrationRequestFactory(
                 MICROSERVICE_URL,
                 MICROSERVICE_NAME,
@@ -41,7 +41,7 @@ public class RegistrationRequestFactoryTest {
     }
 
     @Test
-    public void createRegistrationRequestsInLocaldev() {
+    void createRegistrationRequestsInLocaldev() {
         System.setProperty("LOCALDEV_NAMESPACE", "127.0.0.1.xip.io");
         registrationRequestFactory = new RegistrationRequestFactory(
                 MICROSERVICE_URL,
@@ -457,12 +457,6 @@ public class RegistrationRequestFactoryTest {
 
     static <T> List<T> newList(T... values) {
         final List<T> result = new ArrayList<>(values.length);
-        Collections.addAll(result, values);
-        return result;
-    }
-
-    static <T> Set<T> newSet(T... values) {
-        final Set<T> result = new HashSet<>(values.length);
         Collections.addAll(result, values);
         return result;
     }

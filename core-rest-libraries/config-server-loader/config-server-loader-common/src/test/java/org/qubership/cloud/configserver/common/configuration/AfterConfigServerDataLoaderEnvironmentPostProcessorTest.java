@@ -31,9 +31,9 @@ class AfterConfigServerDataLoaderEnvironmentPostProcessorTest {
     }
 
     @Test
-    void changeInnerConfigServerPrefix(){
+    void changeInnerConfigServerPrefix() {
         Map<String, Object> props = new HashMap<>();
-        props.put( SPRING_CONFIG_IMPORT, "optional:confserv:http://config-server:8080");
+        props.put(SPRING_CONFIG_IMPORT, "optional:confserv:http://config-server:8080");
         MockEnvironment environment = getEnvironment();
         DefaultPropertiesPropertySource.addOrMerge(props, environment.getPropertySources());
         configServerDataLoaderEnvironmentPostProcessor.postProcessEnvironment(environment, null);
@@ -44,12 +44,12 @@ class AfterConfigServerDataLoaderEnvironmentPostProcessorTest {
     }
 
     @Test
-    void exceptionIfUserDoesNotPassConfigServerLocation(){
+    void exceptionIfUserDoesNotPassConfigServerLocation() {
         MockEnvironment environment = getEnvironment();
         environment.setProperty(SPRING_CONFIG_IMPORT, "my_config_data");
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
-            configServerDataLoaderEnvironmentPostProcessor.postProcessEnvironment(environment, null);
-        });
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
+                configServerDataLoaderEnvironmentPostProcessor.postProcessEnvironment(environment, null)
+        );
         assertThat(exception).hasMessage("Found spring.config.import property but without configserver: value. " +
                 "Please add a spring.config.import=configserver:http://config-server:8080 property to your configuration file.");
 
