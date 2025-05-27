@@ -227,7 +227,7 @@ public class AnnotationProcessor {
                     this.executeChangeSetMethod(entry.getChangeSetMethod(), entry.getChangeLogInstance());
                     entry.saveEntryInChangeLog(getMongoDatabase());
                 } catch (Exception e) {
-                    throw new Exception("The changeset failed: " + entry.toString(), e);
+                    throw new Exception("The changeset failed: " + entry, e);
                 }
                 /* notify that process is alive*/
                 this.registerProcessUpdateTime();

@@ -5,12 +5,14 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
-import org.qubership.cloud.mongoevolution.java.annotation.ChangeLog;
-import org.qubership.cloud.mongoevolution.java.annotation.ChangeSet;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.junit.Assert;
+import org.qubership.cloud.mongoevolution.java.annotation.ChangeLog;
+import org.qubership.cloud.mongoevolution.java.annotation.ChangeSet;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
 @ChangeLog(version = 1, order = 1, dbClassifier = TestConstants.DEFAULT_DB_NAME)
@@ -34,7 +36,7 @@ public class ChangeTest1 {
         log.debug("@ChangeSet find document");
         MongoCollection<TestObject> collection = mongoDatabase.getCollection(TestConstants.COLLECTION_NAME, TestObject.class);
         long count = collection.countDocuments(Filters.eq(TestConstants.COLUMN_NAME, TestConstants.COLUMN_VALUE));
-        Assert.assertEquals(1, count);
+        assertEquals(1, count);
     }
 
     @ChangeSet(order = 4)
@@ -43,13 +45,13 @@ public class ChangeTest1 {
         MongoCollection<TestObject> collection = mongoDatabase.getCollection(TestConstants.COLLECTION_NAME, TestObject.class);
         Bson filterObject = Filters.eq(TestConstants.COLUMN_NAME, TestConstants.COLUMN_VALUE);
         Bson updated = Updates.set("name", TestConstants.COLUMN_VALUE_UPDATE);
-        Assert.assertNotNull(collection.updateOne(filterObject, updated));
+        assertNotNull(collection.updateOne(filterObject, updated));
 
-        Assert.assertEquals(1, collection.countDocuments());
+        assertEquals(1, collection.countDocuments());
 
         MongoCursor<TestObject> iterator = collection.find(Filters.eq(TestConstants.COLUMN_NAME, TestConstants.COLUMN_VALUE_UPDATE)).iterator();
 
-        Assert.assertEquals(TestConstants.COLUMN_VALUE_UPDATE, iterator.next().getName());
+        assertEquals(TestConstants.COLUMN_VALUE_UPDATE, iterator.next().getName());
 
     }
 

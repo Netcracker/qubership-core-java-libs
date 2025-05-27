@@ -15,12 +15,10 @@
         <java.version>17</java.version>
         <annotations.version>26.0.1</annotations.version>
         <reflections.version>0.10.2</reflections.version>
-        <mongodb.version>4.11.5</mongodb.version>
+        <mongodb.version>5.0.1</mongodb.version>
         <jacoco.plugin.version>0.8.12</jacoco.plugin.version>
         <lombok.version>1.18.36</lombok.version>
-        <junit.version>5.11.4</junit.version>
         <mockito.version>5.15.2</mockito.version>
-        <powermock.version>2.0.9</powermock.version>
         <mongo.test.server.version>1.46.0</mongo.test.server.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../mongo-evolution-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
@@ -52,11 +50,10 @@
 
         <!-- test dependencies -->
         <dependency>
-            <groupId>org.junit</groupId>
-            <artifactId>junit-bom</artifactId>
-            <version>${junit.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.11.4</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -69,18 +66,6 @@
             <artifactId>mongo-java-server</artifactId>
             <version>${mongo.test.server.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.javassist</groupId>
-                    <artifactId>javassist</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.javassist</groupId>
@@ -161,6 +146,5 @@
             <url>https://maven.pkg.github.com/netcracker/qubership-core-mongo-evolution</url>
         </repository>
     </distributionManagement>
-
 
 </project>
