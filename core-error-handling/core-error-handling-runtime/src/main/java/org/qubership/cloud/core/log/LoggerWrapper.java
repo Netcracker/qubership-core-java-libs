@@ -12,8 +12,12 @@ public class LoggerWrapper implements Logger {
 
     private final Logger log;
 
-    LoggerWrapper(String name) {
-        log = LoggerFactory.getLogger(name);
+    public LoggerWrapper(String name) {
+        this.log = createLogger(name);
+    }
+
+    protected Logger createLogger(String name) {
+        return LoggerFactory.getLogger(name);
     }
 
     @Override
@@ -322,8 +326,7 @@ public class LoggerWrapper implements Logger {
     }
 
     private void adviseLog(String msg, Throwable t, Consumer<String> logMethod) {
-        if (t instanceof ErrorCodeException) {
-            ErrorCodeException e = (ErrorCodeException) t;
+        if (t instanceof ErrorCodeException e) {
             String errorCodePrefix = String.format(ERROR_CODE_LOG_PREFIX_TEMPLATE,
                     e.getErrorCode().getCode(),
                     e.getId());
