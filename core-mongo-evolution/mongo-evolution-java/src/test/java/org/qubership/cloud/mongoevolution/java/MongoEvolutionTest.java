@@ -31,10 +31,8 @@ public class MongoEvolutionTest extends MongoServerConfiguration {
     private final boolean in_progress = false;
     private final long version = 1;
 
-
     MongoEvolution mongoEvolution;
     MongoEvolution mongoEvolutionError;
-
 
     MongoCollection<Document> mongoCollection;
     Document testDoc = null;
@@ -57,7 +55,7 @@ public class MongoEvolutionTest extends MongoServerConfiguration {
     }
 
     @BeforeAll
-    static void setUpBeforeClass() throws Exception {
+    static void setUpBeforeClass() {
         testStartTimestamp = getCurrentTimeInSeconds();
     }
 

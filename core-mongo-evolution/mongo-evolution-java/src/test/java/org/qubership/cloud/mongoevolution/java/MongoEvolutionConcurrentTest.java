@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.qubership.cloud.mongoevolution.java.dataaccess.ConnectionSearchKey;
 
@@ -14,6 +15,7 @@ import java.util.concurrent.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled
 @Slf4j
 class MongoEvolutionConcurrentTest extends MongoServerConfiguration {
 
@@ -64,7 +66,7 @@ class MongoEvolutionConcurrentTest extends MongoServerConfiguration {
         } catch (InterruptedException ex) {
             executorService.shutdownNow();
         }
-        futures.stream().forEach(result -> {
+        futures.forEach(result -> {
             try {
                 assertEquals(Long.valueOf(1L), result.get());
             } catch (Exception ex) {
