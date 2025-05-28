@@ -21,7 +21,6 @@ import java.util.concurrent.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
 @SpringBootTest(classes = MongoTestConfiguration.class)
 @Slf4j
 class SpringMongoEvolutionConcurrentTest {
