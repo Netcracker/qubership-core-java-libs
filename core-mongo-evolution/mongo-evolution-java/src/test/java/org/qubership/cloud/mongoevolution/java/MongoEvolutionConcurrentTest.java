@@ -15,7 +15,6 @@ import java.util.concurrent.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
 @Slf4j
 class MongoEvolutionConcurrentTest extends MongoServerConfiguration {
 
