@@ -19,11 +19,6 @@ public class ProfileChangeTest {
     @ChangeSet(order = 1)
     public void someChange(MongoDatabase db, Map<String, Object> beans) {
         log.debug("@ChangeSet profileChangeTest");
-        AbstractEnvironment env = (AbstractEnvironment) beans.get("org.springframework.core.env.StandardEnvironment");
-        if(null == env || env.getSystemEnvironment().isEmpty()) {
-            log.error("AnnotationProcessor or MongoDbSchemaEvolution should be created with Beans Map");
-            System.exit(1);
-        }
         MongoCollection collection = db.getCollection(TestConstants.PACKAGE_COLLECTION_NAME);
         Document doc = new Document().append(TestConstants.COLUMN_NAME, TestConstants.COLUMN_VALUE);
         collection.insertOne(doc);

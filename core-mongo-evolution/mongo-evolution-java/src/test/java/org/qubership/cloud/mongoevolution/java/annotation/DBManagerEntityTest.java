@@ -1,35 +1,36 @@
 package org.qubership.cloud.mongoevolution.java.annotation;
 
-import org.qubership.cloud.mongoevolution.java.MongoServerConfiguration;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.qubership.cloud.mongoevolution.java.MongoServerConfiguration;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @Slf4j
-public class DBManagerEntityTest extends MongoServerConfiguration {
+class DBManagerEntityTest extends MongoServerConfiguration {
 
     private DBManagerEntity dbManagerEntity;
 
     public final static String TEST_DB_NAME = "test";
 
-    @Before
-    public void prepareTestContext(){
+    @BeforeEach
+    void prepareTestContext() {
         dbManagerEntity = new DBManagerEntity();
     }
 
     @Test
-    public void testGetSetMongoDB() {
-        Assert.assertNull(dbManagerEntity.getMongoDatabase());
+    void testGetSetMongoDB() {
+        assertNull(dbManagerEntity.getMongoDatabase());
         dbManagerEntity.setMongoDatabase(mongoClient.getDatabase(TEST_DB_NAME));
-        Assert.assertNotNull(dbManagerEntity.getMongoDatabase());
+        assertNotNull(dbManagerEntity.getMongoDatabase());
     }
 
     @Test
-    public void testGetSetMongoDatabase() {
-        Assert.assertNull(dbManagerEntity.getMongoDatabase());
+    void testGetSetMongoDatabase() {
+        assertNull(dbManagerEntity.getMongoDatabase());
         dbManagerEntity.setMongoDatabase(mongoClient.getDatabase(TEST_DB_NAME));
-        Assert.assertNotNull(dbManagerEntity.getMongoDatabase());
+        assertNotNull(dbManagerEntity.getMongoDatabase());
     }
-
 }

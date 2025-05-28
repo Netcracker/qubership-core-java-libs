@@ -197,8 +197,7 @@ public class AnnotationProcessor {
     public long getMaxChangeLogVersion() throws Exception {
         List<ChangeEntry> changeEntries = getChangeEntriesFromCache();
         LOGGER.debug("ChangeEntry list:{}", changeEntries);
-        return (null == changeEntries || changeEntries.isEmpty()) ? 0 :
-                changeEntries.get(changeEntries.size() - 1).getVersion();
+        return (changeEntries.isEmpty()) ? 0 : changeEntries.get(changeEntries.size() - 1).getVersion();
     }
 
     private boolean entryIsNotPresentInDb(ChangeEntry entry) {
@@ -227,7 +226,7 @@ public class AnnotationProcessor {
                     this.executeChangeSetMethod(entry.getChangeSetMethod(), entry.getChangeLogInstance());
                     entry.saveEntryInChangeLog(getMongoDatabase());
                 } catch (Exception e) {
-                    throw new Exception("The changeset failed: " + entry.toString(), e);
+                    throw new Exception("The changeset failed: " + entry, e);
                 }
                 /* notify that process is alive*/
                 this.registerProcessUpdateTime();
