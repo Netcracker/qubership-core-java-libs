@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 import static java.lang.System.currentTimeMillis;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MongoEvolutionTest extends MongoServerConfiguration {
+class MongoEvolutionTest extends MongoServerConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoEvolutionTest.class);
     private static ConnectionSearchKey connectionSearchKeyDefault = new ConnectionSearchKey(TestConstants.TENANT_ID, TestConstants.DEFAULT_DB_NAME);
@@ -84,7 +84,7 @@ public class MongoEvolutionTest extends MongoServerConfiguration {
     }
 
     @Test
-    public void createTrackerCollectionRecord() throws Exception {
+    void createTrackerCollectionRecord() throws Exception {
         assertEquals(testStartTimestamp, testDoc.get(MongoEvolution.TRACKER_KEY_UPDATE_START));
         assertEquals(testStartTimestamp, testDoc.get(MongoEvolution.TRACKER_KEY_UPDATE_END));
         assertEquals(in_progress, testDoc.get(MongoEvolution.TRACKER_IN_PROGRESS));
@@ -107,7 +107,7 @@ public class MongoEvolutionTest extends MongoServerConfiguration {
     }
 
     @Test
-    void getDbCurrentVersion() throws Exception {
+    void getDbCurrentVersion() {
         mongoCollection.insertOne(testDoc);
         long version = mongoEvolution.getDbCurrentVersion();
         assertEquals(testDoc.get(MongoEvolution.TRACKER_CURRENT_VERSION), version);
@@ -203,7 +203,7 @@ public class MongoEvolutionTest extends MongoServerConfiguration {
     }
 
     @Test
-    public void updateFieldWithMongoCurrentDateTest() {
+    void updateFieldWithMongoCurrentDateTest() {
         Document dtest = new Document().append("TestField1", "Test Field 1").append("TestimeField", getCurrentTimeInSeconds() - 8);
         mongoCollection.insertOne(dtest);
         long before = getCurrentTimeInSeconds();

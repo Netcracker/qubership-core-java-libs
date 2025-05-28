@@ -30,7 +30,7 @@ import static java.lang.System.currentTimeMillis;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = MongoTestConfiguration.class)
-public class SpringMongoEvolutionTest {
+class SpringMongoEvolutionTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SpringMongoEvolutionTest.class);
     private static ConnectionSearchKey connectionSearchKeyDefault = new ConnectionSearchKey(TestConstants.TENANT_ID, TestConstants.DEFAULT_DB_NAME);

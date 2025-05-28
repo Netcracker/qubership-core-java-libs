@@ -15,7 +15,7 @@ import static org.qubership.cloud.mongoevolution.MongoTestConfiguration.TEST_DB_
 
 @SpringBootTest(classes = MongoTestConfiguration.class)
 @Slf4j
-public class DBManagerEntityTest {
+class DBManagerEntityTest {
 
     @Autowired
     private SpringDBManagerEntity dbManagerEntity;

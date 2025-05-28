@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Disabled
 @SpringBootTest(classes = MongoTestConfiguration.class)
 @Slf4j
-public class SpringMongoEvolutionConcurrentTest {
+class SpringMongoEvolutionConcurrentTest {
 
     private static final int THREAD_COUNT_EVOLVE = 3;
 
