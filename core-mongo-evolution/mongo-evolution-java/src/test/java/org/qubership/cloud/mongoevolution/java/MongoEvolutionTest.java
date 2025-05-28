@@ -84,7 +84,7 @@ class MongoEvolutionTest extends MongoServerConfiguration {
     }
 
     @Test
-    void createTrackerCollectionRecord() throws Exception {
+    void createTrackerCollectionRecord() {
         assertEquals(testStartTimestamp, testDoc.get(MongoEvolution.TRACKER_KEY_UPDATE_START));
         assertEquals(testStartTimestamp, testDoc.get(MongoEvolution.TRACKER_KEY_UPDATE_END));
         assertEquals(in_progress, testDoc.get(MongoEvolution.TRACKER_IN_PROGRESS));

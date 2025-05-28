@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.qubership.cloud.mongoevolution.java.dataaccess.ConnectionSearchKey;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,12 +74,12 @@ class SpringMongoEvolutionConcurrentTest {
         }
     }
 
-    private void evolveConcurrent() throws Exception{
+    private void evolveConcurrent() throws Exception {
         ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT_EVOLVE);
         List<Future<Long>> futures = executorService.invokeAll(spawnThreads());
         executorService.shutdown();
         try {
-            if(!executorService.awaitTermination(120, TimeUnit.SECONDS)) {
+            if (!executorService.awaitTermination(120, TimeUnit.SECONDS)) {
                 executorService.shutdownNow();
             }
         } catch (InterruptedException ex) {
