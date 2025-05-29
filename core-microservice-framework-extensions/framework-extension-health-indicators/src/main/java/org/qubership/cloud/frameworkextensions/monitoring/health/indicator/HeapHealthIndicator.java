@@ -1,7 +1,7 @@
 package org.qubership.cloud.frameworkextensions.monitoring.health.indicator;
 
-import org.qubership.cloud.frameworkextensions.monitoring.health.HealthStatus;
 import lombok.extern.slf4j.Slf4j;
+import org.qubership.cloud.frameworkextensions.monitoring.health.HealthStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -18,11 +18,28 @@ public class HeapHealthIndicator implements HealthIndicator {
     @Value("${health.memory.heap.warning:75}")
     long warning;
 
+    private final MemoryInfo memoryInfo;
+
+    public HeapHealthIndicator() {
+        this.memoryInfo = new RuntimeMemoryInfo();
+    }
+
+    /**
+     * Constructor for testing purposes only
+     */
+    HeapHealthIndicator(MemoryInfo memoryInfo) {
+        this.memoryInfo = memoryInfo;
+    }
+
+    protected long calculateHeapUsage() {
+        long limit = memoryInfo.getMaxMemory();
+        long free = memoryInfo.getFreeMemory();
+        return 100 - (free * 100 / limit);
+    }
+
     @Override
     public Health health() {
-        long limit = Runtime.getRuntime().maxMemory();
-        long free = Runtime.getRuntime().freeMemory();
-        long usage = 100 - (free * 100 / limit);
+        long usage = calculateHeapUsage();
         log.debug("Heap usage - {}%", usage);
 
         Health.Builder status = Health.up();
@@ -33,5 +50,28 @@ public class HeapHealthIndicator implements HealthIndicator {
         }
 
         return status.build();
+    }
+
+    interface MemoryInfo {
+        long getMaxMemory();
+        long getFreeMemory();
+    }
+
+    private static class RuntimeMemoryInfo implements MemoryInfo {
+        private final Runtime runtime;
+
+        RuntimeMemoryInfo() {
+            this.runtime = Runtime.getRuntime();
+        }
+
+        @Override
+        public long getMaxMemory() {
+            return runtime.maxMemory();
+        }
+
+        @Override
+        public long getFreeMemory() {
+            return runtime.freeMemory();
+        }
     }
 }
