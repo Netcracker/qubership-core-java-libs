@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class PortForwardAwareAddressResolverTest {
 
-    private static final String TEST_HOST = "test-host";
+    private static final String TEST_HOST = "PortForwardAwareAddressResolverTest-test-host";
     private static final String UNKNOWN_HOST = "unknown-host";
     private static final byte[] TEST_IP_ADDRESS = new byte[]{8, 8, 8, 8};
     private static final String EXPECTED_HOSTNAME = "dns.google";

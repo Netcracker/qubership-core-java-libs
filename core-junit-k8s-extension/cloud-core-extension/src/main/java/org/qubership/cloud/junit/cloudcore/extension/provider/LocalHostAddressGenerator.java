@@ -91,4 +91,11 @@ public class LocalHostAddressGenerator {
     static void setCurrentIp(InetAddress inetAddress) {
         currentIp = inetAddress;
     }
+
+    /**
+     * FOR TEST PURPOSES ONLY
+     */
+    static synchronized void cleanupAll() {
+        hostAddressMap.clear();
+    }
 }

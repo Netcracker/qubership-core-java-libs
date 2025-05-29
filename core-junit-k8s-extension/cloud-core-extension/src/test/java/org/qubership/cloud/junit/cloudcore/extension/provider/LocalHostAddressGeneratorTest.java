@@ -1,5 +1,6 @@
 package org.qubership.cloud.junit.cloudcore.extension.provider;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +27,11 @@ public class LocalHostAddressGeneratorTest {
     @BeforeEach
     void setUp() {
         LocalHostAddressGenerator.setup();
+    }
+
+    @AfterEach
+    void tearDown() {
+        LocalHostAddressGenerator.cleanupAll();
     }
 
     @Test
