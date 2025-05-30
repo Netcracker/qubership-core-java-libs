@@ -219,7 +219,7 @@ public abstract class MaasKafkaCommonClient implements MaasKafkaClient {
     }
 
     // Getting tenants methods
-    protected CompletableFuture<List<String>> getActiveTenantsInternal() {
+    CompletableFuture<List<String>> getActiveTenantsInternal() {
         final CompletableFuture<List<String>> result = new CompletableFuture<>();
         execute(() -> {
             try {
@@ -237,7 +237,7 @@ public abstract class MaasKafkaCommonClient implements MaasKafkaClient {
         return result;
     }
 
-    private void resolveAvailableTenantsInternal(CompletableFuture<List<String>> result) {
+    void resolveAvailableTenantsInternal(CompletableFuture<List<String>> result) {
         List<String> tenants = _getAvailableTenants();
         if (tenants == null) {
             LOG.debug("Available tenants haven't been fetched");
@@ -249,7 +249,7 @@ public abstract class MaasKafkaCommonClient implements MaasKafkaClient {
         }
     }
 
-    private List<String> _getAvailableTenants() {
+    List<String> _getAvailableTenants() {
         List<String> tenants;
         try {
             tenants = tenantService.listAvailableTenants();
@@ -294,7 +294,7 @@ public abstract class MaasKafkaCommonClient implements MaasKafkaClient {
         return topic;
     }
 
-    private void resolveTopicInternal(String tenantId, CompletableFuture<TopicAddress> result) {
+    void resolveTopicInternal(String tenantId, CompletableFuture<TopicAddress> result) {
         TopicAddress topic = _getTopic(tenantId);
         if (topic == null) {
             LOG.debug("Submit retry initialization process for tenantId: {}, topicDefinition: {}", tenantId, clientDefinition.getTopic());
@@ -307,7 +307,7 @@ public abstract class MaasKafkaCommonClient implements MaasKafkaClient {
     }
 
 
-    private TopicAddress createTopic(String tenantId) {
+    TopicAddress createTopic(String tenantId) {
         TopicAddress topic;
         if (tenantId != null) {
             topic = kafkaTopicService.getOrCreateTopicAddressByDefinitionAndTenantId(clientDefinition, tenantId);

@@ -54,11 +54,12 @@ public class MaasKafkaAggregationTopicService implements MaasKafkaTopicService {
     }
 
     // Utils methods
-    private <T> T callTopicServiceMethod(Function<MaasKafkaTopicService, T> methodExecutor) {
+    <T> T callTopicServiceMethod(Function<MaasKafkaTopicService, T> methodExecutor) {
         for (MaasKafkaTopicServiceProvider provider : maasKafkaTopicServiceProviders) {
             try {
-                if (provider.provide() != null) {
-                    return methodExecutor.apply(provider.provide());
+                MaasKafkaTopicService service = provider.provide();
+                if (service != null) {
+                    return methodExecutor.apply(service);
                 }
             } catch (Throwable ex) {
                 LOGGER.error("Unexpected error occurred", ex);
@@ -68,7 +69,7 @@ public class MaasKafkaAggregationTopicService implements MaasKafkaTopicService {
         throw new MaasKafkaException("There is no valid MaasKafkaTopicService provider");
     }
 
-    private List<MaasKafkaTopicServiceProvider> sortTopicServices(List<MaasKafkaTopicServiceProvider> topicServiceProviders) {
+    List<MaasKafkaTopicServiceProvider> sortTopicServices(List<MaasKafkaTopicServiceProvider> topicServiceProviders) {
         return topicServiceProviders.stream().sorted(Comparator.comparing(MaasKafkaTopicServiceProvider::order)).collect(Collectors.toList());
     }
 }
