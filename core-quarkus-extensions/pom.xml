@@ -5,6 +5,15 @@
     <version>7.0.1-SNAPSHOT</version>
     <artifactId>cloud-core-quarkus</artifactId>
     <packaging>pom</packaging>
+    
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+  
 
     <properties>
         <lombok.version>1.18.36</lombok.version>
