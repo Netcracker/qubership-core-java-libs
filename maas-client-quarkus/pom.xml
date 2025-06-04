@@ -6,6 +6,15 @@
 	<artifactId>maas-client-quarkus-parent</artifactId>
 	<groupId>org.qubership.cloud.quarkus</groupId>
 	<version>8.0.1-SNAPSHOT</version>
+    
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+  
 
 	<modules>
 		<module>maas-client-quarkus-bom</module>
