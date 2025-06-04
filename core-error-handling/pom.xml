@@ -6,6 +6,15 @@
     <artifactId>core-error-handling</artifactId>
     <packaging>pom</packaging>
     <version>3.0.3-SNAPSHOT</version>
+    
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+  
 
     <modules>
         <module>core-error-handling-runtime</module>
