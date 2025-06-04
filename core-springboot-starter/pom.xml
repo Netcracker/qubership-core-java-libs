@@ -15,7 +15,7 @@
 
     <name>qubership-spring-boot-starter</name>
     <description>Starter POM for all Cloud Catalog microservices</description>
-    
+
     <licenses>
         <license>
             <name>Apache-2.0</name>
@@ -23,7 +23,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-  
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
