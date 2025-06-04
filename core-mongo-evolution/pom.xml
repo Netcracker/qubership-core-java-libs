@@ -7,6 +7,15 @@
     <artifactId>mongo-evolution-aggregator</artifactId>
     <version>7.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
+    
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+  
 
     <modules>
         <module>mongo-evolution-java</module>
