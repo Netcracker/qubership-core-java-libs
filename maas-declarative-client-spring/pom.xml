@@ -6,7 +6,7 @@
     <artifactId>maas-declarative-kafka-client-spring-bom</artifactId>
     <version>6.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
-    
+
     <licenses>
         <license>
             <name>Apache-2.0</name>
@@ -14,7 +14,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-  
 
     <modules>
         <module>maas-kafka-spring-client</module>
