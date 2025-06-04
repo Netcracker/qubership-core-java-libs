@@ -7,6 +7,15 @@
     <artifactId>dbaas-client-root</artifactId>
     <version>8.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
+    
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+  
 
     <modules>
         <module>dbaas-client-parent</module>
