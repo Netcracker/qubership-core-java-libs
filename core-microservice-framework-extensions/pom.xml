@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
     <name>framework-extensions</name>
     <description>Common framework extensions library</description>
-    
+
     <licenses>
         <license>
             <name>Apache-2.0</name>
@@ -16,7 +16,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-  
 
     <modules>
         <module>framework-extensions-parent</module>
