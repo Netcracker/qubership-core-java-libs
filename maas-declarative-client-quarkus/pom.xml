@@ -6,7 +6,7 @@
     <artifactId>maas-declarative-kafka-client-quarkus-bom</artifactId>
     <version>6.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    
+
     <licenses>
         <license>
             <name>Apache-2.0</name>
@@ -14,7 +14,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-  
 
     <properties>
         <quarkus.platform.version>3.15.1</quarkus.platform.version>
