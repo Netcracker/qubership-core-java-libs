@@ -6,7 +6,7 @@
     <artifactId>maas-declarative-kafka-client-parent</artifactId>
     <version>5.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
-    
+
     <licenses>
         <license>
             <name>Apache-2.0</name>
@@ -14,7 +14,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-  
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
