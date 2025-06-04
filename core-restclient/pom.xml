@@ -7,7 +7,7 @@
     <version>6.0.3-SNAPSHOT</version>
     <artifactId>microservice-restclient-aggregator</artifactId>
     <packaging>pom</packaging>
-    
+
     <licenses>
         <license>
             <name>Apache-2.0</name>
@@ -15,7 +15,7 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-  
+
     <modules>
         <module>parent</module>
         <module>microservice-restclient-api</module>
