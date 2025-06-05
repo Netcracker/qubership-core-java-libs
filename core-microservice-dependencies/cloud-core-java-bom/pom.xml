@@ -10,6 +10,14 @@
     <name>cloud-core-java-bom</name>
     <description>Contains cloud-core java public libraries</description>
 
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
     <properties>
         <io.micrometer.verion>1.14.1</io.micrometer.verion>
         <java.version>17</java.version>
