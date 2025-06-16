@@ -4,7 +4,7 @@
 
     <groupId>org.qubership.cloud</groupId>
     <artifactId>cloud-core-java-bom</artifactId>
-    <version>11.0.2-SNAPSHOT</version>
+    <version>11.0.2</version>
     <packaging>pom</packaging>
 
     <name>cloud-core-java-bom</name>
