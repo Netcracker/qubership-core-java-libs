@@ -13,9 +13,9 @@
 
     <properties>
         <!-- Qubership -->
-        <context.propagation.core.version>7.0.2</context.propagation.core.version>
-        <dbaas-client.version>8.0.1</dbaas-client.version>
-        <tls-utils.version>2.0.2</tls-utils.version>
+        <context.propagation.core.version>7.0.3</context.propagation.core.version>
+        <dbaas-client.version>8.0.2</dbaas-client.version>
+        <tls-utils.version>2.0.4</tls-utils.version>
 
         <!-- Dev tools -->
         <freemarker.version>2.3.33</freemarker.version>
