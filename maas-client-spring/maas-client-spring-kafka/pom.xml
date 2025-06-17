@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.qubership.cloud.maas.client</groupId>
         <artifactId>maas-client-spring-parent</artifactId>
-        <version>8.0.3</version>
+        <version>8.0.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
