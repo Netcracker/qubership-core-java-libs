@@ -4,7 +4,7 @@
     <parent>
         <artifactId>rest-api-deprecation-switcher-parent</artifactId>
         <groupId>org.qubership.cloud.quarkus</groupId>
-        <version>7.0.2</version>
+        <version>7.0.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
