@@ -32,8 +32,8 @@
 
         <testcontairnes-kafka.version>1.17.5</testcontairnes-kafka.version>
 
-        <maas-declarative-kafka-client.version>5.0.2</maas-declarative-kafka-client.version>
-        <maas-client-spring.version>8.0.2</maas-client-spring.version>
+        <maas-declarative-kafka-client.version>5.0.3</maas-declarative-kafka-client.version>
+        <maas-client-spring.version>8.0.3</maas-client-spring.version>
         <opentelemetry-kafka-clients.version>2.4.0-alpha</opentelemetry-kafka-clients.version>
     </properties>
 
