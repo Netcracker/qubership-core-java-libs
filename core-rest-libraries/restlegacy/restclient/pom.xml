@@ -3,7 +3,7 @@
     <parent>
         <artifactId>restlegacy-parent</artifactId>
         <groupId>org.qubership.cloud</groupId>
-        <version>6.0.4-SNAPSHOT</version>
+        <version>6.0.4</version>
         <relativePath>../restlegacy-parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
