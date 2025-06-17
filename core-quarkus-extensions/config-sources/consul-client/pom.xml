@@ -5,7 +5,7 @@
   <parent>
     <artifactId>config-sources</artifactId>
     <groupId>org.qubership.cloud.quarkus</groupId>
-      <version>7.0.2-SNAPSHOT</version>
+      <version>7.0.2</version>
   </parent>
 
   <artifactId>consul-client-parent</artifactId>
