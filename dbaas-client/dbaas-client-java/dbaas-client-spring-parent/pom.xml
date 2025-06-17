@@ -3,7 +3,7 @@
     <parent>
         <artifactId>dbaas-client-java-parent</artifactId>
         <groupId>org.qubership.cloud</groupId>
-        <version>8.0.3-SNAPSHOT</version>
+        <version>8.0.3</version>
         <relativePath>./../dbaas-client-java-parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
