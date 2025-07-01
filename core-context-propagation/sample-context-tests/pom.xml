@@ -15,19 +15,19 @@
     </licenses>
 
     <properties>
-        <spring.version>6.2.0</spring.version>
+        <spring.version>6.2.8</spring.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.36</version>
+            <version>1.18.38</version>
         </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.1.0</version>
+            <version>6.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test</artifactId>
-            <version>3.3.4</version>
+            <version>3.4.7</version>
             <scope>test</scope>
         </dependency>
         <dependency>
