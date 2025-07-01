@@ -4,7 +4,7 @@
 
     <groupId>org.qubership.cloud.maas.client</groupId>
     <artifactId>maas-client-parent</artifactId>
-    <version>11.0.4-SNAPSHOT</version>
+    <version>11.1.0</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -50,7 +50,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-maas-client.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-maas-client</url>
-        <tag>HEAD</tag>
+        <tag>11.1.0</tag>
     </scm>
 
     <dependencyManagement>
