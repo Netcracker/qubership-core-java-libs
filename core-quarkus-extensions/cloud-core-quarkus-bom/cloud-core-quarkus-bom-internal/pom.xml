@@ -106,26 +106,6 @@
                 <version>${quarkus.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-platform-descriptor-api</artifactId>
-                <version>${quarkus.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-platform-descriptor-resolver-json</artifactId>
-                <version>${quarkus.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-platform-descriptor-json</artifactId>
-                <version>${quarkus.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-creator</artifactId>
-                <version>${quarkus.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
                 <version>${freemarker.version}</version>
@@ -135,16 +115,6 @@
             <dependency>
                 <groupId>io.quarkus</groupId>
                 <artifactId>quarkus-rest-client</artifactId>
-                <version>${quarkus.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-war-launcher-runner</artifactId>
-                <version>${quarkus.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-legacy-launcher</artifactId>
                 <version>${quarkus.version}</version>
             </dependency>
             <dependency>
