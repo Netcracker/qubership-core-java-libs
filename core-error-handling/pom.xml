@@ -59,7 +59,7 @@
                         <dependency>
                             <groupId>org.junit.jupiter</groupId>
                             <artifactId>junit-jupiter-engine</artifactId>
-                            <version>5.11.0</version>
+                            <version>5.11.4</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -85,7 +85,7 @@
                             <path>
                                 <groupId>org.projectlombok</groupId>
                                 <artifactId>lombok</artifactId>
-                                <version>1.18.36</version>
+                                <version>1.18.38</version>
                             </path>
                         </annotationProcessorPaths>
                     </configuration>
