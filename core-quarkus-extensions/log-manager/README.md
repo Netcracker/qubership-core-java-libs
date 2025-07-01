@@ -43,9 +43,13 @@ This endpoint provides a map of all loggers along with their current logging lev
 
 ### 2. Logger level auto update
 
-Log manager provides ability to update Logger level based on properties from Consul.
-This extension observes Consul properties updates event and changes appropriate Logger. 
-Consul logger config property looks like usually Quarkus logger property.
+Log manager provides an ability to update Logger level based on properties from Consul.
+This extension observes Consul kv changes at
+/kv/config/{namespace}/application/
+/kv/config/{namespace}/{microservice}/
+/kv/logging/{namespace}/{microservice}/
+and updates loggers accordingly. 
+Consul logger config property looks like a standard Quarkus logger property.
 For example:
 
 ```properties
@@ -55,9 +59,9 @@ logging.level.com.example.cloud=DEBUG //log level for category "com.example.clou
 
 Logger levels will be retrieved from Consul at:
 http://consul-server:8500/v1/kv/logging/test-namespace/test-app/logging/level/root
-http://consul-server:8500/v1/kv/logging/test-namespace/test-app/logging/level/com/example
+http://consul-server:8500/v1/kv/logging/test-namespace/test-app/logging/level/com/example/cloud
 
 ```java
-Logger myLogger = Logger.getLogger("com.example");
+Logger myLogger = Logger.getLogger("com.example.cloud");
 //myLogger.getLevel() will be equals the value of the level set in the Сonsul
 ```

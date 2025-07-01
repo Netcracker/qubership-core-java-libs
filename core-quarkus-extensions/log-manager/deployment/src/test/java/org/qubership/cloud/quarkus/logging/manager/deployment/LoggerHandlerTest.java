@@ -15,13 +15,12 @@ public class LoggerHandlerTest {
 
     @Test
     public void testGetLoggersEndpoint() {
-        Map response =
-                given()
-                        .when().get("/api/logging/v1/levels")
-                        .then()
-                        .statusCode(200)
-                        .contentType(ContentType.JSON)
-                        .extract().as(Map.class);
+        Map response = given()
+                .when().get("/api/logging/v1/levels")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract().as(Map.class);
 
         Assertions.assertNotNull(response);
     }

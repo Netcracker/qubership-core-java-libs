@@ -19,6 +19,7 @@ class AgroalConnectionFactoryConfigurationHolder implements AgroalConnectionFact
     // Here is a list of default values copied from AgroalConnectionFactoryConfigurationSupplier
     boolean autoCommit = true;
     boolean trackJdbcResources = true;
+    boolean poolRecovery = true;
     String jdbcUrl = "";
     String initialSql = "";
     IsolationLevel transactionIsolation = UNDEFINED;
@@ -82,6 +83,11 @@ class AgroalConnectionFactoryConfigurationHolder implements AgroalConnectionFact
     @Override
     public Collection<Object> credentials() {
         return credentials;
+    }
+
+    @Override
+    public boolean poolRecovery() {
+        return poolRecovery;
     }
 
     @Override

@@ -18,12 +18,12 @@ class LoggingManagerProcessor {
     private static final String GET_LOGGERS_LEVEL_PATH = "/api/logging/v1/levels";
 
     @BuildStep
-    FeatureBuildItem feature() {
-        return new FeatureBuildItem(FEATURE);
+    public void feature(BuildProducer<FeatureBuildItem> feature) {
+        feature.produce(new FeatureBuildItem(FEATURE));
     }
 
-    @Record(ExecutionTime.RUNTIME_INIT)
     @BuildStep
+    @Record(ExecutionTime.RUNTIME_INIT)
     void includeRestEndpoints(BuildProducer<RouteBuildItem> routeProducer,
             NonApplicationRootPathBuildItem nonApplicationRootPathBuildItem,
             BodyHandlerBuildItem bodyHandlerBuildItem,

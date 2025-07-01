@@ -1,5 +1,6 @@
 package org.qubership.cloud.quarkus.logging.manager.runtime.consul;
 
+import org.junit.jupiter.api.Assertions;
 import org.qubership.cloud.quarkus.consul.client.ConsulClient;
 import org.qubership.cloud.quarkus.consul.client.ConsulSourceConfig;
 import org.qubership.cloud.quarkus.consul.client.model.GetValue;
@@ -9,14 +10,14 @@ import io.quarkus.runtime.StartupEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
-import static java.lang.Thread.sleep;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ConsulLoggingConfigWatchFactoryTest {
 
@@ -64,63 +65,104 @@ class ConsulLoggingConfigWatchFactoryTest {
     }
 
     @Test
-    void initConsulLoggingWatch_fireLogUpdated() throws InterruptedException {
+    void initConsulLoggingWatch_fireLogUpdated() throws Exception {
         ConsulClient consulClient = mock(ConsulClient.class);
         ConsulSourceConfig consulSourceConfig = mock(ConsulSourceConfig.class);
         GetValue getValue = new GetValue();
-        getValue.setKey("logging/test-ns/test-app/logging.level.com.test");
+        getValue.setKey("logging/test-ns/test-ms/logging/level/com.test");
         getValue.setValue(Base64.getEncoder().encodeToString(("DEBUG").getBytes()));
 
         Response<List<GetValue>> listResponse = new Response<>(Collections.singletonList(getValue), 1L, true, 1L);
-        when(consulClient.getKVValues(eq("logging/test-ns/test-app"), anyString())).thenReturn(listResponse);
-        when(consulClient.getKVValues(eq("logging/test-ns/test-app"), anyString(), any())).thenReturn(listResponse);
+        when(consulClient.getKVValues(eq(""), anyString())).thenReturn(listResponse);
 
-        ConsulLoggingConfigWatchFactory factory = spy(new ConsulLoggingConfigWatchFactory(consulClient, new TokenStorageStub()));
-        doNothing().when(factory).firePropertiesUpdated(anyMap(), anyString());
-        doNothing().when(factory).fireLogUpdated(anyMap(), anyString());
-
+        CompletableFuture<Map<String, String>> future = new CompletableFuture<>();
+        ConsulLoggingConfigWatchFactory factory = new ConsulLoggingConfigWatchFactory(consulClient, new TokenStorageStub(), "test-ns", "test-ms") {
+            @Override
+            protected void firePropertiesUpdated(Map<String, String> properties) {
+                future.complete(properties);
+            }
+        };
         factory.initConsulLoggingWatch(new StartupEvent(), consulSourceConfig, consulLoggingSourceConfig);
-        sleep(5000);
-        verify(factory).fireLogUpdated(anyMap(), anyString());
+        Map<String, String> properties = future.get(5, TimeUnit.SECONDS);
+        Assertions.assertNotNull(properties);
+        Assertions.assertEquals(1, properties.size());
+        Assertions.assertEquals("DEBUG", properties.get("quarkus.log.category.\"com.test\".level"));
     }
 
     @Test
-    void initConsulLoggingWatch_fireLogUpdated_whenConsulEmpty() throws InterruptedException {
+    void initConsulLoggingWatch_fireLogUpdated_whenConsulEmpty() throws Exception {
         ConsulClient consulClient = mock(ConsulClient.class);
         ConsulSourceConfig consulSourceConfig = mock(ConsulSourceConfig.class);
         GetValue getValueWithNullValue = new GetValue();
-        getValueWithNullValue.setKey("logging/test-ns/test-app");
+        getValueWithNullValue.setKey("logging/test-ns/test-ms");
         getValueWithNullValue.setValue(null);
-        
-        GetValue getValue = new GetValue();
-        getValue.setKey("logging/test-ns/test-app/logging.level.com.test");
-        getValue.setValue(Base64.getEncoder().encodeToString(("DEBUG").getBytes()));
-        
-        Response<List<GetValue>> listResponse1 = new Response<>(Collections.singletonList(getValueWithNullValue), 1L, true, 1L);
-        Response<List<GetValue>> listResponse2 = new Response<>(Collections.singletonList(getValueWithNullValue), 2L, true, 1L);
-        Response<List<GetValue>> listResponse3 = new Response<>(Collections.singletonList(getValue), 3L, true, 1L);
-        Response<List<GetValue>> nullResponse = new Response<>(null, 3L, true, 1L);
-        when(consulClient.getKVValues(eq("logging/test-ns/test-app"), anyString())).thenReturn(listResponse1);
 
-        when(consulClient.getKVValues(eq("logging/test-ns/test-app"), anyString(), any())).thenAnswer(invocation -> {
+        GetValue getValue = new GetValue();
+        getValue.setKey("logging/test-ns/test-ms/logging/level/com.test");
+        getValue.setValue(Base64.getEncoder().encodeToString(("DEBUG").getBytes()));
+
+        Response<List<GetValue>> listResponse1 = new Response<>(Collections.singletonList(getValueWithNullValue), 1L, true, 1L);
+        Response<List<GetValue>> listResponse2 = new Response<>(Collections.singletonList(getValue), 2L, true, 1L);
+        Response<List<GetValue>> nullResponse = new Response<>(null, 3L, true, 1L);
+        when(consulClient.getKVValues(eq(""), anyString())).thenReturn(listResponse1);
+
+        when(consulClient.getKVValues(eq(""), anyString(), any())).thenAnswer(invocation -> {
             QueryParams param = invocation.getArgument(2);
-            if (param.getIndex() == 1L) {
+            if (param.getIndex() == 1) {
                 return listResponse2;
-            } else if (param.getIndex() == 2L) {
-                return listResponse3;
             }
             return nullResponse;
         });
 
-        ConsulLoggingConfigWatchFactory factory = spy(
-                new ConsulLoggingConfigWatchFactory(consulClient, new TokenStorageStub()));
-        doNothing().when(factory).firePropertiesUpdated(anyMap(), anyString());
-        doNothing().when(factory).fireLogUpdated(anyMap(), anyString());
+        ArrayBlockingQueue<Map<String, String>> future = new ArrayBlockingQueue<>(3);
+        ConsulLoggingConfigWatchFactory factory = new ConsulLoggingConfigWatchFactory(consulClient, new TokenStorageStub(), "test-ns", "test-ms") {
+            @Override
+            protected void firePropertiesUpdated(Map<String, String> properties) {
+                future.add(properties);
+            }
+        };
 
         factory.initConsulLoggingWatch(new StartupEvent(), consulSourceConfig, consulLoggingSourceConfig);
-        sleep(5000);
-        verify(factory, times(1)).fireLogUpdated(eq(Collections.emptyMap()), anyString());
-        verify(factory, times(1)).firePropertiesUpdated(eq(Collections.emptyMap()), anyString());
-        verify(factory, times(1)).firePropertiesUpdated(eq(Collections.singletonMap("logging.level.com.test", "DEBUG")), anyString());
+        Map<String, String> properties = future.poll(5, TimeUnit.SECONDS);
+        Assertions.assertNotNull(properties);
+        Assertions.assertTrue(properties.isEmpty());
+
+        properties = future.poll(5, TimeUnit.SECONDS);
+        Assertions.assertNotNull(properties);
+        Assertions.assertEquals(1, properties.size());
+        Assertions.assertEquals("DEBUG", properties.get("quarkus.log.category.\"com.test\".level"));
+    }
+
+    @Test
+    void initConsulLoggingWatchInBackground() throws Exception {
+        ConsulClient consulClient = mock(ConsulClient.class);
+        ConsulSourceConfig consulSourceConfig = mock(ConsulSourceConfig.class);
+        GetValue getValue = new GetValue();
+        getValue.setKey("logging/test-ns/test-ms/logging/level/com.test");
+        getValue.setValue(Base64.getEncoder().encodeToString(("DEBUG").getBytes()));
+
+        CompletableFuture<Void> factoryInitiatedFuture = new CompletableFuture<>();
+        CompletableFuture<Map<String, String>> consulPropertiesReceivedFuture = new CompletableFuture<>();
+        Response<List<GetValue>> listResponse = new Response<>(Collections.singletonList(getValue), 1L, true, 1L);
+
+        when(consulClient.getKVValues(eq(""), anyString())).thenAnswer(i -> listResponse);
+
+        ConsulLoggingConfigWatchFactory factory = new ConsulLoggingConfigWatchFactory(consulClient, new TokenStorageStub(), "test-ns", "test-ms") {
+            @Override
+            protected void firePropertiesUpdated(Map<String, String> properties) {
+                try {
+                    factoryInitiatedFuture.get(5, TimeUnit.SECONDS);
+                    consulPropertiesReceivedFuture.complete(properties);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+        factory.runConsulLoggingWatcher(consulSourceConfig, consulLoggingSourceConfig);
+        factoryInitiatedFuture.complete(null);
+
+        Map<String, String> properties = consulPropertiesReceivedFuture.get(5, TimeUnit.SECONDS);
+        Assertions.assertNotNull(properties);
+        Assertions.assertEquals(1, properties.size());
     }
 }
