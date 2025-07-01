@@ -13,6 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @EnableDbaasDefault
 @Configuration
@@ -26,6 +27,7 @@ public class DbaasRedisConfiguration {
     }
 
     @Bean
+    @Primary
     @ConfigurationProperties("dbaas.redis")
     public RedisProperties redisProperties() {
         return new RedisProperties();
