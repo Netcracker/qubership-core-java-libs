@@ -72,7 +72,7 @@ class SwaggerSecurityConfiguratorTest {
         assertEquals(3, commonSecuritySchemesMap.size());
         assertNotNull(commonSecuritySchemesMap.get(M2M_SECURITY_DEF));
         assertNotNull(commonSecuritySchemesMap.get(CLOUD_ADMIN_SECURITY_DEF));
-        assertNotNull(commonSecuritySchemesMap.get(API_KEY_SECURITY_DEF));
+        assertNotNull(commonSecuritySchemesMap.get(API_KEY_SECURITY_HEADER));
     }
 
 
@@ -83,7 +83,7 @@ class SwaggerSecurityConfiguratorTest {
         assertEquals(3, allSecuritySchemes.size());
         assertNotNull(allSecuritySchemes.get(M2M_SECURITY_DEF));
         assertNotNull(allSecuritySchemes.get(CLOUD_ADMIN_SECURITY_DEF));
-        assertNotNull(allSecuritySchemes.get(API_KEY_SECURITY_DEF));
+        assertNotNull(allSecuritySchemes.get(API_KEY_SECURITY_HEADER));
     }
 
     @Test
@@ -96,7 +96,7 @@ class SwaggerSecurityConfiguratorTest {
         assertEquals(3, allSecuritySchemes.size());
         assertNotNull(allSecuritySchemes.get(M2M_SECURITY_DEF));
         assertNotNull(allSecuritySchemes.get(CLOUD_ADMIN_SECURITY_DEF));
-        assertNotNull(allSecuritySchemes.get(API_KEY_SECURITY_DEF));
+        assertNotNull(allSecuritySchemes.get(API_KEY_SECURITY_HEADER));
     }
 
     @Test
@@ -116,7 +116,7 @@ class SwaggerSecurityConfiguratorTest {
         assertEquals(4, allSecuritySchemes.size());
         assertNotNull(allSecuritySchemes.get(M2M_SECURITY_DEF));
         assertNotNull(allSecuritySchemes.get(CLOUD_ADMIN_SECURITY_DEF));
-        assertNotNull(allSecuritySchemes.get(API_KEY_SECURITY_DEF));
+        assertNotNull(allSecuritySchemes.get(API_KEY_SECURITY_HEADER));
         assertNotNull(allSecuritySchemes.get(TEST_SCHEME));
     }
 
