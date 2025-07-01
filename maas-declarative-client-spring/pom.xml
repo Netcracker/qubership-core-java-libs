@@ -4,7 +4,7 @@
 
     <groupId>org.qubership.cloud.maas.declarative</groupId>
     <artifactId>maas-declarative-kafka-client-spring-bom</artifactId>
-    <version>6.1.0</version>
+    <version>6.1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -224,7 +224,7 @@ because spring-boot-based microservices are maven-inherited from spring-boot-par
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-maas-declarative-client-spring.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-maas-declarative-client-spring</url>
-        <tag>6.1.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
