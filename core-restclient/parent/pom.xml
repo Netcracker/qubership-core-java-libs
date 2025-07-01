@@ -4,7 +4,7 @@
 
     <groupId>org.qubership.cloud</groupId>
     <artifactId>microservice-restclient-parent</artifactId>
-    <version>6.0.5-SNAPSHOT</version>
+    <version>6.1.0</version>
     <packaging>pom</packaging>
 
     <licenses>
