@@ -22,6 +22,9 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
+import io.opentelemetry.context.propagation.ContextPropagators;
+import io.opentelemetry.context.propagation.TextMapPropagator;
+import io.opentelemetry.extension.trace.propagation.B3Propagator;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
 import io.opentelemetry.instrumentation.kafka.internal.KafkaInstrumenterFactory;
 import io.opentelemetry.instrumentation.kafka.internal.KafkaProcessRequest;
@@ -114,5 +117,11 @@ public class MaasKafkaCommonConfig {
                 return CONTEXT_PROPAGATION_ORDER + 1;
             }
         };
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ContextPropagators customPropagators() {
+        return ContextPropagators.create(TextMapPropagator.composite(B3Propagator.injectingMultiHeaders()));
     }
 }
