@@ -8,46 +8,38 @@ import org.qubership.maas.declarative.kafka.client.api.model.MaasKafkaProducerCr
 import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
 import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition;
 import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasTopicDefinition;
-import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
-import net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.logging.log4j.util.Strings;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
-import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
-import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
+@Testcontainers
+public class KafkaTest {
 
-public class KafkaTest implements ApplicationContextAware {
-    protected static EmbeddedKafkaCluster kafka;
+    public static String bootstrapServers;
+
+    @Container
+    static KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0"))
+            .withKraft();
 
     @BeforeAll
-    static void beforeAll() {
-        EmbeddedKafkaClusterConfig kafkaClusterConfig = defaultClusterConfig();
-        kafka = provisionWith(kafkaClusterConfig);
-        kafka.start();
-
+    static void setup() {
+        bootstrapServers = kafkaContainer.getBootstrapServers().replace("PLAINTEXT://", "");
     }
 
-    @AfterAll
-    static void afterAll() {
-        kafka.stop();
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
-                (ConfigurableApplicationContext) applicationContext, "maas.kafka.local-dev.config.bootstrap.servers=localhost:9092");
+    @DynamicPropertySource
+    static void registerDynamicProperties(DynamicPropertyRegistry registry) {
+        registry.add("maas.kafka.local-dev.config.bootstrap.servers", () -> bootstrapServers);
     }
 
     protected <K, V> MaasKafkaConsumer createAndActivateConsumer(MaasKafkaClientFactory clientFactory, String definition, String topic, Consumer<ConsumerRecord<K, V>> handler) {
