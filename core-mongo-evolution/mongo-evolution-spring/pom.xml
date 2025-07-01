@@ -21,12 +21,12 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <java.version>17</java.version>
-        <spring.data.mongodb.version>4.3.4</spring.data.mongodb.version>
-        <spring.boot.version>3.3.4</spring.boot.version>
-        <lombok.version>1.18.36</lombok.version>
+        <spring.data.mongodb.version>4.4.7</spring.data.mongodb.version>
+        <spring.boot.version>3.4.7</spring.boot.version>
+        <lombok.version>1.18.38</lombok.version>
         <mongo.test.server.version>1.46.0</mongo.test.server.version>
         <jacoco.plugin.version>0.8.12</jacoco.plugin.version>
-        <mockito.version>5.15.2</mockito.version>
+        <mockito.version>5.14.2</mockito.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../mongo-evolution-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -84,13 +84,13 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.16</version>
+            <version>1.5.18</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.5.16</version>
+            <version>1.5.18</version>
             <scope>test</scope>
         </dependency>
         <dependency>
