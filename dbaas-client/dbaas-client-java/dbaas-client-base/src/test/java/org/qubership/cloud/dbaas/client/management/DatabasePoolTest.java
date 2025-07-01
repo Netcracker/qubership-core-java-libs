@@ -16,9 +16,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 import static org.qubership.cloud.dbaas.client.DbaasConst.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -79,7 +77,7 @@ public class DatabasePoolTest {
         Object valueNamespace = fieldNamespace.get(databasePool);
         assertNotEquals(customMicroserviceName, valueMicroserviceName);
         assertNotEquals(customNamespace, valueNamespace);
-        
+
         Method method = DatabasePool.class.getDeclaredMethod("enrichClassifier", DbaasDbClassifier.class);
         method.setAccessible(true);
         method.invoke(databasePool, customClassifier);

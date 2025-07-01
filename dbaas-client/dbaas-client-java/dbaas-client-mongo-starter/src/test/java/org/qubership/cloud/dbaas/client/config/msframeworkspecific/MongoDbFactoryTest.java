@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +27,6 @@ import static org.mockito.Mockito.when;
 import static org.qubership.cloud.dbaas.client.config.msframeworkspecific.testconfig.TestMongoDbConfiguration.*;
 
 @ExtendWith(SpringExtension.class)
-@PowerMockIgnore("javax.management.*")
 @SpringBootTest(classes = {TestMongoDbConfiguration.class}, properties = "dbaas.api.mongo.runtime-user-role=admin")
 public class MongoDbFactoryTest {
 

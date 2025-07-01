@@ -10,33 +10,32 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dbaas-client-bom-internal</artifactId>
-    <!-- this bom contains all internal used versions - for usage inside of client modules, which includes 
+    <!-- this bom contains all internal used versions - for usage inside of client modules, which includes
      all modules versions for inter-dependencies and third-party dependencies -->
 
     <properties>
-        <mockito.version>5.14.2</mockito.version>
         <powermock.version>2.0.9</powermock.version>
-        <spring.version>6.1.13</spring.version>
-        <spring.boot.version>3.3.4</spring.boot.version>
-        <postgresql.driver.version>42.7.4</postgresql.driver.version>
-        <spring.data.mongodb.version>4.3.4</spring.data.mongodb.version>
+        <spring.version>6.2.8</spring.version>
+        <spring.boot.version>3.4.7</spring.boot.version>
+        <postgresql.driver.version>42.7.7</postgresql.driver.version>
+        <spring.data.mongodb.version>4.4.7</spring.data.mongodb.version>
         <mongodb.version>5.2.1</mongodb.version>
         <arangodb.driver.version>7.15.0</arangodb.driver.version>
-        <arangodb.spring.data.version>4.4.2</arangodb.spring.data.version>
+        <arangodb.spring.data.version>4.6.0</arangodb.spring.data.version>
         <java.driver.core.version>4.17.0</java.driver.core.version>
         <jedis.client.version>5.2.0</jedis.client.version>
-        <spring.data.redis.version>3.3.4</spring.data.redis.version>
-        <jackson-bom.version>2.18.2</jackson-bom.version>
+        <spring.data.redis.version>3.4.7</spring.data.redis.version>
+        <jackson-bom.version>2.18.4.1</jackson-bom.version>
         <jakarta-annotation.version>3.0.0</jakarta-annotation.version>
-        <flyway.version>11.1.0</flyway.version>
+        <flyway.version>10.20.1</flyway.version>
         <shedlock.version>5.16.0</shedlock.version>
-        <testcontainers.version>1.20.4</testcontainers.version>
+        <testcontainers.version>1.20.6</testcontainers.version>
 
         <!--Qubership's libs-->
-        <rest-libraries.version>6.0.4</rest-libraries.version>
-        <microservice-restclient.version>6.0.4</microservice-restclient.version>
-        <framework-contexts.version>7.0.3</framework-contexts.version>
-        <core-utils.version>2.0.4</core-utils.version>
+        <rest-libraries.version>6.1.0</rest-libraries.version>
+        <microservice-restclient.version>6.1.0</microservice-restclient.version>
+        <framework-contexts.version>7.1.0</framework-contexts.version>
+        <core-utils.version>2.1.0</core-utils.version>
     </properties>
 
     <dependencyManagement>
@@ -97,18 +96,18 @@
             <dependency>
                 <groupId>org.jetbrains</groupId>
                 <artifactId>annotations</artifactId>
-                <version>26.0.1</version>
+                <version>24.1.0</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-dbcp2</artifactId>
-                <version>2.13.0</version>
+                <version>2.12.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents.client5</groupId>
                 <artifactId>httpclient5</artifactId>
-                <version>5.4.1</version>
+                <version>5.4.4</version>
             </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>
@@ -155,17 +154,17 @@
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.5.15</version>
+                <version>1.5.18</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
-                <version>1.5.15</version>
+                <version>1.5.18</version>
             </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.36</version>
+                <version>1.18.38</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -201,7 +200,7 @@
             <dependency>
                 <groupId>org.springframework.retry</groupId>
                 <artifactId>spring-retry</artifactId>
-                <version>2.0.10</version>
+                <version>2.0.12</version>
             </dependency>
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
@@ -216,7 +215,7 @@
             <dependency>
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-core</artifactId>
-                <version>1.14.2</version>
+                <version>1.14.8</version>
             </dependency>
             <dependency>
                 <groupId>com.datastax.oss</groupId>
@@ -251,13 +250,13 @@
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>2.18.0</version>
+                <version>2.16.1</version>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-collections4</artifactId>
-                <version>4.4</version>
+                <version>4.5.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -272,7 +271,7 @@
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-artifact</artifactId>
-                <version>3.9.9</version>
+                <version>3.9.8</version>
             </dependency>
 
             <!-- Test dependencies -->
@@ -297,25 +296,25 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
-                <version>5.11.0</version>
+                <version>5.11.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.27.0</version>
+                <version>3.26.3</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>5.12.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>${mockito.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-module-junit4</artifactId>
-                <version>${powermock.version}</version>
+                <version>5.12.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

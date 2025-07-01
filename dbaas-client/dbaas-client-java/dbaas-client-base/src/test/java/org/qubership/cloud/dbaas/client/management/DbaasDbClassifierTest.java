@@ -1,7 +1,6 @@
 package org.qubership.cloud.dbaas.client.management;
 
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -10,9 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.qubership.cloud.dbaas.client.DbaasConst.TENANT_ID;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DbaasDbClassifierTest {
 
@@ -27,16 +24,16 @@ public class DbaasDbClassifierTest {
         assertNotNullDbaasClassifier(new DbaasDbClassifier.Builder()
                 .withProperty(TENANT_ID, null)
                 .build());
-        assertEquals("Classifiers with the same input parameters must be equal",
-                new DbaasDbClassifier.Builder()
+        assertEquals(new DbaasDbClassifier.Builder()
                         .withProperty(TENANT_ID, null)
                         .build(),
                 new DbaasDbClassifier.Builder()
                         .withProperty(TENANT_ID, null)
-                        .build());
-        assertEquals("Classifiers with the same input parameters must have equal hashcode",
+                        .build(), "Classifiers with the same input parameters must be equal");
+        assertEquals(
                 Objects.hashCode(new DbaasDbClassifier.Builder().withProperty(TENANT_ID, null).build()),
-                Objects.hashCode(new DbaasDbClassifier.Builder().withProperty(TENANT_ID, null).build()));
+                Objects.hashCode(new DbaasDbClassifier.Builder().withProperty(TENANT_ID, null).build()),
+                "Classifiers with the same input parameters must have equal hashcode");
     }
 
     private void assertNotNullDbaasClassifier(DbaasDbClassifier dbaasDbClassifier) {
@@ -86,7 +83,7 @@ public class DbaasDbClassifierTest {
                 .build();
         Map<String, Object> expectedResult = new HashMap<>();
         expectedResult.put(TENANT_ID, "testTenantId");
-        Assertions.assertEquals(expectedResult, dbaasDbClassifier.asMap());
+        assertEquals(expectedResult, dbaasDbClassifier.asMap());
     }
 
 }

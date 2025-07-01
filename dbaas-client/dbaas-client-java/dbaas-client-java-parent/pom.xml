@@ -12,7 +12,7 @@
     <artifactId>dbaas-client-java-parent</artifactId>
     <packaging>pom</packaging>
     <properties>
-        <slf4j-api.version>2.0.16</slf4j-api.version>
+        <slf4j-api.version>2.0.17</slf4j-api.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../dbaas-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -35,7 +35,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>26.0.1</version>
+            <version>24.1.0</version>
             <scope>provided</scope>
         </dependency>
         <!-- Logging -->
@@ -57,12 +57,6 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <scope>test</scope>
-        </dependency>
-        
     </dependencies>
 
 </project>

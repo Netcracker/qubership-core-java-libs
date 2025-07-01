@@ -27,8 +27,7 @@ import static org.qubership.cloud.dbaas.client.DbaasClientApiConst.*;
 import static org.qubership.cloud.dbaas.client.DbaasConst.SCOPE;
 import static org.qubership.cloud.dbaas.client.DbaasConst.SERVICE;
 import static org.qubership.cloud.dbaas.client.DbaasConst.MICROSERVICE_NAME;
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 

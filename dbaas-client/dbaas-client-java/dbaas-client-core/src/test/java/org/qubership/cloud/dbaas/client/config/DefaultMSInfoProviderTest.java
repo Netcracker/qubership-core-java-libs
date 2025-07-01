@@ -10,7 +10,7 @@ import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DefaultMSInfoProviderTest {
     static final String BASELINE_NAMESPACE = "cloud-catalog-test";
