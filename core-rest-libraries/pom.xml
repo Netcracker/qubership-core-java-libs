@@ -5,7 +5,7 @@
     <groupId>org.qubership.cloud</groupId>
     <artifactId>rest-libraries</artifactId>
     <packaging>pom</packaging>
-    <version>6.0.5-SNAPSHOT</version>
+    <version>6.1.0</version>
 
     <licenses>
         <license>
@@ -39,7 +39,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-rest-libraries.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-core-rest-libraries</url>
-        <tag>HEAD</tag>
+        <tag>6.1.0</tag>
     </scm>
 
     <build>
