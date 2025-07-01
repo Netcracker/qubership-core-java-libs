@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.qubership.cloud.quarkus</groupId>
         <artifactId>security-adapters-parent</artifactId>
-        <version>7.0.3-SNAPSHOT</version>
+        <version>7.1.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
