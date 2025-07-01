@@ -20,9 +20,9 @@
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <testcontainers.version>1.20.4</testcontainers.version>
-        <quarkus.version>3.15.2</quarkus.version>
-        <quarkus.core.extention.version>7.0.2</quarkus.core.extention.version>
+        <testcontainers.version>1.20.6</testcontainers.version>
+        <quarkus.version>3.15.5</quarkus.version>
+        <quarkus.core.extention.version>7.1.0</quarkus.core.extention.version>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../aggregator-for-jacoco/target/jacoco-ut/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
         <surefire-plugin.version>3.3.0</surefire-plugin.version>
@@ -89,7 +89,7 @@
                             <path>
                                 <groupId>org.projectlombok</groupId>
                                 <artifactId>lombok</artifactId>
-                                <version>1.18.36</version>
+                                <version>1.18.38</version>
                             </path>
                         </annotationProcessorPaths>
                     </configuration>
