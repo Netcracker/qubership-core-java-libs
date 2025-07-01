@@ -15,4 +15,10 @@ public class CassandraDbConfiguration {
      */
     @ConfigItem(name = "physical-database-id")
     Optional<String> physicalDatabaseId;
+
+    /**
+     * Property with database settings.
+     */
+    @ConfigItem(name = "database-settings")
+    CassandraDatabaseSettings databaseSettings;
 }
