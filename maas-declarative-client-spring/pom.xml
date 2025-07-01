@@ -30,7 +30,7 @@
         <spring-cloud.version>2024.0.1</spring-cloud.version>
         <springdoc.version>1.6.11</springdoc.version>
 
-        <testcontairnes-kafka.version>1.17.5</testcontairnes-kafka.version>
+        <testcontainers.version>1.20.6</testcontainers.version>
 
         <maas-declarative-kafka-client.version>5.1.0</maas-declarative-kafka-client.version>
         <maas-client-spring.version>8.1.0</maas-client-spring.version>
@@ -63,6 +63,44 @@
                 <version>${spring-cloud.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+<!--
+specifying opentelemetry version here exactly to match open telemetry which is used by spring boot to avoid conflicts
+because spring-boot-based microservices are maven-inherited from spring-boot-parent and will collect opentelemetry from its dependencies
+-->
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-bom-alpha</artifactId>
+                <version>1.40.0-alpha</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>io.opentelemetry.instrumentation</groupId>
+                <artifactId>opentelemetry-spring-boot-starter</artifactId>
+                <version>${opentelemetry-kafka-clients.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.opentelemetry.instrumentation</groupId>
+                <artifactId>opentelemetry-kafka-clients-2.6</artifactId>
+                <version>${opentelemetry-kafka-clients.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.opentelemetry.instrumentation</groupId>
+                <artifactId>opentelemetry-kafka-clients-common</artifactId>
+                <version>${opentelemetry-kafka-clients.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>kafka</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
