@@ -4,7 +4,7 @@
 
     <groupId>org.qubership.cloud</groupId>
     <artifactId>blue-green-state-monitor-java</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -36,7 +36,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-blue-green-state-monitor.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-core-blue-green-state-monitor</url>
-        <tag>HEAD</tag>
+        <tag>1.1.0</tag>
     </scm>
     
     <profiles>
