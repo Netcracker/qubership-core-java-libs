@@ -26,15 +26,15 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
-        <spring-boot.version>3.3.4</spring-boot.version>
-        <spring-cloud.version>2023.0.4</spring-cloud.version>
+        <spring-boot.version>3.4.7</spring-boot.version>
+        <spring-cloud.version>2024.0.1</spring-cloud.version>
         <springdoc.version>1.6.11</springdoc.version>
 
         <testcontairnes-kafka.version>1.17.5</testcontairnes-kafka.version>
 
-        <maas-declarative-kafka-client.version>5.0.3</maas-declarative-kafka-client.version>
-        <maas-client-spring.version>8.0.3</maas-client-spring.version>
-        <opentelemetry-kafka-clients.version>2.4.0-alpha</opentelemetry-kafka-clients.version>
+        <maas-declarative-kafka-client.version>5.1.0</maas-declarative-kafka-client.version>
+        <maas-client-spring.version>8.1.0</maas-client-spring.version>
+        <opentelemetry-kafka-clients.version>2.5.0-alpha</opentelemetry-kafka-clients.version>
     </properties>
 
     <dependencyManagement>
