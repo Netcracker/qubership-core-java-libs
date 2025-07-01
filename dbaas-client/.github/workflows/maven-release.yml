@@ -59,7 +59,7 @@ jobs:
           exit 1
 
   update-pom-version:
-    needs: [check-tag]
+    needs: [ check-tag ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -76,7 +76,7 @@ jobs:
           commit_message: "Update pom.xml version to ${{ github.event.inputs.version }}"
 
   upload_to_maven_central:
-    needs: [update-pom-version]
+    needs: [ update-pom-version ]
     uses: Netcracker/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
     with:
       maven_command: "--batch-mode deploy"
@@ -89,7 +89,7 @@ jobs:
       maven_gpg_private_key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
 
   github-release:
-    needs: [upload_to_maven_central]
+    needs: [ upload_to_maven_central ]
     uses: Netcracker/qubership-workflow-hub/.github/workflows/release-drafter.yml@main
     with:
       version: ${{ github.event.inputs.version }}
