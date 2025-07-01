@@ -5,7 +5,7 @@
 
     <groupId>org.qubership.cloud</groupId>
     <artifactId>dbaas-client-root</artifactId>
-    <version>8.0.4-SNAPSHOT</version>
+    <version>8.1.0</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -28,7 +28,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-dbaas-client.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-dbaas-client</url>
-        <tag>HEAD</tag>
+        <tag>8.1.0</tag>
     </scm>
 
     <reporting>
