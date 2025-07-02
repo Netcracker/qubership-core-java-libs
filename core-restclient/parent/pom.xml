@@ -34,7 +34,7 @@
             <!--This dependency is not used directly, but it is required transitively for BWC-->
             <groupId>org.qubership.cloud.security.core.utils</groupId>
             <artifactId>tls-utils</artifactId>
-            <version>2.1.0</version>
+            <version>2.1.1</version>
         </dependency>
     </dependencies>
 
