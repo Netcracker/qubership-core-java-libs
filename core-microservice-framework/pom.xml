@@ -38,7 +38,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-microservice-framework.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-core-microservice-framework</url>
-        <tag>HEAD</tag>
+        <tag>7.1.0</tag>
     </scm>
 
     <build>

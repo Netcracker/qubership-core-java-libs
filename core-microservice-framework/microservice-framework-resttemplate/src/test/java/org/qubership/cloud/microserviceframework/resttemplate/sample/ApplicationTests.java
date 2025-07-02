@@ -2,9 +2,8 @@ package org.qubership.cloud.microserviceframework.resttemplate.sample;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 import org.qubership.cloud.microserviceframework.resttemplate.sample.configuration.RouteConfig;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.concurrent.TimeUnit;
 
@@ -24,11 +22,8 @@ import static org.awaitility.Awaitility.await;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = {TestApplication.class, RouteConfig.class},
-        properties = {
-                "cloud.microservice.name=test-service"
-        },
+        properties = {"cloud.microservice.name=test-service"},
         webEnvironment = RANDOM_PORT)
 public class ApplicationTests {
 
@@ -42,7 +37,7 @@ public class ApplicationTests {
     public void configServerTest() {
         String res = new TestRestTemplate().getForObject(
                 "http://localhost:" + this.port + "/test", String.class);
-        Assert.assertEquals("test_value", res);
+        Assertions.assertEquals("test_value", res);
     }
 
     @Test

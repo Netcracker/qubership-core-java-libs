@@ -20,7 +20,6 @@
         <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
         <maven.pmd.plugin.version>3.7</maven.pmd.plugin.version>
         <jacoco.plugin.version>0.8.12</jacoco.plugin.version>
-        <junit.version>4.13.2</junit.version>
         <spring.boot.version>3.4.7</spring.boot.version>
         <mockito.version>5.14.2</mockito.version>
         <spring.security.version>6.4.7</spring.security.version>
@@ -61,9 +60,9 @@
                 <version>33.2.1-jre</version>
             </dependency>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>5.11.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -71,12 +70,6 @@
                 <artifactId>spring-boot-starter-test</artifactId>
                 <scope>test</scope>
                 <version>${spring.boot.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.mockito</groupId>
-                        <artifactId>mockito-core</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>

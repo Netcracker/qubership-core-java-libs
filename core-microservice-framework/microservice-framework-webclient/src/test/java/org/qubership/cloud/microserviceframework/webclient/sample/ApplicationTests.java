@@ -2,9 +2,8 @@ package org.qubership.cloud.microserviceframework.webclient.sample;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 import org.qubership.cloud.microserviceframework.webclient.sample.configuration.RouteConfig;
@@ -15,7 +14,6 @@ import org.qubership.cloud.routesregistration.common.gateway.route.v3.domain.Rou
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -25,7 +23,6 @@ import static org.awaitility.Awaitility.await;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = {TestApplication.class, RouteConfig.class},
         properties = {
                 "cloud.microservice.name=test-service"
@@ -43,7 +40,7 @@ public class ApplicationTests {
     public void configServerTest() {
         WebTestClient webClient = WebTestClient.bindToServer().baseUrl("http://localhost:" + this.port).build();
         EntityExchangeResult<String> a = webClient.get().uri("/test").exchange().expectBody(String.class).returnResult();
-        Assert.assertEquals("test_value", a.getResponseBody());
+        Assertions.assertEquals("test_value", a.getResponseBody());
     }
 
     @Test
