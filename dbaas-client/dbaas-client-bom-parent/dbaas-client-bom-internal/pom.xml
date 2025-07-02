@@ -34,8 +34,8 @@
         <!--Qubership's libs-->
         <rest-libraries.version>6.1.0</rest-libraries.version>
         <microservice-restclient.version>6.1.0</microservice-restclient.version>
-        <framework-contexts.version>7.1.0</framework-contexts.version>
-        <core-utils.version>2.1.0</core-utils.version>
+        <framework-contexts.version>7.1.1</framework-contexts.version>
+        <core-utils.version>2.1.1</core-utils.version>
     </properties>
 
     <dependencyManagement>
