@@ -13,7 +13,7 @@
 
     <properties>
         <!-- Qubership -->
-        <context.propagation.core.version>7.1.1</context.propagation.core.version>
+        <context.propagation.core.version>7.1.2</context.propagation.core.version>
         <dbaas-client.version>8.1.0</dbaas-client.version>
         <tls-utils.version>2.1.1</tls-utils.version>
 
