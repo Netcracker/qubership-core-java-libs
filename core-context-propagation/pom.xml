@@ -42,7 +42,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-context-propagation.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-core-context-propagation</url>
-        <tag>7.1.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <build>
