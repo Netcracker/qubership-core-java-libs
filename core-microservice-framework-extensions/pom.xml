@@ -31,7 +31,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-microservice-framework-extensions.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-core-microservice-framework-extensions</url>
-        <tag>6.1.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <repositories>
