@@ -36,9 +36,9 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-blue-green-state-monitor.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-core-blue-green-state-monitor</url>
-        <tag>1.1.0</tag>
+        <tag>HEAD</tag>
     </scm>
-    
+
     <profiles>
         <profile>
             <id>docker url default value</id>
