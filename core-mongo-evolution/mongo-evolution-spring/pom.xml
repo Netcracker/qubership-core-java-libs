@@ -4,7 +4,7 @@
 
     <groupId>org.qubership.cloud</groupId>
     <artifactId>mongo-evolution-spring</artifactId>
-    <version>7.2.0</version>
+    <version>7.2.1-SNAPSHOT</version>
 
     <name>mongo-evolution-spring</name>
     <description>mongo-evolution library which based on Spring Framework</description>
