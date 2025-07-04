@@ -1,6 +1,8 @@
 package org.qubership.cloud.restclient.webclient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.core.error.rest.exception.RemoteCodeException;
 import org.qubership.cloud.core.error.rest.tmf.TmfErrorResponse;
 import org.qubership.cloud.restclient.BaseMicroserviceRestClientTest;
@@ -10,8 +12,6 @@ import org.qubership.cloud.restclient.exception.MicroserviceRestClientException;
 import org.qubership.cloud.restclient.exception.MicroserviceRestClientResponseException;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.RecordedRequest;
-import org.junit.Before;
-import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,12 +28,12 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
-public class MicroserviceWebClientTest extends BaseMicroserviceRestClientTest {
-    @Before
-    public void setUpBase() {
+class MicroserviceWebClientTest extends BaseMicroserviceRestClientTest {
+    @BeforeEach
+    void setUpBase() {
         WebClient webClient = WebClient.builder().build();
         restClient = new MicroserviceWebClient(webClient);
     }
@@ -47,7 +47,7 @@ public class MicroserviceWebClientTest extends BaseMicroserviceRestClientTest {
     }
 
     @Test
-    public void testDefaultRequestHeaders() throws InterruptedException {
+    void testDefaultRequestHeaders() throws InterruptedException {
         mockBackEnd.enqueue(new MockResponse().setResponseCode(200).setBody("Test response body"));
         mockBackEnd.enqueue(new MockResponse().setResponseCode(200).setBody("Test response body"));
 
@@ -75,28 +75,26 @@ public class MicroserviceWebClientTest extends BaseMicroserviceRestClientTest {
         assertEquals(MediaType.APPLICATION_JSON.toString(), recordedRequest.getHeader("Content-Type"));
     }
 
-    @Test(expected = MicroserviceRestClientException.class)
-    public void testUnexpectedWebClientExceptionWith4Arguments() {
+    @Test
+    void testUnexpectedWebClientExceptionWith4Arguments() {
         WebClient webClient = getWebClientMock();
         Mockito.when(webClient.method(any(org.springframework.http.HttpMethod.class))).thenThrow(new WebClientException("test exception") {
         });
         restClient = new MicroserviceWebClient(webClient);
-
-        restClient.doRequest(testUrl, HttpMethod.POST, null, null, Void.class);
-    }
-
-    @Test(expected = MicroserviceRestClientException.class)
-    public void testUnexpectedWebClientExceptionWith5Arguments() {
-        WebClient webClient = getWebClientMock();
-        Mockito.when(webClient.method(any(org.springframework.http.HttpMethod.class))).thenThrow(new WebClientException("test exception") {
-        });
-        restClient = new MicroserviceWebClient(webClient);
-
-        restClient.doRequest(testUrl, HttpMethod.POST, null, null, Void.class, null);
+        assertThrows(MicroserviceRestClientException.class, () -> restClient.doRequest(testUrl, HttpMethod.POST, null, null, Void.class));
     }
 
     @Test
-    public void testUnexpectedWebClientResponseException() {
+    void testUnexpectedWebClientExceptionWith5Arguments() {
+        WebClient webClient = getWebClientMock();
+        Mockito.when(webClient.method(any(org.springframework.http.HttpMethod.class))).thenThrow(new WebClientException("test exception") {
+        });
+        restClient = new MicroserviceWebClient(webClient);
+        assertThrows(MicroserviceRestClientException.class, () -> restClient.doRequest(testUrl, HttpMethod.POST, null, null, Void.class, null));
+    }
+
+    @Test
+    void testUnexpectedWebClientResponseException() {
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("test-header", "test-header-value");
         final String errorMessage = "Expected error in unit test";
@@ -119,7 +117,7 @@ public class MicroserviceWebClientTest extends BaseMicroserviceRestClientTest {
     }
 
     @Test
-    public void testResponseToString() {
+    void testResponseToString() {
         int httpStatus = HttpStatus.BAD_REQUEST.value();
         String responseBody = "test_body";
         String responseMessage = "test_message";
@@ -145,7 +143,7 @@ public class MicroserviceWebClientTest extends BaseMicroserviceRestClientTest {
     }
 
     @Test
-    public void testTMFRestClientResponseException() throws Exception {
+    void testTMFRestClientResponseException() throws Exception {
         TmfErrorResponse tmfErrorResponse = TmfErrorResponse.builder()
                 .id(UUID.randomUUID().toString())
                 .code("TEST")
@@ -183,7 +181,7 @@ public class MicroserviceWebClientTest extends BaseMicroserviceRestClientTest {
     }
 
     @Test
-    public void testInvalidTMFRestClientResponse() throws Exception {
+    void testInvalidTMFRestClientResponse() throws Exception {
         TmfErrorResponse tmfErrorResponse = TmfErrorResponse.builder()
                 .id(null)
                 .code(null)
@@ -210,13 +208,13 @@ public class MicroserviceWebClientTest extends BaseMicroserviceRestClientTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testMicroserviceWebClient_NullArgumentThrowsException() {
-        new MicroserviceWebClient((HttpClient) null);
+    @Test
+    void testMicroserviceWebClient_NullArgumentThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> new MicroserviceWebClient((HttpClient) null));
     }
 
     @Test
-    public void testMicroserviceWebClient_AppliedRetryWorks() {
+    void testMicroserviceWebClient_AppliedRetryWorks() {
         ConnectionProvider cp = ConnectionProvider.builder("conn-provider")
                 .maxIdleTime(Duration.ofSeconds(10))
                 .pendingAcquireTimeout(Duration.ofSeconds(20))

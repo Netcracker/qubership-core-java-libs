@@ -1,23 +1,24 @@
 package org.qubership.cloud.restclient.exception;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class MicroserviceRestClientResponseExceptionTest {
+class MicroserviceRestClientResponseExceptionTest {
 
     String msg = "test";
     byte[] responseBody = new byte[8];
     Map<String, List<String>> responseHeaders = new HashMap<>();
 
     @Test
-    public void getResponseBodyAsString() {
+    void getResponseBodyAsString() {
         String response = "resp";
         responseBody = response.getBytes();
         List<String> list = new ArrayList<>();
@@ -29,7 +30,7 @@ public class MicroserviceRestClientResponseExceptionTest {
     }
 
     @Test
-    public void getToStringWithResponseData() {
+    void getToStringWithResponseData() {
         String response = "resp";
         responseBody = response.getBytes();
         List<String> list = new ArrayList<>();

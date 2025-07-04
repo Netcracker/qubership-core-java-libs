@@ -1,19 +1,16 @@
 package org.qubership.cloud.restclient;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.Headers;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.restclient.entity.RestClientResponseEntity;
 import org.qubership.cloud.restclient.entity.TestEntity;
 import org.qubership.cloud.restclient.exception.MicroserviceRestClientResponseException;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,15 +20,13 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import okhttp3.Headers;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * NOTE: there is a QuarkusMicroserviceRestClientTest based on this. It must be executed as well  in case of modification
  * of this class.
- * 
+ *
  * <p>
  * It does not have a default (de)serializer for {@link TestEntity} thus you have to pass only json
  * as body and read {@link String} from response.
@@ -49,27 +44,27 @@ public abstract class BaseMicroserviceRestClientTest {
     protected static final String TEST_RESPONSE_BODY = "Test response body";
 
     protected static final String CONTENT_TYPE = "Content-Type";
-    private static final String TEST_HEADER_NAME= "Test-Header-Name";
+    private static final String TEST_HEADER_NAME = "Test-Header-Name";
     protected static MockWebServer mockBackEnd;
     protected static String testUrl;
     protected final ObjectMapper objectMapper = new ObjectMapper();
 
     protected MicroserviceRestClient restClient;
 
-    @BeforeClass
-    public static void setUpClassBase() throws IOException {
+    @BeforeAll
+    static void setUpClassBase() throws IOException {
         mockBackEnd = new MockWebServer();
         mockBackEnd.start();
         testUrl = LOCAL_HOST + mockBackEnd.getPort() + TEST_PATH;
     }
 
-    @AfterClass
-    public static void tearDownClassBase() throws IOException {
+    @AfterAll
+    static void tearDownClassBase() throws IOException {
         mockBackEnd.shutdown();
     }
 
     @Test
-    public void testNullRequestBody() throws InterruptedException {
+    void testNullRequestBody() throws InterruptedException {
         mockBackEnd.enqueue(new MockResponse().setResponseCode(200).setBody(TEST_RESPONSE_BODY));
 
         RestClientResponseEntity<Void> response = restClient.doRequest(URI.create(testUrl), HttpMethod.POST, null, null, Void.class);
@@ -79,7 +74,7 @@ public abstract class BaseMicroserviceRestClientTest {
     }
 
     @Test
-    public void testNonNullRequestBody() throws InterruptedException {
+    void testNonNullRequestBody() throws InterruptedException {
         mockBackEnd.enqueue(new MockResponse().setResponseCode(200).setBody(TEST_RESPONSE_BODY));
 
         final String testReqBody = "{ \"id\": 1, \"name\": \"some-test-object\" }";
@@ -93,7 +88,7 @@ public abstract class BaseMicroserviceRestClientTest {
     }
 
     @Test
-    public void testUrlWithParams() throws InterruptedException {
+    void testUrlWithParams() throws InterruptedException {
         mockBackEnd.enqueue(new MockResponse().setResponseCode(200).setBody(TEST_RESPONSE_BODY));
 
         RestClientResponseEntity<Void> response = restClient.doRequest(testUrl, HttpMethod.POST, null, null, Void.class);
@@ -104,7 +99,7 @@ public abstract class BaseMicroserviceRestClientTest {
     }
 
     @Test
-    public void testUriTemplate() throws InterruptedException {
+    void testUriTemplate() throws InterruptedException {
         mockBackEnd.enqueue(new MockResponse().setResponseCode(200).setBody(TEST_RESPONSE_BODY));
 
         Map<String, Object> uriParams = new HashMap<>(1);
@@ -117,7 +112,7 @@ public abstract class BaseMicroserviceRestClientTest {
     }
 
     @Test
-    public void testRequestHeaders() throws InterruptedException {
+    void testRequestHeaders() throws InterruptedException {
         mockBackEnd.enqueue(new MockResponse().setResponseCode(200).setBody(TEST_RESPONSE_BODY));
         mockBackEnd.enqueue(new MockResponse().setResponseCode(200).setBody(TEST_RESPONSE_BODY));
 
@@ -139,7 +134,7 @@ public abstract class BaseMicroserviceRestClientTest {
     }
 
     @Test
-    public void testResponseHeaders() throws InterruptedException {
+    void testResponseHeaders() throws InterruptedException {
         mockBackEnd.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setHeader(TEST_HEADER_NAME, "Test-Header-Response-Value")
@@ -160,7 +155,7 @@ public abstract class BaseMicroserviceRestClientTest {
     }
 
     @Test
-    public void testResponseBodyMapping() throws InterruptedException, IOException {
+    void testResponseBodyMapping() throws InterruptedException, IOException {
         final String singleEntity = objectMapper.writeValueAsString(TestEntity.createTestEntity());
         mockBackEnd.enqueue(new MockResponse()
                 .setResponseCode(200)
@@ -191,7 +186,7 @@ public abstract class BaseMicroserviceRestClientTest {
     }
 
     @Test
-    public void testResponseException() throws InterruptedException {
+    void testResponseException() throws InterruptedException {
         final String errBody = "Test internal server error";
         final Map<String, List<String>> errResponseHeaders = new HashMap<>();
         errResponseHeaders.put("test-err-header", Collections.singletonList("test-err-header-value"));
@@ -223,7 +218,7 @@ public abstract class BaseMicroserviceRestClientTest {
     }
 
     @Test
-    public void testResponseExceptionUnknownStatusCode() throws InterruptedException {
+    void testResponseExceptionUnknownStatusCode() throws InterruptedException {
         final String errBody = "Test internal server error";
         final Map<String, List<String>> errResponseHeaders = new HashMap<>();
         errResponseHeaders.put("test-err-header", Collections.singletonList("test-err-header-value"));
@@ -246,7 +241,7 @@ public abstract class BaseMicroserviceRestClientTest {
     }
 
     @Test
-    public void testOverloads() throws InterruptedException, IOException {
+    void testOverloads() throws InterruptedException, IOException {
         final String respBody = TEST_RESPONSE_BODY;
         final Map<String, List<String>> responseHeaders = new HashMap<>();
         responseHeaders.put("test-header", Collections.singletonList("test-header-value"));
