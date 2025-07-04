@@ -36,7 +36,7 @@ class ContextPropagatingFilterTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         nettyNio.dispose();
         ContextManager.clearAll();
     }

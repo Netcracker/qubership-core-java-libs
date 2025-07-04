@@ -30,7 +30,7 @@ class RequestIdCtxLeakTest {
     }
 
     @AfterEach
-    public void stop() {
+    void stop() {
         executorService.shutdownNow();
     }
 

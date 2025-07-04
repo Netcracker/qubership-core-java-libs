@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 public class AbstractThreadTest {
     final ExecutorService simpleExecutor = new ContextAwareExecutorService(Executors.newFixedThreadPool(2));
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         ContextManager.clearAll();
     }
 }
