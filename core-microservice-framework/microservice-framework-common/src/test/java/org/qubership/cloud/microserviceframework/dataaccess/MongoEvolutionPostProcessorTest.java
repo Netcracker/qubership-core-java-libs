@@ -1,11 +1,11 @@
 package org.qubership.cloud.microserviceframework.dataaccess;
 
 import com.mongodb.MongoCredential;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.qubership.cloud.dbaas.client.entity.connection.MongoDBConnection;
 import org.qubership.cloud.dbaas.client.entity.database.MongoDatabase;
 import org.qubership.cloud.microserviceframework.config.MongoPackagesConfigHolder;
@@ -17,12 +17,12 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class MongoEvolutionPostProcessorTest {
+@ExtendWith(MockitoExtension.class)
+class MongoEvolutionPostProcessorTest {
 
     private MongoEvolutionPostProcessor processor;
 
@@ -38,20 +38,20 @@ public class MongoEvolutionPostProcessorTest {
     @Mock
     private MongoDBConnection mongoDBConnection;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         processor = new MongoEvolutionPostProcessor(environment);
         ReflectionTestUtils.setField(processor, "configHolderMongo", configHolder);
         ReflectionTestUtils.setField(processor, "authEnabled", true);
     }
 
     @Test
-    public void testGetSupportedDatabaseType() {
+    void testGetSupportedDatabaseType() {
         assertEquals(MongoDatabase.class, processor.getSupportedDatabaseType());
     }
 
     @Test
-    public void testGetMongoCredential() throws Exception {
+    void testGetMongoCredential() throws Exception {
         // Given
         when(mongoDBConnection.getUsername()).thenReturn("testUser");
         when(mongoDBConnection.getAuthDbName()).thenReturn("testAuthDb");
@@ -69,7 +69,7 @@ public class MongoEvolutionPostProcessorTest {
     }
 
     @Test
-    public void testInitWithCustomPackages() throws Exception {
+    void testInitWithCustomPackages() throws Exception {
         // Given
         setupCustomPackagesConfig();
 
@@ -83,7 +83,7 @@ public class MongoEvolutionPostProcessorTest {
     }
 
     @Test
-    public void testInitWithDefaultPackages() throws Exception {
+    void testInitWithDefaultPackages() throws Exception {
         // Given
         setupDefaultPackagesConfig();
 
@@ -97,7 +97,7 @@ public class MongoEvolutionPostProcessorTest {
     }
 
     @Test
-    public void testProcessWithEmptyPackages() {
+    void testProcessWithEmptyPackages() {
         // Given
         setupEmptyPackagesConfig();
 
@@ -109,7 +109,7 @@ public class MongoEvolutionPostProcessorTest {
     }
 
     @Test
-    public void testProcessWithValidPackages() {
+    void testProcessWithValidPackages() {
         // Given
         setupValidPackagesConfig();
 
@@ -121,7 +121,7 @@ public class MongoEvolutionPostProcessorTest {
     }
 
     @Test
-    public void testProcessWithNullTenantId() {
+    void testProcessWithNullTenantId() {
         // Given
         setupNullTenantIdConfig();
 
@@ -133,7 +133,7 @@ public class MongoEvolutionPostProcessorTest {
     }
 
     @Test
-    public void testProcessWithNullDbClassifier() {
+    void testProcessWithNullDbClassifier() {
         // Given
         setupNullDbClassifierConfig();
 

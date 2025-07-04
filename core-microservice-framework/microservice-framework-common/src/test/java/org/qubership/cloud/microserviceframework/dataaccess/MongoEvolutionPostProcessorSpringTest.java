@@ -1,31 +1,25 @@
 package org.qubership.cloud.microserviceframework.dataaccess;
 
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.dbaas.client.entity.database.MongoDatabase;
 import org.qubership.cloud.microserviceframework.config.MongoPackagesConfigHolder;
-import org.qubership.cloud.microserviceframework.testconfig.MongoTestConfiguration;
 import org.qubership.cloud.microserviceframework.testconfig.MongoPackagesConfigHolderTestConfiguration;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.qubership.cloud.microserviceframework.testconfig.MongoTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {
-        MongoPackagesConfigHolderTestConfiguration.class,
-        MongoTestConfiguration.class
-})
+@SpringBootTest(classes = { MongoTestConfiguration.class, MongoPackagesConfigHolderTestConfiguration.class})
 @TestPropertySource(properties = "mongo-evolution.auth.enabled=false")
-public class MongoEvolutionPostProcessorSpringTest {
+class MongoEvolutionPostProcessorSpringTest {
 
     @Autowired
     private MongoEvolutionPostProcessor mongoEvolutionPostProcessor;
@@ -38,17 +32,17 @@ public class MongoEvolutionPostProcessorSpringTest {
     private MongoDatabase mongoDatabase;
 
     @Test
-    public void mongoEvolutionPostProcessorTestWithoutEmptyPackages() {
+    void mongoEvolutionPostProcessorTestWithoutEmptyPackages() {
         assertDoesNotThrow(() -> mongoEvolutionPostProcessor.process(mongoDatabase));
     }
 
     @Test
-    public void getSupportedDatabaseTypeTest() {
+    void getSupportedDatabaseTypeTest() {
         assertEquals(mongoDatabase.getClass(), mongoEvolutionPostProcessor.getSupportedDatabaseType());
     }
 
     @Test
-    public void mongoEvolutionPostProcessorTestWithEmptyPackages() throws NoSuchFieldException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    void mongoEvolutionPostProcessorTestWithEmptyPackages() throws NoSuchFieldException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         changeBean();
         reInit();
         assertDoesNotThrow(() -> mongoEvolutionPostProcessor.process(mongoDatabase));

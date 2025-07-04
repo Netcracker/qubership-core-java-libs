@@ -1,13 +1,13 @@
 package org.qubership.cloud.microserviceframework.application;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
 import org.qubership.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
 import org.qubership.cloud.microserviceframework.TestApplication;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
@@ -17,23 +17,23 @@ import java.util.stream.Collectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 
-public class MicroserviceApplicationContextTest {
+class MicroserviceApplicationContextTest {
 
     private static final String SPRINGFRAMEWORK_PACKAGE = "org.springframework";
     private MicroserviceApplicationContext context;
 
-    @BeforeClass
-    public static void init() {
+    @BeforeAll
+    static void init() {
         System.setProperty("spring.cloud.config.enabled", String.valueOf(false));
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         context.close();
     }
 
     @Test
-    public void testMandatoryTrackingFilterIsPresentByDefault() {
+    void testMandatoryTrackingFilterIsPresentByDefault() {
         context = new MicroserviceApplicationBuilder()
                 .withApplicationClass(TestApplication.class)
                 .build();
@@ -48,7 +48,7 @@ public class MicroserviceApplicationContextTest {
     }
 
     @Test
-    public void testExcludeSpringPackage() {
+    void testExcludeSpringPackage() {
         context = new MicroserviceApplicationBuilder()
                 .withApplicationClass(TestApplication.class)
                 .withFilterPackagesToExclude(SPRINGFRAMEWORK_PACKAGE)
@@ -61,7 +61,7 @@ public class MicroserviceApplicationContextTest {
     }
 
     @Test
-    public void testAnonymousAuthenticationFilterIsPresentEventSpringPackageExcluded() {
+    void testAnonymousAuthenticationFilterIsPresentEventSpringPackageExcluded() {
         context = new MicroserviceApplicationBuilder()
                 .withApplicationClass(TestApplication.class)
                 .withFilterPackagesToExclude(SPRINGFRAMEWORK_PACKAGE)

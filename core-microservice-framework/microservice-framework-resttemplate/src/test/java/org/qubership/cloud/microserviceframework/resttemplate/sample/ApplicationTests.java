@@ -25,7 +25,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(classes = {TestApplication.class, RouteConfig.class},
         properties = {"cloud.microservice.name=test-service"},
         webEnvironment = RANDOM_PORT)
-public class ApplicationTests {
+class ApplicationTests {
 
     @Autowired
     ControlPlaneClient controlPlaneClient;
@@ -34,14 +34,14 @@ public class ApplicationTests {
     private int port;
 
     @Test
-    public void configServerTest() {
+    void configServerTest() {
         String res = new TestRestTemplate().getForObject(
                 "http://localhost:" + this.port + "/test", String.class);
         Assertions.assertEquals("test_value", res);
     }
 
     @Test
-    public void controlPlaneTest() {
+    void controlPlaneTest() {
         log.info("controlPlaneTest started");
         await()
                 .atMost(5, TimeUnit.SECONDS)
