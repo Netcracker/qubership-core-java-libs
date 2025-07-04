@@ -58,25 +58,13 @@ class RequestIdCtxLeakTest {
             Assertions.assertEquals(mdcInScope, ctxInScope, "MDC and Context values differ"); // passes
         }
 
-
-/*        String outOfScopeCtxValue = ContextManager.<XRequestIdContextObject>getSafe(XRequestIdContextProvider.X_REQUEST_ID_CONTEXT_NAME)
-                .map(XRequestIdContextObject::getRequestId)
-                .orElse(null);*/
         String outOfScopeMdc = getFromMdc();
         String ctxV = getFromContext();
 
-        Assertions.assertEquals(outOfScopeMdc,ctxV,"RequestId should be the same");
-        assertNotEquals(mdcInScope,outOfScopeMdc,"Leak Detected");
-/*
-        if (Objects.equals(outOfScopeMdc, outOfScopeCtxValue) && outOfScopeMdc != null) {
-            log.warn("MDC and context are the same and are not null, this is not newly generated value: " + outOfScopeMdc);
-        }
-*/
+        Assertions.assertEquals(outOfScopeMdc, ctxV, "RequestId should be the same");
+        assertNotEquals(mdcInScope, outOfScopeMdc, "Leak Detected");
 
-        Assertions.assertAll(
-                () -> Assertions.assertNull(outOfScopeMdc, "MDC value leaked") //<- fails
-//                ,() -> Assertions.assertNull(outOfScopeCtxValue, "Ctx value leaked") //<- fails
-        );
+        Assertions.assertNull(outOfScopeMdc, "MDC value leaked");
     }
 
     private String getFromMdc() {
