@@ -1,13 +1,13 @@
 package org.qubership.cloud.contexts.xversion;
 
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
 import org.qubership.cloud.contexts.IncomingContextDataFactory;
 import org.qubership.cloud.framework.contexts.xversion.XVersionContextObject;
 import org.qubership.cloud.framework.contexts.xversion.XVersionProvider;
-import org.junit.Assert;
-import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class XVersionProviderApiTest {
 
@@ -20,7 +20,7 @@ public class XVersionProviderApiTest {
     @Test
     public void xVersionProviderMustHaveDefaultConstructor() {
         XVersionProvider xVersionProvider = new XVersionProvider();
-        Assert.assertNotNull(xVersionProvider);
+        assertNotNull(xVersionProvider);
     }
 
     @Test

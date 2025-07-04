@@ -13,10 +13,9 @@ import org.slf4j.MDC;
 
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.qubership.cloud.framework.contexts.originatingbiid.OriginatingBiIdContextObject.ORIGINATING_BI_ID_SERIALIZATION_NAME;
-import static org.junit.Assert.*;
 
 class OriginatingBiIdContextObjectTest extends AbstractContextTestWithProperties {
 
@@ -30,7 +29,7 @@ class OriginatingBiIdContextObjectTest extends AbstractContextTestWithProperties
         originatingBiIdContextObject.serialize(outgoingContextData);
         Object o = outgoingContextData.getResponseHeaders().get(ORIGINATING_BI_ID_SERIALIZATION_NAME);
         assertNotNull(o);
-        assertTrue(o instanceof String);
+        assertInstanceOf(String.class, o);
         assertEquals(testUUID, o);
     }
 
@@ -53,7 +52,7 @@ class OriginatingBiIdContextObjectTest extends AbstractContextTestWithProperties
         ContextDataResponse outgoingContextData = new ContextDataResponse();
         originatingBiIdContextObject.serialize(outgoingContextData);
         Object o = outgoingContextData.getResponseHeaders().get(ORIGINATING_BI_ID_SERIALIZATION_NAME);
-        assertEquals(o, "");
+        assertEquals("", o);
     }
 
     @Test
@@ -70,7 +69,7 @@ class OriginatingBiIdContextObjectTest extends AbstractContextTestWithProperties
         RequestContextPropagation.initRequestContext(
                 new ContextDataRequest(ORIGINATING_BI_ID_SERIALIZATION_NAME, uuid)
         );
-        Assertions.assertNotNull(ContextManager.get(OriginatingBiIdProvider.CONTEXT_NAME));
+        assertNotNull(ContextManager.get(OriginatingBiIdProvider.CONTEXT_NAME));
         String actualOriginatingBiId = OriginatingBiIdContext.get();
         assertNotNull(actualOriginatingBiId);
         assertEquals(uuid, actualOriginatingBiId);
@@ -111,7 +110,7 @@ class OriginatingBiIdContextObjectTest extends AbstractContextTestWithProperties
         );
         assertNotNull(ContextManager.get(OriginatingBiIdProvider.CONTEXT_NAME));
         String actualOriginatingBiId = OriginatingBiIdContext.get();
-        assertEquals(actualOriginatingBiId, "");
+        assertEquals("", actualOriginatingBiId);
         String testUUID = UUID.randomUUID().toString();
         OriginatingBiIdContext.set(testUUID);
         ContextDataResponse responseContextData = new ContextDataResponse();
@@ -169,7 +168,7 @@ class OriginatingBiIdContextObjectTest extends AbstractContextTestWithProperties
         );
         assertNotNull(ContextManager.get(OriginatingBiIdProvider.CONTEXT_NAME));
         String actualOriginatingBiId = OriginatingBiIdContext.get();
-        assertEquals(actualOriginatingBiId, "");
+        assertEquals("", actualOriginatingBiId);
         String testUUID = UUID.randomUUID().toString();
         OriginatingBiIdContext.set(testUUID);
         ContextDataResponse responseContextData = new ContextDataResponse();
@@ -198,7 +197,7 @@ class OriginatingBiIdContextObjectTest extends AbstractContextTestWithProperties
 
         Map<String, Map<String, Object>> serializableContextData = ContextManager.getSerializableContextData();
 
-        Assertions.assertTrue(serializableContextData.containsKey(OriginatingBiIdProvider.CONTEXT_NAME));
+        assertTrue(serializableContextData.containsKey(OriginatingBiIdProvider.CONTEXT_NAME));
     }
 
     @Test
@@ -208,27 +207,27 @@ class OriginatingBiIdContextObjectTest extends AbstractContextTestWithProperties
 
         Map<String, Object> serializableContextData = originatingBiIdContextObject.getSerializableContextData();
 
-        Assertions.assertEquals(1, serializableContextData.size());
-        Assertions.assertEquals("12345", serializableContextData.get(ORIGINATING_BI_ID_SERIALIZATION_NAME));
+        assertEquals(1, serializableContextData.size());
+        assertEquals("12345", serializableContextData.get(ORIGINATING_BI_ID_SERIALIZATION_NAME));
 
         OriginatingBiIdContextObject originatingBiIdContextObject1 = new OriginatingBiIdContextObject(new SimpleIncomingContextData());
-        Assertions.assertEquals(0, originatingBiIdContextObject1.getSerializableContextData().size());
+        assertEquals(0, originatingBiIdContextObject1.getSerializableContextData().size());
     }
 
     @Test
-    void originatingBiIdContextShouldFillMdc() throws ExecutionException, InterruptedException {
+    void originatingBiIdContextShouldFillMdc() {
         String expectedId = UUID.randomUUID().toString();
         OriginatingBiIdContextObject originatingBiIdContextObject = new OriginatingBiIdContextObject(expectedId);
 
         ContextManager.set(OriginatingBiIdProvider.CONTEXT_NAME, originatingBiIdContextObject);
         OriginatingBiIdContextObject actualObject = ContextManager.get(OriginatingBiIdProvider.CONTEXT_NAME);
-        Assertions.assertNotNull(actualObject);
-        Assertions.assertEquals(expectedId, actualObject.getOriginatingBiId());
-        Assertions.assertEquals(expectedId, MDC.get("originating_bi_id"));
+        assertNotNull(actualObject);
+        assertEquals(expectedId, actualObject.getOriginatingBiId());
+        assertEquals(expectedId, MDC.get("originating_bi_id"));
 
         ContextManager.clear(OriginatingBiIdProvider.CONTEXT_NAME);
         actualObject = ContextManager.get(OriginatingBiIdProvider.CONTEXT_NAME);
-        Assertions.assertNotNull(actualObject);
+        assertNotNull(actualObject);
         Assertions.assertNull(actualObject.getOriginatingBiId());
         Assertions.assertNull(MDC.get("originating_bi_id"));
     }

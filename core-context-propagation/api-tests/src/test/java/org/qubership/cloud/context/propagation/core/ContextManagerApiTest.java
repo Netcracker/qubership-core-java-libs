@@ -1,20 +1,18 @@
 package org.qubership.cloud.context.propagation.core;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.ContextPropagationHelperTest;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.qubership.cloud.context.propagation.core.ContextManager.CORE_CONTEXTPROPAGATION_PROVIDERS_LOOKUP;
 import static org.qubership.cloud.context.propagation.core.ContextManager.LOOKUP_CONTEXT_PROVIDERS_PATH;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -22,25 +20,25 @@ public class ContextManagerApiTest {
 
     private final String CONTEXT_NAME = "context-name";
 
-    @Before
+    @BeforeEach
     public void start() throws Exception {
         ContextPropagationHelperTest.clearRegistry();
     }
 
     @Test
     public void checkCoreContextpropagationProvidersLookupProperty() {
-        assertEquals("Value of CORE_CONTEXTPROPAGATION_PROVIDERS_LOOKUP must be core.contextpropagation.providers.lookup otherwise it breaks backward compatibility!",
+        assertEquals("core.contextpropagation.providers.lookup",
                 CORE_CONTEXTPROPAGATION_PROVIDERS_LOOKUP,
-                "core.contextpropagation.providers.lookup"
+                "Value of CORE_CONTEXTPROPAGATION_PROVIDERS_LOOKUP must be core.contextpropagation.providers.lookup otherwise it breaks backward compatibility!"
         );
     }
 
     @Test
     public void checkLookupContextProvidersPath() {
         assertEquals(
-                "Value of LOOKUP_CONTEXT_PROVIDERS_PATH must be context_propagation.context_providers.path otherwise it breaks backward compatibility!",
+                "context_propagation.context_providers.path",
                 LOOKUP_CONTEXT_PROVIDERS_PATH,
-                "context_propagation.context_providers.path"
+                "Value of LOOKUP_CONTEXT_PROVIDERS_PATH must be context_propagation.context_providers.path otherwise it breaks backward compatibility!"
         );
     }
 
@@ -50,9 +48,9 @@ public class ContextManagerApiTest {
         try {
             getContextProvidersMethod = contextManagerClass.getMethod(methodName, parameterTypes);
         } catch (NoSuchMethodException e) {
-            Assert.fail(String.format("method with name '%s' does not exist in ContextManager class", methodName));
+            fail(String.format("method with name '%s' does not exist in ContextManager class", methodName));
         }
-        Assert.assertNotNull(getContextProvidersMethod);
+        assertNotNull(getContextProvidersMethod);
         return getContextProvidersMethod;
     }
 

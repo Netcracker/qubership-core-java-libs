@@ -1,11 +1,11 @@
 package org.qubership.cloud.context.propagation.spring.common.filter;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
 import org.qubership.cloud.headerstracking.filters.context.RequestIdContext;
 import jakarta.servlet.Servlet;
-import org.junit.Before;
-import org.junit.Test;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,15 +15,15 @@ import org.springframework.mock.web.MockFilterChain;
 import java.io.IOException;
 import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.qubership.cloud.context.propagation.core.ContextManager.getSafe;
 import static jakarta.ws.rs.core.HttpHeaders.ACCEPT_LANGUAGE;
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class SpringContextProviderFilterTest {
     public static final String X_REQUEST_ID_CONTEXT_NAME = "X-Request-Id";
 
-    @Before
+    @BeforeEach
     public void init() {
         ContextManager.clearAll();
     }
@@ -60,7 +60,7 @@ public class SpringContextProviderFilterTest {
             assertEquals("Context with name " + RequestIdContext.get() + " is not registered and context provider can not be found", e.getMessage());
         }
         assertNotEquals(xRequestIdValue, RequestIdContext.get());
-        assertNull(acceptLanguageValue, AcceptLanguageContext.get());
+        assertNull(AcceptLanguageContext.get());
     }
 
     public static class EnumerationImpl<T> implements Enumeration<T> {

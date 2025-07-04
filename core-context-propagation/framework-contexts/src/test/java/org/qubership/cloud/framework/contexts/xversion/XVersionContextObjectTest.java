@@ -1,19 +1,19 @@
 package org.qubership.cloud.framework.contexts.xversion;
 
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
 import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
 import org.qubership.cloud.framework.contexts.data.SimpleIncomingContextData;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.qubership.cloud.framework.contexts.xversion.XVersionContextObject.X_VERSION_SERIALIZATION_NAME;
-import static org.junit.Assert.*;
 
 public class XVersionContextObjectTest {
     @Test
@@ -45,7 +45,7 @@ public class XVersionContextObjectTest {
         xVersionContextObject.serialize(outgoingContextData);
         Object o = outgoingContextData.getResponseHeaders().get(X_VERSION_SERIALIZATION_NAME);
         assertNotNull(o);
-        assertTrue(o instanceof String);
+        assertInstanceOf(String.class, o);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class XVersionContextObjectTest {
 
         Map<String, Map<String, Object>> serializableContextData = ContextManager.getSerializableContextData();
 
-        Assertions.assertTrue(serializableContextData.containsKey(XVersionProvider.CONTEXT_NAME));
+        assertTrue(serializableContextData.containsKey(XVersionProvider.CONTEXT_NAME));
     }
 
     @Test
@@ -64,11 +64,11 @@ public class XVersionContextObjectTest {
 
         Map<String, Object> serializableContextData = xVersionContextObject.getSerializableContextData();
 
-        Assertions.assertEquals(1, serializableContextData.size());
-        Assertions.assertEquals("1", serializableContextData.get(X_VERSION_SERIALIZATION_NAME));
+        assertEquals(1, serializableContextData.size());
+        assertEquals("1", serializableContextData.get(X_VERSION_SERIALIZATION_NAME));
 
         XVersionContextObject xVersionContextObject1 = new XVersionContextObject(new SimpleIncomingContextData());
-        Assertions.assertEquals(0, xVersionContextObject1.getSerializableContextData().size());
+        assertEquals(0, xVersionContextObject1.getSerializableContextData().size());
     }
 
     public static class IncomingContextDataImpl implements IncomingContextData {
@@ -93,7 +93,7 @@ public class XVersionContextObjectTest {
 
     public static class OutgoingContextDataImpl implements OutgoingContextData {
 
-        private Map<String, Object> responseHeaders = new HashMap<>();
+        private final Map<String, Object> responseHeaders = new HashMap<>();
 
         @Override
         public void set(String name, Object values) {

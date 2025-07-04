@@ -1,14 +1,13 @@
 package org.qubership.cloud.headerstracking.filters.context;
 
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.contexts.common.RequestContextObject;
 import jakarta.ws.rs.core.HttpHeaders;
-import org.junit.Test;
-import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
 
 import java.util.HashMap;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AcceptLanguageContextTest extends AbstractContextTest {
 

@@ -1,18 +1,17 @@
 package org.qubership.cloud.framework.contexts.clientip;
 
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
 import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
-import org.qubership.cloud.framework.contexts.clientip.ClientIPContextObject;
 import org.qubership.cloud.headerstracking.filters.context.ClientIPContext;
-import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.qubership.cloud.framework.contexts.clientip.ClientIPContextObject.X_FORWARDED_FOR;
 import static org.qubership.cloud.framework.contexts.clientip.ClientIPContextObject.X_NC_CLIENT_IP;
-import static org.junit.Assert.*;
 
 public class ClientIPContextObjectTest {
 
@@ -40,7 +39,7 @@ public class ClientIPContextObjectTest {
         assertNull(outgoingContextData.getResponseHeaders().get(X_FORWARDED_FOR));
         Object o = outgoingContextData.getResponseHeaders().get(X_NC_CLIENT_IP);
         assertNotNull(o);
-        assertTrue(o instanceof String);
+        assertInstanceOf(String.class, o);
         assertEquals(CLIENT_IP, o);
     }
 
@@ -54,7 +53,7 @@ public class ClientIPContextObjectTest {
         assertNull(outgoingContextData.getResponseHeaders().get(X_FORWARDED_FOR));
         Object o = outgoingContextData.getResponseHeaders().get(X_NC_CLIENT_IP);
         assertNotNull(o);
-        assertTrue(o instanceof String);
+        assertInstanceOf(String.class, o);
         assertEquals(FIRST_OF_MULTIPLE_IPS, o);
     }
 
@@ -68,7 +67,7 @@ public class ClientIPContextObjectTest {
         assertNull(outgoingContextData.getResponseHeaders().get(X_FORWARDED_FOR));
         Object o = outgoingContextData.getResponseHeaders().get(X_NC_CLIENT_IP);
         assertNotNull(o);
-        assertTrue(o instanceof String);
+        assertInstanceOf(String.class, o);
         assertEquals(CLIENT_IP, o);
     }
 
@@ -91,7 +90,7 @@ public class ClientIPContextObjectTest {
     }
 
     public static class OutgoingContextDataImpl implements OutgoingContextData {
-        private Map<String, Object> responseHeaders = new HashMap<>();
+        private final Map<String, Object> responseHeaders = new HashMap<>();
 
         @Override
         public void set(String name, Object values) {

@@ -1,8 +1,8 @@
 package org.qubership.cloud.context.propagation.spring.webclient.interceptor;
 
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
-import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

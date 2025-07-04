@@ -1,15 +1,15 @@
 package org.qubership.cloud.context.propagation.sample.threads;
 
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContextObject;
 import org.qubership.cloud.headerstracking.filters.context.RequestIdContext;
-import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContextObject.X_REQUEST_ID;
-import static org.junit.Assert.*;
 
 public class RequestIdThreadsPropagationTest extends AbstractThreadTest {
     private static final String REQUEST_ID = "some-id";
@@ -35,9 +35,7 @@ public class RequestIdThreadsPropagationTest extends AbstractThreadTest {
         ContextManager.set(X_REQUEST_ID, new XRequestIdContextObject(REQUEST_ID));
 
         final ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            ContextManager.set(X_REQUEST_ID, new XRequestIdContextObject("new-id"));
-        });
+        executor.execute(() -> ContextManager.set(X_REQUEST_ID, new XRequestIdContextObject("new-id")));
         executor.shutdown();
         assertEquals(REQUEST_ID, ((XRequestIdContextObject) ContextManager.get(X_REQUEST_ID)).getRequestId());
     }

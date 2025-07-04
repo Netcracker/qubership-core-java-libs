@@ -1,12 +1,9 @@
 package org.qubership.cloud.framework.contexts.xrequestid;
 
+import org.junit.jupiter.api.*;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.Scope;
 import org.qubership.cloud.framework.contexts.strategies.AbstractXRequestIdStrategy;
-import org.junit.*;
-import org.junit.jupiter.api.Assertions;
-import org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContextObject;
-import org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContextProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -17,7 +14,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-@Ignore
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+@Disabled
 public class RequestIdCtxLeakTest {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -25,18 +24,18 @@ public class RequestIdCtxLeakTest {
     private final String expectInScope = "test";
     private ExecutorService executorService;
 
-    @Before
+    @BeforeEach
     public void init() {
         executorService = Executors.newFixedThreadPool(1);
     }
 
-    @After
+    @AfterEach
     public void stop() {
         executorService.shutdownNow();
     }
 
-    @After
-    @Before
+    @AfterEach
+    @BeforeEach
     public void cleanUp() {
         ContextManager.clearAll();
         newValue = new XRequestIdContextObject(expectInScope);
@@ -67,7 +66,7 @@ public class RequestIdCtxLeakTest {
         String ctxV = getFromContext();
 
         Assertions.assertEquals(outOfScopeMdc,ctxV,"RequestId should be the same");
-        Assertions.assertNotEquals(mdcInScope,outOfScopeMdc,"Leak Detected");
+        assertNotEquals(mdcInScope,outOfScopeMdc,"Leak Detected");
 /*
         if (Objects.equals(outOfScopeMdc, outOfScopeCtxValue) && outOfScopeMdc != null) {
             log.warn("MDC and context are the same and are not null, this is not newly generated value: " + outOfScopeMdc);
@@ -92,7 +91,7 @@ public class RequestIdCtxLeakTest {
 
     @Test
     public void contextShouldNotLeakOutsideOfExecuteWithContext() throws ExecutionException, InterruptedException {
-        String beforeInExecutor = executorService.submit(() -> getFromMdc()).get();
+        String beforeInExecutor = executorService.submit(this::getFromMdc).get();
         Assertions.assertNull(beforeInExecutor, "context was not cleaned up");
 
         String beforeFromMdc = getFromMdc();
@@ -123,7 +122,7 @@ public class RequestIdCtxLeakTest {
             };
         }).get();
 
-        Assert.assertNotEquals(submit.get(), nonScopedSubmit[1], "Leak detected value from context and outside are the same"); ///LEAK
+        assertNotEquals(submit.get(), nonScopedSubmit[1], "Leak detected value from context and outside are the same"); ///LEAK
 
         String nonScopedMdc = nonScopedSubmit[0];
         String nonScopedCtxValue = nonScopedSubmit[1];

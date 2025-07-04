@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.qubership.cloud.framework.contexts.businessprocess.BusinessProcessContextObject.BUSINESS_PROCESS_ID_SERIALIZATION_NAME;
-import static org.junit.Assert.*;
 
 public class BusinessProcessContextObjectTest extends AbstractContextTestWithProperties {
 
@@ -28,7 +28,7 @@ public class BusinessProcessContextObjectTest extends AbstractContextTestWithPro
         businessProcessContextObject.serialize(outgoingContextData);
         Object o = outgoingContextData.getResponseHeaders().get(BUSINESS_PROCESS_ID_SERIALIZATION_NAME);
         assertNotNull(o);
-        assertTrue(o instanceof String);
+        assertInstanceOf(String.class, o);
         assertEquals(testUUID, o);
     }
 
@@ -196,7 +196,7 @@ public class BusinessProcessContextObjectTest extends AbstractContextTestWithPro
 
         Map<String, Map<String, Object>> serializableContextData = ContextManager.getSerializableContextData();
 
-        Assertions.assertTrue(serializableContextData.containsKey(BusinessProcessProvider.CONTEXT_NAME));
+        assertTrue(serializableContextData.containsKey(BusinessProcessProvider.CONTEXT_NAME));
     }
 
     @Test
@@ -206,10 +206,10 @@ public class BusinessProcessContextObjectTest extends AbstractContextTestWithPro
 
         Map<String, Object> serializableContextData = businessProcessContextObject.getSerializableContextData();
 
-        Assertions.assertEquals(1, serializableContextData.size());
-        Assertions.assertEquals("12345", serializableContextData.get(BUSINESS_PROCESS_ID_SERIALIZATION_NAME));
+        assertEquals(1, serializableContextData.size());
+        assertEquals("12345", serializableContextData.get(BUSINESS_PROCESS_ID_SERIALIZATION_NAME));
 
         BusinessProcessContextObject businessProcessContextObject1 = new BusinessProcessContextObject(new SimpleIncomingContextData());
-        Assertions.assertEquals(0, businessProcessContextObject1.getSerializableContextData().size());
+        assertEquals(0, businessProcessContextObject1.getSerializableContextData().size());
     }
 }

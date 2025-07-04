@@ -1,18 +1,18 @@
 package org.qubership.cloud.context.propagation.core.contexts.common;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.contexts.IncomingContextDataFactory;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.qubership.cloud.context.propagation.core.contexts.common.RequestProvider.REQUEST_CONTEXT_NAME;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class RequestProviderApiTest {
-    @Before
+    @BeforeEach
     public void setup() {
         ContextManager.register(Collections.singletonList(new RequestProvider()));
     }

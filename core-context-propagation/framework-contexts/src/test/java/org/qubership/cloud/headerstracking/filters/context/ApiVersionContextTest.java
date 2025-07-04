@@ -1,9 +1,9 @@
 package org.qubership.cloud.headerstracking.filters.context;
 
-import org.junit.Test;
-import org.qubership.cloud.headerstracking.filters.context.ApiVersionContext;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ApiVersionContextTest {
 

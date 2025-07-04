@@ -1,5 +1,7 @@
 package org.qubership.cloud.contexts.allowedheaders;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.ContextPropagationHelperTest;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
@@ -7,18 +9,16 @@ import org.qubership.cloud.context.propagation.core.contexts.common.RequestProvi
 import org.qubership.cloud.contexts.IncomingContextDataFactory;
 import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersContextObject;
 import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider.HEADERS_PROPERTY;
-import static org.junit.Assert.assertEquals;
 
 public class AllowedHeadersContextObjectApiTest {
 
-    @Before
+    @BeforeEach
     public void setup(){
         ContextManager.register(Collections.singletonList(new RequestProvider()));
     }

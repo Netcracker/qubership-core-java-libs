@@ -1,10 +1,10 @@
 package org.qubership.cloud.context.propagation.sample.threads;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersContextObject;
 import org.qubership.cloud.headerstracking.filters.context.AllowedHeadersContext;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,16 +12,16 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class AllowedHeadersThreadsPropagationTest extends AbstractThreadTest {
-    private Map<String, String> HEADERS = new HashMap<>();
+    private final Map<String, String> HEADERS = new HashMap<>();
     public static final String ALLOWED_HEADER = "allowed_header";
     final Runnable runnableWithAllowedHeaders = () -> assertEquals(HEADERS, AllowedHeadersContext.getHeaders());
     final Runnable runnableWithoutAllowedHeaders = () -> assertEquals(Collections.emptyMap(), AllowedHeadersContext.getHeaders());
 
-    @Before
+    @BeforeEach
     public void setUp() {
         HEADERS.put("header", "value");
     }

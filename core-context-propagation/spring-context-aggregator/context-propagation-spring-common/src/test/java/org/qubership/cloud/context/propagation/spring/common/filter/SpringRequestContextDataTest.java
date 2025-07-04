@@ -1,11 +1,12 @@
 package org.qubership.cloud.context.propagation.spring.common.filter;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SpringRequestContextDataTest {
 
@@ -15,7 +16,7 @@ public class SpringRequestContextDataTest {
         String acceptLanguage = "Accept-Language";
         String xVersion = "X-Version";
         Mockito.when(httpServletRequest.getHeaderNames())
-                .thenReturn(new EnumerationImpl<String>(Arrays.asList(acceptLanguage, xVersion).iterator()));
+                .thenReturn(new EnumerationImpl<>(Arrays.asList(acceptLanguage, xVersion).iterator()));
         String acceptLanguageValue = "ru;en";
 
         Mockito.when(httpServletRequest.getHeaders(acceptLanguage))
@@ -27,9 +28,9 @@ public class SpringRequestContextDataTest {
 
         SpringRequestContextData springRequestContextData = new SpringRequestContextData(httpServletRequest);
         Map<String, List<?>> headers = springRequestContextData.getAll();
-        Assert.assertEquals(2, headers.size());
-        Assert.assertEquals(acceptLanguageValue, headers.get(acceptLanguage).get(0));
-        Assert.assertEquals(xVersionValue, headers.get(xVersion).get(0));
+        assertEquals(2, headers.size());
+        assertEquals(acceptLanguageValue, headers.get(acceptLanguage).get(0));
+        assertEquals(xVersionValue, headers.get(xVersion).get(0));
 
     }
 

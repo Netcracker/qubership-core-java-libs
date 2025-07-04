@@ -1,17 +1,17 @@
 package org.qubership.cloud.context.propagation.core.contexts.common;
 
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.contexts.IncomingContextDataFactory;
-import org.junit.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.qubership.cloud.context.propagation.core.contexts.common.RequestProvider.REQUEST_CONTEXT_NAME;
-import static org.junit.Assert.assertEquals;
 
 public class RequestContextObjectApiTest {
     @Test

@@ -1,21 +1,21 @@
 package org.qubership.cloud.headerstracking.filters.context;
 
-import org.junit.Test;
-import org.qubership.cloud.headerstracking.filters.context.RequestIdContext;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RequestIdContextTest extends AbstractContextTest {
 
     @Test
-    public void testRequestWithoutHeader() throws Exception {
+    public void testRequestWithoutHeader() {
         assertNotNull(RequestIdContext.get());
         RequestIdContext.set("new_request_id");
         assertEquals("new_request_id", RequestIdContext.get());
     }
 
     @Test
-    public void testClearContext() throws Exception {
+    public void testClearContext() {
         RequestIdContext.set("new_request_id");
         assertEquals("new_request_id", RequestIdContext.get());
         RequestIdContext.clear();

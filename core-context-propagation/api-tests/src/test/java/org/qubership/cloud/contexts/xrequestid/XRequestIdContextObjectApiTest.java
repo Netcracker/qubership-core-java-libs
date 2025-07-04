@@ -1,5 +1,7 @@
 package org.qubership.cloud.contexts.xrequestid;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
@@ -7,17 +9,16 @@ import org.qubership.cloud.context.propagation.core.contexts.common.RequestProvi
 import org.qubership.cloud.contexts.IncomingContextDataFactory;
 import org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContextObject;
 import org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContextProvider;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.util.Collections;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class XRequestIdContextObjectApiTest {
 
-    @Before
+    @BeforeEach
     public void setup() {
         ContextManager.register(Collections.singletonList(new RequestProvider()));
     }

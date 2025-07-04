@@ -1,20 +1,16 @@
 package org.qubership.cloud.framework.contexts.tenant;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
 import org.slf4j.MDC;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.qubership.cloud.framework.contexts.tenant.DefaultTenantProvider.TENANT_CONTEXT_NAME;
@@ -24,7 +20,7 @@ import static org.qubership.cloud.framework.contexts.tenant.TenantContextObject.
 public class TenantContextTest {
     private static final String TENANT = "123456";
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ContextManager.clearAll();
         MDC.clear();
@@ -53,7 +49,7 @@ public class TenantContextTest {
         assertEquals(TENANT, tenantId);
         ContextManager.clear(TENANT_CONTEXT_NAME);
         tenantId = MDC.get("tenantId");
-        Assert.assertNull("Tenant id must be null", tenantId);
+        assertNull(tenantId, "Tenant id must be null");
     }
 
     @Test
@@ -63,13 +59,13 @@ public class TenantContextTest {
         assertEquals(TENANT, tenantId);
         ContextManager.set(TENANT_CONTEXT_NAME, new TenantContextObject((String)null));
         tenantId = MDC.get("tenantId");
-        Assert.assertNull("Tenant id must be null", tenantId);
+        assertNull(tenantId, "Tenant id must be null");
     }
 
     @Test
     public void testCreateContextSnapshotIfContextIsEmpty() {
         ContextManager.clearAll();
-        Assert.assertNotNull(ContextManager.createContextSnapshot());
+        assertNotNull(ContextManager.createContextSnapshot());
     }
 
     @Test
@@ -90,7 +86,7 @@ public class TenantContextTest {
 
     public static class ContextDataResponse implements OutgoingContextData {
 
-        private Map<String, Object> responseHeaders = new HashMap<>();
+        private final Map<String, Object> responseHeaders = new HashMap<>();
 
 
         @Override

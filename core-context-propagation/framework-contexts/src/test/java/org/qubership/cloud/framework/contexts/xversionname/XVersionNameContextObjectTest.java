@@ -1,19 +1,19 @@
 package org.qubership.cloud.framework.contexts.xversionname;
 
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
 import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
 import org.qubership.cloud.framework.contexts.data.SimpleIncomingContextData;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.qubership.cloud.framework.contexts.xversionname.XVersionNameContextObject.X_VERSION_NAME_SERIALIZATION_NAME;
-import static org.junit.Assert.*;
 
 public class XVersionNameContextObjectTest {
     private final static String CANDIDATE = "candidate";
@@ -34,7 +34,7 @@ public class XVersionNameContextObjectTest {
         xVersionContextObject.serialize(outgoingContextData);
         Object o = outgoingContextData.getResponseHeaders().get(X_VERSION_NAME_SERIALIZATION_NAME);
         assertNotNull(o);
-        assertTrue(o instanceof String);
+        assertInstanceOf(String.class, o);
         assertEquals(CANDIDATE, o);
     }
 
@@ -44,7 +44,7 @@ public class XVersionNameContextObjectTest {
 
         Map<String, Map<String, Object>> serializableContextData = ContextManager.getSerializableContextData();
 
-        Assertions.assertTrue(serializableContextData.containsKey(XVersionNameProvider.CONTEXT_NAME));
+        assertTrue(serializableContextData.containsKey(XVersionNameProvider.CONTEXT_NAME));
     }
 
     @Test
@@ -83,7 +83,7 @@ public class XVersionNameContextObjectTest {
 
     public static class OutgoingContextDataImpl implements OutgoingContextData {
 
-        private Map<String, Object> responseHeaders = new HashMap<>();
+        private final Map<String, Object> responseHeaders = new HashMap<>();
 
         @Override
         public void set(String name, Object values) {

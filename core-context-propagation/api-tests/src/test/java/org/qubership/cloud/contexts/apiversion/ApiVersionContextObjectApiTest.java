@@ -1,5 +1,7 @@
 package org.qubership.cloud.contexts.apiversion;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
@@ -7,16 +9,15 @@ import org.qubership.cloud.context.propagation.core.contexts.common.RequestProvi
 import org.qubership.cloud.contexts.IncomingContextDataFactory;
 import org.qubership.cloud.framework.contexts.apiversion.ApiVersionContextObject;
 import org.qubership.cloud.framework.contexts.apiversion.ApiVersionProvider;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class ApiVersionContextObjectApiTest {
 
-    @Before
+    @BeforeEach
     public void setup() {
         ContextManager.register(Collections.singletonList(new RequestProvider()));
     }

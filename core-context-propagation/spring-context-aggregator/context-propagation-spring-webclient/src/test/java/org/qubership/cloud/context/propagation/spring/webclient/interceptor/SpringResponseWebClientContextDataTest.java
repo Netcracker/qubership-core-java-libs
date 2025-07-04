@@ -1,15 +1,16 @@
 package org.qubership.cloud.context.propagation.spring.webclient.interceptor;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.reactive.function.client.ClientRequest;
 
 import java.net.URI;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 public class SpringResponseWebClientContextDataTest {
     SpringResponseWebClientContextData webClientContextData;
@@ -18,7 +19,7 @@ public class SpringResponseWebClientContextDataTest {
     private static final String PASCAL_CASE_HEADER_KEY = "PascalCaseHeaderKey";
     private static final String PASCAL_CASE_HEADER_VALUE = "pascalCaseHeaderValue";
 
-    @Before
+    @BeforeEach
     public void init() {
         webClientContextData = new SpringResponseWebClientContextData();
         webClientContextData.set("header", "value");

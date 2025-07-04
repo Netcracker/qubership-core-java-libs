@@ -1,16 +1,16 @@
 package org.qubership.cloud.context.propagation.spring.resttemplate.interceptor;
 
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 public class SpringResponseRestTemplateContextDataTest {
@@ -19,7 +19,7 @@ public class SpringResponseRestTemplateContextDataTest {
     private static final String PASCAL_CASE_HEADER_KEY = "PascalCaseHeaderKey";
     private static final String PASCAL_CASE_HEADER_VALUE = "pascalCaseHeaderValue";
 
-    @Before
+    @BeforeEach
     public void init() {
         restTemplateContextData = new SpringResponseRestTemplateContextData();
         restTemplateContextData.set("header", "value");

@@ -1,15 +1,15 @@
 package org.qubership.cloud.contexts.allowedheaders;
 
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.contexts.IncomingContextDataFactory;
 import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersContextObject;
 import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider;
-import org.junit.Assert;
-import org.junit.Test;
 
 import java.util.HashMap;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider.HEADERS_PROPERTY;
-import static org.junit.Assert.assertEquals;
 
 public class AllowedHeadersProviderApiTest {
 
@@ -22,7 +22,7 @@ public class AllowedHeadersProviderApiTest {
     @Test
     public void testAllowedHeadersDefaultConstructor() {
         AllowedHeadersProvider allowedHeadersProvider = new AllowedHeadersProvider();
-        Assert.assertNotNull(allowedHeadersProvider);
+        assertNotNull(allowedHeadersProvider);
     }
 
     @Test
