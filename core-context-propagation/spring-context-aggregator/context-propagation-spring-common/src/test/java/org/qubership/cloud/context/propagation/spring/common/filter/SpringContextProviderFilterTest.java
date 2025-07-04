@@ -20,16 +20,16 @@ import static org.qubership.cloud.context.propagation.core.ContextManager.getSaf
 import static jakarta.ws.rs.core.HttpHeaders.ACCEPT_LANGUAGE;
 import static org.mockito.Mockito.*;
 
-public class SpringContextProviderFilterTest {
+class SpringContextProviderFilterTest {
     public static final String X_REQUEST_ID_CONTEXT_NAME = "X-Request-Id";
 
     @BeforeEach
-    public void init() {
+    void init() {
         ContextManager.clearAll();
     }
 
     @Test
-    public void testDoFilterInternal() throws ServletException, IOException {
+    void testDoFilterInternal() throws ServletException, IOException {
         HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
         when(httpServletRequest.getHeaderNames())
                 .thenReturn(new EnumerationImpl<>(Arrays.asList(ACCEPT_LANGUAGE, X_REQUEST_ID_CONTEXT_NAME).iterator()));

@@ -15,30 +15,30 @@ import java.util.concurrent.Executors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class AllowedHeadersThreadsPropagationTest extends AbstractThreadTest {
+class AllowedHeadersThreadsPropagationTest extends AbstractThreadTest {
     private final Map<String, String> HEADERS = new HashMap<>();
     public static final String ALLOWED_HEADER = "allowed_header";
     final Runnable runnableWithAllowedHeaders = () -> assertEquals(HEADERS, AllowedHeadersContext.getHeaders());
     final Runnable runnableWithoutAllowedHeaders = () -> assertEquals(Collections.emptyMap(), AllowedHeadersContext.getHeaders());
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         HEADERS.put("header", "value");
     }
 
     @Test
-    public void testPropagationForAllowedHeaders() throws Exception {
+    void testPropagationForAllowedHeaders() throws Exception {
         AllowedHeadersContext.set(HEADERS);
         simpleExecutor.submit(runnableWithAllowedHeaders).get();
     }
 
     @Test
-    public void testNoPropagationForAllowedHeaders() throws Exception {
+    void testNoPropagationForAllowedHeaders() throws Exception {
         simpleExecutor.submit(runnableWithoutAllowedHeaders).get();
     }
 
     @Test
-    public void childThreadDoesntAffectParentOne() {
+    void childThreadDoesntAffectParentOne() {
         ContextManager.set(ALLOWED_HEADER, new AllowedHeadersContextObject(HEADERS));
 
         final ExecutorService executor = Executors.newSingleThreadExecutor();

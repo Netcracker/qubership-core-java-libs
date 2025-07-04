@@ -17,17 +17,17 @@ import static org.qubership.cloud.framework.contexts.tenant.DefaultTenantProvide
 import static org.qubership.cloud.framework.contexts.tenant.TenantContextObject.TENANT_HEADER;
 
 
-public class TenantContextTest {
+class TenantContextTest {
     private static final String TENANT = "123456";
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ContextManager.clearAll();
         MDC.clear();
     }
 
     @Test
-    public void populateResponse() {
+    void populateResponse() {
         TenantContextObject tenantContextObject = new TenantContextObject(TENANT);
         ContextManager.set(TENANT_CONTEXT_NAME, tenantContextObject);
         ContextDataResponse contextDataResponse = new ContextDataResponse();
@@ -36,14 +36,14 @@ public class TenantContextTest {
     }
 
     @Test
-    public void testSetTenantIdInMDC() {
+    void testSetTenantIdInMDC() {
         ContextManager.set(TENANT_CONTEXT_NAME, new TenantContextObject(TENANT));
         String tenantId = MDC.get("tenantId");
         assertEquals(TENANT, tenantId);
     }
 
     @Test
-    public void testClearTenantIdInMDC() {
+    void testClearTenantIdInMDC() {
         ContextManager.set(TENANT_CONTEXT_NAME, new TenantContextObject(TENANT));
         String tenantId = MDC.get("tenantId");
         assertEquals(TENANT, tenantId);
@@ -53,7 +53,7 @@ public class TenantContextTest {
     }
 
     @Test
-    public void testSetEmptyTenantIdInMDC() {
+    void testSetEmptyTenantIdInMDC() {
         ContextManager.set(TENANT_CONTEXT_NAME, new TenantContextObject(TENANT));
         String tenantId = MDC.get("tenantId");
         assertEquals(TENANT, tenantId);
@@ -63,13 +63,13 @@ public class TenantContextTest {
     }
 
     @Test
-    public void testCreateContextSnapshotIfContextIsEmpty() {
+    void testCreateContextSnapshotIfContextIsEmpty() {
         ContextManager.clearAll();
         assertNotNull(ContextManager.createContextSnapshot());
     }
 
     @Test
-    public void testPropagateWithNonEmptyTenant() {
+    void testPropagateWithNonEmptyTenant() {
         OutgoingContextData mockOutgoingContextData = mock(OutgoingContextData.class);
         TenantContextObject contextObject = new TenantContextObject(TENANT);
         contextObject.propagate(mockOutgoingContextData);
@@ -77,7 +77,7 @@ public class TenantContextTest {
     }
 
     @Test
-    public void testPropagateWithEmptyTenant() {
+    void testPropagateWithEmptyTenant() {
         OutgoingContextData mockOutgoingContextData = mock(OutgoingContextData.class);
         TenantContextObject contextObject = new TenantContextObject("");
         contextObject.propagate(mockOutgoingContextData);

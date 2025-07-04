@@ -8,7 +8,7 @@ public abstract class AbstractContextTest {
     public static final String CUSTOM_HEADER = "Custom-header-1";
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         System.setProperty("headers.allowed", CUSTOM_HEADER);
         RequestContextPropagation.initRequestContext(new ContextDataRequest());
     }

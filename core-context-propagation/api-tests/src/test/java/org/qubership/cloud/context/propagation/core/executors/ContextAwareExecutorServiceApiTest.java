@@ -10,17 +10,17 @@ import java.util.concurrent.ExecutorService;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class ContextAwareExecutorServiceApiTest {
+class ContextAwareExecutorServiceApiTest {
 
     @Test
-    public void constructorWithExecutorServiceOnly() throws NoSuchMethodException {
+    void constructorWithExecutorServiceOnly() throws NoSuchMethodException {
         Class<ContextAwareExecutorService> contextAwareExecutorServiceClass = ContextAwareExecutorService.class;
         Constructor<ContextAwareExecutorService> constructor = contextAwareExecutorServiceClass.getConstructor(ExecutorService.class);
         assertNotNull(constructor);
     }
 
     @Test
-    public void constructorWithExecutorServiceAndMap() throws NoSuchMethodException {
+    void constructorWithExecutorServiceAndMap() throws NoSuchMethodException {
         Class<ContextAwareExecutorService> contextAwareExecutorServiceClass = ContextAwareExecutorService.class;
         Constructor<ContextAwareExecutorService> constructorWithExecutorService = contextAwareExecutorServiceClass.getConstructor(ExecutorService.class, Map.class);
         assertNotNull(constructorWithExecutorService);

@@ -13,7 +13,7 @@ import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 @ExtendWith(SystemStubsExtension.class)
-public class AllowedHeadersPropertyTest extends AbstractContextTestWithProperties {
+class AllowedHeadersPropertyTest extends AbstractContextTestWithProperties {
     public static final String HEADERS_ENV = "headers_allowed";
     private static final String CUSTOM_HEADER = "Custom-header-1";
     public static final String ALLOWED_HEADER = "allowed_header";
@@ -22,7 +22,7 @@ public class AllowedHeadersPropertyTest extends AbstractContextTestWithPropertie
     private EnvironmentVariables environmentVariables = new EnvironmentVariables(HEADERS_ENV, CUSTOM_HEADER);
 
     @Test
-    public void initAllowedHeadersContext() {
+    void initAllowedHeadersContext() {
         RequestContextPropagation.initRequestContext(new ContextDataRequest());
         Assertions.assertNotNull(ContextManager.get(ALLOWED_HEADER));
         AllowedHeadersContextObject allowedHeadersContextObject = ContextManager.get(ALLOWED_HEADER);

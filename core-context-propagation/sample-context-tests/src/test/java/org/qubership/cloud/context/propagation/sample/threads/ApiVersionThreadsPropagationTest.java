@@ -11,25 +11,25 @@ import java.util.concurrent.Executors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.qubership.cloud.framework.contexts.apiversion.ApiVersionProvider.API_VERSION_CONTEXT_NAME;
 
-public class ApiVersionThreadsPropagationTest extends AbstractThreadTest {
+class ApiVersionThreadsPropagationTest extends AbstractThreadTest {
     private static final String API_VERSION_VALUE = "v0";
     private static final String DEFAULT_VALUE = "v1";
     final Runnable runnableWithVersion = () -> assertEquals(API_VERSION_VALUE, ApiVersionContext.get());
     final Runnable runnableWithDefaultVersion = () -> assertEquals(DEFAULT_VALUE, ApiVersionContext.get());
 
     @Test
-    public void testPropagationForApiVersion() throws Exception {
+    void testPropagationForApiVersion() throws Exception {
         ApiVersionContext.set(API_VERSION_VALUE);
         simpleExecutor.submit(runnableWithVersion).get();
     }
 
     @Test
-    public void testDefaultPropagationForApiVersion() throws Exception {
+    void testDefaultPropagationForApiVersion() throws Exception {
         simpleExecutor.submit(runnableWithDefaultVersion).get();
     }
 
     @Test
-    public void childThreadDoesntAffectParentOne() {
+    void childThreadDoesntAffectParentOne() {
         ContextManager.set(API_VERSION_CONTEXT_NAME, new ApiVersionContextObject(API_VERSION_VALUE));
 
         final ExecutorService executor = Executors.newSingleThreadExecutor();

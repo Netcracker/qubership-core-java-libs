@@ -18,12 +18,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class SpringWebClientInterceptorTest {
+class SpringWebClientInterceptorTest {
     private final URI DEFAULT_URL = URI.create("http://example.com");
 
-
     @Test
-    public void testDoFilterWithAcceptLanguage() {
+    void testDoFilterWithAcceptLanguage() {
         AcceptLanguageContext.set("ru");
         ClientRequest request = ClientRequest.create(HttpMethod.GET, DEFAULT_URL).build();
         ClientResponse response = mock(ClientResponse.class);
@@ -40,7 +39,7 @@ public class SpringWebClientInterceptorTest {
     }
 
     @Test
-    public void testFilterWithoutAcceptLanguage() {
+    void testFilterWithoutAcceptLanguage() {
         ContextManager.clearAll();
         ClientRequest request = ClientRequest.create(HttpMethod.GET, DEFAULT_URL).build();
         ClientResponse response = mock(ClientResponse.class);

@@ -15,34 +15,34 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class XVersionContextObjectApiTest {
+class XVersionContextObjectApiTest {
 
     private final static String XVERSION_DEFAULT_VALUE = "";
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         ContextManager.register(Collections.singletonList(new RequestProvider()));
     }
 
     @Test
-    public void testDefaultXVersionValue() {
+    void testDefaultXVersionValue() {
         XVersionContextObject xVersionContextObject = new XVersionContextObject(null);
         assertEquals(XVERSION_DEFAULT_VALUE, xVersionContextObject.getXVersion());
     }
 
     @Test
-    public void testXVersionSerializationName() {
+    void testXVersionSerializationName() {
         assertEquals("X-Version", XVersionContextObject.X_VERSION_SERIALIZATION_NAME);
     }
 
     @Test
-    public void testXVersionFromIncomingContextData() {
+    void testXVersionFromIncomingContextData() {
         XVersionContextObject xVersionContextObject = new XVersionContextObject(IncomingContextDataFactory.getXVersionIncomingContextData());
         assertEquals("2", xVersionContextObject.getXVersion());
     }
 
     @Test
-    public void testGetXVesrionFromContextManager() {
+    void testGetXVesrionFromContextManager() {
         ContextManager.register(Collections.singletonList(new XVersionProvider()));
         IncomingContextData xVersionIncomingContextData = IncomingContextDataFactory.getXVersionIncomingContextData();
         RequestContextPropagation.initRequestContext(xVersionIncomingContextData);

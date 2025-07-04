@@ -9,22 +9,22 @@ import org.qubership.cloud.framework.contexts.xversion.XVersionProvider;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class XVersionProviderApiTest {
+class XVersionProviderApiTest {
 
     @Test
-    public void checkXVersionContextName() {
+    void checkXVersionContextName() {
         assertEquals("x-version", XVersionProvider.CONTEXT_NAME);
         assertEquals("x-version", new XVersionProvider().contextName());
     }
 
     @Test
-    public void xVersionProviderMustHaveDefaultConstructor() {
+    void xVersionProviderMustHaveDefaultConstructor() {
         XVersionProvider xVersionProvider = new XVersionProvider();
         assertNotNull(xVersionProvider);
     }
 
     @Test
-    public void xVersionProvideMethodWithIncomingContextData() {
+    void xVersionProvideMethodWithIncomingContextData() {
         XVersionProvider xVersionProvider = new XVersionProvider();
         IncomingContextData xVersionIncomingContextData = IncomingContextDataFactory.getXVersionIncomingContextData();
         XVersionContextObject xVersionContextObject = xVersionProvider.provide(xVersionIncomingContextData);
@@ -33,7 +33,7 @@ public class XVersionProviderApiTest {
     }
 
     @Test
-    public void xVersionProvideMethodWithNullableParameter() {
+    void xVersionProvideMethodWithNullableParameter() {
         XVersionProvider xVersionProvider = new XVersionProvider();
         XVersionContextObject xVersionContextObject = xVersionProvider.provide(null);
 

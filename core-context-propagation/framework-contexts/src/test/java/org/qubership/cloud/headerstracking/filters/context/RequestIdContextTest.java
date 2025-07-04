@@ -5,17 +5,17 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RequestIdContextTest extends AbstractContextTest {
+class RequestIdContextTest extends AbstractContextTest {
 
     @Test
-    public void testRequestWithoutHeader() {
+    void testRequestWithoutHeader() {
         assertNotNull(RequestIdContext.get());
         RequestIdContext.set("new_request_id");
         assertEquals("new_request_id", RequestIdContext.get());
     }
 
     @Test
-    public void testClearContext() {
+    void testClearContext() {
         RequestIdContext.set("new_request_id");
         assertEquals("new_request_id", RequestIdContext.get());
         RequestIdContext.clear();

@@ -13,30 +13,30 @@ import org.slf4j.MDC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class MdcClientIPContextTest {
+class MdcClientIPContextTest {
     private static final String CLIENT_IP_VALUE = "127.0.0.1";
     private final AbstractClientIPStrategy strategy = new ClientIPStrategy(() -> provide(null));
 
     @AfterEach
     @BeforeEach
-    public void cleanUp() {
+    void cleanUp() {
         ContextManager.clearAll();
         MDC.remove(AbstractClientIPStrategy.MDC_CLIENT_IP_KEY);
     }
 
     @Test
-    public void mdcShouldPutClientIPFromStrategy() {
+    void mdcShouldPutClientIPFromStrategy() {
         assertEquals(strategy.get().getClientIp(), getFromMdc());
     }
 
     @Test
-    public void mdcShouldPutCustomClientIP() {
+    void mdcShouldPutCustomClientIP() {
         strategy.set(new ClientIPContextObject(CLIENT_IP_VALUE));
         assertEquals(CLIENT_IP_VALUE, getFromMdc());
     }
 
     @Test
-    public void mdcShouldRemoveClientIP() {
+    void mdcShouldRemoveClientIP() {
         assertEquals(strategy.get().getClientIp(), getFromMdc());
         strategy.clear();
         assertNull(getFromMdc());

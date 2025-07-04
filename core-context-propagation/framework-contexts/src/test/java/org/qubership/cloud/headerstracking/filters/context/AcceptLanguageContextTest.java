@@ -9,17 +9,17 @@ import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AcceptLanguageContextTest extends AbstractContextTest {
+class AcceptLanguageContextTest extends AbstractContextTest {
 
     @Test
-    public void testRequestWithHeader() {
+    void testRequestWithHeader() {
         assertEquals("en; ru;", AcceptLanguageContext.get());
         AcceptLanguageContext.set("new_lang");
         assertEquals("new_lang", AcceptLanguageContext.get());
     }
 
     @Test
-    public void testClearContext() {
+    void testClearContext() {
         ContextManager.set("request", new RequestContextObject(new HashMap<String, String>() {{
             put(HttpHeaders.ACCEPT_LANGUAGE, "RU");
         }}));
@@ -29,7 +29,7 @@ public class AcceptLanguageContextTest extends AbstractContextTest {
     }
 
     @Test
-    public void testClearContextWithRequest() {
+    void testClearContextWithRequest() {
         ContextManager.set("request", new RequestContextObject(new HashMap<String, String>() {{
             put(HttpHeaders.ACCEPT_LANGUAGE, "RU");
         }}));

@@ -15,11 +15,11 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.qubership.cloud.framework.contexts.xversionname.XVersionNameContextObject.X_VERSION_NAME_SERIALIZATION_NAME;
 
-public class XVersionNameContextObjectTest {
+class XVersionNameContextObjectTest {
     private final static String CANDIDATE = "candidate";
 
     @Test
-    public void testDefault() {
+    void testDefault() {
         XVersionNameContextObject xVersionContextObject = new XVersionNameContextObject(new IncomingContextDataImpl(X_VERSION_NAME_SERIALIZATION_NAME, ""));
         OutgoingContextDataImpl outgoingContextData = new OutgoingContextDataImpl();
         xVersionContextObject.serialize(outgoingContextData);
@@ -28,7 +28,7 @@ public class XVersionNameContextObjectTest {
     }
 
     @Test
-    public void testSerializeToString() {
+    void testSerializeToString() {
         XVersionNameContextObject xVersionContextObject = new XVersionNameContextObject(new IncomingContextDataImpl(X_VERSION_NAME_SERIALIZATION_NAME, CANDIDATE));
         OutgoingContextDataImpl outgoingContextData = new OutgoingContextDataImpl();
         xVersionContextObject.serialize(outgoingContextData);
@@ -39,7 +39,7 @@ public class XVersionNameContextObjectTest {
     }
 
     @Test
-    public void testXVersionSerializableDataFromCxtManager() {
+    void testXVersionSerializableDataFromCxtManager() {
         RequestContextPropagation.initRequestContext(new SimpleIncomingContextData(Map.of(X_VERSION_NAME_SERIALIZATION_NAME, CANDIDATE)));
 
         Map<String, Map<String, Object>> serializableContextData = ContextManager.getSerializableContextData();
@@ -48,7 +48,7 @@ public class XVersionNameContextObjectTest {
     }
 
     @Test
-    public void testXVersionSerializableData() {
+    void testXVersionSerializableData() {
         SimpleIncomingContextData contextData = new SimpleIncomingContextData(Map.of(X_VERSION_NAME_SERIALIZATION_NAME, CANDIDATE));
         XVersionNameContextObject xVersionContextObject = new XVersionNameContextObject(contextData);
 

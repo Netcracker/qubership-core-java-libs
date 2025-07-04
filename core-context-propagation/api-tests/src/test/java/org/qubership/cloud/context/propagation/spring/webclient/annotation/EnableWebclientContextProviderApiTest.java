@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class EnableWebclientContextProviderApiTest {
+class EnableWebclientContextProviderApiTest {
 
     @Test
-    public void checkEnableWebclientContextProvider() {
+    void checkEnableWebclientContextProvider() {
         assertEquals("org.qubership.cloud.context.propagation.spring.webclient.annotation.EnableWebclientContextProvider", EnableWebclientContextProvider.class.getName());
     }
 }

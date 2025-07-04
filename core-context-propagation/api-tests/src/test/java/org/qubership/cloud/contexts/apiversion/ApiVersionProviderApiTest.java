@@ -9,22 +9,22 @@ import org.qubership.cloud.framework.contexts.apiversion.ApiVersionProvider;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class ApiVersionProviderApiTest {
+class ApiVersionProviderApiTest {
 
     @Test
-    public void checkApiVersionContextName() {
+    void checkApiVersionContextName() {
         assertEquals("Api-Version-Context", ApiVersionProvider.API_VERSION_CONTEXT_NAME);
         assertEquals("Api-Version-Context", new ApiVersionProvider().contextName());
     }
 
     @Test
-    public void apiVersionProviderMustHaveDefaultConstructor() {
+    void apiVersionProviderMustHaveDefaultConstructor() {
         AllowedHeadersProvider allowedHeadersProvider = new AllowedHeadersProvider();
         assertNotNull(allowedHeadersProvider);
     }
 
     @Test
-    public void apiVersionProvideMethodWithIncomingContextData() {
+    void apiVersionProvideMethodWithIncomingContextData() {
         ApiVersionProvider apiVersionProvider = new ApiVersionProvider();
         ApiVersionContextObject apiVersionContextObject = apiVersionProvider.provide(IncomingContextDataFactory.getApiVersionIncomingContextData());
 
@@ -32,7 +32,7 @@ public class ApiVersionProviderApiTest {
     }
 
     @Test
-    public void apiVersionProvideMethodWithNullableParameter() {
+    void apiVersionProvideMethodWithNullableParameter() {
         ApiVersionProvider apiVersionProvider = new ApiVersionProvider();
         ApiVersionContextObject apiVersionContextObject = apiVersionProvider.provide(null);
 

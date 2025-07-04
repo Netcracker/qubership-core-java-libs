@@ -6,7 +6,6 @@ import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
 import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
 import org.qubership.cloud.framework.contexts.data.SimpleIncomingContextData;
-import org.junit.jupiter.api.Assertions;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +16,7 @@ import static org.qubership.cloud.framework.contexts.xversion.XVersionContextObj
 
 public class XVersionContextObjectTest {
     @Test
-    public void testBackwardComp() {
+    void testBackwardComp() {
         XVersionContextObject contextObject = new XVersionContextObject(new IncomingContextData() {
             @Override
             public Object get(String name) {
@@ -39,7 +38,7 @@ public class XVersionContextObjectTest {
     }
 
     @Test
-    public void testSerializeToString() {
+    void testSerializeToString() {
         XVersionContextObject xVersionContextObject = new XVersionContextObject(new IncomingContextDataImpl(X_VERSION_SERIALIZATION_NAME, "V1"));
         OutgoingContextDataImpl outgoingContextData = new OutgoingContextDataImpl();
         xVersionContextObject.serialize(outgoingContextData);
@@ -49,7 +48,7 @@ public class XVersionContextObjectTest {
     }
 
     @Test
-    public void testXVersionSerializableDataFromCxtManager() {
+    void testXVersionSerializableDataFromCxtManager() {
         RequestContextPropagation.initRequestContext(new SimpleIncomingContextData(Map.of(X_VERSION_SERIALIZATION_NAME, "1")));
 
         Map<String, Map<String, Object>> serializableContextData = ContextManager.getSerializableContextData();
@@ -58,7 +57,7 @@ public class XVersionContextObjectTest {
     }
 
     @Test
-    public void testXVersionSerializableData() {
+    void testXVersionSerializableData() {
         SimpleIncomingContextData contextData = new SimpleIncomingContextData(Map.of(X_VERSION_SERIALIZATION_NAME, "1"));
         XVersionContextObject xVersionContextObject = new XVersionContextObject(contextData);
 

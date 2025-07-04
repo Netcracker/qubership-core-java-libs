@@ -13,14 +13,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.qubership.cloud.framework.contexts.clientip.ClientIPContextObject.X_FORWARDED_FOR;
 import static org.qubership.cloud.framework.contexts.clientip.ClientIPContextObject.X_NC_CLIENT_IP;
 
-public class ClientIPContextObjectTest {
+class ClientIPContextObjectTest {
 
     private static final String CLIENT_IP = "127.0.0.1";
     private static final String MULTIPLE_IPS = "127.0.0.2,127.0.0.3";
     private static final String FIRST_OF_MULTIPLE_IPS = "127.0.0.2";
 
     @Test
-    public void testDefault() {
+    void testDefault() {
         ClientIPContextObject clientIPContextObject = new ClientIPContextObject(new IncomingContextDataImpl(Map.of()));
         OutgoingContextDataImpl outgoingContextData = new OutgoingContextDataImpl();
         clientIPContextObject.serialize(outgoingContextData);
@@ -30,7 +30,7 @@ public class ClientIPContextObjectTest {
     }
 
     @Test
-    public void testSerializeToString_XForwardedFor() {
+    void testSerializeToString_XForwardedFor() {
         ClientIPContextObject clientIPContextObject = new ClientIPContextObject(new IncomingContextDataImpl(Map.of(
                 X_FORWARDED_FOR, CLIENT_IP
         )));
@@ -44,7 +44,7 @@ public class ClientIPContextObjectTest {
     }
 
     @Test
-    public void testSerializeToString_XForwardedFor_Multiple() {
+    void testSerializeToString_XForwardedFor_Multiple() {
         ClientIPContextObject clientIPContextObject = new ClientIPContextObject(new IncomingContextDataImpl(Map.of(
                 X_FORWARDED_FOR, MULTIPLE_IPS
         )));
@@ -58,7 +58,7 @@ public class ClientIPContextObjectTest {
     }
 
     @Test
-    public void testSerializeToString_X_NC_Client_IP() {
+    void testSerializeToString_X_NC_Client_IP() {
         ClientIPContextObject clientIPContextObject = new ClientIPContextObject(new IncomingContextDataImpl(Map.of(
                 X_NC_CLIENT_IP, CLIENT_IP
         )));

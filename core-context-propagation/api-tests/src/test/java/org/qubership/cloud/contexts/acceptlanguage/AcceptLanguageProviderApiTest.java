@@ -13,34 +13,34 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class AcceptLanguageProviderApiTest {
+class AcceptLanguageProviderApiTest {
 
     @BeforeEach
-    public void setup(){
+    void setup(){
         ContextManager.register(Collections.singletonList(new RequestProvider()));
     }
 
     @Test
-    public void testDefaultConstructor() {
+    void testDefaultConstructor() {
         final AcceptLanguageProvider languageProvider = new AcceptLanguageProvider();
         assertNotNull(languageProvider);
     }
 
     @Test
-    public void testAcceptLanguageContextName() {
+    void testAcceptLanguageContextName() {
         assertEquals("Accept-Language", AcceptLanguageProvider.ACCEPT_LANGUAGE);
         assertEquals("Accept-Language", new AcceptLanguageProvider().contextName());
     }
 
     @Test
-    public void testProvideDefaultAcceptLanguage() {
+    void testProvideDefaultAcceptLanguage() {
         AcceptLanguageProvider acceptLanguageProvider = new AcceptLanguageProvider();
         AcceptLanguageContextObject acceptLanguageContextObject = acceptLanguageProvider.provide(null);
         assertNull(acceptLanguageContextObject.getAcceptedLanguages());
     }
 
     @Test
-    public void testProvideCustomAcceptLanguage() {
+    void testProvideCustomAcceptLanguage() {
         AcceptLanguageProvider acceptLanguageProvider = new AcceptLanguageProvider();
         AcceptLanguageContextObject acceptLanguageContextObject = acceptLanguageProvider.provide(IncomingContextDataFactory.getAcceptLanguageIncomingContextData());
         assertEquals("ru; en", acceptLanguageContextObject.getAcceptedLanguages());

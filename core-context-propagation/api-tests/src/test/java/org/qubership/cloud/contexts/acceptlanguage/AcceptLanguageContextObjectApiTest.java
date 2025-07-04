@@ -13,22 +13,22 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AcceptLanguageContextObjectApiTest {
+class AcceptLanguageContextObjectApiTest {
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         ContextManager.register(Collections.singletonList(new RequestProvider()));
     }
 
     @Test
-    public void testGetAcceptedApi() {
+    void testGetAcceptedApi() {
         AcceptLanguageContextObject acceptLanguageContextObject = new AcceptLanguageContextObject("ru");
         String acceptLanguage = acceptLanguageContextObject.getAcceptedLanguages(); // API
         assertEquals("ru", acceptLanguage);
     }
 
     @Test
-    public void testGetAcceptLanguageFromContextManager() {
+    void testGetAcceptLanguageFromContextManager() {
         ContextManager.register(Collections.singletonList(new AcceptLanguageProvider()));
         RequestContextPropagation.initRequestContext(IncomingContextDataFactory.getAcceptLanguageIncomingContextData());
         AcceptLanguageContextObject acceptLanguageContextObject = ContextManager.get(AcceptLanguageProvider.ACCEPT_LANGUAGE); // API

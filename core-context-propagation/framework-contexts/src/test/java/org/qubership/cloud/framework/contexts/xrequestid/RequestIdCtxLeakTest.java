@@ -17,7 +17,7 @@ import java.util.concurrent.Future;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @Disabled
-public class RequestIdCtxLeakTest {
+class RequestIdCtxLeakTest {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private XRequestIdContextObject newValue;
@@ -25,7 +25,7 @@ public class RequestIdCtxLeakTest {
     private ExecutorService executorService;
 
     @BeforeEach
-    public void init() {
+    void init() {
         executorService = Executors.newFixedThreadPool(1);
     }
 
@@ -36,7 +36,7 @@ public class RequestIdCtxLeakTest {
 
     @AfterEach
     @BeforeEach
-    public void cleanUp() {
+    void cleanUp() {
         ContextManager.clearAll();
         newValue = new XRequestIdContextObject(expectInScope);
         MDC.remove(XRequestIdContextObject.X_REQUEST_ID);
@@ -44,7 +44,7 @@ public class RequestIdCtxLeakTest {
     }
 
     @Test
-    public void scopeShouldNotGenerateValuesOutsideOfTheScope() {
+    void scopeShouldNotGenerateValuesOutsideOfTheScope() {
         String mdcInScope;
         try (Scope scope =
                      ContextManager.newScope(
@@ -90,7 +90,7 @@ public class RequestIdCtxLeakTest {
     }
 
     @Test
-    public void contextShouldNotLeakOutsideOfExecuteWithContext() throws ExecutionException, InterruptedException {
+    void contextShouldNotLeakOutsideOfExecuteWithContext() throws ExecutionException, InterruptedException {
         String beforeInExecutor = executorService.submit(this::getFromMdc).get();
         Assertions.assertNull(beforeInExecutor, "context was not cleaned up");
 

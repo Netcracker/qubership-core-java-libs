@@ -192,7 +192,7 @@ class OriginatingBiIdContextObjectTest extends AbstractContextTestWithProperties
     }
 
     @Test
-    public void testOriginatingBiSerializableDataFromCxtManager() {
+    void testOriginatingBiSerializableDataFromCxtManager() {
         RequestContextPropagation.initRequestContext(new SimpleIncomingContextData(Map.of(ORIGINATING_BI_ID_SERIALIZATION_NAME, "12345")));
 
         Map<String, Map<String, Object>> serializableContextData = ContextManager.getSerializableContextData();
@@ -201,7 +201,7 @@ class OriginatingBiIdContextObjectTest extends AbstractContextTestWithProperties
     }
 
     @Test
-    public void testOriginatingBiSerializableData() {
+    void testOriginatingBiSerializableData() {
         SimpleIncomingContextData contextData = new SimpleIncomingContextData(Map.of(ORIGINATING_BI_ID_SERIALIZATION_NAME, "12345"));
         OriginatingBiIdContextObject originatingBiIdContextObject = new OriginatingBiIdContextObject(contextData);
 

@@ -13,7 +13,7 @@ import org.slf4j.MDC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class MdcXRequestIdContextTest {
+class MdcXRequestIdContextTest {
 
     public static String X_REQUEST_ID_VALUE = "changedId123";
 
@@ -21,24 +21,24 @@ public class MdcXRequestIdContextTest {
 
     @AfterEach
     @BeforeEach
-    public void cleanUp() {
+    void cleanUp() {
         ContextManager.clearAll();
         MDC.remove(XRequestIdContextObject.X_REQUEST_ID);
     }
 
     @Test
-    public void mdcShouldPutXRequestIdFromStrategy() {
+    void mdcShouldPutXRequestIdFromStrategy() {
         assertEquals(strategy.get().getRequestId(),getFromMdc());
     }
 
     @Test
-    public void mdcShouldPutCustomXRequestId() {
+    void mdcShouldPutCustomXRequestId() {
         strategy.set(new XRequestIdContextObject(X_REQUEST_ID_VALUE));
         assertEquals(X_REQUEST_ID_VALUE, getFromMdc());
     }
 
     @Test
-    public void mdcShouldRemoveXRequestId() {
+    void mdcShouldRemoveXRequestId() {
         assertEquals(strategy.get().getRequestId(), getFromMdc());
         strategy.clear();
         assertNull(getFromMdc());

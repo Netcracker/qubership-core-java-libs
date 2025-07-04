@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.qubership.cloud.framework.contexts.acceptlanguage.AcceptLanguageProvider.ACCEPT_LANGUAGE;
 
-public class AcceptLanguageThreadsPropagationTest extends AbstractThreadTest {
+class AcceptLanguageThreadsPropagationTest extends AbstractThreadTest {
 
     private static final String ACCEPT_LANG_VALUE = "en-US;";
 
@@ -21,18 +21,18 @@ public class AcceptLanguageThreadsPropagationTest extends AbstractThreadTest {
 
 
     @Test
-    public void testPropagationForAcceptLang() throws Exception {
+    void testPropagationForAcceptLang() throws Exception {
         AcceptLanguageContext.set(ACCEPT_LANG_VALUE);
         simpleExecutor.submit(runnableWithAcceptLang).get();
     }
 
     @Test
-    public void testNoPropagationForAcceptLang() throws Exception {
+    void testNoPropagationForAcceptLang() throws Exception {
         simpleExecutor.submit(runnableWithoutAcceptLang).get();
     }
 
     @Test
-    public void childThreadDoesntAffectParentOne() {
+    void childThreadDoesntAffectParentOne() {
         ContextManager.set(ACCEPT_LANGUAGE, new AcceptLanguageContextObject(ACCEPT_LANG_VALUE));
 
         final ExecutorService executor = Executors.newSingleThreadExecutor();

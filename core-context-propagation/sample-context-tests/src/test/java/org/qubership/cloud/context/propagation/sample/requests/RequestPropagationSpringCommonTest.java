@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EnableSpringContextProvider
 @ContextConfiguration(classes = TestControllerSpringCommon.class)
 @SpringBootTest(properties = {"cloud-core.context-propagation.url=/test_url/v111/spring/common/test"})
-public class RequestPropagationSpringCommonTest {
+class RequestPropagationSpringCommonTest {
 
     @Autowired
     protected WebApplicationContext context;
@@ -28,12 +28,12 @@ public class RequestPropagationSpringCommonTest {
     SpringPostAuthnContextProviderFilter filter;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilter(filter).build();
     }
 
     @Test
-    public void testRequestPropagation() throws Exception {
+    void testRequestPropagation() throws Exception {
         mockMvc.perform(get("/spring/common/test/requestId"))
                 .andExpect(header().exists("X-Request-Id"));
     }

@@ -30,7 +30,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
         "headers.allowed=custom-header",
         "cloud-core.context-propagation.url=/test_url/v111/test"
 })
-public class RequestPropagationTest {
+class RequestPropagationTest {
     @Autowired
     protected WebApplicationContext context;
 
@@ -54,7 +54,7 @@ public class RequestPropagationTest {
     RestTemplate restTemplate;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(preAuthnFilter, postAuthnFilter).build();
     }
 
@@ -76,7 +76,7 @@ public class RequestPropagationTest {
      */
     @Test
     @Disabled
-    public void testRequestPropagation() throws Exception {
+    void testRequestPropagation() throws Exception {
         MockRestServiceServer mockServer = MockRestServiceServer.bindTo(restTemplate).build();
         mockServer.expect(requestTo("/chain_request"))
                 .andExpect(header(HttpHeaders.ACCEPT_LANGUAGE, ACCEPT_LANGUAGE_VALUE))

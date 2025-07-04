@@ -32,7 +32,7 @@ class AllowedHeadersContextObjectPropagationTest extends AbstractContextTestWith
     }
 
     @Test
-    public void initAllowedHeadersContext() {
+    void initAllowedHeadersContext() {
         RequestContextPropagation.initRequestContext(new ContextDataRequest());
         Assertions.assertNotNull(ContextManager.get(ALLOWED_HEADER));
         AllowedHeadersContextObject allowedHeadersContextObject = ContextManager.get(ALLOWED_HEADER);
@@ -44,7 +44,7 @@ class AllowedHeadersContextObjectPropagationTest extends AbstractContextTestWith
     }
 
     @Test
-    public void initAllowedHeadersContextWithSpringCommon() {
+    void initAllowedHeadersContextWithSpringCommon() {
         RequestContextPropagation.initRequestContext(new ContextDataRequest());
         AllowedHeadersContextObject allowedHeadersContextObject = ContextManager.get(ALLOWED_HEADER);
         Assertions.assertTrue(allowedHeadersContextObject.getHeaders().containsKey(CUSTOM_HEADER));
@@ -55,7 +55,7 @@ class AllowedHeadersContextObjectPropagationTest extends AbstractContextTestWith
     }
 
     @Test
-    public void testAllowedHeadersContextWrapper() {
+    void testAllowedHeadersContextWrapper() {
         RequestContextPropagation.initRequestContext(new ContextDataRequest());
         Map<String, String> testHeaders = new HashMap<>();
         testHeaders.put(CUSTOM_HEADER, "custom_value");
@@ -71,7 +71,7 @@ class AllowedHeadersContextObjectPropagationTest extends AbstractContextTestWith
     }
 
     @Test
-    public void testAllowedHeadersSerializableDataFromCxtManager() {
+    void testAllowedHeadersSerializableDataFromCxtManager() {
         RequestContextPropagation.initRequestContext(new ContextDataRequest());
 
         Map<String, Map<String, Object>> serializableContextData = ContextManager.getSerializableContextData();
@@ -80,7 +80,7 @@ class AllowedHeadersContextObjectPropagationTest extends AbstractContextTestWith
     }
 
     @Test
-    public void testAllowedHeadersSerializableData() {
+    void testAllowedHeadersSerializableData() {
         SimpleIncomingContextData contextData = new SimpleIncomingContextData(Map.of(CUSTOM_HEADER, "custom_value"));
         AllowedHeadersContextObject allowedHeadersContextObject = new AllowedHeadersContextObject(contextData, Collections.singletonList(CUSTOM_HEADER));
 

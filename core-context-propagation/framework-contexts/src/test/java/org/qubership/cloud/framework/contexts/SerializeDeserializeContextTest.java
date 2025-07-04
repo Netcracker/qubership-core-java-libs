@@ -38,7 +38,7 @@ import static org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContex
 import static org.qubership.cloud.framework.contexts.xversion.XVersionContextObject.X_VERSION_SERIALIZATION_NAME;
 
 @Slf4j
-public class SerializeDeserializeContextTest extends AbstractContextTestWithProperties {
+class SerializeDeserializeContextTest extends AbstractContextTestWithProperties {
 
     static Map<String, String> properties = Map.of(HEADERS_PROPERTY, "allowed-header-1");
 
@@ -53,7 +53,7 @@ public class SerializeDeserializeContextTest extends AbstractContextTestWithProp
     }
 
     @Test
-    public void example() throws JsonProcessingException {
+    void example() throws JsonProcessingException {
         Map<String, Map<String, Object>> contextSnapshot = ContextManager.getSerializableContextData();
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -69,7 +69,7 @@ public class SerializeDeserializeContextTest extends AbstractContextTestWithProp
     }
 
     @Test
-    public void checkSerializableDeserializable() throws JsonProcessingException {
+    void checkSerializableDeserializable() throws JsonProcessingException {
         fillXVersionContext("2");
         Assertions.assertEquals("2",
                 ContextManager.<XVersionContextObject>get(XVersionProvider.CONTEXT_NAME).getXVersion());
@@ -97,7 +97,7 @@ public class SerializeDeserializeContextTest extends AbstractContextTestWithProp
     }
 
     @Test
-    public void fullTest() throws JsonProcessingException {
+    void fullTest() throws JsonProcessingException {
         ContextValuesStorage expectedValues = ContextValuesStorage.builder()
                 .allowedHeaders(Collections.singletonMap("allowed-header-1", "value-of-allowed-header-1"))
                 .acceptedLanguages("ru")

@@ -10,10 +10,10 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ExecuteWithContextTest {
+class ExecuteWithContextTest {
 
     @Test
-    public void executeWithContextTest() {
+    void executeWithContextTest() {
         String initialContextValue = "first";
         String newContextValue = "second";
         AcceptLanguageContext.set(initialContextValue);

@@ -8,10 +8,10 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class SpringRequestContextDataTest {
+class SpringRequestContextDataTest {
 
     @Test
-    public void getAll() {
+    void getAll() {
         HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
         String acceptLanguage = "Accept-Language";
         String xVersion = "X-Version";

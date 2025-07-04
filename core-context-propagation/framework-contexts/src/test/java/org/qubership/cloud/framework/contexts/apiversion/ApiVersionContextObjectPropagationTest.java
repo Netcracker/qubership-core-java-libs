@@ -37,7 +37,7 @@ class ApiVersionContextObjectPropagationTest extends AbstractContextTestWithProp
     }
 
     @Test
-    public void getDefaultValue() {
+    void getDefaultValue() {
         RequestContextPropagation.initRequestContext(new DefaultContextDataRequest()); // filter
         Assertions.assertNotNull(ContextManager.get(API_VERSION_CONTEXT_NAME));
         ApiVersionContextObject apiVersionContextObject = ContextManager.get(API_VERSION_CONTEXT_NAME);
@@ -45,7 +45,7 @@ class ApiVersionContextObjectPropagationTest extends AbstractContextTestWithProp
     }
 
     @Test
-    public void initApiVersionContext() {
+    void initApiVersionContext() {
         RequestContextPropagation.initRequestContext(new ContextDataRequest()); // filter
         Assertions.assertNotNull(ContextManager.get(API_VERSION_CONTEXT_NAME));
         ApiVersionContextObject apiVersionContextObject = ContextManager.get(API_VERSION_CONTEXT_NAME);
@@ -53,7 +53,7 @@ class ApiVersionContextObjectPropagationTest extends AbstractContextTestWithProp
     }
 
     @Test
-    public void testApiVersionContextWrapper() {
+    void testApiVersionContextWrapper() {
         RequestContextPropagation.initRequestContext(new ContextDataRequest());
         Assertions.assertEquals("v2", ApiVersionContext.get());
 
@@ -65,7 +65,7 @@ class ApiVersionContextObjectPropagationTest extends AbstractContextTestWithProp
     }
 
     @Test
-    public void testApiVersionSerializableDataFromCxtManager() {
+    void testApiVersionSerializableDataFromCxtManager() {
         RequestContextPropagation.initRequestContext(new ContextDataRequest());
 
         Map<String, Map<String, Object>> serializableContextData = ContextManager.getSerializableContextData();
@@ -74,7 +74,7 @@ class ApiVersionContextObjectPropagationTest extends AbstractContextTestWithProp
     }
 
     @Test
-    public void testApiVersionSerializableData() {
+    void testApiVersionSerializableData() {
         SimpleIncomingContextData contextData = new SimpleIncomingContextData(Map.of(URL_HEADER, "api/v2/some-test-url"));
         ApiVersionContextObject apiVersionContextObject = new ApiVersionContextObject(contextData);
 

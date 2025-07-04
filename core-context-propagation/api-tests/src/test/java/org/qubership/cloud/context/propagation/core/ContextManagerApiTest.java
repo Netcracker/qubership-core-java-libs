@@ -16,17 +16,17 @@ import static org.qubership.cloud.context.propagation.core.ContextManager.LOOKUP
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ContextManagerApiTest {
+class ContextManagerApiTest {
 
     private final String CONTEXT_NAME = "context-name";
 
     @BeforeEach
-    public void start() throws Exception {
+    void start() throws Exception {
         ContextPropagationHelperTest.clearRegistry();
     }
 
     @Test
-    public void checkCoreContextpropagationProvidersLookupProperty() {
+    void checkCoreContextpropagationProvidersLookupProperty() {
         assertEquals("core.contextpropagation.providers.lookup",
                 CORE_CONTEXTPROPAGATION_PROVIDERS_LOOKUP,
                 "Value of CORE_CONTEXTPROPAGATION_PROVIDERS_LOOKUP must be core.contextpropagation.providers.lookup otherwise it breaks backward compatibility!"
@@ -34,7 +34,7 @@ public class ContextManagerApiTest {
     }
 
     @Test
-    public void checkLookupContextProvidersPath() {
+    void checkLookupContextProvidersPath() {
         assertEquals(
                 "context_propagation.context_providers.path",
                 LOOKUP_CONTEXT_PROVIDERS_PATH,
@@ -64,7 +64,7 @@ public class ContextManagerApiTest {
     }
 
     @Test
-    public void checkGetContextProvidersSignature() {
+    void checkGetContextProvidersSignature() {
         Method getContextProvidersMethod = getContextManagerMethod("getContextProviders");
         Type returnedType = getReturnedType(getContextProvidersMethod);
 
@@ -76,7 +76,7 @@ public class ContextManagerApiTest {
     }
 
     @Test
-    public void testGetContextProvidersAPI() {
+    void testGetContextProvidersAPI() {
         Collection<ContextProvider<?>> contextProviders = ContextManager.getContextProviders();
         assertNotNull(contextProviders);
     }
@@ -86,7 +86,7 @@ public class ContextManagerApiTest {
     }
 
     @Test
-    public void checkRegisterSignature() {
+    void checkRegisterSignature() {
         Method registerMethod = getContextManagerMethod("register", List.class);
 
         Type returnedType = getReturnedType(registerMethod);
@@ -100,14 +100,14 @@ public class ContextManagerApiTest {
     }
 
     @Test
-    public void testRegisterAPI() {
+    void testRegisterAPI() {
         ContextProvider<?> contextProvider = mock(ContextProvider.class);
         Collection<ContextProvider<?>> register = ContextManager.register(Collections.singletonList(contextProvider)); // API
         assertNotNull(register);
     }
 
     @Test
-    public void checkSetSignature() {
+    void checkSetSignature() {
         Method registerMethod = getContextManagerMethod("set", String.class, Object.class);
 
         Type returnedType = getReturnedType(registerMethod);
@@ -115,13 +115,13 @@ public class ContextManagerApiTest {
     }
 
     @Test
-    public void testSetAPI() {
+    void testSetAPI() {
         createAndRegisterTestContext();
         ContextManager.set(CONTEXT_NAME, "context-value"); // API
     }
 
     @Test
-    public void checkGetSignature() {
+    void checkGetSignature() {
         Method registerMethod = getContextManagerMethod("get", String.class);
 
         Type returnedType = getReturnedType(registerMethod);
@@ -129,7 +129,7 @@ public class ContextManagerApiTest {
     }
 
     @Test
-    public void testGetAPI() {
+    void testGetAPI() {
         Strategy mockStrategy = createAndRegisterTestContext();
         when(mockStrategy.get()).thenReturn("context-value");
 
@@ -138,7 +138,7 @@ public class ContextManagerApiTest {
     }
 
     @Test
-    public void checkGetSafeSignature() {
+    void checkGetSafeSignature() {
         Method registerMethod = getContextManagerMethod("getSafe", String.class);
 
         Type returnedType = getReturnedType(registerMethod);
@@ -146,7 +146,7 @@ public class ContextManagerApiTest {
     }
 
     @Test
-    public void testGetSafeAPI() {
+    void testGetSafeAPI() {
         Strategy mockStrategy = createAndRegisterTestContext();
         when(mockStrategy.getSafe()).thenReturn(Optional.of("context-value"));
 
@@ -155,7 +155,7 @@ public class ContextManagerApiTest {
     }
 
     @Test
-    public void checkClearSignature() {
+    void checkClearSignature() {
         Method registerMethod = getContextManagerMethod("clear", String.class);
 
         Type returnedType = getReturnedType(registerMethod);
@@ -163,13 +163,13 @@ public class ContextManagerApiTest {
     }
 
     @Test
-    public void testClearAPI() {
+    void testClearAPI() {
         createAndRegisterTestContext();
         ContextManager.clear(CONTEXT_NAME); // API
     }
 
     @Test
-    public void checkClearAllSignature() {
+    void checkClearAllSignature() {
         Method registerMethod = getContextManagerMethod("clearAll");
 
         Type returnedType = getReturnedType(registerMethod);
@@ -177,13 +177,13 @@ public class ContextManagerApiTest {
     }
 
     @Test
-    public void testClearAllAPI() {
+    void testClearAllAPI() {
         createAndRegisterTestContext();
         ContextManager.clearAll(); // API
     }
 
     @Test
-    public void checkGetAllSignature() {
+    void checkGetAllSignature() {
         Method registerMethod = getContextManagerMethod("getAll");
 
         Type returnedType = getReturnedType(registerMethod);
@@ -195,13 +195,13 @@ public class ContextManagerApiTest {
     }
 
     @Test
-    public void testGetAllAPI() {
+    void testGetAllAPI() {
         createAndRegisterTestContext();
         ContextManager.getAll(); // API
     }
 
     @Test
-    public void checkNewScopeSignature() {
+    void checkNewScopeSignature() {
         Method method = getContextManagerMethod("newScope", String.class, Object.class);
 
         Type returnedType = getReturnedType(method);
@@ -209,25 +209,25 @@ public class ContextManagerApiTest {
     }
 
     @Test
-    public void testNewScopeAPI() {
+    void testNewScopeAPI() {
         createAndRegisterTestContext();
         Scope new_value = ContextManager.newScope(CONTEXT_NAME, "new value"); // API
     }
 
     @Test
-    public void testCreateContextSnapshotAPI() {
+    void testCreateContextSnapshotAPI() {
         createAndRegisterTestContext();
         Map<String, Object> contextSnapshot = ContextManager.createContextSnapshot(Collections.singleton(CONTEXT_NAME));// API
     }
 
     @Test
-    public void testCreateContextSnapshotAPIWithExcludedContexts() {
+    void testCreateContextSnapshotAPIWithExcludedContexts() {
         createAndRegisterTestContext();
         Map<String, Object> contextSnapshot = ContextManager.createContextSnapshotWithoutContexts(Collections.singleton(CONTEXT_NAME));// API
     }
 
     @Test
-    public void testActivateContextSnapshotAPI() {
+    void testActivateContextSnapshotAPI() {
         createAndRegisterTestContext();
         Map<String, Object> contextSnapshot = new HashMap<>();
         contextSnapshot.put(CONTEXT_NAME, "snapshot context name");
@@ -235,7 +235,7 @@ public class ContextManagerApiTest {
     }
 
     @Test
-    public void testExecuteWithContextAPI() {
+    void testExecuteWithContextAPI() {
         createAndRegisterTestContext();
         Map<String, Object> contextSnapshot = new HashMap<>();
         contextSnapshot.put(CONTEXT_NAME, "snapshot context name");
@@ -243,7 +243,7 @@ public class ContextManagerApiTest {
     }
 
     @Test
-    public void testCreateContextSnapshotWithoutParamsAPI() {
+    void testCreateContextSnapshotWithoutParamsAPI() {
         createAndRegisterTestContext();
         Map<String, Object> contextSnapshot = ContextManager.createContextSnapshot();// API
     }

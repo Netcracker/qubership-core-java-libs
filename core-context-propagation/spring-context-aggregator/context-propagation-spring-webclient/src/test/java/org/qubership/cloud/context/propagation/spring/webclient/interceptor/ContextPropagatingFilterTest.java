@@ -20,12 +20,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static jakarta.ws.rs.core.HttpHeaders.ACCEPT_LANGUAGE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ContextPropagatingFilterTest {
+class ContextPropagatingFilterTest {
     private static final String ACCEPT_LANGUAGE_VALUE = "en-En";
     private Scheduler nettyNio;
 
     @BeforeEach
-    public void init() {
+    void init() {
         ContextManager.clearAll();
         nettyNio = Schedulers.newSingle("test-netty-thread", true);//emulates netty nio
 
@@ -42,7 +42,7 @@ public class ContextPropagatingFilterTest {
     }
 
     @Test
-    public void testHeadersAreSet() {
+    void testHeadersAreSet() {
         List<ClientRequest> requests = new CopyOnWriteArrayList<>();
         final WebClient client = WebClient.builder()
                 .exchangeFunction(request -> {

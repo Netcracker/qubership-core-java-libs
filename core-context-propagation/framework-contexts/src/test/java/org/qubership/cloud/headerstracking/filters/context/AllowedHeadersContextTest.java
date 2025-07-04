@@ -7,15 +7,15 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AllowedHeadersContextTest extends AbstractContextTest {
+class AllowedHeadersContextTest extends AbstractContextTest {
 
     @Test
-    public void testRequestWithHeader() {
+    void testRequestWithHeader() {
         assertEquals("custom_value", AllowedHeadersContext.getHeaders().get(CUSTOM_HEADER));
     }
 
     @Test
-    public void testSetContext() {
+    void testSetContext() {
         Map<String, String> resultMap = new HashMap<>() {{
             put("header1", "value1");
             put("header2", "value2");
@@ -25,7 +25,7 @@ public class AllowedHeadersContextTest extends AbstractContextTest {
     }
 
     @Test
-    public void testClearContext() {
+    void testClearContext() {
         assertFalse(AllowedHeadersContext.getHeaders().isEmpty());
         AllowedHeadersContext.clear();
         assertTrue(AllowedHeadersContext.getHeaders().isEmpty());
