@@ -2,10 +2,12 @@ package org.qubership.cloud.microserviceframework.config;
 
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Locale;
 
@@ -13,7 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.qubership.cloud.microserviceframework.testconfig.TestConstants.*;
 
-@SpringBootTest(classes = MicroserviceFrameworkConfiguration.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {MicroserviceFrameworkConfiguration.class})
 class MicroserviceFrameworkConfigurationTest {
 
     @Autowired
