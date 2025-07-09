@@ -1,6 +1,6 @@
 # Consul Config Source
 
-Consul Config Source provides quarkus extension based on plain java core Consul Config library: [consul-config-provider-common](https://git.qubership.org/PROD.Platform.Cloud_Core/rest-libraries/-/tree/main/consul-config-provider/consul-config-provider-common).
+Consul Config Source provides quarkus extension based on plain java core Consul Config library: [consul-config-provider-common](https://github.com/Netcracker/qubership-core-rest-libraries/tree/main/consul-config-provider/consul-config-provider-common).
 
 Consul usage architecture, installation and migration guides: [https://perch.qubership.org/display/CLOUDCORE/Consul+as+Config+Server](https://<github link todo>/Consul+as+Config+Server)
 
@@ -15,7 +15,7 @@ To include extension to your project add:
 </dependency>
 ```
 
-Then, fill the config parameters. Configuration information and typical default parameters are described in the consul-client module: https://git.qubership.org/PROD.Platform.Cloud_Core/libs/cloud-core-quarkus-extensions/-/blob/main/config-sources/consul-client/README.md#consul-client
+Then, fill the config parameters. Configuration information and typical default parameters are described in the consul-client module: https://github.com/Netcracker/qubership-core-quarkus-extensions/blob/main/config-sources/consul-client/README.md#consul-client
 
 # Using at runtime 
 You can use properties injection in standard Quarkus declarative way:

@@ -100,8 +100,7 @@ By default, the property has a `tenant` value.
 
 After it, you should make default steps: create an entity, create repository interface that is
 extended `PanacheRepositoryBase`
-and inject your repository to your classes. You can see an example in our quarkus
-quickstarter: https://git.qubership.org/DEMO.Platform_Researches/quarkus-quickstart.    
+and inject your repository to your classes.
 Sometimes, you also need to use the other kind of database, for example, your use two types of logical database in your
 microservice at the same time. In this case, you should inject a named bean and use it for database operations. In other
 words, you can define `quarkus.dbaas.datasource.main-type=service` and use Panache with serviceDb and
@@ -745,7 +744,7 @@ attention**
 to provide some dbaas functionality such as password validation, reconnection, multi-tenancy and so on.
 
 More info can be
-found [here](https://git.qubership.org/PROD.Platform.Cloud_Core/dbaas-client/-/tree/main/dbaas-client-java/dbaas-client-opensearch-base#native-resthighlevelclient)
+found [here](https://github.com/Netcracker/qubership-dbaas-client/tree/main/dbaas-client-java/dbaas-client-opensearch-base#native-opensearchclient)
 
 ##### ServiceNative client
 
@@ -793,7 +792,7 @@ public void hello(){
 ```
 
 DbaaS solution Information about supported methods and restrictions can be found
-in https://git.qubership.org/PROD.Platform.Cloud_Core/dbaas-client/-/tree/main/dbaas-client-java/dbaas-client-opensearch-base
+in https://github.com/Netcracker/qubership-dbaas-client/tree/main/dbaas-client-java/dbaas-client-opensearch-base
 .
 
 Service and tenant clients allow users to use API
@@ -923,11 +922,6 @@ To start using TLS feature user has to enable it on the physical database (adapt
 ### Physical database switching
 
 > These parameters are given as an example. For reliable information, check each adapter's documentation
-> * Postgresql: https://git.qubership.org/PROD.Platform.HA/postgres-operator/-/blob/main/docs/installation.md#tls
-> * Cassandra: https://git.qubership.org/PROD.Platform.Databases/cassandra-operator/-/blob/main/docs/installation_guide.md#tls-encryption
-> * Mongodb: https://git.qubership.org/PROD.Platform.Databases/mongodb-operator/-/blob/main/docs/installation_guide.md#tls-parameters
-> * Opensearch: https://git.qubership.org/PROD.Platform.ElasticStack/opensearch-service/-/blob/main/documentation/installation-guide/encrypted-access/README.md
-
 
 To enable TLS support in physical database redeploy database with parameters from column `Enable TLS`. 
 In order to use TLS with cert-manager also add parameters from second column.

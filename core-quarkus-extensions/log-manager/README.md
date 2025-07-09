@@ -23,7 +23,7 @@ First of all in order to use this extension, you should add the maven dependency
 
 where a version can be found in an artifactory by the link: https://artifactorycn.qubership.org/pd.saas.mvn/org/qubership/cloud/quarkus/log-manager-deployment/
 
-Then, fill the config parameters. Configuration information and typical default parameters are described in the consul-client module: https://git.qubership.org/PROD.Platform.Cloud_Core/libs/cloud-core-quarkus-extensions/-/blob/main/config-sources/consul-client/README.md#consul-client
+Then, fill the config parameters. Configuration information and typical default parameters are described in the consul-client module: https://github.com/Netcracker/qubership-core-quarkus-extensions/tree/main/config-sources/consul-client#consul-client
 
 ## Additional configuration properties
 | Property name                                  | Description                                                                      | Default value |                                        
