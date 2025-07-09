@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ContextAwareExecutorServiceTest {
 
     @Test
-    public void executeWthCurrentContext() {
+    void executeWthCurrentContext() {
         // init current context
         XVersionContextObject xVersionContextObject = new XVersionContextObject((IncomingContextData) null);
         xVersionContextObject.setxVersion("v1");
@@ -48,7 +48,7 @@ class ContextAwareExecutorServiceTest {
     }
 
     @Test
-    public void executeWthContextSnapshot_ContextAwareExecutorService() {
+    void executeWthContextSnapshot_ContextAwareExecutorService() {
         // init current context
         XVersionContextObject xVersionContextObject = new XVersionContextObject((IncomingContextData) null);
         xVersionContextObject.setxVersion("v1");
@@ -82,7 +82,7 @@ class ContextAwareExecutorServiceTest {
     }
 
     @Test
-    public void executeWthContextSnapshot_ContextAwareExecutor() {
+    void executeWthContextSnapshot_ContextAwareExecutor() {
         // init current context
         XVersionContextObject xVersionContextObject = new XVersionContextObject((IncomingContextData) null);
         xVersionContextObject.setxVersion("v1");

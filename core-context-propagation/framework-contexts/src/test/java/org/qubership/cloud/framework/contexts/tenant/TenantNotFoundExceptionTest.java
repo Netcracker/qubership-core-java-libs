@@ -1,19 +1,20 @@
 package org.qubership.cloud.framework.contexts.tenant;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-public class TenantNotFoundExceptionTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class TenantNotFoundExceptionTest {
 
     @Test
-    public void testConstructorWithMessage() {
+    void testConstructorWithMessage() {
         String errorMessage = "Tenant not found.";
         TenantNotFoundException exception = new TenantNotFoundException(errorMessage);
         assertEquals(errorMessage, exception.getMessage());
     }
 
     @Test
-    public void testConstructorWithEmptyMessage() {
+    void testConstructorWithEmptyMessage() {
         String errorMessage = "";
         TenantNotFoundException exception = new TenantNotFoundException(errorMessage);
         assertEquals(errorMessage, exception.getMessage());

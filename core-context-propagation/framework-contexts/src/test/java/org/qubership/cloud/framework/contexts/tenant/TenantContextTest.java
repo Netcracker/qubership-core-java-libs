@@ -1,37 +1,33 @@
 package org.qubership.cloud.framework.contexts.tenant;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
 import org.slf4j.MDC;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.qubership.cloud.framework.contexts.tenant.DefaultTenantProvider.TENANT_CONTEXT_NAME;
 import static org.qubership.cloud.framework.contexts.tenant.TenantContextObject.TENANT_HEADER;
 
 
-public class TenantContextTest {
+class TenantContextTest {
     private static final String TENANT = "123456";
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         ContextManager.clearAll();
         MDC.clear();
     }
 
     @Test
-    public void populateResponse() {
+    void populateResponse() {
         TenantContextObject tenantContextObject = new TenantContextObject(TENANT);
         ContextManager.set(TENANT_CONTEXT_NAME, tenantContextObject);
         ContextDataResponse contextDataResponse = new ContextDataResponse();
@@ -40,40 +36,40 @@ public class TenantContextTest {
     }
 
     @Test
-    public void testSetTenantIdInMDC() {
+    void testSetTenantIdInMDC() {
         ContextManager.set(TENANT_CONTEXT_NAME, new TenantContextObject(TENANT));
         String tenantId = MDC.get("tenantId");
         assertEquals(TENANT, tenantId);
     }
 
     @Test
-    public void testClearTenantIdInMDC() {
+    void testClearTenantIdInMDC() {
         ContextManager.set(TENANT_CONTEXT_NAME, new TenantContextObject(TENANT));
         String tenantId = MDC.get("tenantId");
         assertEquals(TENANT, tenantId);
         ContextManager.clear(TENANT_CONTEXT_NAME);
         tenantId = MDC.get("tenantId");
-        Assert.assertNull("Tenant id must be null", tenantId);
+        assertNull(tenantId, "Tenant id must be null");
     }
 
     @Test
-    public void testSetEmptyTenantIdInMDC() {
+    void testSetEmptyTenantIdInMDC() {
         ContextManager.set(TENANT_CONTEXT_NAME, new TenantContextObject(TENANT));
         String tenantId = MDC.get("tenantId");
         assertEquals(TENANT, tenantId);
         ContextManager.set(TENANT_CONTEXT_NAME, new TenantContextObject((String)null));
         tenantId = MDC.get("tenantId");
-        Assert.assertNull("Tenant id must be null", tenantId);
+        assertNull(tenantId, "Tenant id must be null");
     }
 
     @Test
-    public void testCreateContextSnapshotIfContextIsEmpty() {
+    void testCreateContextSnapshotIfContextIsEmpty() {
         ContextManager.clearAll();
-        Assert.assertNotNull(ContextManager.createContextSnapshot());
+        assertNotNull(ContextManager.createContextSnapshot());
     }
 
     @Test
-    public void testPropagateWithNonEmptyTenant() {
+    void testPropagateWithNonEmptyTenant() {
         OutgoingContextData mockOutgoingContextData = mock(OutgoingContextData.class);
         TenantContextObject contextObject = new TenantContextObject(TENANT);
         contextObject.propagate(mockOutgoingContextData);
@@ -81,7 +77,7 @@ public class TenantContextTest {
     }
 
     @Test
-    public void testPropagateWithEmptyTenant() {
+    void testPropagateWithEmptyTenant() {
         OutgoingContextData mockOutgoingContextData = mock(OutgoingContextData.class);
         TenantContextObject contextObject = new TenantContextObject("");
         contextObject.propagate(mockOutgoingContextData);
@@ -90,7 +86,7 @@ public class TenantContextTest {
 
     public static class ContextDataResponse implements OutgoingContextData {
 
-        private Map<String, Object> responseHeaders = new HashMap<>();
+        private final Map<String, Object> responseHeaders = new HashMap<>();
 
 
         @Override

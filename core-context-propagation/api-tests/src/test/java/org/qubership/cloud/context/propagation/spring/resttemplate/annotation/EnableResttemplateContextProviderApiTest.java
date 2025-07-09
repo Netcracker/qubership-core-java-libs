@@ -1,12 +1,13 @@
 package org.qubership.cloud.context.propagation.spring.resttemplate.annotation;
 
-import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
-public class EnableResttemplateContextProviderApiTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class EnableResttemplateContextProviderApiTest {
     @Test
-    public void checkEnableResttemplateContextProvider() {
+    void checkEnableResttemplateContextProvider() {
         assertEquals("org.qubership.cloud.context.propagation.spring.resttemplate.annotation.EnableResttemplateContextProvider", EnableResttemplateContextProvider.class.getName());
     }
 }

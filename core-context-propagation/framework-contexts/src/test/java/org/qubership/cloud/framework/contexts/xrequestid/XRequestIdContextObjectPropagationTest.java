@@ -26,17 +26,17 @@ class XRequestIdContextObjectPropagationTest extends AbstractContextTestWithProp
     static Map<String, String> properties = Map.of("headers.allowed", CUSTOM_HEADER);
 
     @BeforeAll
-    protected static void setup() {
+    static void setup() {
         AbstractContextTestWithProperties.parentSetup(properties);
     }
 
     @AfterAll
-    protected static void cleanup() {
+    static void cleanup() {
         AbstractContextTestWithProperties.parentCleanup(properties);
     }
 
     @Test
-    public void getDefaultValue() {
+    void getDefaultValue() {
         RequestContextPropagation.initRequestContext(new DefaultContextDataRequest()); // filter
         Assertions.assertNotNull(ContextManager.get(X_REQUEST_ID));
         XRequestIdContextObject xRequestIdContextObject = ContextManager.get(X_REQUEST_ID);
@@ -44,7 +44,7 @@ class XRequestIdContextObjectPropagationTest extends AbstractContextTestWithProp
     }
 
     @Test
-    public void testXRequestIdPropagation() {
+    void testXRequestIdPropagation() {
         RequestContextPropagation.initRequestContext(new ContextDataRequest()); // filter
         Assertions.assertNotNull(ContextManager.get(X_REQUEST_ID));
         XRequestIdContextObject xRequestIdContextObject = ContextManager.get(X_REQUEST_ID);
@@ -57,7 +57,7 @@ class XRequestIdContextObjectPropagationTest extends AbstractContextTestWithProp
     }
 
     @Test
-    public void testXRequestIdPropagationWithResponsePropagatableData() {
+    void testXRequestIdPropagationWithResponsePropagatableData() {
         RequestContextPropagation.initRequestContext(new ContextDataRequest()); // filter
         XRequestIdContextObject xRequestIdContextObject = ContextManager.get(X_REQUEST_ID);
         Assertions.assertNotNull(xRequestIdContextObject.getRequestId());
@@ -69,7 +69,7 @@ class XRequestIdContextObjectPropagationTest extends AbstractContextTestWithProp
     }
 
     @Test
-    public void testXRequestIdContextWrapper() {
+    void testXRequestIdContextWrapper() {
         RequestContextPropagation.initRequestContext(new ContextDataRequest());
         Assertions.assertNotNull(RequestIdContext.get());
 
@@ -81,7 +81,7 @@ class XRequestIdContextObjectPropagationTest extends AbstractContextTestWithProp
     }
 
     @Test
-    public void testXRequestSerializableDataFromCxtManager() {
+    void testXRequestSerializableDataFromCxtManager() {
         RequestContextPropagation.initRequestContext(new SimpleIncomingContextData(Map.of(X_REQUEST_ID, "12345")));
 
         Map<String, Map<String, Object>> serializableContextData = ContextManager.getSerializableContextData();
@@ -90,7 +90,7 @@ class XRequestIdContextObjectPropagationTest extends AbstractContextTestWithProp
     }
 
     @Test
-    public void testXRequestSerializableData() {
+    void testXRequestSerializableData() {
         SimpleIncomingContextData contextData = new SimpleIncomingContextData(Map.of(X_REQUEST_ID, "12345"));
         XRequestIdContextObject xRequestIdContextObject = new XRequestIdContextObject(contextData);
 

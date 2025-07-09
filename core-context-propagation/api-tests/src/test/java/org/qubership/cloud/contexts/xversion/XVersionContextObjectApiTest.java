@@ -1,5 +1,7 @@
 package org.qubership.cloud.contexts.xversion;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
@@ -7,41 +9,40 @@ import org.qubership.cloud.context.propagation.core.contexts.common.RequestProvi
 import org.qubership.cloud.contexts.IncomingContextDataFactory;
 import org.qubership.cloud.framework.contexts.xversion.XVersionContextObject;
 import org.qubership.cloud.framework.contexts.xversion.XVersionProvider;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class XVersionContextObjectApiTest {
+
+class XVersionContextObjectApiTest {
 
     private final static String XVERSION_DEFAULT_VALUE = "";
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         ContextManager.register(Collections.singletonList(new RequestProvider()));
     }
 
     @Test
-    public void testDefaultXVersionValue() {
+    void testDefaultXVersionValue() {
         XVersionContextObject xVersionContextObject = new XVersionContextObject(null);
         assertEquals(XVERSION_DEFAULT_VALUE, xVersionContextObject.getXVersion());
     }
 
     @Test
-    public void testXVersionSerializationName() {
+    void testXVersionSerializationName() {
         assertEquals("X-Version", XVersionContextObject.X_VERSION_SERIALIZATION_NAME);
     }
 
     @Test
-    public void testXVersionFromIncomingContextData() {
+    void testXVersionFromIncomingContextData() {
         XVersionContextObject xVersionContextObject = new XVersionContextObject(IncomingContextDataFactory.getXVersionIncomingContextData());
         assertEquals("2", xVersionContextObject.getXVersion());
     }
 
     @Test
-    public void testGetXVesrionFromContextManager() {
+    void testGetXVesrionFromContextManager() {
         ContextManager.register(Collections.singletonList(new XVersionProvider()));
         IncomingContextData xVersionIncomingContextData = IncomingContextDataFactory.getXVersionIncomingContextData();
         RequestContextPropagation.initRequestContext(xVersionIncomingContextData);

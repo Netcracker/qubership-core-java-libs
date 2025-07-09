@@ -36,7 +36,7 @@ class AcceptLanguageContextObjectPropagationTest extends AbstractContextTestWith
     }
 
     @Test
-    public void testAcceptLanguageContextPropagation() {
+    void testAcceptLanguageContextPropagation() {
         RequestContextPropagation.initRequestContext(new ContextDataRequest());
         Assertions.assertNotNull(ContextManager.get(ACCEPT_LANGUAGE));
         AcceptLanguageContextObject acceptLanguageContextObject = ContextManager.get(ACCEPT_LANGUAGE);
@@ -49,7 +49,7 @@ class AcceptLanguageContextObjectPropagationTest extends AbstractContextTestWith
     }
 
     @Test
-    public void testAcceptLanguageContextWrapper() {
+    void testAcceptLanguageContextWrapper() {
         RequestContextPropagation.initRequestContext(new ContextDataRequest());
         Assertions.assertEquals(TEST_LANGUAGES, AcceptLanguageContext.get());
 
@@ -61,7 +61,7 @@ class AcceptLanguageContextObjectPropagationTest extends AbstractContextTestWith
     }
 
     @Test
-    public void testAcceptLanguageSerializableDataFromCxtManager() {
+    void testAcceptLanguageSerializableDataFromCxtManager() {
         RequestContextPropagation.initRequestContext(new ContextDataRequest());
 
         Map<String, Map<String, Object>> serializableContextData = ContextManager.getSerializableContextData();
@@ -70,7 +70,7 @@ class AcceptLanguageContextObjectPropagationTest extends AbstractContextTestWith
     }
 
     @Test
-    public void testAcceptLanguageSerializableData() {
+    void testAcceptLanguageSerializableData() {
         SimpleIncomingContextData contextData = new SimpleIncomingContextData(Map.of(ACCEPT_LANGUAGE, "en; ru;"));
         AcceptLanguageContextObject acceptLanguageContextObject = new AcceptLanguageContextObject(contextData);
 

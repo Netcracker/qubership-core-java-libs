@@ -1,13 +1,14 @@
 package org.qubership.cloud.context.propagation.core;
 
-import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
-public class RegisterProviderApiTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class RegisterProviderApiTest {
 
     @Test
-    public void checkRegisterProviderAnnotationName(){
+    void checkRegisterProviderAnnotationName(){
         assertEquals("org.qubership.cloud.context.propagation.core.RegisterProvider", RegisterProvider.class.getName());
     }
 }

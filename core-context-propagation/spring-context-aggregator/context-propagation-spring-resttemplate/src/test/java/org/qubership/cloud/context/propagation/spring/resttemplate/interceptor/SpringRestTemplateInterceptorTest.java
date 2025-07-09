@@ -1,9 +1,9 @@
 package org.qubership.cloud.context.propagation.spring.resttemplate.interceptor;
 
 
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
-import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
@@ -15,13 +15,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-public class SpringRestTemplateInterceptorTest {
+class SpringRestTemplateInterceptorTest {
 
     @Test
-    public void testRestTemplateInterceptorWithAcceptLanguage() throws IOException {
+    void testRestTemplateInterceptorWithAcceptLanguage() throws IOException {
         AcceptLanguageContext.set("ru");
         HttpRequest request = Mockito.mock(HttpRequest.class);
         when(request.getHeaders()).thenReturn(new HttpHeaders());
@@ -33,7 +33,7 @@ public class SpringRestTemplateInterceptorTest {
     }
 
     @Test
-    public void testMissingAcceptLanguageInterceptor() throws IOException {
+    void testMissingAcceptLanguageInterceptor() throws IOException {
         ContextManager.clearAll();
         HttpRequest request = Mockito.mock(HttpRequest.class);
         when(request.getHeaders()).thenReturn(new HttpHeaders());

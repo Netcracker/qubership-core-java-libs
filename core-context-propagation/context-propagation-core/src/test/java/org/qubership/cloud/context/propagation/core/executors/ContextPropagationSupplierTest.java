@@ -15,9 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ContextPropagationSupplierTest {
 
-
     @Test
-    public void checkContextPropagation() throws ExecutionException, InterruptedException {
+    void checkContextPropagation() throws ExecutionException, InterruptedException {
         XVersionContextObject xVersionContextObject = new XVersionContextObject("v1");
         ContextManager.set(XVersionProvider.CONTEXT_NAME, xVersionContextObject);
 

@@ -1,5 +1,7 @@
 package org.qubership.cloud.contexts.xrequestid;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
@@ -7,29 +9,28 @@ import org.qubership.cloud.context.propagation.core.contexts.common.RequestProvi
 import org.qubership.cloud.contexts.IncomingContextDataFactory;
 import org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContextObject;
 import org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContextProvider;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.util.Collections;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class XRequestIdContextObjectApiTest {
 
-    @Before
-    public void setup() {
+class XRequestIdContextObjectApiTest {
+
+    @BeforeEach
+    void setup() {
         ContextManager.register(Collections.singletonList(new RequestProvider()));
     }
 
     @Test
-    public void testDefaultXRequestId() {
+    void testDefaultXRequestId() {
         XRequestIdContextObject xRequestIdContextObject = new XRequestIdContextObject((IncomingContextData) null);
         assertNotNull(xRequestIdContextObject.getRequestId());
     }
 
     @Test
-    public void testXRequestIdFromIncomingContextData() {
+    void testXRequestIdFromIncomingContextData() {
         IncomingContextData xRequestIdIncomingContextData = IncomingContextDataFactory.getXRequestIdIncomingContextData();
         XRequestIdContextObject xRequestIdContextObject = new XRequestIdContextObject(xRequestIdIncomingContextData);
         String expectedValue = (String) xRequestIdIncomingContextData.get("X-Request-Id");
@@ -37,14 +38,14 @@ public class XRequestIdContextObjectApiTest {
     }
 
     @Test
-    public void testConstructorWithXRequestIdParameter() {
+    void testConstructorWithXRequestIdParameter() {
         String customRequestId = UUID.randomUUID().toString();
         XRequestIdContextObject xRequestIdContextObject = new XRequestIdContextObject(customRequestId);
         assertEquals(customRequestId, xRequestIdContextObject.getRequestId());
     }
 
     @Test
-    public void testGetXRequestIdFromContextManager() {
+    void testGetXRequestIdFromContextManager() {
         ContextManager.register(Collections.singletonList(new XRequestIdContextProvider()));
         IncomingContextData xRequestIdIncomingContextData = IncomingContextDataFactory.getXRequestIdIncomingContextData();
         RequestContextPropagation.initRequestContext(xRequestIdIncomingContextData);

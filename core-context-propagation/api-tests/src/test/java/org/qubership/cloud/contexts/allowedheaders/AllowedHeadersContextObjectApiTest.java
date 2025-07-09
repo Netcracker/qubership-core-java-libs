@@ -1,5 +1,7 @@
 package org.qubership.cloud.contexts.allowedheaders;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.ContextPropagationHelperTest;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
@@ -7,30 +9,28 @@ import org.qubership.cloud.context.propagation.core.contexts.common.RequestProvi
 import org.qubership.cloud.contexts.IncomingContextDataFactory;
 import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersContextObject;
 import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider.HEADERS_PROPERTY;
-import static org.junit.Assert.assertEquals;
 
-public class AllowedHeadersContextObjectApiTest {
+class AllowedHeadersContextObjectApiTest {
 
-    @Before
-    public void setup(){
+    @BeforeEach
+    void setup(){
         ContextManager.register(Collections.singletonList(new RequestProvider()));
     }
 
     @Test
-    public void testGetHeadersEmptyContextDataApi() {
+    void testGetHeadersEmptyContextDataApi() {
         AllowedHeadersContextObject allowedHeadersContextObject = new AllowedHeadersContextObject(null, Collections.singletonList("my-header"));
         assertEquals(new HashMap<>(), allowedHeadersContextObject.getHeaders());
     }
 
     @Test
-    public void testGetHeadersWithContextDataApi() {
+    void testGetHeadersWithContextDataApi() {
         AllowedHeadersContextObject allowedHeadersContextObject = new AllowedHeadersContextObject(IncomingContextDataFactory.getAllowedHeadersIncomingContextData(),
                 Collections.singletonList("my-header"));
         HashMap<String, Object> expected = new HashMap<>();
@@ -39,7 +39,7 @@ public class AllowedHeadersContextObjectApiTest {
     }
 
     @Test
-    public void testGetHeadersWithMapApi() {
+    void testGetHeadersWithMapApi() {
         HashMap<String, String> expected = new HashMap<>();
         expected.put("my-header", "my-value");
         AllowedHeadersContextObject allowedHeadersContextObject = new AllowedHeadersContextObject(expected);
@@ -47,7 +47,7 @@ public class AllowedHeadersContextObjectApiTest {
     }
 
     @Test
-    public void testGetAllowedHeadersFromContextManager() {
+    void testGetAllowedHeadersFromContextManager() {
         ContextPropagationHelperTest.clearRegistry();
         System.setProperty(HEADERS_PROPERTY, "my-header");
         ContextManager.register(Collections.singletonList(new AllowedHeadersProvider()));

@@ -21,12 +21,12 @@ class RequestContextObjectTest {
     private final String headerValue = "Custom-header-1";
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         RequestContextPropagation.initRequestContext(new IncomingContextDataImpl());
     }
 
     @Test
-    public void testRequestWithHeader() {
+    void testRequestWithHeader() {
         assertEquals("Custom-header-1", ((RequestContextObject) ContextManager.get(REQUEST_CONTEXT_NAME)).getFirst("X-Custom-Header"));
         ContextManager.set(REQUEST_CONTEXT_NAME, new RequestContextObject(new HashMap<String, List<String>>() {{
             put("X-Custom-Header", Collections.singletonList("Custom-header-2"));
@@ -35,39 +35,39 @@ class RequestContextObjectTest {
     }
 
     @Test
-    public void testClearContext() {
+    void testClearContext() {
         assertNotNull(ContextManager.get(REQUEST_CONTEXT_NAME));
         ContextManager.clear(REQUEST_CONTEXT_NAME);
         assertEquals(0, ((RequestContextObject) ContextManager.get(REQUEST_CONTEXT_NAME)).getHttpHeaders().size());
     }
 
     @Test
-    public void testGetRequestHeaderByUpperCaseHeaderName() {
+    void testGetRequestHeaderByUpperCaseHeaderName() {
         assertEquals(headerValue, ((RequestContextObject) ContextManager.get(REQUEST_CONTEXT_NAME)).getHttpHeader("X-CUSTOM-HEADER").get(0));
     }
 
     @Test
-    public void testGetRequestHeaderByLowerCaseHeaderName() {
+    void testGetRequestHeaderByLowerCaseHeaderName() {
         assertEquals(headerValue, ((RequestContextObject) ContextManager.get(REQUEST_CONTEXT_NAME)).getHttpHeader("x-custom-header").get(0));
     }
 
     @Test
-    public void testGetFirstByUpperCaseHeaderName() {
+    void testGetFirstByUpperCaseHeaderName() {
         assertEquals(headerValue, ((RequestContextObject) ContextManager.get(REQUEST_CONTEXT_NAME)).getFirst("X-CUSTOM-HEADER"));
     }
 
     @Test
-    public void testGetFirstByLowerCaseHeaderName() {
+    void testGetFirstByLowerCaseHeaderName() {
         assertEquals(headerValue, ((RequestContextObject) ContextManager.get(REQUEST_CONTEXT_NAME)).getFirst("x-custom-header"));
     }
 
     @Test
-    public void getDefaultValue() {
+    void getDefaultValue() {
         assertTrue(((RequestContextObject) ContextManager.get(REQUEST_CONTEXT_NAME)).getDefault().isEmpty());
     }
 
     @Test
-    public void testFilterByNullHeaderValues() {
+    void testFilterByNullHeaderValues() {
         RequestContextObject requestContextObject = new RequestContextObject(Collections.singletonMap(headerName, null));
         assertEquals(0, requestContextObject.getHttpHeader(headerName).size());
     }

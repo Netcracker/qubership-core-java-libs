@@ -13,13 +13,13 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.qubership.cloud.framework.contexts.businessprocess.BusinessProcessContextObject.BUSINESS_PROCESS_ID_SERIALIZATION_NAME;
-import static org.junit.Assert.*;
 
-public class BusinessProcessContextObjectTest extends AbstractContextTestWithProperties {
+class BusinessProcessContextObjectTest extends AbstractContextTestWithProperties {
 
     @Test
-    public void isBusinessProcessContextObjectSerializedIfSet() {
+    void isBusinessProcessContextObjectSerializedIfSet() {
         String testUUID = UUID.randomUUID().toString();
         BusinessProcessContextObject businessProcessContextObject = new BusinessProcessContextObject(
                 new ContextDataRequest(BUSINESS_PROCESS_ID_SERIALIZATION_NAME, testUUID)
@@ -28,12 +28,12 @@ public class BusinessProcessContextObjectTest extends AbstractContextTestWithPro
         businessProcessContextObject.serialize(outgoingContextData);
         Object o = outgoingContextData.getResponseHeaders().get(BUSINESS_PROCESS_ID_SERIALIZATION_NAME);
         assertNotNull(o);
-        assertTrue(o instanceof String);
+        assertInstanceOf(String.class, o);
         assertEquals(testUUID, o);
     }
 
     @Test
-    public void isBusinessProcessContextObjectSerializedIfNotSet() {
+    void isBusinessProcessContextObjectSerializedIfNotSet() {
         BusinessProcessContextObject businessProcessContextObject = new BusinessProcessContextObject(
                 new ContextDataRequest()
         );
@@ -44,7 +44,7 @@ public class BusinessProcessContextObjectTest extends AbstractContextTestWithPro
     }
 
     @Test
-    public void isBusinessProcessContextObjectSerializedIfHeaderEmpty() {
+    void isBusinessProcessContextObjectSerializedIfHeaderEmpty() {
         BusinessProcessContextObject businessProcessContextObject = new BusinessProcessContextObject(
                 new ContextDataRequest(BUSINESS_PROCESS_ID_SERIALIZATION_NAME, "")
         );
@@ -55,7 +55,7 @@ public class BusinessProcessContextObjectTest extends AbstractContextTestWithPro
     }
 
     @Test
-    public void getDefaultValue() {
+    void getDefaultValue() {
         RequestContextPropagation.initRequestContext(new ContextDataRequest());
         assertNotNull(ContextManager.get(BusinessProcessProvider.CONTEXT_NAME));
         String actualBusinessProcessId = BusinessProcessIdContext.get();
@@ -63,7 +63,7 @@ public class BusinessProcessContextObjectTest extends AbstractContextTestWithPro
     }
 
     @Test
-    public void getValueFromRequest() {
+    void getValueFromRequest() {
         String uuid = UUID.randomUUID().toString();
         RequestContextPropagation.initRequestContext(
                 new ContextDataRequest(BUSINESS_PROCESS_ID_SERIALIZATION_NAME, uuid)
@@ -75,7 +75,7 @@ public class BusinessProcessContextObjectTest extends AbstractContextTestWithPro
     }
 
     @Test
-    public void testBusinessProcessIdPropagationIfProcessIdIsNotSet() {
+    void testBusinessProcessIdPropagationIfProcessIdIsNotSet() {
         RequestContextPropagation.initRequestContext(
                 new ContextDataRequest()
         );
@@ -88,7 +88,7 @@ public class BusinessProcessContextObjectTest extends AbstractContextTestWithPro
     }
 
     @Test
-    public void testBusinessProcessIdPropagationIfProcessIdIsSetDuringExecution() {
+    void testBusinessProcessIdPropagationIfProcessIdIsSetDuringExecution() {
         RequestContextPropagation.initRequestContext(
                 new ContextDataRequest()
         );
@@ -103,7 +103,7 @@ public class BusinessProcessContextObjectTest extends AbstractContextTestWithPro
     }
 
     @Test
-    public void testBusinessProcessIdPropagationIfHeaderIsEmpty() {
+    void testBusinessProcessIdPropagationIfHeaderIsEmpty() {
         RequestContextPropagation.initRequestContext(
                 new ContextDataRequest(BUSINESS_PROCESS_ID_SERIALIZATION_NAME, "")
         );
@@ -118,7 +118,7 @@ public class BusinessProcessContextObjectTest extends AbstractContextTestWithPro
     }
 
     @Test
-    public void testBusinessProcessIdPropagation() {
+    void testBusinessProcessIdPropagation() {
         String expectedUUID = UUID.randomUUID().toString();
         RequestContextPropagation.initRequestContext(
                 new ContextDataRequest(BUSINESS_PROCESS_ID_SERIALIZATION_NAME, expectedUUID)
@@ -133,7 +133,7 @@ public class BusinessProcessContextObjectTest extends AbstractContextTestWithPro
     }
 
     @Test
-    public void testBusinessProcessIdPropagationWithResponsePropagatableDataIfProcessIdIsNotSet() {
+    void testBusinessProcessIdPropagationWithResponsePropagatableDataIfProcessIdIsNotSet() {
         RequestContextPropagation.initRequestContext(
                 new ContextDataRequest()
         );
@@ -146,7 +146,7 @@ public class BusinessProcessContextObjectTest extends AbstractContextTestWithPro
     }
 
     @Test
-    public void testBusinessProcessIdPropagationWithResponsePropagatableDataIfProcessIdSetDuringExecution() {
+    void testBusinessProcessIdPropagationWithResponsePropagatableDataIfProcessIdSetDuringExecution() {
         RequestContextPropagation.initRequestContext(
                 new ContextDataRequest()
         );
@@ -161,7 +161,7 @@ public class BusinessProcessContextObjectTest extends AbstractContextTestWithPro
     }
 
     @Test
-    public void testBusinessProcessIdPropagationWithResponsePropagatableDataIfHeaderIsEmpty() {
+    void testBusinessProcessIdPropagationWithResponsePropagatableDataIfHeaderIsEmpty() {
         RequestContextPropagation.initRequestContext(
                 new ContextDataRequest(BUSINESS_PROCESS_ID_SERIALIZATION_NAME, "")
         );
@@ -176,7 +176,7 @@ public class BusinessProcessContextObjectTest extends AbstractContextTestWithPro
     }
 
     @Test
-    public void testBusinessProcessIdPropagationWithResponsePropagatableData() {
+    void testBusinessProcessIdPropagationWithResponsePropagatableData() {
         String expectedUUID = UUID.randomUUID().toString();
         RequestContextPropagation.initRequestContext(
                 new ContextDataRequest(BUSINESS_PROCESS_ID_SERIALIZATION_NAME, expectedUUID)
@@ -191,25 +191,25 @@ public class BusinessProcessContextObjectTest extends AbstractContextTestWithPro
     }
 
     @Test
-    public void testBusinessProcessSerializableDataFromCxtManager() {
+    void testBusinessProcessSerializableDataFromCxtManager() {
         RequestContextPropagation.initRequestContext(new SimpleIncomingContextData(Map.of(BUSINESS_PROCESS_ID_SERIALIZATION_NAME, "12345")));
 
         Map<String, Map<String, Object>> serializableContextData = ContextManager.getSerializableContextData();
 
-        Assertions.assertTrue(serializableContextData.containsKey(BusinessProcessProvider.CONTEXT_NAME));
+        assertTrue(serializableContextData.containsKey(BusinessProcessProvider.CONTEXT_NAME));
     }
 
     @Test
-    public void testBusinessProcessSerializableData() {
+    void testBusinessProcessSerializableData() {
         SimpleIncomingContextData contextData = new SimpleIncomingContextData(Map.of(BUSINESS_PROCESS_ID_SERIALIZATION_NAME, "12345"));
         BusinessProcessContextObject businessProcessContextObject = new BusinessProcessContextObject(contextData);
 
         Map<String, Object> serializableContextData = businessProcessContextObject.getSerializableContextData();
 
-        Assertions.assertEquals(1, serializableContextData.size());
-        Assertions.assertEquals("12345", serializableContextData.get(BUSINESS_PROCESS_ID_SERIALIZATION_NAME));
+        assertEquals(1, serializableContextData.size());
+        assertEquals("12345", serializableContextData.get(BUSINESS_PROCESS_ID_SERIALIZATION_NAME));
 
         BusinessProcessContextObject businessProcessContextObject1 = new BusinessProcessContextObject(new SimpleIncomingContextData());
-        Assertions.assertEquals(0, businessProcessContextObject1.getSerializableContextData().size());
+        assertEquals(0, businessProcessContextObject1.getSerializableContextData().size());
     }
 }

@@ -1,11 +1,10 @@
 package org.qubership.cloud.context.propagation.spring.webclient.interceptor;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.framework.contexts.acceptlanguage.AcceptLanguageContextObject;
-import org.junit.Assert;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -19,13 +18,14 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static jakarta.ws.rs.core.HttpHeaders.ACCEPT_LANGUAGE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ContextPropagatingFilterTest {
+class ContextPropagatingFilterTest {
     private static final String ACCEPT_LANGUAGE_VALUE = "en-En";
     private Scheduler nettyNio;
 
-    @Before
-    public void init() {
+    @BeforeEach
+    void init() {
         ContextManager.clearAll();
         nettyNio = Schedulers.newSingle("test-netty-thread", true);//emulates netty nio
 
@@ -35,14 +35,14 @@ public class ContextPropagatingFilterTest {
 
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         nettyNio.dispose();
         ContextManager.clearAll();
     }
 
     @Test
-    public void testHeadersAreSet() {
+    void testHeadersAreSet() {
         List<ClientRequest> requests = new CopyOnWriteArrayList<>();
         final WebClient client = WebClient.builder()
                 .exchangeFunction(request -> {
@@ -64,10 +64,8 @@ public class ContextPropagatingFilterTest {
                 .block(Duration.ofSeconds(100));
 
 
-        Assert.assertEquals(2, requests.size());
-
-        Assert.assertEquals(ACCEPT_LANGUAGE_VALUE, requests.get(0).headers().toSingleValueMap().get(HttpHeaders.ACCEPT_LANGUAGE));
-
-        Assert.assertEquals(ACCEPT_LANGUAGE_VALUE, requests.get(1).headers().toSingleValueMap().get(HttpHeaders.ACCEPT_LANGUAGE));
+        assertEquals(2, requests.size());
+        assertEquals(ACCEPT_LANGUAGE_VALUE, requests.get(0).headers().toSingleValueMap().get(HttpHeaders.ACCEPT_LANGUAGE));
+        assertEquals(ACCEPT_LANGUAGE_VALUE, requests.get(1).headers().toSingleValueMap().get(HttpHeaders.ACCEPT_LANGUAGE));
     }
 }

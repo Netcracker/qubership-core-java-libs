@@ -1,17 +1,15 @@
 package org.qubership.cloud.context.propagation.sample.requests;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
 import org.qubership.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -25,15 +23,14 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
+@SpringBootTest
 @ContextConfiguration(classes = {
         TestController.class, RequestPropagationTestConfig.class})
 @TestPropertySource(properties = {
         "headers.allowed=custom-header",
         "cloud-core.context-propagation.url=/test_url/v111/test"
 })
-public class RequestPropagationTest {
+class RequestPropagationTest {
     @Autowired
     protected WebApplicationContext context;
 
@@ -56,8 +53,8 @@ public class RequestPropagationTest {
     @Autowired
     RestTemplate restTemplate;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(preAuthnFilter, postAuthnFilter).build();
     }
 
@@ -78,8 +75,8 @@ public class RequestPropagationTest {
     headers are present.
      */
     @Test
-    @Ignore // from pdclfrm-766, because builder can't find custom_header
-    public void testRequestPropagation() throws Exception {
+    @Disabled
+    void testRequestPropagation() throws Exception {
         MockRestServiceServer mockServer = MockRestServiceServer.bindTo(restTemplate).build();
         mockServer.expect(requestTo("/chain_request"))
                 .andExpect(header(HttpHeaders.ACCEPT_LANGUAGE, ACCEPT_LANGUAGE_VALUE))

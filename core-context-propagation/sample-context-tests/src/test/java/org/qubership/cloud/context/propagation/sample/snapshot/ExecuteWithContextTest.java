@@ -1,19 +1,19 @@
 package org.qubership.cloud.context.propagation.sample.snapshot;
 
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.framework.contexts.acceptlanguage.AcceptLanguageContextObject;
 import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
-import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ExecuteWithContextTest {
+class ExecuteWithContextTest {
 
     @Test
-    public void executeWithContextTest() {
+    void executeWithContextTest() {
         String initialContextValue = "first";
         String newContextValue = "second";
         AcceptLanguageContext.set(initialContextValue);

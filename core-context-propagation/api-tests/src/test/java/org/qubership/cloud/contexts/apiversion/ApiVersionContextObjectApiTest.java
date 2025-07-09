@@ -1,5 +1,7 @@
 package org.qubership.cloud.contexts.apiversion;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
@@ -7,28 +9,27 @@ import org.qubership.cloud.context.propagation.core.contexts.common.RequestProvi
 import org.qubership.cloud.contexts.IncomingContextDataFactory;
 import org.qubership.cloud.framework.contexts.apiversion.ApiVersionContextObject;
 import org.qubership.cloud.framework.contexts.apiversion.ApiVersionProvider;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ApiVersionContextObjectApiTest {
 
-    @Before
-    public void setup() {
+class ApiVersionContextObjectApiTest {
+
+    @BeforeEach
+    void setup() {
         ContextManager.register(Collections.singletonList(new RequestProvider()));
     }
 
     @Test
-    public void testDefaultApiVersion() {
+    void testDefaultApiVersion() {
         ApiVersionContextObject apiVersionContextObject = new ApiVersionContextObject((IncomingContextData) null);
         assertEquals("v1", apiVersionContextObject.getVersion());
     }
 
     @Test
-    public void testApiVersionFromIncomingContextData() {
+    void testApiVersionFromIncomingContextData() {
         ApiVersionContextObject apiVersionContextObject = new ApiVersionContextObject(
                 IncomingContextDataFactory.getApiVersionIncomingContextData());
         String expected = "v2";
@@ -36,13 +37,13 @@ public class ApiVersionContextObjectApiTest {
     }
 
     @Test
-    public void testConstructorWithApiVersionParameter() {
+    void testConstructorWithApiVersionParameter() {
         ApiVersionContextObject apiVersionContextObject = new ApiVersionContextObject("v2");
         assertEquals("v2", apiVersionContextObject.getVersion());
     }
 
     @Test
-    public void testGetApiVersionFromContextManager() {
+    void testGetApiVersionFromContextManager() {
         ContextManager.register(Collections.singletonList(new ApiVersionProvider()));
         RequestContextPropagation.initRequestContext(IncomingContextDataFactory.getApiVersionIncomingContextData());
         ApiVersionContextObject apiVersionContextObject = ContextManager.get(ApiVersionProvider.API_VERSION_CONTEXT_NAME); // API

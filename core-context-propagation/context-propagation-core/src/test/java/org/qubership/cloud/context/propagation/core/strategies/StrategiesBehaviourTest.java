@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 import java.util.function.Supplier;
 
 
-public class StrategiesBehaviourTest {
+class StrategiesBehaviourTest {
     @Test
-    public void testThreadLocalStrategy_ReturnsNullAfterNullSet() {
+    void testThreadLocalStrategy_ReturnsNullAfterNullSet() {
         Strategy<XVersionContextObject> strategy = getThreadLocalStrategy();
         strategy.set(null);
 
@@ -21,7 +21,7 @@ public class StrategiesBehaviourTest {
     }
 
     @Test
-    public void testThreadLocalStrategy_ReturnsDefaultAfterClear() {
+    void testThreadLocalStrategy_ReturnsDefaultAfterClear() {
         Strategy<XVersionContextObject> strategy = getThreadLocalStrategy();
         XVersionContextObject xVersionObj = new XVersionContextObject("test-x-version");
         strategy.set(xVersionObj);
@@ -35,7 +35,7 @@ public class StrategiesBehaviourTest {
     }
 
     @Test
-    public void testRestEasyStrategy_ReturnsNullAfterNullSet() {
+    void testRestEasyStrategy_ReturnsNullAfterNullSet() {
         Strategy<XVersionContextObject> strategy = getRestEasyStrategy();
         strategy.set(null);
 
@@ -43,7 +43,7 @@ public class StrategiesBehaviourTest {
     }
 
     @Test
-    public void testRestEasyStrategy_ReturnsDefaultAfterClear() {
+    void testRestEasyStrategy_ReturnsDefaultAfterClear() {
         Strategy<XVersionContextObject> strategy = getRestEasyStrategy();
         XVersionContextObject xVersionObj = new XVersionContextObject("test-x-version");
         strategy.set(xVersionObj);
@@ -57,7 +57,7 @@ public class StrategiesBehaviourTest {
     }
 
     @Test
-    public void testThreadLocalStrategyBehaviour_Equals_RestEasyStrategyBehaviour() {
+    void testThreadLocalStrategyBehaviour_Equals_RestEasyStrategyBehaviour() {
         Strategy<XVersionContextObject> threadLocalStrategy = getThreadLocalStrategy();
         Strategy<XVersionContextObject> restEasyStrategy = getRestEasyStrategy();
 

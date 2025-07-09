@@ -1,32 +1,32 @@
 package org.qubership.cloud.contexts.allowedheaders;
 
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.contexts.IncomingContextDataFactory;
 import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersContextObject;
 import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider;
-import org.junit.Assert;
-import org.junit.Test;
 
 import java.util.HashMap;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider.HEADERS_PROPERTY;
-import static org.junit.Assert.assertEquals;
 
-public class AllowedHeadersProviderApiTest {
+class AllowedHeadersProviderApiTest {
 
     @Test
-    public void testAllowedHeadersContextName() {
+    void testAllowedHeadersContextName() {
         assertEquals("allowed_header", AllowedHeadersProvider.ALLOWED_HEADER);
         assertEquals("allowed_header", new AllowedHeadersProvider().contextName());
     }
 
     @Test
-    public void testAllowedHeadersDefaultConstructor() {
+    void testAllowedHeadersDefaultConstructor() {
         AllowedHeadersProvider allowedHeadersProvider = new AllowedHeadersProvider();
-        Assert.assertNotNull(allowedHeadersProvider);
+        assertNotNull(allowedHeadersProvider);
     }
 
     @Test
-    public void testProvideAllowedHeadersContextObject() {
+    void testProvideAllowedHeadersContextObject() {
         System.setProperty(HEADERS_PROPERTY, "my-header");
         AllowedHeadersProvider allowedHeadersProvider = new AllowedHeadersProvider();
         AllowedHeadersContextObject allowedHeadersContextObject = allowedHeadersProvider.provide(IncomingContextDataFactory.getAllowedHeadersIncomingContextData());
@@ -39,7 +39,7 @@ public class AllowedHeadersProviderApiTest {
     }
 
     @Test
-    public void testProvideAllowedHeadersContextObjectWithoutHeaders() {
+    void testProvideAllowedHeadersContextObjectWithoutHeaders() {
         AllowedHeadersProvider allowedHeadersProvider = new AllowedHeadersProvider();
         AllowedHeadersContextObject allowedHeadersContextObject = allowedHeadersProvider.provide(IncomingContextDataFactory.getAllowedHeadersIncomingContextData());
 

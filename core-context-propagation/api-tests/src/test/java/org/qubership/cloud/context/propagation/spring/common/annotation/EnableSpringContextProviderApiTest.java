@@ -1,13 +1,14 @@
 package org.qubership.cloud.context.propagation.spring.common.annotation;
 
-import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
-public class EnableSpringContextProviderApiTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class EnableSpringContextProviderApiTest {
 
     @Test
-    public void checkEnableSpringContextProviderAnnotationName() {
+    void checkEnableSpringContextProviderAnnotationName() {
         assertEquals("org.qubership.cloud.context.propagation.spring.common.annotation.EnableSpringContextProvider", EnableSpringContextProvider.class.getName());
     }
 }
