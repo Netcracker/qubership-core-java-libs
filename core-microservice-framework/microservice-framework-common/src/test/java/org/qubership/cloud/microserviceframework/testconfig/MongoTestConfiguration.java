@@ -1,16 +1,16 @@
 package org.qubership.cloud.microserviceframework.testconfig;
 
+import jakarta.annotation.PreDestroy;
 import org.qubership.cloud.dbaas.client.entity.connection.MongoDBConnection;
 import org.qubership.cloud.dbaas.client.entity.database.MongoDatabase;
-import jakarta.annotation.PreDestroy;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.TreeMap;
 
 import static org.qubership.cloud.microserviceframework.testconfig.TestConstants.MONGO_DB_NAME;
 
-@TestConfiguration
+@Configuration
 public class MongoTestConfiguration {
 
     private MongoTestContainer container;

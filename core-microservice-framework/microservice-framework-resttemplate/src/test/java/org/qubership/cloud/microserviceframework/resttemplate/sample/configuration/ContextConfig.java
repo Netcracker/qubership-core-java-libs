@@ -1,10 +1,9 @@
 package org.qubership.cloud.microserviceframework.resttemplate.sample.configuration;
 
+import org.mockito.Mockito;
 import org.qubership.cloud.configserver.common.configuration.AbstractCustomConfigServerConfigDataLocationResolver;
 import org.qubership.cloud.restclient.MicroserviceRestClient;
 import org.qubership.cloud.restclient.entity.RestClientResponseEntity;
-import org.apache.commons.logging.Log;
-import org.mockito.Mockito;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.cloud.config.environment.Environment;
 

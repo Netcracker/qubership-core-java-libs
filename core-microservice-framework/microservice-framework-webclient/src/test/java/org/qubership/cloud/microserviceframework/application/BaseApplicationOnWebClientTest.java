@@ -15,19 +15,19 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
                 "cloud.microservice.name=test-service"
         },
         webEnvironment = RANDOM_PORT)
-public class BaseApplicationOnWebClientTest {
+class BaseApplicationOnWebClientTest {
 
     @Autowired
     ApplicationContext context;
 
     @Test
-    public void testDbaasRestClientInitialized() {
+    void testDbaasRestClientInitialized() {
         assertThat("Bean 'dbaasRestClient' is missing in context",
                 context.getBean("dbaasRestClient") instanceof MicroserviceWebClient);
     }
 
     @Test
-    public void testDbaasClientInitialized() {
+    void testDbaasClientInitialized() {
         assertThat("Bean 'dbaasClient' is missing in context",
                 context.getBean("dbaasClient") instanceof DbaasClient);
     }

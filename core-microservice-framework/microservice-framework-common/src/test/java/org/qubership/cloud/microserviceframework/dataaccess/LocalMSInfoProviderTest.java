@@ -1,21 +1,21 @@
 package org.qubership.cloud.microserviceframework.dataaccess;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.qubership.cloud.dbaas.client.config.MSInfoProvider;
 import org.qubership.cloud.microserviceframework.config.annotation.EnableMSInfoProvider;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class LocalMSInfoProviderTest {
+class LocalMSInfoProviderTest {
     static final String SANDBOX_NAMESPACE = "cloud-catalog-sandbox07";
     static final String MICROSERVICE_NAME = "test-ms";
 
@@ -37,69 +37,68 @@ public class LocalMSInfoProviderTest {
     }
 
     @Test
-    public void testLocalDev() throws Exception {
+    void testLocalDev() throws Exception {
         initContext(LocalDevConfigTest.class);
 
         reinitializeMSInfo();
 
-        assertEquals(null, msInfoProvider.getNamespace());
-        assertEquals(msInfoProvider.getMicroserviceName(), MICROSERVICE_NAME);
+        assertNull(msInfoProvider.getNamespace());
+        assertEquals(MICROSERVICE_NAME, msInfoProvider.getMicroserviceName());
     }
 
     @Test
-    public void testSandbox() throws Exception {
+    void testSandbox() throws Exception {
         initContext(SandboxConfigTest.class);
 
         reinitializeMSInfo();
 
-        assertEquals(msInfoProvider.getNamespace(), SANDBOX_NAMESPACE);
-        assertEquals(msInfoProvider.getMicroserviceName(), MICROSERVICE_NAME);
+        assertEquals(SANDBOX_NAMESPACE, msInfoProvider.getNamespace());
+        assertEquals(MICROSERVICE_NAME, msInfoProvider.getMicroserviceName());
     }
 
     @Test
-    public void testDefaultNamespace() throws Exception {
+    void testDefaultNamespace() throws Exception {
         initContext(LocalDevDefaultNamespaceConfigTest.class);
 
         reinitializeMSInfo();
 
-        assertEquals(null, msInfoProvider.getNamespace());
+        assertNull(msInfoProvider.getNamespace());
         assertEquals(MICROSERVICE_NAME, msInfoProvider.getMicroserviceName());
     }
 
     @Test
-    public void testEmptyNamespace() throws Exception {
+    void testEmptyNamespace() throws Exception {
         initContext(LocalDevEmptyNamespaceConfigTest.class);
 
         reinitializeMSInfo();
 
-        assertEquals(null, msInfoProvider.getNamespace());
+        assertNull(msInfoProvider.getNamespace());
         assertEquals(MICROSERVICE_NAME, msInfoProvider.getMicroserviceName());
     }
 
 
-    @After
-    public void tearDown() throws Exception {
+    @AfterEach
+    void tearDown() {
         applicationContext.close();
     }
 
-    @RunWith(SpringJUnit4ClassRunner.class)
     @EnableMSInfoProvider
     @TestPropertySource(properties = {
             "cloud.microservice.namespace=unknown",
             "cloud.microservice.name=" + MICROSERVICE_NAME
     })
-    private static class LocalDevConfigTest { }
+    private static class LocalDevConfigTest {
+    }
 
-    @RunWith(SpringJUnit4ClassRunner.class)
     @EnableMSInfoProvider
     @TestPropertySource(properties = {
             "cloud.microservice.namespace=" + SANDBOX_NAMESPACE,
             "cloud.microservice.name=" + MICROSERVICE_NAME
     })
-    private static class SandboxConfigTest {}
+    private static class SandboxConfigTest {
+    }
 
 
-    @RunWith(SpringJUnit4ClassRunner.class)
     @EnableMSInfoProvider
     @TestPropertySource(properties = {
             "cloud.microservice.namespace=default",
@@ -108,7 +107,6 @@ public class LocalMSInfoProviderTest {
     private static class LocalDevDefaultNamespaceConfigTest {
     }
 
-    @RunWith(SpringJUnit4ClassRunner.class)
     @EnableMSInfoProvider
     @TestPropertySource(properties = {
             "cloud.microservice.namespace= ",

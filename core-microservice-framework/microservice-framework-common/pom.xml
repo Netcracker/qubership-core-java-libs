@@ -10,7 +10,6 @@
     </parent>
 
     <properties>
-        <powermock.version>2.0.9</powermock.version>
         <jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
     </properties>
 
