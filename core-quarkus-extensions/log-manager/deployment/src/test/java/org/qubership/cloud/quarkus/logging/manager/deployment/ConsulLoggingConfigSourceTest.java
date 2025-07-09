@@ -1,7 +1,6 @@
 package org.qubership.cloud.quarkus.logging.manager.deployment;
 
 import org.qubership.cloud.log.manager.common.LogManager;
-import io.quarkus.arc.Arc;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
