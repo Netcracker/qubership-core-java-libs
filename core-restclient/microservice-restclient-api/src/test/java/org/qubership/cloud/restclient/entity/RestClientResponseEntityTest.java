@@ -1,18 +1,21 @@
 package org.qubership.cloud.restclient.entity;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class RestClientResponseEntityTest {
+
+class RestClientResponseEntityTest {
 
     @Test
-    public void verifyEquality() {
+    void verifyEquality() {
         List<String> list = new ArrayList<>();
         String responseBody = "resp";
         Map<String, List<String>> header = new HashMap<>();
@@ -23,7 +26,7 @@ public class RestClientResponseEntityTest {
     }
 
     @Test
-    public void verifyNotEqualWhenBodyisDifferent() {
+    void verifyNotEqualWhenBodyisDifferent() {
         List<String> list = new ArrayList<>();
         String responseBody = "resp";
         String responseBody2 = "resp2";
@@ -35,7 +38,7 @@ public class RestClientResponseEntityTest {
     }
 
     @Test
-    public void verifyNotEqualWhenHeaderisDifferent() {
+    void verifyNotEqualWhenHeaderisDifferent() {
         List<String> list = new ArrayList<>();
         String responseBody = "resp";
         Map<String, List<String>> header = new HashMap<>();
@@ -48,7 +51,7 @@ public class RestClientResponseEntityTest {
     }
 
     @Test
-    public void verifyNotEqualWhenStatusCodeisDifferent() {
+    void verifyNotEqualWhenStatusCodeisDifferent() {
         List<String> list = new ArrayList<>();
         String responseBody = "resp";
         Map<String, List<String>> header = new HashMap<>();
@@ -59,7 +62,7 @@ public class RestClientResponseEntityTest {
     }
 
     @Test
-    public void verifyIfNotInstanceOFRestClientResponseEntity() {
+    void verifyIfNotInstanceOFRestClientResponseEntity() {
         List<String> list = new ArrayList<>();
         Void responseBody = null;
         Map<String, List<String>> header = new HashMap<>();
