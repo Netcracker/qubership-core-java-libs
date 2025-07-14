@@ -63,5 +63,5 @@ http://consul-server:8500/v1/kv/logging/test-namespace/test-app/logging/level/co
 
 ```java
 Logger myLogger = Logger.getLogger("com.example.cloud");
-//myLogger.getLevel() will be equals the value of the level set in the Сonsul
+//myLogger.getLevel() will be equals the value of the level set in the Consul
 ```

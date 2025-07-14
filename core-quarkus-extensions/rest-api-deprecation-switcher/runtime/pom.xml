@@ -11,17 +11,10 @@
     <artifactId>rest-api-deprecation-switcher-quarkus</artifactId>
 
     <dependencies>
-        <!--VLLA: убрать exclusion-->
         <dependency>
             <groupId>org.qubership.cloud</groupId>
             <artifactId>rest-api-deprecation-switcher-common</artifactId>
             <version>${rest-libraries.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.qubership.cloud</groupId>
-                    <artifactId>core-error-handling-rest</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.qubership.cloud</groupId>
