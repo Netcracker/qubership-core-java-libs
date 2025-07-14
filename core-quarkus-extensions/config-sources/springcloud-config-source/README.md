@@ -42,7 +42,7 @@ public Map<String, String> getProperties()
 
 With this method, you can get properties from config-server in runtime.
 
-Сreate an instance of the PropertyManager class:
+Create an instance of the PropertyManager class:
 ```java
 private PropertyManager pm = PropertyManager.getInstance();
 ```
