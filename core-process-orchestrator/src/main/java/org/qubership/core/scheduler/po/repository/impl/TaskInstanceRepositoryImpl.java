@@ -76,6 +76,21 @@ public class TaskInstanceRepositoryImpl extends AbstractRepository implements Ta
     }
 
     @Override
+    public void addTaskInstancesBulk(List<TaskInstanceImpl> taskInstances) {
+        String query = "insert into " + tableName + " (task_id,name,def_id,version, state,type,pi_id,depends_on) values(?,?,?,?,?,?,?,?)";
+        jdbcRunner.executeBatch(query, taskInstances, (taskInstance, p) -> {
+            p.setString(1, taskInstance.getId());
+            p.setString(2, taskInstance.getName());
+            p.setString(3, "1");
+            p.setInt(4, taskInstance.getVersion());
+            p.setString(5, taskInstance.getState().toString());
+            p.setString(6, taskInstance.getType());
+            p.setString(7, taskInstance.getProcessID());
+            p.setObject(8, serializer.serialize(taskInstance.getDependsOn()));
+        });
+    }
+
+    @Override
     public TaskInstanceImpl getTaskInstance(String id) {
         return jdbcRunner.query(
                 "select * from " +

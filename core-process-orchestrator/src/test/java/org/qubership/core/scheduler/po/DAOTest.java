@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.util.Calendar;
+import java.util.List;
 
 class DAOTest {
 
@@ -110,5 +111,22 @@ class DAOTest {
         newTask = taskInstanceRepository.getTaskInstance("1");
         Assertions.assertEquals(taskInstance, newTask);
 
+    }
+
+    @Test
+    void testAddTasksInBulkRepository() {
+        TaskInstanceRepository taskInstanceRepository = new TaskInstanceRepositoryImpl(dataSource);
+
+        TaskInstanceImpl taskInstance1 = new TaskInstanceImpl("1", "TestTask1", DummyTask2.class.getName(), "2");
+        TaskInstanceImpl taskInstance2 = new TaskInstanceImpl("2", "TestTask2", DummyTask2.class.getName(), "2");
+        taskInstance1.setState(TaskState.NOT_STARTED);
+        taskInstance2.setState(TaskState.IN_PROGRESS);
+
+        taskInstanceRepository.addTaskInstancesBulk(List.of(taskInstance1, taskInstance2));
+        TaskInstanceImpl newTask1 = taskInstanceRepository.getTaskInstance("1");
+        TaskInstanceImpl newTask2 = taskInstanceRepository.getTaskInstance("2");
+
+        Assertions.assertEquals(taskInstance1, newTask1);
+        Assertions.assertEquals(taskInstance2, newTask2);
     }
 }
