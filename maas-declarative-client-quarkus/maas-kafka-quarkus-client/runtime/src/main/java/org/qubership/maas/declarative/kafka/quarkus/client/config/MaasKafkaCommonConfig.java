@@ -21,7 +21,7 @@ import org.qubership.maas.declarative.kafka.quarkus.client.impl.QuarkusContextPr
 import org.qubership.maas.declarative.kafka.quarkus.client.impl.QuarkusKafkaClientCreationServiceImpl;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 
 import static org.qubership.maas.declarative.kafka.client.impl.client.consumer.filter.impl.ContextPropagationFilter.CONTEXT_PROPAGATION_ORDER;
 import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 @Singleton
 public class MaasKafkaCommonConfig {
@@ -71,11 +72,10 @@ public class MaasKafkaCommonConfig {
     @Singleton
     @Produces
     @DefaultBean
-    KafkaClientCreationService defaultKafkaClientCreationService(MeterRegistry meterRegistry) {
-        if (props.kafkaMonitoringEnabled) {
-            return new QuarkusKafkaClientCreationServiceImpl(meterRegistry, props.tracingEnabled);
-        }
-        return new QuarkusKafkaClientCreationServiceImpl(null, props.tracingEnabled);
+    KafkaClientCreationService defaultKafkaClientCreationService(MeterRegistry meterRegistry, Instance<OpenTelemetry> openTelemetry) {
+        var metrics = TRUE.equals(props.kafkaMonitoringEnabled) ? meterRegistry : null;
+        var telemetry = TRUE.equals(props.tracingEnabled) && openTelemetry.isResolvable() ? openTelemetry.get() : null;
+        return new QuarkusKafkaClientCreationServiceImpl(metrics, telemetry);
     }
 
     @Singleton
@@ -118,12 +118,12 @@ public class MaasKafkaCommonConfig {
     @ApplicationScoped
     @Named("maasTracingVertexFilter")
     @DefaultBean
-    public ConsumerRecordFilter tracingVertexFilter(Vertx vertx) {
-        if (FALSE.equals(props.tracingEnabled)) {
+    public ConsumerRecordFilter tracingVertexFilter(Vertx vertx, Instance<OpenTelemetry> openTelemetryInstance) {
+        if (FALSE.equals(props.tracingEnabled) || !openTelemetryInstance.isResolvable()) {
             return NoopFilter.INSTANCE;
         }
         return new ConsumerRecordFilter() {
-            final KafkaInstrumenterFactory instrumenterFactory = new KafkaInstrumenterFactory(GlobalOpenTelemetry.get(), "maas-declarative-kafka");
+            final KafkaInstrumenterFactory instrumenterFactory = new KafkaInstrumenterFactory(openTelemetryInstance.get(), "maas-declarative-kafka");
             final Instrumenter<KafkaProcessRequest, Void> consumerProcessInstrumenter = instrumenterFactory.createConsumerProcessInstrumenter();
 
             @Override

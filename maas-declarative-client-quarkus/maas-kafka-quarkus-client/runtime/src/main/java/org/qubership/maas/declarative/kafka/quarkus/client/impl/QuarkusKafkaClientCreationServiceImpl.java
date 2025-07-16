@@ -6,7 +6,7 @@ import org.qubership.maas.declarative.kafka.client.impl.client.creator.KafkaClie
 import org.qubership.maas.declarative.kafka.client.impl.common.bg.KafkaConsumerConfiguration;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.kafka.KafkaClientMetrics;
-import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.instrumentation.kafkaclients.v2_6.KafkaTelemetry;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -19,20 +19,20 @@ import java.util.function.Function;
 
 public class QuarkusKafkaClientCreationServiceImpl extends KafkaClientCreationServiceImpl {
     private final MeterRegistry registry;
-    private final boolean tracingEnabled;
+    private final OpenTelemetry telemetry;
 
-    public QuarkusKafkaClientCreationServiceImpl(MeterRegistry registry, Boolean tracingEnabled) {
+    public QuarkusKafkaClientCreationServiceImpl(MeterRegistry registry, OpenTelemetry telemetry) {
         this.registry = registry;
-        this.tracingEnabled = tracingEnabled;
+        this.telemetry = telemetry;
     }
 
     @Override
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public Producer createKafkaProducer(Map<String, Object> configs, Serializer keySerializer, Serializer valueSerializer) {
         Producer kafkaProducer = super.createKafkaProducer(configs, keySerializer, valueSerializer);
 
-        if (tracingEnabled) {
-            KafkaTelemetry telemetry = KafkaTelemetry.create(GlobalOpenTelemetry.get());
-            kafkaProducer = telemetry.wrap(kafkaProducer);
+        if (telemetry != null) {
+            kafkaProducer = KafkaTelemetry.create(telemetry).wrap(kafkaProducer);
         }
 
         if (registry != null) {

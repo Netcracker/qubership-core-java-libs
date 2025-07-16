@@ -5,6 +5,7 @@ import org.qubership.maas.declarative.kafka.client.api.model.MaasKafkaConsumerCr
 import org.qubership.maas.declarative.kafka.client.api.model.MaasKafkaProducerCreationRequest;
 import org.qubership.maas.declarative.kafka.client.api.model.MaasProducerRecord;
 import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.context.Scope;
@@ -72,13 +73,8 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
     MaasKafkaClientFactory clientFactory;
     @Inject
     MaasKafkaClientStateManagerService eventService;
-
-    @BeforeAll
-    static void beforeAll() {
-        OpenTelemetrySdk.builder()
-                .setPropagators(ContextPropagators.create(B3Propagator.injectingMultiHeaders()))
-                .buildAndRegisterGlobal();
-    }
+    @Inject
+    OpenTelemetry openTelemetry;
 
     @Test
     @Timeout(value = 60)
@@ -248,7 +244,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
                 consumer.activateSync();
                 producer.activateSync();
 
-                Span span = GlobalOpenTelemetry.get().getTracer("test").spanBuilder("tracing-test").startSpan();
+                Span span = openTelemetry.getTracer("test").spanBuilder("tracing-test").startSpan();
                 try (Scope ignored = span.makeCurrent()) {
                     String spanId = span.getSpanContext().getSpanId();
 
@@ -316,7 +312,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
                         null,
                         null
                 );
-                Span span = GlobalOpenTelemetry.get().getTracer("test").spanBuilder("tracing-test").startSpan();
+                Span span = openTelemetry.getTracer("test").spanBuilder("tracing-test").startSpan();
                 try (Scope ignored = span.makeCurrent()) {
                     SpanContext spanContext = span.getSpanContext();
                     producer.sendSync(producerRecord);
