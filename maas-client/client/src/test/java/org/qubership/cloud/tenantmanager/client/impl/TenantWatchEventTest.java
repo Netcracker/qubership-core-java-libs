@@ -26,13 +26,13 @@ class TenantWatchEventTest {
 
 	@Test
 	public void testNonEmptyMessage() throws JsonProcessingException {
-		String json = "{\"type\":\"MODIFIED\",\"tenants\":[{\"objectId\":\"233a1c4c-dde1-4766-9ca5-c0b21400c2b7\",\"externalId\":\"57b5e723-3970-4cde-a5d1-cfee509eecd0\",\"namespace\":null,\"status\":\"ACTIVE\",\"name\":\"seli1015-tenant2\",\"domainName\":null,\"workbook\":null,\"admin\":{\"login\":\"sergey.lisovoy@qubership.org\",\"password\":null,\"firstName\":\"Sergey\",\"lastName\":\"Lisovoy\"}}]}";
+		String json = "{\"type\":\"MODIFIED\",\"tenants\":[{\"objectId\":\"233a1c4c-dde1-4766-9ca5-c0b21400c2b7\",\"externalId\":\"57b5e723-3970-4cde-a5d1-cfee509eecd0\",\"namespace\":null,\"status\":\"ACTIVE\",\"name\":\"user-tenant2\",\"domainName\":null,\"workbook\":null,\"admin\":{\"login\":\"test@example.com\",\"password\":null,\"firstName\":\"Sergey\",\"lastName\":\"Lisovoy\"}}]}";
 		TenantWatchEvent obj = new ObjectMapper().readValue(json, TenantWatchEvent.class);
 		assertEquals(TenantWatchEvent.EventType.MODIFIED, obj.getType());
 		assertEquals(1, obj.getTenants().size());
 		Tenant tenant = obj.getTenants().get(0);
 		assertEquals("57b5e723-3970-4cde-a5d1-cfee509eecd0", tenant.getExternalId());
 		assertEquals("ACTIVE", tenant.getStatus());
-		assertEquals("seli1015-tenant2", tenant.getName());
+		assertEquals("user-tenant2", tenant.getName());
 	}
 }

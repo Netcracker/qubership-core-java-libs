@@ -365,7 +365,7 @@ class KafkaMaaSClientImplTest {
                                                     "        \"name\" : \"orders\",\n" +
                                                     "        \"namespace\" : \"cloudbss-kube-core-demo-2\"\n" +
                                                     "      },\n" +
-                                                    "      \"name\" : \"seli1015-test1\",\n" +
+                                                    "      \"name\" : \"user-test1\",\n" +
                                                     "      \"template\" : \"base\",\n" +
                                                     "      \"configs\" : {\n" +
                                                     "        \"compression.type\" : \"snappy\"\n" +
@@ -383,7 +383,7 @@ class KafkaMaaSClientImplTest {
                                     "          \"my-kafka.kafka-cluster:9092\"\n" +
                                     "       ]\n" +
                                     "  }, \n" +
-                                    "  \"name\": \"seli1015-test1\",\n" +
+                                    "  \"name\": \"user-test1\",\n" +
                                     "  \"classifier\": {\n" +
                                     "    \"name\": \"orders\",\n" +
                                     "    \"namespace\": \"cloudbss-kube-core-demo-2\",\n" +
@@ -417,12 +417,12 @@ class KafkaMaaSClientImplTest {
             TopicAddress topicAddress = client.getOrCreateTopic(new Classifier("orders"),
                     TopicCreateOptions.builder()
                             .onTopicExists(OnTopicExists.MERGE)
-                            .name("seli1015-test1")
+                            .name("user-test1")
                             .config("compression.type", "snappy")
                             .template("base")
                             .build());
             assertNotNull(topicAddress);
-            assertEquals("seli1015-test1", topicAddress.getTopicName());
+            assertEquals("user-test1", topicAddress.getTopicName());
             assertEquals("my-kafka.kafka-cluster:9092", topicAddress.getBoostrapServers("PLAINTEXT"));
         });
     }
@@ -451,7 +451,7 @@ class KafkaMaaSClientImplTest {
                         response()
                                 .withStatusCode(200)
                                 .withBody("{\n" +
-                                        "  \"name\": \"seli1015-test1\"\n" +
+                                        "  \"name\": \"user-test1\"\n" +
                                         "}\n")
                 );
 
@@ -459,9 +459,9 @@ class KafkaMaaSClientImplTest {
                 var client = createKafkaClient("http://localhost:" + mockServer.getPort());
                 TopicAddress topicAddress = client.getOrCreateTopic(new Classifier("orders"),
                         TopicCreateOptions.builder()
-                                .name("seli1015-test1")
+                                .name("user-test1")
                                 .build());
-                assertEquals("seli1015-test1", topicAddress.getTopicName());
+                assertEquals("user-test1", topicAddress.getTopicName());
             });
         });
     }
@@ -487,7 +487,7 @@ class KafkaMaaSClientImplTest {
                                                     "        \"name\" : \"orders\",\n" +
                                                     "        \"namespace\" : \"cloudbss-kube-core-demo-2\"\n" +
                                                     "      },\n" +
-                                                    "      \"name\" : \"seli1015-test1\",\n" +
+                                                    "      \"name\" : \"user-test1\",\n" +
                                                     "      \"minNumPartitions\" : 2\n" +
                                                     "    }",
                                             MatchType.STRICT
@@ -502,7 +502,7 @@ class KafkaMaaSClientImplTest {
                                     "          \"my-kafka.kafka-cluster:9092\"\n" +
                                     "       ]\n" +
                                     "  }, \n" +
-                                    "  \"name\": \"seli1015-test1\",\n" +
+                                    "  \"name\": \"user-test1\",\n" +
                                     "  \"classifier\": {\n" +
                                     "    \"name\": \"orders\",\n" +
                                     "    \"namespace\": \"cloudbss-kube-core-demo-2\",\n" +
@@ -534,11 +534,11 @@ class KafkaMaaSClientImplTest {
             TopicAddress topicAddress = client.getOrCreateTopic(new Classifier("orders"),
                     TopicCreateOptions.builder()
                             .onTopicExists(OnTopicExists.MERGE)
-                            .name("seli1015-test1")
+                            .name("user-test1")
                             .minNumPartitions(2)
                             .build());
             assertNotNull(topicAddress);
-            assertEquals("seli1015-test1", topicAddress.getTopicName());
+            assertEquals("user-test1", topicAddress.getTopicName());
             assertEquals("my-kafka.kafka-cluster:9092", topicAddress.getBoostrapServers("PLAINTEXT"));
         });
     }

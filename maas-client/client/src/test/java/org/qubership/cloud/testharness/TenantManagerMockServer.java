@@ -84,29 +84,29 @@ public class TenantManagerMockServer implements WebsockServer {
 
     public String addFirstActivatedTenant() {
         messagesQueue.add("a[\"MESSAGE\\nmessage-id:90c683e4-80a5-4b3f-be4d-2e8881162b2a\\nsubscription:9abb0688-6426-4c88-a535-64ba223e89d2\\n\\n" +
-                "{\\\"type\\\":\\\"MODIFIED\\\",\\\"tenants\\\":[{\\\"externalId\\\":\\\"233a1c4c-dde1-4766-9ca5-c0b21400c2b7\\\",\\\"objectId\\\":\\\"57b5e723-3970-4cde-a5d1-cfee509eecd0\\\",\\\"namespace\\\":null,\\\"status\\\":\\\"ACTIVE\\\",\\\"name\\\":\\\"seli1015-tenant2\\\",\\\"domainName\\\":null,\\\"workbook\\\":null,\\\"admin\\\":{\\\"login\\\":\\\"sergey.lisovoy@qubership.org\\\",\\\"password\\\":null,\\\"firstName\\\":\\\"Sergey\\\",\\\"lastName\\\":\\\"Lisovoy\\\"}}]}\\u0000\"]");
+                "{\\\"type\\\":\\\"MODIFIED\\\",\\\"tenants\\\":[{\\\"externalId\\\":\\\"233a1c4c-dde1-4766-9ca5-c0b21400c2b7\\\",\\\"objectId\\\":\\\"57b5e723-3970-4cde-a5d1-cfee509eecd0\\\",\\\"namespace\\\":null,\\\"status\\\":\\\"ACTIVE\\\",\\\"name\\\":\\\"user-tenant2\\\",\\\"domainName\\\":null,\\\"workbook\\\":null,\\\"admin\\\":{\\\"login\\\":\\\"test@example.com\\\",\\\"password\\\":null,\\\"firstName\\\":\\\"Sergey\\\",\\\"lastName\\\":\\\"Lisovoy\\\"}}]}\\u0000\"]");
         return "233a1c4c-dde1-4766-9ca5-c0b21400c2b7";
     }
 
     public String addSecondActivatedTenant() {
         messagesQueue.add("a[\"MESSAGE\\nmessage-id:90c683e4-80a5-4b3f-be4d-2e8881162b2a\\nsubscription:9abb0688-6426-4c88-a535-64ba223e89d2\\n\\n" +
-                "{\\\"type\\\":\\\"MODIFIED\\\",\\\"tenants\\\":[{\\\"externalId\\\":\\\"800eb78d-9878-4222-82e9-9bc1fde13196\\\",\\\"objectId\\\":\\\"4dd2d500-3ee3-40a8-bb79-5e535c533da1\\\",\\\"namespace\\\":null,\\\"status\\\":\\\"ACTIVE\\\",\\\"name\\\":\\\"seli1015-tenant2\\\",\\\"domainName\\\":null,\\\"workbook\\\":null,\\\"admin\\\":{\\\"login\\\":\\\"sergey.lisovoy@qubership.org\\\",\\\"password\\\":null,\\\"firstName\\\":\\\"Sergey\\\",\\\"lastName\\\":\\\"Lisovoy\\\"}}]}\\u0000\"]");
+                "{\\\"type\\\":\\\"MODIFIED\\\",\\\"tenants\\\":[{\\\"externalId\\\":\\\"800eb78d-9878-4222-82e9-9bc1fde13196\\\",\\\"objectId\\\":\\\"4dd2d500-3ee3-40a8-bb79-5e535c533da1\\\",\\\"namespace\\\":null,\\\"status\\\":\\\"ACTIVE\\\",\\\"name\\\":\\\"user-tenant2\\\",\\\"domainName\\\":null,\\\"workbook\\\":null,\\\"admin\\\":{\\\"login\\\":\\\"test@example.com\\\",\\\"password\\\":null,\\\"firstName\\\":\\\"Sergey\\\",\\\"lastName\\\":\\\"Lisovoy\\\"}}]}\\u0000\"]");
         return "800eb78d-9878-4222-82e9-9bc1fde13196";
     }
 
     public void deleteFirstTenant() {
         messagesQueue.add("a[\"MESSAGE\\nmessage-id:f80afd14-d611-494e-bbc6-9429b63df12e\\nsubscription:9abb0688-6426-4c88-a535-64ba223e89d2\\n\\n" +
-                "{\\\"type\\\":\\\"DELETED\\\",\\\"tenants\\\":[{\\\"externalId\\\":\\\"233a1c4c-dde1-4766-9ca5-c0b21400c2b7\\\",\\\"objectId\\\":\\\"57b5e723-3970-4cde-a5d1-cfee509eecd0\\\",\\\"namespace\\\":null,\\\"status\\\":\\\"DELETING\\\",\\\"name\\\":\\\"seli1015-tenant2\\\",\\\"domainName\\\":null,\\\"workbook\\\":null,\\\"admin\\\":{\\\"login\\\":\\\"sergey.lisovoy@qubership.org\\\",\\\"password\\\":null,\\\"firstName\\\":\\\"Sergey\\\",\\\"lastName\\\":\\\"Lisovoy\\\"}}]}\\u0000\"]");
+                "{\\\"type\\\":\\\"DELETED\\\",\\\"tenants\\\":[{\\\"externalId\\\":\\\"233a1c4c-dde1-4766-9ca5-c0b21400c2b7\\\",\\\"objectId\\\":\\\"57b5e723-3970-4cde-a5d1-cfee509eecd0\\\",\\\"namespace\\\":null,\\\"status\\\":\\\"DELETING\\\",\\\"name\\\":\\\"user-tenant2\\\",\\\"domainName\\\":null,\\\"workbook\\\":null,\\\"admin\\\":{\\\"login\\\":\\\"test@example.com\\\",\\\"password\\\":null,\\\"firstName\\\":\\\"Sergey\\\",\\\"lastName\\\":\\\"Lisovoy\\\"}}]}\\u0000\"]");
     }
 
     public void deactivateSecondTenant() {
         messagesQueue.add("a[\"MESSAGE\\nmessage-id:90c683e4-80a5-4b3f-be4d-2e8881162b2a\\nsubscription:9abb0688-6426-4c88-a535-64ba223e89d2\\n\\n" +
-                "{\\\"type\\\":\\\"MODIFIED\\\",\\\"tenants\\\":[{\\\"externalId\\\":\\\"800eb78d-9878-4222-82e9-9bc1fde13196\\\",\\\"objectId\\\":\\\"4dd2d500-3ee3-40a8-bb79-5e535c533da1\\\",\\\"namespace\\\":null,\\\"status\\\":\\\"SUSPENDED\\\",\\\"name\\\":\\\"seli1015-tenant2\\\",\\\"domainName\\\":null,\\\"workbook\\\":null,\\\"admin\\\":{\\\"login\\\":\\\"sergey.lisovoy@qubership.org\\\",\\\"password\\\":null,\\\"firstName\\\":\\\"Sergey\\\",\\\"lastName\\\":\\\"Lisovoy\\\"}}]}\\u0000\"]");
+                "{\\\"type\\\":\\\"MODIFIED\\\",\\\"tenants\\\":[{\\\"externalId\\\":\\\"800eb78d-9878-4222-82e9-9bc1fde13196\\\",\\\"objectId\\\":\\\"4dd2d500-3ee3-40a8-bb79-5e535c533da1\\\",\\\"namespace\\\":null,\\\"status\\\":\\\"SUSPENDED\\\",\\\"name\\\":\\\"user-tenant2\\\",\\\"domainName\\\":null,\\\"workbook\\\":null,\\\"admin\\\":{\\\"login\\\":\\\"test@example.com\\\",\\\"password\\\":null,\\\"firstName\\\":\\\"Sergey\\\",\\\"lastName\\\":\\\"Lisovoy\\\"}}]}\\u0000\"]");
     }
 
     public void start() {
         messagesQueue.clear();
-        messagesQueue.add("a[\"MESSAGE\\nsubscription:9abb0688-6426-4c88-a535-64ba223e89d2\\n\\n{\\\"type\\\":\\\"SUBSCRIBED\\\",\\\"tenants\\\":[{\\\"externalId\\\":\\\"9bcacf1e-20cb-4dd2-970e-404c354bcd8f\\\",\\\"objectId\\\":null,\\\"namespace\\\":null,\\\"status\\\":\\\"AWAITING_APPROVAL\\\",\\\"name\\\":\\\"seli1015-tenant1\\\",\\\"domainName\\\":null,\\\"workbook\\\":null,\\\"admin\\\":{\\\"login\\\":\\\"sergey.lisovoy@qubership.org\\\",\\\"password\\\":null,\\\"firstName\\\":\\\"Sergey\\\",\\\"lastName\\\":\\\"Lisovoy\\\"}}]}\\u0000\"]");
+        messagesQueue.add("a[\"MESSAGE\\nsubscription:9abb0688-6426-4c88-a535-64ba223e89d2\\n\\n{\\\"type\\\":\\\"SUBSCRIBED\\\",\\\"tenants\\\":[{\\\"externalId\\\":\\\"9bcacf1e-20cb-4dd2-970e-404c354bcd8f\\\",\\\"objectId\\\":null,\\\"namespace\\\":null,\\\"status\\\":\\\"AWAITING_APPROVAL\\\",\\\"name\\\":\\\"user-tenant1\\\",\\\"domainName\\\":null,\\\"workbook\\\":null,\\\"admin\\\":{\\\"login\\\":\\\"test@example.com\\\",\\\"password\\\":null,\\\"firstName\\\":\\\"Sergey\\\",\\\"lastName\\\":\\\"Lisovoy\\\"}}]}\\u0000\"]");
         server.start();
 
         heartbeatTimer = new Timer(true);
