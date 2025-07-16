@@ -114,7 +114,7 @@ class DbaasOpensearchClientImplTest {
     }
 
     @Test
-    void createCustomTenantDatabase() throws IOException { //TODO аверное в opensearchClient тоит добавить возомжность конфигурить DatabaseConfig
+    void createCustomTenantDatabase() throws IOException { // TODO: probably should add the ability to configure DatabaseConfig in opensearchClient
         ContextManager.set(TENANT_CONTEXT_NAME, new TenantContextObject("1234"));
         String fullName = tenantClient.normalize("uniq_name");
         Map<String, String> indexData = Map.of("message", "test message");
@@ -132,7 +132,7 @@ class DbaasOpensearchClientImplTest {
 
     @Test
     @DirtiesContext
-    void createCustomTenantDatabaseWithCutomBuild() throws IOException { //TODO аверное в opensearchClient тоит добавить возомжность конфигурить DatabaseConfig
+    void createCustomTenantDatabaseWithCutomBuild() throws IOException { // TODO: probably should add the ability to configure DatabaseConfig in opensearchClient
         ContextManager.set(TENANT_CONTEXT_NAME, new TenantContextObject("1234"));
 
         DatabaseConfig.Builder builder = DatabaseConfig.builder();
