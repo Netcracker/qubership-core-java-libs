@@ -22,7 +22,7 @@
 Maas client consist of two parts:
 * maas-client-core - Tiny, pure java client to MaaS
 * rabbit-context-propagation - utility classes for propagation and restoration of B/G version context
-* maas-client-quarkus - Core client with beans for Quarkus now located at: https://git.qubership.org/PROD.Platform.Cloud_Core/libs/cloud-core-quarkus-extensions
+* maas-client-quarkus - Core client with beans for Quarkus now located at: https://github.com/Netcracker/qubership-core-quarkus-extensions
 
 # Tiny, pure java client
 Thin layer to MaaS with following requirements in mind:
@@ -47,8 +47,8 @@ For more information about variables see: [Parameters Provided by Deployer to Ap
 To add missed variables to your pod runtime environment, you need to edit your deployment chart files.  
 
 ## Start
-First of all we need to create instance of [MaaSAPIClient](https://git.qubership.org/PROD.Platform.Cloud_Core/libs/maas-client/-/blob/main/core/src/main/java/com/qubership/cloud/maas/client/api/MaaSAPIClient.java). 
-Default implementation for this interface is [MaaSAPIClientImpl](https://git.qubership.org/PROD.Platform.Cloud_Core/libs/maas-client/-/blob/main/core/src/main/java/com/qubership/cloud/maas/client/impl/MaaSAPIClientImpl.java).
+First of all we need to create instance of [MaaSAPIClient](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/org/qubership/cloud/maas/client/api/MaaSAPIClient.java). 
+Default implementation for this interface is [MaaSAPIClientImpl](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/org/qubership/cloud/maas/client/impl/MaaSAPIClientImpl.java).
 MaaSAPIClientImpl requires single parameter to instantiate - M2M auth token supplier. This token will be used to:
 * interact with maas-agent microservice
 * subscribe to tenant-manager tenant activation/deactivation events (tenant-topics feature)
@@ -61,7 +61,7 @@ MaaSClient client = new MaaSAPIClientImpl(() -> M2MManager.getInstance().getToke
    
 
 ## Kafka client usage example
-All MaaS operations for Kafka is collected in [KafkaMaaSClient](https://git.qubership.org/PROD.Platform.Cloud_Core/libs/maas-client/-/blob/main/core/src/main/java/com/qubership/cloud/maas/client/api/kafka/KafkaMaaSClient.java). To obtain *new* instance of MaaS Kafka client just call: 
+All MaaS operations for Kafka is collected in [KafkaMaaSClient](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/org/qubership/cloud/maas/client/api/kafka/KafkaMaaSClient.java). To obtain *new* instance of MaaS Kafka client just call: 
 ```java
 KafkaMaaSClient kafkaClient = client.getKafkaClient();
 ```
@@ -146,7 +146,7 @@ KafkaContextPropagation.restoreContext(message.headers());
 ```
 
 ## RabbitMQ client usage example
-All MaaS operations for RabbitMQ is collected in [RabbitMaaSClient](https://git.qubership.org/PROD.Platform.Cloud_Core/libs/maas-client/-/blob/main/client/src/main/java/com/qubership/cloud/maas/client/api/rabbit/RabbitMaaSClient.java). 
+All MaaS operations for RabbitMQ is collected in [RabbitMaaSClient](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/org/qubership/cloud/maas/client/api/rabbit/RabbitMaaSClient.java). 
 To obtain *new* instance of MaaS RabbitMQ client just call:
 ```java
 RabbitMaaSClient rabbitClient = client.getRabbitClient();
