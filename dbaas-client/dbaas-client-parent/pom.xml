@@ -18,12 +18,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
-        <maven.compiler.plugin.version>3.12.1</maven.compiler.plugin.version>
+        <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
         <mockito.version>5.14.2</mockito.version>
         <powermock.version>2.0.9</powermock.version>
-        <jacoco.plugin.version>0.8.12</jacoco.plugin.version>
+        <jacoco.plugin.version>0.8.13</jacoco.plugin.version>
         <cassandra-unit.version>4.3.1.0</cassandra-unit.version>
-        <maven.surefire.version>3.3.0</maven.surefire.version>
+        <maven.surefire.version>3.5.3</maven.surefire.version>
 
         <io.grpc.version>1.65.1</io.grpc.version>
         <sonar.coverage.jacoco.xmlReportPaths>
@@ -62,7 +62,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.3.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
