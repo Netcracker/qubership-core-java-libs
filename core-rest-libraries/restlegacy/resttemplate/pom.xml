@@ -82,7 +82,7 @@
                 <configuration>
                     <parameters>true</parameters>
                 </configuration>
-                <version>3.12.1</version>
+                <version>3.14.0</version>
             </plugin>
         </plugins>
     </build>
