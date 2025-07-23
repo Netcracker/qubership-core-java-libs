@@ -18,8 +18,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
-        <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
-        <build.plugins.plugin.version>3.2.1</build.plugins.plugin.version>
+        <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
+        <build.plugins.plugin.version>3.3.1</build.plugins.plugin.version>
         <okhttp3.version>4.12.0</okhttp3.version>
         <mockito.version>5.14.2</mockito.version>
         <spring.version>6.2.8</spring.version>
@@ -72,7 +72,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.12</version>
+                <version>0.8.13</version>
                 <executions>
                     <execution>
                         <goals>
