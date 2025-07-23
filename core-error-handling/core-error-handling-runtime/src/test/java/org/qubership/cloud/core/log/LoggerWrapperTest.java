@@ -11,9 +11,11 @@ import org.qubership.cloud.utils.TestUpperException;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class LoggerWrapperTest {
@@ -42,77 +44,77 @@ class LoggerWrapperTest {
         @Test
         void testGetName() {
             when(mockLogger.getName()).thenReturn(TEST_LOGGER_NAME);
-            assertThat(loggerWrapper.getName()).isEqualTo(TEST_LOGGER_NAME);
+            assertEquals(TEST_LOGGER_NAME, loggerWrapper.getName());
             verify(mockLogger).getName();
         }
 
         @Test
         void testIsTraceEnabled() {
             when(mockLogger.isTraceEnabled()).thenReturn(true);
-            assertThat(loggerWrapper.isTraceEnabled()).isTrue();
+            assertTrue(loggerWrapper.isTraceEnabled());
             verify(mockLogger).isTraceEnabled();
         }
 
         @Test
         void testIsTraceEnabledWithMarker() {
             when(mockLogger.isTraceEnabled(mockMarker)).thenReturn(true);
-            assertThat(loggerWrapper.isTraceEnabled(mockMarker)).isTrue();
+            assertTrue(loggerWrapper.isTraceEnabled(mockMarker));
             verify(mockLogger).isTraceEnabled(mockMarker);
         }
 
         @Test
         void testIsDebugEnabled() {
             when(mockLogger.isDebugEnabled()).thenReturn(true);
-            assertThat(loggerWrapper.isDebugEnabled()).isTrue();
+            assertTrue(loggerWrapper.isDebugEnabled());
             verify(mockLogger).isDebugEnabled();
         }
 
         @Test
         void testIsDebugEnabledWithMarker() {
             when(mockLogger.isDebugEnabled(mockMarker)).thenReturn(true);
-            assertThat(loggerWrapper.isDebugEnabled(mockMarker)).isTrue();
+            assertTrue(loggerWrapper.isDebugEnabled(mockMarker));
             verify(mockLogger).isDebugEnabled(mockMarker);
         }
 
         @Test
         void testIsInfoEnabled() {
             when(mockLogger.isInfoEnabled()).thenReturn(true);
-            assertThat(loggerWrapper.isInfoEnabled()).isTrue();
+            assertTrue(loggerWrapper.isInfoEnabled());
             verify(mockLogger).isInfoEnabled();
         }
 
         @Test
         void testIsInfoEnabledWithMarker() {
             when(mockLogger.isInfoEnabled(mockMarker)).thenReturn(true);
-            assertThat(loggerWrapper.isInfoEnabled(mockMarker)).isTrue();
+            assertTrue(loggerWrapper.isInfoEnabled(mockMarker));
             verify(mockLogger).isInfoEnabled(mockMarker);
         }
 
         @Test
         void testIsWarnEnabled() {
             when(mockLogger.isWarnEnabled()).thenReturn(true);
-            assertThat(loggerWrapper.isWarnEnabled()).isTrue();
+            assertTrue(loggerWrapper.isWarnEnabled());
             verify(mockLogger).isWarnEnabled();
         }
 
         @Test
         void testIsWarnEnabledWithMarker() {
             when(mockLogger.isWarnEnabled(mockMarker)).thenReturn(true);
-            assertThat(loggerWrapper.isWarnEnabled(mockMarker)).isTrue();
+            assertTrue(loggerWrapper.isWarnEnabled(mockMarker));
             verify(mockLogger).isWarnEnabled(mockMarker);
         }
 
         @Test
         void testIsErrorEnabled() {
             when(mockLogger.isErrorEnabled()).thenReturn(true);
-            assertThat(loggerWrapper.isErrorEnabled()).isTrue();
+            assertTrue(loggerWrapper.isErrorEnabled());
             verify(mockLogger).isErrorEnabled();
         }
 
         @Test
         void testIsErrorEnabledWithMarker() {
             when(mockLogger.isErrorEnabled(mockMarker)).thenReturn(true);
-            assertThat(loggerWrapper.isErrorEnabled(mockMarker)).isTrue();
+            assertTrue(loggerWrapper.isErrorEnabled(mockMarker));
             verify(mockLogger).isErrorEnabled(mockMarker);
         }
     }
