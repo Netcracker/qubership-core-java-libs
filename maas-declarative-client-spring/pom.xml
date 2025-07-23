@@ -110,7 +110,7 @@ because spring-boot-based microservices are maven-inherited from spring-boot-par
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-                <version>1.6.0</version>
+                <version>1.7.1</version>
                 <configuration>
                     <updatePomFile>true</updatePomFile>
                     <flattenMode>resolveCiFriendliesOnly</flattenMode>
@@ -135,7 +135,7 @@ because spring-boot-based microservices are maven-inherited from spring-boot-par
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.12</version>
+                <version>0.8.13</version>
                 <executions>
                     <execution>
                         <goals>
@@ -160,7 +160,7 @@ because spring-boot-based microservices are maven-inherited from spring-boot-par
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-surefire-plugin</artifactId>
-                            <version>3.2.5</version>
+                            <version>3.5.3</version>
                             <configuration>
                                 <environmentVariables>
                                     <TESTCONTAINERS_RYUK_CONTAINER_IMAGE>
@@ -191,7 +191,7 @@ because spring-boot-based microservices are maven-inherited from spring-boot-par
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-surefire-plugin</artifactId>
-                            <version>3.2.5</version>
+                            <version>3.5.3</version>
                             <configuration>
                                 <environmentVariables>
                                     <DOCKER_HOST>${env.TEST_DOCKER_URL}</DOCKER_HOST>
