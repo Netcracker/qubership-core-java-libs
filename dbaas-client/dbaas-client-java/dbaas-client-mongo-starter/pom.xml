@@ -6,7 +6,7 @@
     <parent>
         <artifactId>dbaas-client-spring-parent</artifactId>
         <groupId>org.qubership.cloud</groupId>
-        <version>8.1.1-SNAPSHOT</version>
+        <version>8.1.1</version>
         <relativePath>./../dbaas-client-spring-parent/</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
