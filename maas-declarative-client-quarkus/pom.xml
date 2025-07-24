@@ -29,15 +29,15 @@
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
         <source-plugin.version>3.3.1</source-plugin.version>
 
-        <jandex.version>3.4.0</jandex.version>
+        <jandex.version>3.2.6</jandex.version>
         <curator.version>5.1.0</curator.version>
 
         <testcontainers.version>1.18.3</testcontainers.version>
         <assertj-core.version>3.26.3</assertj-core.version>
 
-        <maas-declarative-kafka-client.version>5.1.0</maas-declarative-kafka-client.version>
-        <maas-client-quarkus-kafka.version>8.1.0</maas-client-quarkus-kafka.version>
-        <blue-green-state-monitor-quarkus.version>1.1.0</blue-green-state-monitor-quarkus.version>
+        <maas-declarative-kafka-client.version>5.1.1</maas-declarative-kafka-client.version>
+        <maas-client-quarkus-kafka.version>8.1.1</maas-client-quarkus-kafka.version>
+        <blue-green-state-monitor-quarkus.version>1.1.1</blue-green-state-monitor-quarkus.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../maas-kafka-quarkus-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
