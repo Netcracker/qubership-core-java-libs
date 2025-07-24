@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.qubership.cloud.maas.declarative</groupId>
         <artifactId>maas-declarative-kafka-client-spring-bom</artifactId>
-        <version>6.1.1</version>
+        <version>6.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
