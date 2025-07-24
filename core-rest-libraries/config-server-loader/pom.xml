@@ -3,7 +3,7 @@
     <parent>
         <artifactId>rest-libraries-parent</artifactId>
         <groupId>org.qubership.cloud</groupId>
-        <version>6.1.1</version>
+        <version>6.1.2-SNAPSHOT</version>
         <relativePath>../rest-libraries-parent/pom.xml</relativePath>
     </parent>
 
