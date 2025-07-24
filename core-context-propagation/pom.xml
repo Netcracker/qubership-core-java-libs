@@ -4,7 +4,7 @@
 
     <groupId>org.qubership.cloud</groupId>
     <artifactId>context-propagation</artifactId>
-    <version>7.1.3</version>
+    <version>7.1.4-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -42,7 +42,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-context-propagation.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-core-context-propagation</url>
-        <tag>7.1.3</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <build>
