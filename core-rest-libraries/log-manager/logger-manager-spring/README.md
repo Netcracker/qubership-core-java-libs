@@ -38,7 +38,7 @@ spring:
     import: consul:${CONSUL_URL}
 ```
 
-When connecting these settings, connection to the Сonsul is required. If the Сonsul is unavailable, the application will not work and will throw an error.
+When connecting these settings, connection to the Consul is required. If the Consul is unavailable, the application will not work and will throw an error.
 
 ***Second option***. Consul is not required.
 If you want to use only log management and connecting to the Consul is not necessary for you, use the following settings:
@@ -71,5 +71,5 @@ This library allows you to connect an endpoint for obtaining levels.
 | `/api/logging/v1/levels`    |   `GET`     | Returns the map of all loggers, with information about logger names and levels |
 
 ##### LoggingUpdater
-This class allows to change logging levels via Сonsul based on the Spring Cloud library.
-This class implements the logic of default values of logging levels in case of deleting properties from the Сonsul.
+This class allows to change logging levels via Consul based on the Spring Cloud library.
+This class implements the logic of default values of logging levels in case of deleting properties from the Consul.
