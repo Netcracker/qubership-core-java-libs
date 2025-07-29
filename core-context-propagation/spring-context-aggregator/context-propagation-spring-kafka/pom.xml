@@ -10,7 +10,7 @@
 
     <artifactId>context-propagation-spring-kafka</artifactId>
     <properties>
-        <spring.kafka.version>3.3.7</spring.kafka.version>
+        <spring.kafka.version>3.3.8</spring.kafka.version>
     </properties>
     <dependencies>
         <dependency>
@@ -28,19 +28,19 @@
         <dependency>
             <groupId>org.qubership.cloud</groupId>
             <artifactId>framework-contexts</artifactId>
-            <version>7.1.2</version>
+            <version>7.1.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>3.4.7</version>
+            <version>3.4.8</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka-test</artifactId>
-            <version>3.3.7</version>
+            <version>3.3.8</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>

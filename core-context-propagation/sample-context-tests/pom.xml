@@ -15,7 +15,7 @@
     </licenses>
 
     <properties>
-        <spring.version>6.2.8</spring.version>
+        <spring.version>6.2.9</spring.version>
     </properties>
 
     <dependencies>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test</artifactId>
-            <version>3.4.7</version>
+            <version>3.4.8</version>
             <scope>test</scope>
         </dependency>
         <dependency>
