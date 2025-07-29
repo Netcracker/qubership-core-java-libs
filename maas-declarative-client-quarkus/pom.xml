@@ -16,7 +16,7 @@
     </licenses>
 
     <properties>
-        <quarkus.platform.version>3.15.5</quarkus.platform.version>
+        <quarkus.platform.version>3.15.6</quarkus.platform.version>
 
         <maven.compiler.release>17</maven.compiler.release>
         <maven.compiler.source>17</maven.compiler.source>
@@ -25,7 +25,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
-        <flatten-maven-plugin.version>1.7.1</flatten-maven-plugin.version>
+        <flatten-maven-plugin.version>1.7.2</flatten-maven-plugin.version>
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
         <source-plugin.version>3.3.1</source-plugin.version>
 
