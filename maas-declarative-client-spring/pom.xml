@@ -26,8 +26,8 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
-        <spring-boot.version>3.4.7</spring-boot.version>
-        <spring-cloud.version>2024.0.1</spring-cloud.version>
+        <spring-boot.version>3.4.8</spring-boot.version>
+        <spring-cloud.version>2024.0.2</spring-cloud.version>
         <springdoc.version>1.6.11</springdoc.version>
 
         <testcontainers.version>1.20.6</testcontainers.version>
@@ -110,7 +110,7 @@ because spring-boot-based microservices are maven-inherited from spring-boot-par
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-                <version>1.7.1</version>
+                <version>1.7.2</version>
                 <configuration>
                     <updatePomFile>true</updatePomFile>
                     <flattenMode>resolveCiFriendliesOnly</flattenMode>
