@@ -22,7 +22,7 @@ public class LongRunningTask extends AbstractProcessTask {
     public void executeInternal(TaskInstance<TaskExecutionContext> taskInstance, ExecutionContext executionContext) {
         String taskName = ProcessOrchestrator.getInstance().getTaskInstanceRepository().getTaskInstance(taskInstance.getId()).getName();
         for (int i = 0; i < 10; i++) {
-            Thread.sleep(1000);
+            Thread.sleep(100);
             log.info("Ping {}", taskName);
         }
     }

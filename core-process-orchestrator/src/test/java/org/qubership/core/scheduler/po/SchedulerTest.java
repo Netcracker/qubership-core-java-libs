@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.function.Function;
 
 import static org.awaitility.Awaitility.await;
 
@@ -126,7 +127,6 @@ class SchedulerTest {
         testProcess.addTask(LongRunningTask.class);
         ProcessInstanceImpl instance = orchestrator.createProcess(testProcess);
         orchestrator.startProcess(instance);
-        Thread.sleep(5000);
         orchestrator.terminateProcess(instance.getId());
         waitForProcess(instance.getId());
         Assertions.assertEquals(TaskState.TERMINATED, orchestrator.getProcessInstance(instance.getId()).getState());
@@ -142,7 +142,6 @@ class SchedulerTest {
         }
         ProcessInstanceImpl instance = orchestrator.createProcess(testProcess);
         orchestrator.startProcess(instance);
-        Thread.sleep(5000);
         orchestrator.terminateProcess(instance.getId());
         waitForProcess(instance.getId());
         Assertions.assertEquals(TaskState.TERMINATED, orchestrator.getProcessInstance(instance.getId()).getState());
@@ -156,14 +155,12 @@ class SchedulerTest {
         testProcess.addTask(LongRunningTask.class);
         ProcessInstanceImpl instance = orchestrator.createProcess(testProcess);
         orchestrator.startProcess(instance);
-        Thread.sleep(10000);
         orchestrator.terminateProcess(instance.getId());
         waitForProcess(instance.getId());
-        Thread.sleep(1000);
         Assertions.assertEquals(TaskState.TERMINATED, orchestrator.getProcessInstance(instance.getId()).getState());
         instance = orchestrator.getProcessInstance(instance.getId());
         orchestrator.retryProcess(instance);
-        waitForProcess(instance.getId());
+        waitForProcessCondition(instance.getId(), this::isInProgress);
         orchestrator.stop();
     }
 
@@ -197,7 +194,6 @@ class SchedulerTest {
 
     @Test
     void testNamedTaskPO() {
-
         ProcessDefinition warpUm = new DummyNamedProcess();
         ProcessInstanceImpl process = orchestrator.createProcess(warpUm);
 
@@ -277,7 +273,7 @@ class SchedulerTest {
     @Test
     void terminateSyncTimeout() {
         ProcessDefinition testProcess = new ProcessDefinition("SyncTest");
-        NamedTask task = new NamedTask(LongRunningTask.class.getName(), LongRunningTask.class.getName(), 5L);
+        NamedTask task = new NamedTask(LongRunningTask.class.getName(), LongRunningTask.class.getName(), 1L);
         testProcess.addTask(task);
         ProcessInstanceImpl instance = orchestrator.createProcess(testProcess);
         orchestrator.startProcess(instance);
@@ -286,10 +282,11 @@ class SchedulerTest {
         Assertions.assertEquals(TaskState.FAILED, orchestrator.getProcessInstance(instance.getId()).getState());
         orchestrator.stop();
     }
+
     @Test
     void terminateAsyncTimeout() {
         ProcessDefinition testProcess = new ProcessDefinition("AsyncTest");
-        NamedTask task = new NamedTask(AsyncTimeoutTask.class.getName(), AsyncTimeoutTask.class.getName(), 5L,10L);
+        NamedTask task = new NamedTask(AsyncTimeoutTask.class.getName(), AsyncTimeoutTask.class.getName(), 5L, 10L);
         testProcess.addTask(task);
         ProcessInstanceImpl instance = orchestrator.createProcess(testProcess);
         orchestrator.startProcess(instance);
@@ -300,23 +297,36 @@ class SchedulerTest {
     }
 
     private void waitForProcess(String id) {
-
-        await()
-                .atMost(Duration.of(60, ChronoUnit.SECONDS))
-                .pollDelay(Duration.ZERO)
-                .pollInterval(Duration.of(1, ChronoUnit.SECONDS))
-                .until(() -> isStopped(id));
+        waitForProcessCondition(id, this::isStopped);
     }
 
+    private void waitForProcessCondition(String id, Function<String, Boolean> condition) {
+        await()
+                .atMost(Duration.ofSeconds(60))
+                .pollDelay(Duration.ZERO)
+                .pollInterval(Duration.of(200, ChronoUnit.MILLIS))
+                .until(() -> condition.apply(id));
+    }
+
+    private boolean isInProgress(String id) {
+        ProcessInstanceImpl instance = orchestrator.getProcessInstance(id);
+        return instance.getTasks().stream().anyMatch(t -> t.getState().equals(TaskState.IN_PROGRESS) || t.getState().equals(TaskState.NOT_STARTED));
+    }
 
     private boolean isStopped(String id) {
         ProcessInstanceImpl instance = orchestrator.getProcessInstance(id);
-        if (instance == null) return true;
-        if (instance.getTasks().stream().anyMatch(t -> t.getState().equals(TaskState.FAILED)))
+        if (instance == null) {
+            return true;
+        }
+        if (instance.getTasks().stream().anyMatch(t -> t.getState().equals(TaskState.FAILED))) {
             return instance.getState() == TaskState.FAILED;
-        if (instance.getTasks().stream().anyMatch(t -> t.getState().equals(TaskState.TERMINATED)))
+        }
+        if (instance.getTasks().stream().anyMatch(t -> t.getState().equals(TaskState.TERMINATED))) {
             return instance.getState() == TaskState.TERMINATED;
-        if (instance.getState() == TaskState.TERMINATED) return true;
+        }
+        if (instance.getState() == TaskState.TERMINATED) {
+            return true;
+        }
         boolean isProgressingTask = instance.getTasks().stream().anyMatch(t -> t.getState().equals(TaskState.IN_PROGRESS) || t.getState().equals(TaskState.NOT_STARTED));
         return !isProgressingTask && instance.getState() == TaskState.COMPLETED;
     }

@@ -151,9 +151,6 @@ public class ProcessOrchestrator {
                 keyToRemove.forEach(k -> context.remove(k));
                 context.save();
                 taskInstance.setState(TaskState.NOT_STARTED);
-//                taskInstance.getContext().apply(t -> {
-//                    t.clear();
-//                });
                 taskInstance.setStartTime(Calendar.getInstance().getTime());
                 taskInstance.save();
                 logger.info(
