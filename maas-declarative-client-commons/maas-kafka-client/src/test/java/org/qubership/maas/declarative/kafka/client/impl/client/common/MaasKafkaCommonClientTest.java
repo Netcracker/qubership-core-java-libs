@@ -15,6 +15,7 @@ import org.qubership.maas.declarative.kafka.client.impl.client.notification.api.
 import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;
 import org.qubership.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -23,10 +24,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 class MaasKafkaCommonClientTest {
 
@@ -108,7 +111,7 @@ class MaasKafkaCommonClientTest {
     @Test
     void initAsyncSuccess() throws ExecutionException, InterruptedException, TimeoutException {
         CompletableFuture<Void> future = client.initAsync();
-        future.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        future.get(TIMEOUT_SECONDS, SECONDS);
 
         assertEquals(MaasKafkaClientState.INITIALIZED, client.getClientState());
         verify(kafkaTopicService).getTopicAddressByDefinition(any());
@@ -126,7 +129,7 @@ class MaasKafkaCommonClientTest {
     void activateAsyncSuccess() throws ExecutionException, InterruptedException, TimeoutException {
         client.initSync();
         CompletableFuture<Void> future = client.activateAsync();
-        future.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        future.get(TIMEOUT_SECONDS, SECONDS);
         verify(stateChangeNotificationService).subscribeOnActivationEvent(any());
     }
 
@@ -153,6 +156,7 @@ class MaasKafkaCommonClientTest {
             capturedTenantId.set(t);
             capturedTopicAddress.set(ta);
         });
+        await().atMost(5, SECONDS).until(() -> capturedTenantId.get() != null && capturedTopicAddress.get() != null);
 
         // Then
         verify(kafkaTopicService).getTopicAddressByDefinitionAndTenantId(any(), eq(TEST_TENANT));
@@ -168,7 +172,7 @@ class MaasKafkaCommonClientTest {
 
         // When
         CompletableFuture<List<String>> future = client.getActiveTenantsInternal();
-        List<String> result = future.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        List<String> result = future.get(TIMEOUT_SECONDS, SECONDS);
 
         // Then
         assertEquals(expectedTenants, result);
@@ -182,7 +186,7 @@ class MaasKafkaCommonClientTest {
 
         // When
         CompletableFuture<TopicAddress> future = client.getTopicInternal(null);
-        TopicAddress result = future.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        TopicAddress result = future.get(TIMEOUT_SECONDS, SECONDS);
 
         // Then
         assertEquals(mockTopicAddress, result);
@@ -197,7 +201,7 @@ class MaasKafkaCommonClientTest {
 
         // When
         CompletableFuture<TopicAddress> future = client.getTopicInternal(TEST_TENANT);
-        TopicAddress result = future.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        TopicAddress result = future.get(TIMEOUT_SECONDS, SECONDS);
 
         // Then
         assertEquals(mockTopicAddress, result);
@@ -212,7 +216,7 @@ class MaasKafkaCommonClientTest {
 
         // When
         CompletableFuture<TopicAddress> future = client.getTopicInternal(null);
-        TopicAddress result = future.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        TopicAddress result = future.get(TIMEOUT_SECONDS, SECONDS);
 
         // Then
         assertEquals(mockTopicAddress, result);
