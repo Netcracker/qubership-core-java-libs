@@ -1,1 +1,1 @@
-org.qubership.cloud.maas.client.spring.rabbit.DynamicQueueBindingManagerConfiguration
+com.netcracker.cloud.maas.client.spring.rabbit.DynamicQueueBindingManagerConfiguration

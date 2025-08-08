@@ -1,8 +1,8 @@
 package com.netcracker.cloud.maas.client.spring.kafka;
 
-import org.qubership.cloud.maas.client.api.kafka.KafkaMaaSClient;
-import org.qubership.cloud.maas.spring.MaaSClientConfig;
-import org.qubership.cloud.maas.spring.localdev.MaasLocalDevConfig;
+import com.netcracker.cloud.maas.client.api.kafka.KafkaMaaSClient;
+import com.netcracker.cloud.maas.spring.MaaSClientConfig;
+import com.netcracker.cloud.maas.spring.localdev.MaasLocalDevConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

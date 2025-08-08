@@ -10,7 +10,7 @@ Versioned exchange is created using VersionedBinding class and marked as `@Bean`
 Application configuration class:
 
 ```java     
-import org.qubership.cloud.maas.spring.rabbit.annotation.VersionedBinding;
+import com.netcracker.cloud.maas.spring.rabbit.annotation.VersionedBinding;
 import org.springframework.amqp.core.Queue;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

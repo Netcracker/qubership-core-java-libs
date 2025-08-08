@@ -1,7 +1,7 @@
 package com.netcracker.cloud.maas.client.spring.rabbit.annotation;
 
-import org.qubership.cloud.maas.spring.localdev.MaasLocalDevConfig;
-import org.qubership.cloud.maas.client.spring.rabbit.DynamicQueueBindingManagerConfiguration;
+import com.netcracker.cloud.maas.spring.localdev.MaasLocalDevConfig;
+import com.netcracker.cloud.maas.client.spring.rabbit.DynamicQueueBindingManagerConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.ElementType;

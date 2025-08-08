@@ -1,8 +1,8 @@
 package com.netcracker.cloud.maas.client.spring.rabbit;
 
 import com.github.fridujo.rabbitmq.mock.compatibility.MockConnectionFactoryFactory;
-import org.qubership.cloud.maas.client.spring.rabbit.annotation.EnableDynamicQueueBindings;
-import org.qubership.cloud.maas.client.spring.rabbit.annotation.VersionedBinding;
+import com.netcracker.cloud.maas.client.spring.rabbit.annotation.EnableDynamicQueueBindings;
+import com.netcracker.cloud.maas.client.spring.rabbit.annotation.VersionedBinding;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;

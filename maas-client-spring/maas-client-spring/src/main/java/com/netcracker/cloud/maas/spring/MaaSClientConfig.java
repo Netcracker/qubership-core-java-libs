@@ -1,8 +1,8 @@
 package com.netcracker.cloud.maas.spring;
 
-import org.qubership.cloud.maas.client.api.MaaSAPIClient;
-import org.qubership.cloud.maas.client.impl.MaaSAPIClientImpl;
-import org.qubership.cloud.security.core.auth.M2MManager;
+import com.netcracker.cloud.maas.client.api.MaaSAPIClient;
+import com.netcracker.cloud.maas.client.impl.MaaSAPIClientImpl;
+import com.netcracker.cloud.security.core.auth.M2MManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

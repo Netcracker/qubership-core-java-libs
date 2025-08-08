@@ -1,9 +1,9 @@
 package com.netcracker.cloud.maas.spring.localdev;
 
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
-import org.qubership.cloud.bluegreen.impl.service.InMemoryBlueGreenStatePublisher;
-import org.qubership.cloud.security.core.auth.DummyM2MManager;
-import org.qubership.cloud.security.core.auth.M2MManager;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.bluegreen.impl.service.InMemoryBlueGreenStatePublisher;
+import com.netcracker.cloud.security.core.auth.DummyM2MManager;
+import com.netcracker.cloud.security.core.auth.M2MManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;

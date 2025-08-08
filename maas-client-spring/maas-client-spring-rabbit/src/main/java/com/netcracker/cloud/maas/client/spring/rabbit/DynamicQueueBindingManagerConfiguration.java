@@ -1,9 +1,9 @@
 package com.netcracker.cloud.maas.client.spring.rabbit;
 
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
-import org.qubership.cloud.maas.client.bluegreen.rabbit.DynamicQueueBindingsManager;
-import org.qubership.cloud.maas.client.bluegreen.rabbit.DynamicQueueBindingsManagerImpl;
-import org.qubership.cloud.maas.client.spring.rabbit.annotation.VersionedBinding;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.maas.client.bluegreen.rabbit.DynamicQueueBindingsManager;
+import com.netcracker.cloud.maas.client.bluegreen.rabbit.DynamicQueueBindingsManagerImpl;
+import com.netcracker.cloud.maas.client.spring.rabbit.annotation.VersionedBinding;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
