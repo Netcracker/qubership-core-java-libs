@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.po;
+package com.netcracker.core.scheduler.po;
 
 import com.github.kagkarlsson.scheduler.ScheduledExecution;
 import com.github.kagkarlsson.scheduler.Scheduler;

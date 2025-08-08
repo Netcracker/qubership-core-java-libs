@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler;
+package com.netcracker.core.scheduler;
 
 import com.github.kagkarlsson.scheduler.Scheduler;
 import com.github.kagkarlsson.scheduler.task.Task;

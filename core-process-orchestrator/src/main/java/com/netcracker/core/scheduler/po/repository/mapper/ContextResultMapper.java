@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.po.repository.mapper;
+package com.netcracker.core.scheduler.po.repository.mapper;
 
 import com.github.kagkarlsson.jdbc.ResultSetMapper;
 import com.github.kagkarlsson.scheduler.serializer.Serializer;

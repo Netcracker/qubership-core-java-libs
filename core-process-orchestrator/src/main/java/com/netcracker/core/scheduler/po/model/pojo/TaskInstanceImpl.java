@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.po.model.pojo;
+package com.netcracker.core.scheduler.po.model.pojo;
 
 import org.qubership.core.scheduler.po.DataContext;
 import org.qubership.core.scheduler.po.ProcessOrchestrator;

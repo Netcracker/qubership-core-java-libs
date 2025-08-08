@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.po.serializers;
+package com.netcracker.core.scheduler.po.serializers;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;

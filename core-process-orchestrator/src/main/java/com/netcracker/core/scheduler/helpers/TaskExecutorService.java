@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.helpers;
+package com.netcracker.core.scheduler.helpers;
 
 import com.github.kagkarlsson.scheduler.task.Execution;
 import org.qubership.core.scheduler.po.FutureKey;

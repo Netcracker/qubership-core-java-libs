@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.po.task;
+package com.netcracker.core.scheduler.po.task;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.helpers;
+package com.netcracker.core.scheduler.helpers;
 
 import com.github.kagkarlsson.scheduler.Scheduler;
 import com.zaxxer.hikari.HikariConfig;

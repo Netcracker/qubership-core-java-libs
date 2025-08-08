@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.po.samples.tasks;
+package com.netcracker.core.scheduler.po.samples.tasks;
 
 import com.github.kagkarlsson.scheduler.task.ExecutionContext;
 import com.github.kagkarlsson.scheduler.task.TaskInstance;

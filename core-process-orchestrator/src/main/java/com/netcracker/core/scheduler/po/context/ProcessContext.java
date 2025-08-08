@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.po.context;
+package com.netcracker.core.scheduler.po.context;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;

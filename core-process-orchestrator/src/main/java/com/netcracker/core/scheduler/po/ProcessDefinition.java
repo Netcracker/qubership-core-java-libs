@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.po;
+package com.netcracker.core.scheduler.po;
 
 import org.qubership.core.scheduler.po.model.pojo.ProcessInstanceImpl;
 import org.qubership.core.scheduler.po.model.pojo.TaskInstanceImpl;

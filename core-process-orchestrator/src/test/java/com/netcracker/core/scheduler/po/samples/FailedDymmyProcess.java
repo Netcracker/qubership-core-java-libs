@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.po.samples;
+package com.netcracker.core.scheduler.po.samples;
 
 import org.qubership.core.scheduler.po.ProcessDefinition;
 import org.qubership.core.scheduler.po.samples.tasks.FailedDummyTask;

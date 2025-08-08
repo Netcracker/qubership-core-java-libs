@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.po.samples;
+package com.netcracker.core.scheduler.po.samples;
 
 import com.github.kagkarlsson.scheduler.task.ExecutionComplete;
 import com.github.kagkarlsson.scheduler.task.ExecutionOperations;

@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.po;
+package com.netcracker.core.scheduler.po;
 
 @SuppressWarnings("unused")
 public class TerminateException extends RuntimeException{

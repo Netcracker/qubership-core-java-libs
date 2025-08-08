@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.po.runnable;
+package com.netcracker.core.scheduler.po.runnable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

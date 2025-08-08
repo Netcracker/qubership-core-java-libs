@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.po.task;
+package com.netcracker.core.scheduler.po.task;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

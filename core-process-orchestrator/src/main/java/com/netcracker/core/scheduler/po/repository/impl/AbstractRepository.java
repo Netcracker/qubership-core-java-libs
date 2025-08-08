@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.po.repository.impl;
+package com.netcracker.core.scheduler.po.repository.impl;
 
 import com.github.kagkarlsson.jdbc.JdbcRunner;
 

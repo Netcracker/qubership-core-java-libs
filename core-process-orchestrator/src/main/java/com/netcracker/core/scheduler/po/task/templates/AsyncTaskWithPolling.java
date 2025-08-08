@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.po.task.templates;
+package com.netcracker.core.scheduler.po.task.templates;
 
 import com.github.kagkarlsson.scheduler.task.CompletionHandler;
 import com.github.kagkarlsson.scheduler.task.ExecutionContext;

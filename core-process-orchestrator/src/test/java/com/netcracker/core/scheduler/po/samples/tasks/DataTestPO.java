@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.po.samples.tasks;
+package com.netcracker.core.scheduler.po.samples.tasks;
 
 import org.qubership.core.scheduler.po.ProcessDefinition;
 

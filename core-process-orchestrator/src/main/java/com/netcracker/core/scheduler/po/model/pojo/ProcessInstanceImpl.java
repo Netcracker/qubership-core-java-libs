@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.po.model.pojo;
+package com.netcracker.core.scheduler.po.model.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import org.qubership.core.scheduler.po.DataContext;

@@ -1,4 +1,4 @@
-package org.qubership.core.scheduler.helpers;
+package com.netcracker.core.scheduler.helpers;
 
 public class MyTestObject {
     private String data;
