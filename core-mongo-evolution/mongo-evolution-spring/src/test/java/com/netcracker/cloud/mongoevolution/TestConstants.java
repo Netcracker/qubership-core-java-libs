@@ -4,7 +4,7 @@ package com.netcracker.cloud.mongoevolution;
 public class TestConstants {
 
     public static final String DEFAULT_DB_NAME = "default";
-    public static final String CHANGELOGS_SCAN_PACKAGE = "org.qubership.cloud";
+    public static final String CHANGELOGS_SCAN_PACKAGE = "com.netcracker.cloud";
     public final static String TENANT_ID = "tenantId";
     public final static String DB_NAME = "dbName";
 
@@ -21,14 +21,14 @@ public class TestConstants {
 
     public final static String TEST_PROFILE_2 = "test";
 
-    public final static String CHANGELOGS_SCAN_BASE_PACKAGE = "org.qubership.cloud.mongoevolution.basechangelogs";
-    public final static String CHANGELOGS_SCAN_TENANT_PACKAGE = "org.qubership.cloud.mongoevolution.tenantchangelogs";
-    public final static String CHANGELOGS_SCAN_SERVICE_PACKAGE = "org.qubership.cloud.mongoevolution.servicechangelogs";
+    public final static String CHANGELOGS_SCAN_BASE_PACKAGE = "com.netcracker.cloud.mongoevolution.basechangelogs";
+    public final static String CHANGELOGS_SCAN_TENANT_PACKAGE = "com.netcracker.cloud.mongoevolution.tenantchangelogs";
+    public final static String CHANGELOGS_SCAN_SERVICE_PACKAGE = "com.netcracker.cloud.mongoevolution.servicechangelogs";
 
-    public final static String CHANGELOGS_SCAN_PROFILE_PACKAGE = "org.qubership.cloud.mongoevolution.profilechangelogs";
+    public final static String CHANGELOGS_SCAN_PROFILE_PACKAGE = "com.netcracker.cloud.mongoevolution.profilechangelogs";
     public final static String PACKAGE_COLLECTION_NAME = "packagecollection";
 
-    public final static String CHANGELOGS_SCAN_ERROR_PACKAGE = "org.qubership.cloud.mongoevolution.errorchangelogs";
+    public final static String CHANGELOGS_SCAN_ERROR_PACKAGE = "com.netcracker.cloud.mongoevolution.errorchangelogs";
     public final static String ERROR_DB_NAME = "error";
     public static final String ERROR_DEFAULT_DB_NAME = "default_error";
 }

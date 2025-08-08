@@ -5,10 +5,10 @@ import com.mongodb.client.model.Filters;
 import org.bson.BsonTimestamp;
 import org.bson.Document;
 import org.junit.jupiter.api.*;
-import org.qubership.cloud.mongoevolution.java.annotation.AnnotationProcessor;
-import org.qubership.cloud.mongoevolution.java.annotation.ChangeEntry;
-import org.qubership.cloud.mongoevolution.java.annotation.DBManagerEntity;
-import org.qubership.cloud.mongoevolution.java.dataaccess.ConnectionSearchKey;
+import com.netcracker.cloud.mongoevolution.java.annotation.AnnotationProcessor;
+import com.netcracker.cloud.mongoevolution.java.annotation.ChangeEntry;
+import com.netcracker.cloud.mongoevolution.java.annotation.DBManagerEntity;
+import com.netcracker.cloud.mongoevolution.java.dataaccess.ConnectionSearchKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -224,7 +224,7 @@ class MongoEvolutionTest extends MongoServerConfiguration {
         try {
             ChangeEntry entry = new ChangeEntry(1, 1, 1,
                     (ChangeClassTest.class.getDeclaredMethod("someChangeOne", null)), new ChangeClassTest());
-            assertEquals("org.qubership.cloud.mongoevolution.java.ChangeClassTest", entry.getChangeClassName());
+            assertEquals("com.netcracker.cloud.mongoevolution.java.ChangeClassTest", entry.getChangeClassName());
             assertEquals("someChangeOne", entry.getChangeMethodName());
 
         } catch (Exception e) {

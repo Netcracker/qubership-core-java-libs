@@ -4,8 +4,8 @@ package com.netcracker.cloud.mongoevolution.java.annotation;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import org.qubership.cloud.mongoevolution.java.MongoEvolution;
-import org.qubership.cloud.mongoevolution.java.dataaccess.ConnectionSearchKey;
+import com.netcracker.cloud.mongoevolution.java.MongoEvolution;
+import com.netcracker.cloud.mongoevolution.java.dataaccess.ConnectionSearchKey;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static com.mongodb.client.model.Filters.*;
-import static org.qubership.cloud.mongoevolution.java.annotation.ChangeEntry.*;
+import static com.netcracker.cloud.mongoevolution.java.annotation.ChangeEntry.*;
 import static java.util.Arrays.asList;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 

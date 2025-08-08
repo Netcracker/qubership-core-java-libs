@@ -8,8 +8,8 @@ import com.mongodb.client.model.Updates;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.qubership.cloud.mongoevolution.java.annotation.ChangeLog;
-import org.qubership.cloud.mongoevolution.java.annotation.ChangeSet;
+import com.netcracker.cloud.mongoevolution.java.annotation.ChangeLog;
+import com.netcracker.cloud.mongoevolution.java.annotation.ChangeSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

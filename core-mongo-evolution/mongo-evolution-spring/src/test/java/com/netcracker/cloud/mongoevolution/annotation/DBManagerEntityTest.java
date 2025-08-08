@@ -3,15 +3,15 @@ package com.netcracker.cloud.mongoevolution.annotation;
 import com.mongodb.client.MongoClient;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.mongoevolution.MongoTestConfiguration;
-import org.qubership.cloud.mongoevolution.SpringDBManagerEntity;
+import com.netcracker.cloud.mongoevolution.MongoTestConfiguration;
+import com.netcracker.cloud.mongoevolution.SpringDBManagerEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.qubership.cloud.mongoevolution.MongoTestConfiguration.TEST_DB_NAME;
+import static com.netcracker.cloud.mongoevolution.MongoTestConfiguration.TEST_DB_NAME;
 
 @SpringBootTest(classes = MongoTestConfiguration.class)
 @Slf4j

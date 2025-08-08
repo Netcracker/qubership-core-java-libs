@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.mongoevolution.java.dataaccess.ConnectionSearchKey;
+import com.netcracker.cloud.mongoevolution.java.dataaccess.ConnectionSearchKey;
 
 import java.util.Collection;
 import java.util.HashSet;

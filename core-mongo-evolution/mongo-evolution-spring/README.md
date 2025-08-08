@@ -9,7 +9,7 @@ First of all you should add the following maven dependency to your pom:
 
 ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>mongo-evolution-spring</artifactId>
         <version>${mongo.evolution.spring.version}</version>
     </dependency>

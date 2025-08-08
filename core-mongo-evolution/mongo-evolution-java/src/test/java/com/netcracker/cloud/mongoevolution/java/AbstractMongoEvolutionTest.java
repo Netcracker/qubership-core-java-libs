@@ -6,7 +6,7 @@ import com.mongodb.client.MongoDatabase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.qubership.cloud.mongoevolution.java.dataaccess.ConnectionSearchKey;
+import com.netcracker.cloud.mongoevolution.java.dataaccess.ConnectionSearchKey;
 
 import java.util.concurrent.TimeUnit;
 

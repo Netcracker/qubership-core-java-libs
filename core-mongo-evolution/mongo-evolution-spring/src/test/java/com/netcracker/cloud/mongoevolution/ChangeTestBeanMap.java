@@ -3,8 +3,8 @@ package com.netcracker.cloud.mongoevolution;
 import com.mongodb.client.MongoCollection;
 import lombok.extern.apachecommons.CommonsLog;
 import org.bson.Document;
-import org.qubership.cloud.mongoevolution.java.annotation.ChangeLog;
-import org.qubership.cloud.mongoevolution.java.annotation.ChangeSet;
+import com.netcracker.cloud.mongoevolution.java.annotation.ChangeLog;
+import com.netcracker.cloud.mongoevolution.java.annotation.ChangeSet;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.Map;

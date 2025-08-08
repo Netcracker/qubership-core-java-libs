@@ -2,8 +2,8 @@ package com.netcracker.cloud.mongoevolution;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import org.qubership.cloud.mongoevolution.java.annotation.ChangeLog;
-import org.qubership.cloud.mongoevolution.java.annotation.ChangeSet;
+import com.netcracker.cloud.mongoevolution.java.annotation.ChangeLog;
+import com.netcracker.cloud.mongoevolution.java.annotation.ChangeSet;
 import lombok.extern.apachecommons.CommonsLog;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;

@@ -3,7 +3,7 @@ package com.netcracker.cloud.mongoevolution.java.annotation;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.mongoevolution.java.MongoServerConfiguration;
+import com.netcracker.cloud.mongoevolution.java.MongoServerConfiguration;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;

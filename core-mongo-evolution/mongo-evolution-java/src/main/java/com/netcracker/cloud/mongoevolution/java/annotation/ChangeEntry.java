@@ -3,7 +3,7 @@ package com.netcracker.cloud.mongoevolution.java.annotation;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import org.qubership.cloud.mongoevolution.java.MongoEvolution;
+import com.netcracker.cloud.mongoevolution.java.MongoEvolution;
 import lombok.Data;
 import org.bson.Document;
 

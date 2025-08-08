@@ -1,9 +1,9 @@
 package com.netcracker.cloud.mongoevolution.java;
 
 import com.mongodb.client.MongoClient;
-import org.qubership.cloud.mongoevolution.java.annotation.AnnotationProcessor;
-import org.qubership.cloud.mongoevolution.java.annotation.DBManagerEntity;
-import org.qubership.cloud.mongoevolution.java.dataaccess.ConnectionSearchKey;
+import com.netcracker.cloud.mongoevolution.java.annotation.AnnotationProcessor;
+import com.netcracker.cloud.mongoevolution.java.annotation.DBManagerEntity;
+import com.netcracker.cloud.mongoevolution.java.dataaccess.ConnectionSearchKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

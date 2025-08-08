@@ -10,7 +10,7 @@ Add the dependency to pom:
 
 ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>mongo-evolution</artifactId>
         <version>${mongo.evolution.version}</version>
     </dependency>
@@ -24,7 +24,7 @@ and methods which annotated @ChangeSet and have parameter as MongoDatabase or wi
 For example:
 
 ```java
-package org.qubership.cloud.mongoevolution;
+package com.netcracker.cloud.mongoevolution;
 
 @ChangeLog(version = 1)
 public class ChangeLog1 {
@@ -48,6 +48,6 @@ In the last step you should specify package where you mongo evolution code are a
 ```java
 public void configureAndRunMongoEvo() {
     new MongoEvolution(client, "my-db-name", new ConnectionSearchKey(null, DB_CLASSIFIER))
-                        .evolve("org.qubership.cloud.mongoevolution");
+                        .evolve("com.netcracker.cloud.mongoevolution");
 }
 ```
