@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.spring.localdev;
+package com.netcracker.cloud.maas.spring.localdev;
 
 import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
 import org.qubership.cloud.bluegreen.impl.service.InMemoryBlueGreenStatePublisher;

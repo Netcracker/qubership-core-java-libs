@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.spring;
+package com.netcracker.cloud.maas.spring;
 
 import org.qubership.cloud.maas.client.api.MaaSAPIClient;
 import org.qubership.cloud.maas.client.impl.MaaSAPIClientImpl;

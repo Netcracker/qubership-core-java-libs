@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.spring.rabbit.annotation;
+package com.netcracker.cloud.maas.client.spring.rabbit.annotation;
 
 import org.qubership.cloud.maas.spring.localdev.MaasLocalDevConfig;
 import org.qubership.cloud.maas.client.spring.rabbit.DynamicQueueBindingManagerConfiguration;

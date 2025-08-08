@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.spring.localdev;
+package com.netcracker.cloud.maas.spring.localdev;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

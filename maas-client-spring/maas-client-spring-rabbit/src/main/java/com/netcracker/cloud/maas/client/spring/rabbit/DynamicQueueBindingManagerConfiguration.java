@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.spring.rabbit;
+package com.netcracker.cloud.maas.client.spring.rabbit;
 
 import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
 import org.qubership.cloud.maas.client.bluegreen.rabbit.DynamicQueueBindingsManager;

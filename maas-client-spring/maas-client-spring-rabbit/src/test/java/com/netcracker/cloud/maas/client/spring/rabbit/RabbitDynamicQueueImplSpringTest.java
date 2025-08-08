@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.spring.rabbit;
+package com.netcracker.cloud.maas.client.spring.rabbit;
 
 import com.github.fridujo.rabbitmq.mock.compatibility.MockConnectionFactoryFactory;
 import org.qubership.cloud.maas.client.spring.rabbit.annotation.EnableDynamicQueueBindings;
