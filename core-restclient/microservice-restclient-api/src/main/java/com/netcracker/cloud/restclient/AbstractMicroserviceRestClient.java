@@ -1,6 +1,6 @@
 package com.netcracker.cloud.restclient;
 
-import org.qubership.cloud.restclient.entity.RestClientResponseEntity;
+import com.netcracker.cloud.restclient.entity.RestClientResponseEntity;
 
 import java.net.URI;
 import java.util.List;

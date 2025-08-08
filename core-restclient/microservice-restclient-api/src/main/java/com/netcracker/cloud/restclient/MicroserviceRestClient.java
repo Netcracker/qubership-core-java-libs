@@ -1,7 +1,7 @@
 package com.netcracker.cloud.restclient;
 
 
-import org.qubership.cloud.restclient.entity.RestClientResponseEntity;
+import com.netcracker.cloud.restclient.entity.RestClientResponseEntity;
 
 import org.jetbrains.annotations.Nullable;
 

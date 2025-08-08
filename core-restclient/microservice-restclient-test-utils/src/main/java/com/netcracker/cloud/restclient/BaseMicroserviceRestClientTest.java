@@ -8,9 +8,9 @@ import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.restclient.entity.RestClientResponseEntity;
-import org.qubership.cloud.restclient.entity.TestEntity;
-import org.qubership.cloud.restclient.exception.MicroserviceRestClientResponseException;
+import com.netcracker.cloud.restclient.entity.RestClientResponseEntity;
+import com.netcracker.cloud.restclient.entity.TestEntity;
+import com.netcracker.cloud.restclient.exception.MicroserviceRestClientResponseException;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,7 +1,7 @@
 package com.netcracker.cloud.restclient.webclient;
 
-import org.qubership.cloud.restclient.MicroserviceRestClient;
-import org.qubership.cloud.restclient.MicroserviceRestClientFactory;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.restclient.MicroserviceRestClientFactory;
 
 public class MicroserviceWebClientFactory implements MicroserviceRestClientFactory {
     @Override

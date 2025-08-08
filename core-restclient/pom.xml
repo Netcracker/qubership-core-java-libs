@@ -3,7 +3,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.qubership.cloud</groupId>
+    <groupId>com.netcracker.cloud</groupId>
     <version>6.1.2-SNAPSHOT</version>
     <artifactId>microservice-restclient-aggregator</artifactId>
     <packaging>pom</packaging>

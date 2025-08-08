@@ -1,7 +1,7 @@
 package com.netcracker.cloud.restclient.exception;
 
-import org.qubership.cloud.core.error.runtime.ErrorCodeException;
-import org.qubership.cloud.core.error.runtime.ErrorCodeHolder;
+import com.netcracker.cloud.core.error.runtime.ErrorCodeException;
+import com.netcracker.cloud.core.error.runtime.ErrorCodeHolder;
 
 public class MicroserviceRestClientException extends ErrorCodeException {
     public MicroserviceRestClientException(String msg) {
