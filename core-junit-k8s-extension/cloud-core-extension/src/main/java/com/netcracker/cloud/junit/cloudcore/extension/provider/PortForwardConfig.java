@@ -1,4 +1,4 @@
-package org.qubership.cloud.junit.cloudcore.extension.provider;
+package com.netcracker.cloud.junit.cloudcore.extension.provider;
 
 import lombok.Data;
 

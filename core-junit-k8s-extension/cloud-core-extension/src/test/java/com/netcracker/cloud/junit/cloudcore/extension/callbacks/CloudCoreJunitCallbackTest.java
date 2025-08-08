@@ -1,4 +1,4 @@
-package org.qubership.cloud.junit.cloudcore.extension.callbacks;
+package com.netcracker.cloud.junit.cloudcore.extension.callbacks;
 
 import org.qubership.cloud.junit.cloudcore.extension.callbacks.classes.TestClass;
 import org.qubership.cloud.junit.cloudcore.extension.callbacks.classes.TestClassLev2;

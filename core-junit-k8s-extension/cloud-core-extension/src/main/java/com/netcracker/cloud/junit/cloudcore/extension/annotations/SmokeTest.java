@@ -1,4 +1,4 @@
-package org.qubership.cloud.junit.cloudcore.extension.annotations;
+package com.netcracker.cloud.junit.cloudcore.extension.annotations;
 
 import org.junit.jupiter.api.Tag;
 

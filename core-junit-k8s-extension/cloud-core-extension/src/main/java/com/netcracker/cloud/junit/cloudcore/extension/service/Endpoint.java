@@ -1,4 +1,4 @@
-package org.qubership.cloud.junit.cloudcore.extension.service;
+package com.netcracker.cloud.junit.cloudcore.extension.service;
 
 public record Endpoint(String host, int port) {
 

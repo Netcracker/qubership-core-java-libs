@@ -1,4 +1,4 @@
-package org.qubership.cloud.junit.cloudcore.extension.annotations;
+package com.netcracker.cloud.junit.cloudcore.extension.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

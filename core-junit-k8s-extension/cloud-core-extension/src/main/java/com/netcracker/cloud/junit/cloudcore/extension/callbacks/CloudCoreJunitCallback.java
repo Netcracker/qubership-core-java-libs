@@ -1,4 +1,4 @@
-package org.qubership.cloud.junit.cloudcore.extension.callbacks;
+package com.netcracker.cloud.junit.cloudcore.extension.callbacks;
 
 import org.qubership.cloud.junit.cloudcore.extension.annotations.Cloud;
 import org.qubership.cloud.junit.cloudcore.extension.annotations.IntValue;

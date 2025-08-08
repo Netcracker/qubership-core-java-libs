@@ -1,4 +1,4 @@
-package org.qubership.cloud.junit.cloudcore.extension.callbacks.classes;
+package com.netcracker.cloud.junit.cloudcore.extension.callbacks.classes;
 
 import org.qubership.cloud.junit.cloudcore.extension.annotations.PortForward;
 import org.qubership.cloud.junit.cloudcore.extension.annotations.Value;

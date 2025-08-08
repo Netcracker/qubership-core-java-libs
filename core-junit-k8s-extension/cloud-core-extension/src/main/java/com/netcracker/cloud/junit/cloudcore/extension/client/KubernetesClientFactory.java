@@ -1,4 +1,4 @@
-package org.qubership.cloud.junit.cloudcore.extension.client;
+package com.netcracker.cloud.junit.cloudcore.extension.client;
 
 import org.qubership.cloud.junit.cloudcore.extension.provider.CloudAndNamespace;
 import io.fabric8.kubernetes.api.model.NamedContext;
