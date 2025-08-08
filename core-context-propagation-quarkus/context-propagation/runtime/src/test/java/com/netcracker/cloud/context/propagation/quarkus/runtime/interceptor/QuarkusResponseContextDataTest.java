@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.quarkus.runtime.interceptor;
+package com.netcracker.cloud.context.propagation.quarkus.runtime.interceptor;
 
 import jakarta.ws.rs.core.MultivaluedMap;
 import org.jboss.resteasy.reactive.common.util.QuarkusMultivaluedHashMap;

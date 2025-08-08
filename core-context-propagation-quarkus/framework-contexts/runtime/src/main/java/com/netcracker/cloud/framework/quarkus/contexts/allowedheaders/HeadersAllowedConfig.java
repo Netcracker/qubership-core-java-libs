@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.quarkus.contexts.allowedheaders;
+package com.netcracker.cloud.framework.quarkus.contexts.allowedheaders;
 
 import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;

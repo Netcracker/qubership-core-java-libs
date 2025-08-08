@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.quarkus.runtime.interceptor;
+package com.netcracker.cloud.context.propagation.quarkus.runtime.interceptor;
 
 import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
 import jakarta.ws.rs.core.MultivaluedMap;

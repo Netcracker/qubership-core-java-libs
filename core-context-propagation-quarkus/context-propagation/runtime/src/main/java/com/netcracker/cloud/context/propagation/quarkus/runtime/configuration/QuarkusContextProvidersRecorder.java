@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.quarkus.runtime.configuration;
+package com.netcracker.cloud.context.propagation.quarkus.runtime.configuration;
 
 import org.qubership.cloud.context.propagation.quarkus.runtime.filter.QuarkusPreAuthnContextProviderHandler;
 import io.quarkus.runtime.annotations.Recorder;

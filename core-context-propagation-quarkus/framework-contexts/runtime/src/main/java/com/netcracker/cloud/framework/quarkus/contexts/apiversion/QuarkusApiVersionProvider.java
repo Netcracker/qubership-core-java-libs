@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.quarkus.contexts.apiversion;
+package com.netcracker.cloud.framework.quarkus.contexts.apiversion;
 
 import org.qubership.cloud.context.propagation.core.RegisterProvider;
 import org.qubership.cloud.context.propagation.core.Strategy;

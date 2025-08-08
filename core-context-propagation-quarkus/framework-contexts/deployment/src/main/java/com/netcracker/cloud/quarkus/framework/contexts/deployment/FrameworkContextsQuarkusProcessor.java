@@ -1,4 +1,4 @@
-package org.qubership.cloud.quarkus.framework.contexts.deployment;
+package com.netcracker.cloud.quarkus.framework.contexts.deployment;
 
 import org.qubership.cloud.framework.quarkus.contexts.allowedheaders.HeadersAllowedConfig;
 import org.qubership.cloud.framework.quarkus.contexts.allowedheaders.HeadersAllowedRecorder;

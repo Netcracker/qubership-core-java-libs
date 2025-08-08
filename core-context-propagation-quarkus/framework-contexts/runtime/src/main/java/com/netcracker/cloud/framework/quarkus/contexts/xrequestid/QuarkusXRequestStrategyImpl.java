@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.quarkus.contexts.xrequestid;
+package com.netcracker.cloud.framework.quarkus.contexts.xrequestid;
 
 import org.qubership.cloud.context.propagation.core.Strategy;
 import org.qubership.cloud.context.propagation.core.supports.strategies.RestEasyDefaultStrategy;

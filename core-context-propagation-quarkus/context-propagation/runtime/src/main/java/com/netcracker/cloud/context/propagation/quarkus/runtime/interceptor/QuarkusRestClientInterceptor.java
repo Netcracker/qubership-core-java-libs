@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.quarkus.runtime.interceptor;
+package com.netcracker.cloud.context.propagation.quarkus.runtime.interceptor;
 
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import jakarta.ws.rs.client.ClientRequestContext;

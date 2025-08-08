@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.quarkus.it.reactive;
+package com.netcracker.cloud.context.propagation.quarkus.it.reactive;
 
 import io.smallrye.mutiny.Uni;
 import jakarta.ws.rs.GET;

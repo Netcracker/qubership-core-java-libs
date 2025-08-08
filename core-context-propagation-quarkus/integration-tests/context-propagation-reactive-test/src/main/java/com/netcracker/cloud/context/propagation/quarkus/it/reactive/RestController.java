@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.quarkus.it.reactive;
+package com.netcracker.cloud.context.propagation.quarkus.it.reactive;
 
 import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
 import org.qubership.cloud.headerstracking.filters.context.RequestIdContext;

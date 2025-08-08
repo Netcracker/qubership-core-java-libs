@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.quarkus.runtime.microprofile.context;
+package com.netcracker.cloud.context.propagation.quarkus.runtime.microprofile.context;
 
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.eclipse.microprofile.context.spi.ThreadContextController;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.quarkus.contexts.originatingbiid;
+package com.netcracker.cloud.framework.quarkus.contexts.originatingbiid;
 
 
 import org.qubership.cloud.context.propagation.core.RegisterProvider;

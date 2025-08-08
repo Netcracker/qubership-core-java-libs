@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.quarkus.runtime.filter;
+package com.netcracker.cloud.context.propagation.quarkus.runtime.filter;
 
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.context.propagation.quarkus.runtime.interceptor.QuarkusResponseContextData;

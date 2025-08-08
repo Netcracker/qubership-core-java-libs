@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.quarkus.runtime.filter;
+package com.netcracker.cloud.context.propagation.quarkus.runtime.filter;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
