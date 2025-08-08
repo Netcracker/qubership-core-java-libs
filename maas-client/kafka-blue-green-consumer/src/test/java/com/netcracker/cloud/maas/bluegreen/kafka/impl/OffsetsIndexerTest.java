@@ -6,7 +6,7 @@ import org.mockito.Mockito;
 
 import java.util.Set;
 
-import static org.qubership.cloud.maas.bluegreen.kafka.TestUtil.*;
+import static com.netcracker.cloud.maas.bluegreen.kafka.TestUtil.*;
 
 class OffsetsIndexerTest {
 

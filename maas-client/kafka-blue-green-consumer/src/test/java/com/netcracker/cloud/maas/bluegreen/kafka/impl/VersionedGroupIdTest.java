@@ -1,7 +1,7 @@
 package com.netcracker.cloud.maas.bluegreen.kafka.impl;
 
-import org.qubership.cloud.bluegreen.api.model.State;
-import org.qubership.cloud.bluegreen.api.model.Version;
+import com.netcracker.cloud.bluegreen.api.model.State;
+import com.netcracker.cloud.bluegreen.api.model.Version;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;

@@ -1,14 +1,14 @@
 package com.netcracker.cloud.maas.client.impl.kafka;
 
-import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
-import org.qubership.cloud.maas.client.impl.ApiUrlProvider;
-import org.qubership.cloud.maas.client.impl.Env;
-import org.qubership.cloud.maas.client.impl.apiversion.ServerApiVersion;
-import org.qubership.cloud.maas.client.impl.http.HttpClient;
-import org.qubership.cloud.tenantmanager.client.impl.TenantManagerConnectorImpl;
-import org.qubership.cloud.testharness.MaaSCocoonExtension;
-import org.qubership.cloud.testharness.TenantManagerMockInject;
-import org.qubership.cloud.testharness.TenantManagerMockServer;
+import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
+import com.netcracker.cloud.maas.client.impl.ApiUrlProvider;
+import com.netcracker.cloud.maas.client.impl.Env;
+import com.netcracker.cloud.maas.client.impl.apiversion.ServerApiVersion;
+import com.netcracker.cloud.maas.client.impl.http.HttpClient;
+import com.netcracker.cloud.tenantmanager.client.impl.TenantManagerConnectorImpl;
+import com.netcracker.cloud.testharness.MaaSCocoonExtension;
+import com.netcracker.cloud.testharness.TenantManagerMockInject;
+import com.netcracker.cloud.testharness.TenantManagerMockServer;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import static org.qubership.cloud.maas.client.Utils.withProp;
+import static com.netcracker.cloud.maas.client.Utils.withProp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockserver.model.HttpRequest.request;

@@ -33,9 +33,9 @@ application.id=maas.my-app-streams.my-namespace
 ### Default configuration
 
 ~~~ java 
-import org.qubership.cloud.maas.client.api.kafka.KafkaMaaSClient;
-import org.qubership.cloud.maas.client.context.kafka.MaaSKafkaAdminWrapper;
-import org.qubership.cloud.maas.client.context.kafka.MaaSKafkaClientSupplier;
+import com.netcracker.cloud.maas.client.api.kafka.KafkaMaaSClient;
+import com.netcracker.cloud.maas.client.context.kafka.MaaSKafkaAdminWrapper;
+import com.netcracker.cloud.maas.client.context.kafka.MaaSKafkaClientSupplier;
 import org.apache.kafka.clients.admin.ForwardingAdmin;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -57,10 +57,10 @@ public class KafkaStreamsExample {
 ### Custom classifier configuration
 
 ~~~ java 
-import org.qubership.cloud.maas.client.api.Classifier;
-import org.qubership.cloud.maas.client.api.kafka.KafkaMaaSClient;
-import org.qubership.cloud.maas.client.context.kafka.MaaSKafkaAdminWrapper;
-import org.qubership.cloud.maas.client.context.kafka.MaaSKafkaClientSupplier;
+import com.netcracker.cloud.maas.client.api.Classifier;
+import com.netcracker.cloud.maas.client.api.kafka.KafkaMaaSClient;
+import com.netcracker.cloud.maas.client.context.kafka.MaaSKafkaAdminWrapper;
+import com.netcracker.cloud.maas.client.context.kafka.MaaSKafkaClientSupplier;
 import org.apache.kafka.clients.admin.ForwardingAdmin;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -85,10 +85,10 @@ In case if topics already exists in Kafka but not registered in MaaS yet, overri
 This will make MaaS to register existing Kafka topic. So the topic will be become manageable by MaaS.
 
 ~~~ java 
-import org.qubership.cloud.maas.client.api.kafka.KafkaMaaSClient;
-import org.qubership.cloud.maas.client.api.kafka.protocolextractors.OnTopicExists;
-import org.qubership.cloud.maas.client.context.kafka.MaaSKafkaAdminWrapper;
-import org.qubership.cloud.maas.client.context.kafka.MaaSKafkaClientSupplier;
+import com.netcracker.cloud.maas.client.api.kafka.KafkaMaaSClient;
+import com.netcracker.cloud.maas.client.api.kafka.protocolextractors.OnTopicExists;
+import com.netcracker.cloud.maas.client.context.kafka.MaaSKafkaAdminWrapper;
+import com.netcracker.cloud.maas.client.context.kafka.MaaSKafkaClientSupplier;
 import org.apache.kafka.clients.admin.ForwardingAdmin;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;

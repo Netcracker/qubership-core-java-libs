@@ -2,7 +2,7 @@ package com.netcracker.cloud.tenantmanager.client.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.qubership.cloud.tenantmanager.client.Tenant;
+import com.netcracker.cloud.tenantmanager.client.Tenant;
 import lombok.Data;
 
 import java.util.ArrayList;

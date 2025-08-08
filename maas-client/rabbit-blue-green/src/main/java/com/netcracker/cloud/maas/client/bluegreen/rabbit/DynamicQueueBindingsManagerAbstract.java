@@ -1,7 +1,7 @@
 package com.netcracker.cloud.maas.client.bluegreen.rabbit;
 
-import org.qubership.cloud.bluegreen.api.model.Version;
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.bluegreen.api.model.Version;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;

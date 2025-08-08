@@ -3,7 +3,7 @@ package com.netcracker.cloud.maas.client.impl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.qubership.cloud.maas.client.Utils.withProp;
+import static com.netcracker.cloud.maas.client.Utils.withProp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.org.webcompere.systemstubs.SystemStubs.withEnvironmentVariable;

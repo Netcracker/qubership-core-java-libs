@@ -1,7 +1,7 @@
 package com.netcracker.cloud.maas.client.impl.kafka;
 
-import static org.qubership.cloud.maas.client.Utils.readResourceAsString;
-import static org.qubership.cloud.maas.client.Utils.withProp;
+import static com.netcracker.cloud.maas.client.Utils.readResourceAsString;
+import static com.netcracker.cloud.maas.client.Utils.withProp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,20 +27,20 @@ import org.mockserver.matchers.Times;
 import org.mockserver.mock.action.ExpectationResponseCallback;
 import org.mockserver.model.HttpRequest;
 
-import org.qubership.cloud.maas.client.Utils;
-import org.qubership.cloud.maas.client.api.Classifier;
-import org.qubership.cloud.maas.client.api.MaaSException;
-import org.qubership.cloud.maas.client.api.kafka.KafkaMaaSClient;
-import org.qubership.cloud.maas.client.api.kafka.SearchCriteria;
-import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
-import org.qubership.cloud.maas.client.api.kafka.TopicCreateOptions;
-import org.qubership.cloud.maas.client.api.kafka.protocolextractors.OnTopicExists;
-import org.qubership.cloud.maas.client.impl.ApiUrlProvider;
-import org.qubership.cloud.maas.client.impl.Env;
-import org.qubership.cloud.maas.client.impl.MaaSAPIClientImpl;
-import org.qubership.cloud.maas.client.impl.apiversion.ServerApiVersion;
-import org.qubership.cloud.maas.client.impl.dto.kafka.v1.TopicTemplate;
-import org.qubership.cloud.maas.client.impl.http.HttpClient;
+import com.netcracker.cloud.maas.client.Utils;
+import com.netcracker.cloud.maas.client.api.Classifier;
+import com.netcracker.cloud.maas.client.api.MaaSException;
+import com.netcracker.cloud.maas.client.api.kafka.KafkaMaaSClient;
+import com.netcracker.cloud.maas.client.api.kafka.SearchCriteria;
+import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
+import com.netcracker.cloud.maas.client.api.kafka.TopicCreateOptions;
+import com.netcracker.cloud.maas.client.api.kafka.protocolextractors.OnTopicExists;
+import com.netcracker.cloud.maas.client.impl.ApiUrlProvider;
+import com.netcracker.cloud.maas.client.impl.Env;
+import com.netcracker.cloud.maas.client.impl.MaaSAPIClientImpl;
+import com.netcracker.cloud.maas.client.impl.apiversion.ServerApiVersion;
+import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicTemplate;
+import com.netcracker.cloud.maas.client.impl.http.HttpClient;
 
 import lombok.extern.slf4j.Slf4j;
 

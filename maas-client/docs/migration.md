@@ -26,14 +26,14 @@ public TrackingVersionFilterImpl(BlueGreenStatePublisher publisher) {
 You can take `BlueGreenStatePublisher` suitable implementation from: 
 ```xml
 <dependency>
-    <groupId>org.qubership.cloud</groupId>
+    <groupId>com.netcracker.cloud</groupId>
     <artifactId>blue-green-state-monitor-spring</artifactId>
 </dependency>
 ```
 or for Quarkus:
 ```xml
 <dependency>
-    <groupId>org.qubership.cloud</groupId>
+    <groupId>com.netcracker.cloud</groupId>
     <artifactId>blue-green-state-monitor-quarkus</artifactId>
 </dependency>
 ```

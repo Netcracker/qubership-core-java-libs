@@ -1,9 +1,9 @@
 package com.netcracker.cloud.maas.bluegreen.kafka.impl;
 
-import org.qubership.cloud.maas.bluegreen.kafka.BGKafkaConsumer;
-import org.qubership.cloud.maas.bluegreen.kafka.CommitMarker;
-import org.qubership.cloud.maas.bluegreen.kafka.Record;
-import org.qubership.cloud.maas.bluegreen.kafka.RecordsBatch;
+import com.netcracker.cloud.maas.bluegreen.kafka.BGKafkaConsumer;
+import com.netcracker.cloud.maas.bluegreen.kafka.CommitMarker;
+import com.netcracker.cloud.maas.bluegreen.kafka.Record;
+import com.netcracker.cloud.maas.bluegreen.kafka.RecordsBatch;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;

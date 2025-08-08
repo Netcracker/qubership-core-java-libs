@@ -1,7 +1,7 @@
 package com.netcracker.cloud.maas.client.impl.kafka.protocolextractors;
 
-import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
-import org.qubership.cloud.maas.client.api.kafka.protocolextractors.ConnectionPropertiesExtractor;
+import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
+import com.netcracker.cloud.maas.client.api.kafka.protocolextractors.ConnectionPropertiesExtractor;
 
 import java.util.List;
 import java.util.Map;

@@ -1,15 +1,15 @@
 package com.netcracker.cloud.maas.client.impl;
 
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
-import org.qubership.cloud.maas.client.api.MaaSAPIClient;
-import org.qubership.cloud.maas.client.api.kafka.KafkaMaaSClient;
-import org.qubership.cloud.maas.client.api.rabbit.RabbitMaaSClient;
-import org.qubership.cloud.maas.client.impl.apiversion.ServerApiVersion;
-import org.qubership.cloud.maas.client.impl.http.HttpClient;
-import org.qubership.cloud.maas.client.impl.kafka.KafkaMaaSClientImpl;
-import org.qubership.cloud.maas.client.impl.rabbit.RabbitMaaSClientImpl;
-import org.qubership.cloud.tenantmanager.client.TenantManagerConnector;
-import org.qubership.cloud.tenantmanager.client.impl.TenantManagerConnectorImpl;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.maas.client.api.MaaSAPIClient;
+import com.netcracker.cloud.maas.client.api.kafka.KafkaMaaSClient;
+import com.netcracker.cloud.maas.client.api.rabbit.RabbitMaaSClient;
+import com.netcracker.cloud.maas.client.impl.apiversion.ServerApiVersion;
+import com.netcracker.cloud.maas.client.impl.http.HttpClient;
+import com.netcracker.cloud.maas.client.impl.kafka.KafkaMaaSClientImpl;
+import com.netcracker.cloud.maas.client.impl.rabbit.RabbitMaaSClientImpl;
+import com.netcracker.cloud.tenantmanager.client.TenantManagerConnector;
+import com.netcracker.cloud.tenantmanager.client.impl.TenantManagerConnectorImpl;
 
 import java.util.function.Supplier;
 

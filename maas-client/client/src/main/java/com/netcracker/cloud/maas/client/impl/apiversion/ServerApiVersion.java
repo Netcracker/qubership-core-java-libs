@@ -1,8 +1,8 @@
 package com.netcracker.cloud.maas.client.impl.apiversion;
 
-import org.qubership.cloud.maas.client.impl.Lazy;
-import org.qubership.cloud.maas.client.impl.dto.ApiVersionResponse;
-import org.qubership.cloud.maas.client.impl.http.HttpClient;
+import com.netcracker.cloud.maas.client.impl.Lazy;
+import com.netcracker.cloud.maas.client.impl.dto.ApiVersionResponse;
+import com.netcracker.cloud.maas.client.impl.http.HttpClient;
 
 import java.util.Optional;
 

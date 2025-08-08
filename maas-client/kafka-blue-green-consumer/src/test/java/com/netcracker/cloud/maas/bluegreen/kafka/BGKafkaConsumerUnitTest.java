@@ -1,15 +1,15 @@
 package com.netcracker.cloud.maas.bluegreen.kafka;
 
-import org.qubership.cloud.bluegreen.api.model.BlueGreenState;
-import org.qubership.cloud.bluegreen.api.model.NamespaceVersion;
-import org.qubership.cloud.bluegreen.api.model.State;
-import org.qubership.cloud.bluegreen.api.model.Version;
-import org.qubership.cloud.bluegreen.impl.service.InMemoryBlueGreenStatePublisher;
-import org.qubership.cloud.framework.contexts.xversion.XVersionContextObject;
-import org.qubership.cloud.maas.bluegreen.kafka.impl.AdminAdapter;
-import org.qubership.cloud.maas.bluegreen.kafka.impl.BGKafkaConsumerConfig;
-import org.qubership.cloud.maas.bluegreen.kafka.impl.BGKafkaConsumerImpl;
-import org.qubership.cloud.maas.bluegreen.kafka.impl.VersionedGroupId;
+import com.netcracker.cloud.bluegreen.api.model.BlueGreenState;
+import com.netcracker.cloud.bluegreen.api.model.NamespaceVersion;
+import com.netcracker.cloud.bluegreen.api.model.State;
+import com.netcracker.cloud.bluegreen.api.model.Version;
+import com.netcracker.cloud.bluegreen.impl.service.InMemoryBlueGreenStatePublisher;
+import com.netcracker.cloud.framework.contexts.xversion.XVersionContextObject;
+import com.netcracker.cloud.maas.bluegreen.kafka.impl.AdminAdapter;
+import com.netcracker.cloud.maas.bluegreen.kafka.impl.BGKafkaConsumerConfig;
+import com.netcracker.cloud.maas.bluegreen.kafka.impl.BGKafkaConsumerImpl;
+import com.netcracker.cloud.maas.bluegreen.kafka.impl.VersionedGroupId;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import static org.qubership.cloud.maas.bluegreen.kafka.TestUtil.*;
+import static com.netcracker.cloud.maas.bluegreen.kafka.TestUtil.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

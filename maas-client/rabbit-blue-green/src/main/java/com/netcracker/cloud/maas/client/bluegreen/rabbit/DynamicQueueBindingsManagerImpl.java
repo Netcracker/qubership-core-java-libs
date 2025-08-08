@@ -1,6 +1,6 @@
 package com.netcracker.cloud.maas.client.bluegreen.rabbit;
 
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 

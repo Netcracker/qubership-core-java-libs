@@ -1,8 +1,8 @@
 package com.netcracker.cloud.maas.client.impl.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.qubership.cloud.maas.client.impl.dto.kafka.v1.TopicSettings;
-import org.qubership.cloud.maas.client.impl.dto.kafka.v1.TopicTemplateInfo;
+import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicSettings;
+import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicTemplateInfo;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;

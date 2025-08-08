@@ -1,6 +1,6 @@
 package com.netcracker.cloud.maas.client.impl.rabbit;
 
-import org.qubership.cloud.bluegreen.impl.service.LocalDevBlueGreenStatePublisher;
+import com.netcracker.cloud.bluegreen.impl.service.LocalDevBlueGreenStatePublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

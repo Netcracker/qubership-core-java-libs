@@ -1,8 +1,8 @@
 package com.netcracker.cloud.maas.client.impl.dto.kafka.v1;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.qubership.cloud.maas.client.api.Classifier;
-import org.qubership.cloud.maas.client.api.kafka.TopicCreateOptions;
+import com.netcracker.cloud.maas.client.api.Classifier;
+import com.netcracker.cloud.maas.client.api.kafka.TopicCreateOptions;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 

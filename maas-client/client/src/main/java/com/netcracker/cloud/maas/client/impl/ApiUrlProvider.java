@@ -1,7 +1,7 @@
 package com.netcracker.cloud.maas.client.impl;
 
-import org.qubership.cloud.maas.client.api.kafka.protocolextractors.OnTopicExists;
-import org.qubership.cloud.maas.client.impl.apiversion.ServerApiVersion;
+import com.netcracker.cloud.maas.client.api.kafka.protocolextractors.OnTopicExists;
+import com.netcracker.cloud.maas.client.impl.apiversion.ServerApiVersion;
 import lombok.Getter;
 
 import java.time.Duration;

@@ -1,15 +1,15 @@
 package com.netcracker.cloud.maas.bluegreen.versiontracker.impl;
 
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
-import org.qubership.cloud.bluegreen.impl.service.ConsulBlueGreenStatePublisher;
-import org.qubership.cloud.maas.bluegreen.versiontracker.api.TrackingVersionFilter;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.bluegreen.impl.service.ConsulBlueGreenStatePublisher;
+import com.netcracker.cloud.maas.bluegreen.versiontracker.api.TrackingVersionFilter;
 import lombok.SneakyThrows;
 
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static org.qubership.cloud.maas.bluegreen.versiontracker.impl.VersionFilterConstructor.constructVersionFilter;
+import static com.netcracker.cloud.maas.bluegreen.versiontracker.impl.VersionFilterConstructor.constructVersionFilter;
 
 public class TrackingVersionFilterImpl implements TrackingVersionFilter, AutoCloseable {
     private final BlueGreenStatePublisher statePublisher;

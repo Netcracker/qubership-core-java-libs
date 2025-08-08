@@ -1,7 +1,7 @@
 package com.netcracker.cloud.maas.client.impl.apiversion;
 
-import org.qubership.cloud.maas.client.Utils;
-import org.qubership.cloud.maas.client.impl.http.HttpClient;
+import com.netcracker.cloud.maas.client.Utils;
+import com.netcracker.cloud.maas.client.impl.http.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockserver.integration.ClientAndServer;

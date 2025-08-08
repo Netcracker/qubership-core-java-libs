@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import org.qubership.cloud.maas.client.impl.Env;
+import com.netcracker.cloud.maas.client.impl.Env;
 
 import java.io.IOException;
 import java.util.*;

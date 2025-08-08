@@ -1,9 +1,9 @@
 package com.netcracker.cloud.tenantmanager.client.impl;
 
-import org.qubership.cloud.maas.client.impl.Env;
-import org.qubership.cloud.maas.client.impl.http.HttpClient;
-import org.qubership.cloud.tenantmanager.client.Tenant;
-import org.qubership.cloud.tenantmanager.client.TenantManagerConnector;
+import com.netcracker.cloud.maas.client.impl.Env;
+import com.netcracker.cloud.maas.client.impl.http.HttpClient;
+import com.netcracker.cloud.tenantmanager.client.Tenant;
+import com.netcracker.cloud.tenantmanager.client.TenantManagerConnector;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,8 +15,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-import static org.qubership.cloud.tenantmanager.client.Tenant.STATE_ACTIVE;
-import static org.qubership.cloud.tenantmanager.client.impl.StompCommands.MESSAGE;
+import static com.netcracker.cloud.tenantmanager.client.Tenant.STATE_ACTIVE;
+import static com.netcracker.cloud.tenantmanager.client.impl.StompCommands.MESSAGE;
 
 // TODO externalize to separate library?
 // TODO dummy sync implementation: no retries, no timeout management and so on ...

@@ -1,12 +1,12 @@
 package com.netcracker.cloud.maas.client.impl.rabbit;
 
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
-import org.qubership.cloud.maas.client.api.Classifier;
-import org.qubership.cloud.maas.client.api.rabbit.RabbitMaaSClient;
-import org.qubership.cloud.maas.client.api.rabbit.VHost;
-import org.qubership.cloud.maas.client.impl.ApiUrlProvider;
-import org.qubership.cloud.maas.client.impl.dto.rabbit.v1.VHostRequest;
-import org.qubership.cloud.maas.client.impl.http.HttpClient;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.maas.client.api.Classifier;
+import com.netcracker.cloud.maas.client.api.rabbit.RabbitMaaSClient;
+import com.netcracker.cloud.maas.client.api.rabbit.VHost;
+import com.netcracker.cloud.maas.client.impl.ApiUrlProvider;
+import com.netcracker.cloud.maas.client.impl.dto.rabbit.v1.VHostRequest;
+import com.netcracker.cloud.maas.client.impl.http.HttpClient;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 

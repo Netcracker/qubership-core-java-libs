@@ -1,7 +1,7 @@
 package com.netcracker.cloud.maas.client.api.kafka;
 
-import org.qubership.cloud.maas.client.api.Classifier;
-import org.qubership.cloud.maas.client.impl.dto.kafka.v1.TopicTemplate;
+import com.netcracker.cloud.maas.client.api.Classifier;
+import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicTemplate;
 
 import java.util.List;
 import java.util.Optional;

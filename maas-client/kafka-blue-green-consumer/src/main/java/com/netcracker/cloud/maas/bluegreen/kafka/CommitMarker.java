@@ -1,6 +1,6 @@
 package com.netcracker.cloud.maas.bluegreen.kafka;
 
-import org.qubership.cloud.bluegreen.api.model.NamespaceVersion;
+import com.netcracker.cloud.bluegreen.api.model.NamespaceVersion;
 import lombok.ToString;
 import lombok.Value;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;

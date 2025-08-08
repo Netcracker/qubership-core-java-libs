@@ -1,8 +1,8 @@
 package com.netcracker.cloud.maas.bluegreen.kafka;
 
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
-import org.qubership.cloud.maas.bluegreen.kafka.impl.*;
-import org.qubership.cloud.maas.bluegreen.kafka.impl.*;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.maas.bluegreen.kafka.impl.*;
+import com.netcracker.cloud.maas.bluegreen.kafka.impl.*;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
@@ -11,7 +11,7 @@ import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.junit.jupiter.params.provider.Arguments;
 import org.mockito.Mockito;
-import org.qubership.cloud.maas.bluegreen.kafka.impl.*;
+import com.netcracker.cloud.maas.bluegreen.kafka.impl.*;
 
 import java.util.AbstractMap;
 import java.util.Arrays;

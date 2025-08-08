@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.qubership.cloud.maas.client</groupId>
+    <groupId>com.netcracker.cloud.maas.client</groupId>
     <artifactId>maas-client-bom</artifactId>
     <version>11.1.2-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -21,37 +21,37 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.qubership.cloud.maas.client</groupId>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>maas-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud.maas.client</groupId>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>rabbit-context-propagation</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud.maas.client</groupId>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>kafka-context-propagation</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud.maas.client</groupId>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>deployment-version-tracker</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud.maas.client</groupId>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>kafka-blue-green-consumer</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud.maas.client</groupId>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>rabbit-blue-green</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud.maas.client</groupId>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>kafka-streams-adapter</artifactId>
                 <version>${project.version}</version>
             </dependency>

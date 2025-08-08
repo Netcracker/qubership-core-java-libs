@@ -1,6 +1,6 @@
 package com.netcracker.cloud.maas.client.api.kafka.protocolextractors;
 
-import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
+import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
 import lombok.NonNull;
 
 import java.util.Map;

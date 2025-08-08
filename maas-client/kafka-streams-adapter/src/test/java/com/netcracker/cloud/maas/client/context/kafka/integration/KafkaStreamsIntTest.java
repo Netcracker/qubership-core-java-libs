@@ -1,15 +1,15 @@
 package com.netcracker.cloud.maas.client.context.kafka.integration;
 
-import org.qubership.cloud.maas.client.api.Classifier;
-import org.qubership.cloud.maas.client.api.kafka.KafkaMaaSClient;
-import org.qubership.cloud.maas.client.api.kafka.TopicCreateOptions;
-import org.qubership.cloud.maas.client.api.kafka.protocolextractors.OnTopicExists;
-import org.qubership.cloud.maas.client.context.kafka.MaaSKafkaAdminWrapper;
-import org.qubership.cloud.maas.client.context.kafka.MaaSKafkaClientSupplier;
-import org.qubership.cloud.maas.client.impl.Env;
-import org.qubership.cloud.maas.client.impl.dto.kafka.v1.TopicInfo;
-import org.qubership.cloud.maas.client.impl.dto.kafka.v1.TopicSettings;
-import org.qubership.cloud.maas.client.impl.kafka.TopicAddressImpl;
+import com.netcracker.cloud.maas.client.api.Classifier;
+import com.netcracker.cloud.maas.client.api.kafka.KafkaMaaSClient;
+import com.netcracker.cloud.maas.client.api.kafka.TopicCreateOptions;
+import com.netcracker.cloud.maas.client.api.kafka.protocolextractors.OnTopicExists;
+import com.netcracker.cloud.maas.client.context.kafka.MaaSKafkaAdminWrapper;
+import com.netcracker.cloud.maas.client.context.kafka.MaaSKafkaClientSupplier;
+import com.netcracker.cloud.maas.client.impl.Env;
+import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicInfo;
+import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicSettings;
+import com.netcracker.cloud.maas.client.impl.kafka.TopicAddressImpl;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;

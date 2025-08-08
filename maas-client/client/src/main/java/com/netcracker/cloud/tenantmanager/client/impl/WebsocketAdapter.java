@@ -1,7 +1,7 @@
 package com.netcracker.cloud.tenantmanager.client.impl;
 
-import org.qubership.cloud.maas.client.impl.Env;
-import org.qubership.cloud.maas.client.impl.http.HttpClient;
+import com.netcracker.cloud.maas.client.impl.Env;
+import com.netcracker.cloud.maas.client.impl.http.HttpClient;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Request;
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.qubership.cloud.tenantmanager.client.impl.StompCommands.*;
+import static com.netcracker.cloud.tenantmanager.client.impl.StompCommands.*;
 
 // TODO there might be error in stomp negotiation sequence. So this code will wait connect/subscription ack indefinite time
 @Slf4j

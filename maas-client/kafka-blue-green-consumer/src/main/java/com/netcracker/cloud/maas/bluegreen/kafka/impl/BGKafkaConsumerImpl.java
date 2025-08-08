@@ -1,14 +1,14 @@
 package com.netcracker.cloud.maas.bluegreen.kafka.impl;
 
-import org.qubership.cloud.bluegreen.api.model.BlueGreenState;
-import org.qubership.cloud.bluegreen.api.model.NamespaceVersion;
-import org.qubership.cloud.bluegreen.api.model.State;
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
-import org.qubership.cloud.maas.bluegreen.kafka.BGKafkaConsumer;
-import org.qubership.cloud.maas.bluegreen.kafka.CommitMarker;
-import org.qubership.cloud.maas.bluegreen.kafka.Record;
-import org.qubership.cloud.maas.bluegreen.kafka.RecordsBatch;
-import org.qubership.cloud.maas.bluegreen.versiontracker.impl.VersionFilterConstructor;
+import com.netcracker.cloud.bluegreen.api.model.BlueGreenState;
+import com.netcracker.cloud.bluegreen.api.model.NamespaceVersion;
+import com.netcracker.cloud.bluegreen.api.model.State;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.maas.bluegreen.kafka.BGKafkaConsumer;
+import com.netcracker.cloud.maas.bluegreen.kafka.CommitMarker;
+import com.netcracker.cloud.maas.bluegreen.kafka.Record;
+import com.netcracker.cloud.maas.bluegreen.kafka.RecordsBatch;
+import com.netcracker.cloud.maas.bluegreen.versiontracker.impl.VersionFilterConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.*;
@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static org.qubership.cloud.framework.contexts.xversion.XVersionContextObject.X_VERSION_SERIALIZATION_NAME;
+import static com.netcracker.cloud.framework.contexts.xversion.XVersionContextObject.X_VERSION_SERIALIZATION_NAME;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG;
 

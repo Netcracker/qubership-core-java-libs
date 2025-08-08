@@ -1,12 +1,12 @@
 package com.netcracker.cloud.maas.client.impl.rabbit;
 
-import org.qubership.cloud.bluegreen.impl.service.LocalDevBlueGreenStatePublisher;
-import org.qubership.cloud.maas.client.api.Classifier;
-import org.qubership.cloud.maas.client.api.rabbit.VHost;
-import org.qubership.cloud.maas.client.impl.ApiUrlProvider;
-import org.qubership.cloud.maas.client.impl.Env;
-import org.qubership.cloud.maas.client.impl.apiversion.ServerApiVersion;
-import org.qubership.cloud.maas.client.impl.http.HttpClient;
+import com.netcracker.cloud.bluegreen.impl.service.LocalDevBlueGreenStatePublisher;
+import com.netcracker.cloud.maas.client.api.Classifier;
+import com.netcracker.cloud.maas.client.api.rabbit.VHost;
+import com.netcracker.cloud.maas.client.impl.ApiUrlProvider;
+import com.netcracker.cloud.maas.client.impl.Env;
+import com.netcracker.cloud.maas.client.impl.apiversion.ServerApiVersion;
+import com.netcracker.cloud.maas.client.impl.http.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +16,7 @@ import org.mockserver.matchers.MatchType;
 
 import java.util.UUID;
 
-import static org.qubership.cloud.maas.client.Utils.withProp;
+import static com.netcracker.cloud.maas.client.Utils.withProp;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;

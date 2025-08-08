@@ -1,7 +1,7 @@
 package com.netcracker.cloud.maas.client.api.rabbit;
 
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
-import org.qubership.cloud.maas.client.api.Classifier;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.maas.client.api.Classifier;
 
 import java.util.List;
 

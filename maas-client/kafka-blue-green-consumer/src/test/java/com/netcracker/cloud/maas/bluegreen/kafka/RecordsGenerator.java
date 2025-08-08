@@ -1,6 +1,6 @@
 package com.netcracker.cloud.maas.bluegreen.kafka;
 
-import org.qubership.cloud.framework.contexts.xversion.XVersionContextObject;
+import com.netcracker.cloud.framework.contexts.xversion.XVersionContextObject;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.TopicPartition;

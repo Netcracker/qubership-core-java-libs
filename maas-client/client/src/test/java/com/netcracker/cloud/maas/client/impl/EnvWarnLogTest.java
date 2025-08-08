@@ -1,6 +1,6 @@
 package com.netcracker.cloud.maas.client.impl;
 
-import org.qubership.cloud.maas.client.Utils;
+import com.netcracker.cloud.maas.client.Utils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static org.qubership.cloud.maas.client.Utils.withProp;
+import static com.netcracker.cloud.maas.client.Utils.withProp;
 import static uk.org.webcompere.systemstubs.SystemStubs.withEnvironmentVariable;
 
 class EnvWarnLogTest {

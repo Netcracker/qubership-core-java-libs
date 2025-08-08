@@ -1,16 +1,16 @@
 package com.netcracker.cloud.maas.bluegreen.versiontracker.impl;
 
-import org.qubership.cloud.bluegreen.api.model.BlueGreenState;
-import org.qubership.cloud.bluegreen.api.model.NamespaceVersion;
-import org.qubership.cloud.bluegreen.api.model.State;
-import org.qubership.cloud.bluegreen.api.model.Version;
-import org.qubership.cloud.bluegreen.impl.service.ConsulBlueGreenStatePublisher;
-import org.qubership.cloud.maas.bluegreen.versiontracker.api.TrackingVersionFilter;
-import org.qubership.cloud.maas.client.impl.Env;
+import com.netcracker.cloud.bluegreen.api.model.BlueGreenState;
+import com.netcracker.cloud.bluegreen.api.model.NamespaceVersion;
+import com.netcracker.cloud.bluegreen.api.model.State;
+import com.netcracker.cloud.bluegreen.api.model.Version;
+import com.netcracker.cloud.bluegreen.impl.service.ConsulBlueGreenStatePublisher;
+import com.netcracker.cloud.maas.bluegreen.versiontracker.api.TrackingVersionFilter;
+import com.netcracker.cloud.maas.client.impl.Env;
 
 import java.util.function.Predicate;
 
-import static org.qubership.cloud.maas.bluegreen.versiontracker.impl.VersionFilterConstructor.constructVersionFilter;
+import static com.netcracker.cloud.maas.bluegreen.versiontracker.impl.VersionFilterConstructor.constructVersionFilter;
 
 public class LocalDevTrackingVersionFilter implements TrackingVersionFilter {
     private BlueGreenState state;

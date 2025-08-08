@@ -1,14 +1,14 @@
 package com.netcracker.cloud.maas.client.impl.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.qubership.cloud.maas.client.api.Classifier;
-import org.qubership.cloud.maas.client.api.kafka.TopicCreateOptions;
-import org.qubership.cloud.maas.client.impl.Env;
-import org.qubership.cloud.maas.client.impl.dto.kafka.v1.TopicRequest;
+import com.netcracker.cloud.maas.client.api.Classifier;
+import com.netcracker.cloud.maas.client.api.kafka.TopicCreateOptions;
+import com.netcracker.cloud.maas.client.impl.Env;
+import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicRequest;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 
-import static org.qubership.cloud.maas.client.Utils.withProp;
+import static com.netcracker.cloud.maas.client.Utils.withProp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TopicCreateRequestTest {

@@ -1,16 +1,16 @@
 package com.netcracker.cloud.maas.bluegreen.versiontracker.impl;
 
-import org.qubership.cloud.bluegreen.api.model.BlueGreenState;
-import org.qubership.cloud.bluegreen.api.model.NamespaceVersion;
-import org.qubership.cloud.bluegreen.api.model.Version;
+import com.netcracker.cloud.bluegreen.api.model.BlueGreenState;
+import com.netcracker.cloud.bluegreen.api.model.NamespaceVersion;
+import com.netcracker.cloud.bluegreen.api.model.Version;
 import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;
 
-import static org.qubership.cloud.bluegreen.api.model.State.ACTIVE;
-import static org.qubership.cloud.bluegreen.api.model.State.CANDIDATE;
-import static org.qubership.cloud.bluegreen.impl.service.ConsulBlueGreenStatePublisher.UNKNOWN_DATETIME;
-import static org.qubership.cloud.maas.client.impl.Env.PROP_NAMESPACE;
+import static com.netcracker.cloud.bluegreen.api.model.State.ACTIVE;
+import static com.netcracker.cloud.bluegreen.api.model.State.CANDIDATE;
+import static com.netcracker.cloud.bluegreen.impl.service.ConsulBlueGreenStatePublisher.UNKNOWN_DATETIME;
+import static com.netcracker.cloud.maas.client.impl.Env.PROP_NAMESPACE;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LocalDevTrackingVersionFilterTest {

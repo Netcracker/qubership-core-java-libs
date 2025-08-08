@@ -1,8 +1,8 @@
 package com.netcracker.cloud.maas.bluegreen.kafka;
 
-import org.qubership.cloud.bluegreen.api.model.State;
-import org.qubership.cloud.bluegreen.impl.service.InMemoryBlueGreenStatePublisher;
-import org.qubership.cloud.maas.bluegreen.kafka.impl.BGKafkaConsumerImpl;
+import com.netcracker.cloud.bluegreen.api.model.State;
+import com.netcracker.cloud.bluegreen.impl.service.InMemoryBlueGreenStatePublisher;
+import com.netcracker.cloud.maas.bluegreen.kafka.impl.BGKafkaConsumerImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
-import static org.qubership.cloud.maas.bluegreen.kafka.impl.BGKafkaConsumerConfig.builder;
+import static com.netcracker.cloud.maas.bluegreen.kafka.impl.BGKafkaConsumerConfig.builder;
 import static org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 

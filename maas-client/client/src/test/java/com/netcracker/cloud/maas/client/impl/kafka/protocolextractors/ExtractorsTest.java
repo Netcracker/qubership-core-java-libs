@@ -1,12 +1,12 @@
 package com.netcracker.cloud.maas.client.impl.kafka.protocolextractors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.qubership.cloud.maas.client.impl.dto.kafka.v1.TopicInfo;
-import org.qubership.cloud.maas.client.impl.kafka.TopicAddressImpl;
+import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicInfo;
+import com.netcracker.cloud.maas.client.impl.kafka.TopicAddressImpl;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 
-import static org.qubership.cloud.maas.client.impl.kafka.protocolextractors.ConnectionPropertiesExtractorAbstract.*;
+import static com.netcracker.cloud.maas.client.impl.kafka.protocolextractors.ConnectionPropertiesExtractorAbstract.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

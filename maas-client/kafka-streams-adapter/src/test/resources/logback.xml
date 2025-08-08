@@ -6,7 +6,7 @@
         </encoder>
     </appender>
 
-    <logger name="org.qubership" level="DEBUG"/>
+    <logger name="com.netcracker" level="DEBUG"/>
     <logger name="org.testcontainers" level="DEBUG"/>
     <logger name="org.apache.zookeeper" level="WARN"/>
     <logger name="org.apache.kafka" level="WARN"/>

@@ -2,7 +2,7 @@ package com.netcracker.cloud.maas.client.impl.dto.kafka.v1;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.qubership.cloud.maas.client.api.kafka.TopicUserCredentials;
+import com.netcracker.cloud.maas.client.api.kafka.TopicUserCredentials;
 import lombok.Data;
 import lombok.ToString;
 

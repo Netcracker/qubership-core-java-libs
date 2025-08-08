@@ -1,12 +1,12 @@
 package com.netcracker.cloud.maas.bluegreen.kafka.impl;
 
-import org.qubership.cloud.maas.bluegreen.kafka.ConsumerConsistencyMode;
+import com.netcracker.cloud.maas.bluegreen.kafka.ConsumerConsistencyMode;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
-import static org.qubership.cloud.maas.bluegreen.kafka.TestUtil.*;
+import static com.netcracker.cloud.maas.bluegreen.kafka.TestUtil.*;
 
 public class EventualOffsetCorrectorTest extends AbstractOffsetCorrectorTest {
     @Override

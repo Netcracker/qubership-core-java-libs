@@ -16,21 +16,21 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.qubership.cloud.maas.client.api.Classifier;
-import org.qubership.cloud.maas.client.api.MaaSException;
-import org.qubership.cloud.maas.client.api.kafka.KafkaMaaSClient;
-import org.qubership.cloud.maas.client.api.kafka.SearchCriteria;
-import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
-import org.qubership.cloud.maas.client.api.kafka.TopicCreateOptions;
-import org.qubership.cloud.maas.client.impl.ApiUrlProvider;
-import org.qubership.cloud.maas.client.impl.Lazy;
-import org.qubership.cloud.maas.client.impl.dto.kafka.v1.TopicDeleteRequest;
-import org.qubership.cloud.maas.client.impl.dto.kafka.v1.TopicDeleteResponse;
-import org.qubership.cloud.maas.client.impl.dto.kafka.v1.TopicInfo;
-import org.qubership.cloud.maas.client.impl.dto.kafka.v1.TopicRequest;
-import org.qubership.cloud.maas.client.impl.dto.kafka.v1.TopicTemplate;
-import org.qubership.cloud.maas.client.impl.http.HttpClient;
-import org.qubership.cloud.tenantmanager.client.TenantManagerConnector;
+import com.netcracker.cloud.maas.client.api.Classifier;
+import com.netcracker.cloud.maas.client.api.MaaSException;
+import com.netcracker.cloud.maas.client.api.kafka.KafkaMaaSClient;
+import com.netcracker.cloud.maas.client.api.kafka.SearchCriteria;
+import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
+import com.netcracker.cloud.maas.client.api.kafka.TopicCreateOptions;
+import com.netcracker.cloud.maas.client.impl.ApiUrlProvider;
+import com.netcracker.cloud.maas.client.impl.Lazy;
+import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicDeleteRequest;
+import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicDeleteResponse;
+import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicInfo;
+import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicRequest;
+import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicTemplate;
+import com.netcracker.cloud.maas.client.impl.http.HttpClient;
+import com.netcracker.cloud.tenantmanager.client.TenantManagerConnector;
 
 import lombok.extern.slf4j.Slf4j;
 

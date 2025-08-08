@@ -120,7 +120,7 @@ Full example for consumer can be found [here](https://git.qubership.org/PROD.Pla
 It is crucial to save and restore context during message processing. Moreover, its is manadatory requirements to correctly filtering messages in 
 Blue/Green deployment. To serialize current execution context into message headers just call utility method:
 ```java
-import org.qubership.cloud.maas.client.context.kafka.KafkaContextPropagation;
+import com.netcracker.cloud.maas.client.context.kafka.KafkaContextPropagation;
 
 var record = new ProducerRecord<...>(
         topicName,
@@ -133,7 +133,7 @@ var record = new ProducerRecord<...>(
 Context propagation methods is in class [KafkaContextPropagation](kafka-context-propagation/src/main/java/org/qubership/cloud/maas/client/context/kafka/KafkaContextPropagation.java) located in module:
 ```xml
 <dependency>
-    <groupId>org.qubership.cloud.maas.client</groupId>
+    <groupId>com.netcracker.cloud.maas.client</groupId>
     <artifactId>kafka-context-propagation</artifactId>
 </dependency>
 
@@ -173,7 +173,7 @@ restore version value to microservice execution context on message receiver side
 MaaS Client offers utility class to simplify these tasks. Include dependency to:
 ```xml
 <dependency>
-    <groupId>org.qubership.cloud.maas.client</groupId>
+    <groupId>com.netcracker.cloud.maas.client</groupId>
     <artifactId>rabbit-context-propagation</artifactId>
     <version>{version}</version>
 </dependency>

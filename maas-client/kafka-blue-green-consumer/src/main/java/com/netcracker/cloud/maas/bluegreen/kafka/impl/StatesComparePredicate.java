@@ -1,6 +1,6 @@
 package com.netcracker.cloud.maas.bluegreen.kafka.impl;
 
-import org.qubership.cloud.bluegreen.api.model.State;
+import com.netcracker.cloud.bluegreen.api.model.State;
 import lombok.AllArgsConstructor;
 
 import java.util.Objects;

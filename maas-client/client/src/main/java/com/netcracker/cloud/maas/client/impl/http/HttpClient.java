@@ -1,7 +1,7 @@
 package com.netcracker.cloud.maas.client.impl.http;
 
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.maas.client.impl.Env;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.maas.client.impl.Env;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 

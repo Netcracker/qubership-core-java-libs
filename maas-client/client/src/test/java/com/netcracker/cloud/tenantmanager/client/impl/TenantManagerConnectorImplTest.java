@@ -1,11 +1,11 @@
 package com.netcracker.cloud.tenantmanager.client.impl;
 
-import org.qubership.cloud.maas.client.impl.Env;
-import org.qubership.cloud.maas.client.impl.http.HttpClient;
-import org.qubership.cloud.tenantmanager.client.Tenant;
-import org.qubership.cloud.testharness.MaaSCocoonExtension;
-import org.qubership.cloud.testharness.TenantManagerMockInject;
-import org.qubership.cloud.testharness.TenantManagerMockServer;
+import com.netcracker.cloud.maas.client.impl.Env;
+import com.netcracker.cloud.maas.client.impl.http.HttpClient;
+import com.netcracker.cloud.tenantmanager.client.Tenant;
+import com.netcracker.cloud.testharness.MaaSCocoonExtension;
+import com.netcracker.cloud.testharness.TenantManagerMockInject;
+import com.netcracker.cloud.testharness.TenantManagerMockServer;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
-import static org.qubership.cloud.maas.client.Utils.withProp;
+import static com.netcracker.cloud.maas.client.Utils.withProp;
 import static org.junit.jupiter.api.Assertions.*;
 
 

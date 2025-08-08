@@ -1,10 +1,10 @@
 package com.netcracker.cloud.maas.client.context.kafka;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.framework.contexts.xversion.XVersionContextObject;
-import org.qubership.cloud.framework.contexts.xversion.XVersionProvider;
-import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.framework.contexts.xversion.XVersionContextObject;
+import com.netcracker.cloud.framework.contexts.xversion.XVersionProvider;
+import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
 import org.apache.kafka.common.header.Header;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,9 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.qubership.cloud.framework.contexts.acceptlanguage.AcceptLanguageProvider.ACCEPT_LANGUAGE;
-import static org.qubership.cloud.framework.contexts.xversion.XVersionContextObject.X_VERSION_SERIALIZATION_NAME;
-import static org.qubership.cloud.maas.client.context.kafka.KafkaContextPropagation.*;
+import static com.netcracker.cloud.framework.contexts.acceptlanguage.AcceptLanguageProvider.ACCEPT_LANGUAGE;
+import static com.netcracker.cloud.framework.contexts.xversion.XVersionContextObject.X_VERSION_SERIALIZATION_NAME;
+import static com.netcracker.cloud.maas.client.context.kafka.KafkaContextPropagation.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class KafkaContextPropagationTest {

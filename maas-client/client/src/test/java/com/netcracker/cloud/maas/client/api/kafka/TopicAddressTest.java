@@ -1,6 +1,6 @@
 package com.netcracker.cloud.maas.client.api.kafka;
 
-import org.qubership.cloud.maas.client.api.Classifier;
+import com.netcracker.cloud.maas.client.api.Classifier;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

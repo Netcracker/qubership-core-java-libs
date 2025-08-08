@@ -2,7 +2,7 @@ package com.netcracker.cloud.maas.client.api.kafka;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.qubership.cloud.maas.client.api.kafka.protocolextractors.OnTopicExists;
+import com.netcracker.cloud.maas.client.api.kafka.protocolextractors.OnTopicExists;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;

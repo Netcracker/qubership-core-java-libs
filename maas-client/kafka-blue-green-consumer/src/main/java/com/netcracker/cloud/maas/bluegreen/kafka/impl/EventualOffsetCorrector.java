@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.qubership.cloud.bluegreen.api.model.State.*;
+import static com.netcracker.cloud.bluegreen.api.model.State.*;
 
 @Slf4j
 public class EventualOffsetCorrector extends OffsetCorrector {
