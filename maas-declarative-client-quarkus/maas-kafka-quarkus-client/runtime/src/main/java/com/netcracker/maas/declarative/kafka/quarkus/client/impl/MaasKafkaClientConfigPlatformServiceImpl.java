@@ -1,7 +1,7 @@
 package com.netcracker.maas.declarative.kafka.quarkus.client.impl;
 
-import org.qubership.maas.declarative.kafka.client.impl.definition.api.MaasKafkaClientConfigPlatformService;
-import org.qubership.maas.declarative.kafka.quarkus.client.ConfigUtils;
+import com.netcracker.maas.declarative.kafka.client.impl.definition.api.MaasKafkaClientConfigPlatformService;
+import com.netcracker.maas.declarative.kafka.quarkus.client.ConfigUtils;
 import org.eclipse.microprofile.config.Config;
 
 import java.util.Map;

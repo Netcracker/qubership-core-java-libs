@@ -1,9 +1,9 @@
 package com.netcracker.maas.declarative.kafka.quarkus.client.test;
 
-import org.qubership.maas.declarative.kafka.client.api.*;
-import org.qubership.maas.declarative.kafka.client.api.model.MaasKafkaConsumerCreationRequest;
-import org.qubership.maas.declarative.kafka.client.api.model.MaasKafkaProducerCreationRequest;
-import org.qubership.maas.declarative.kafka.client.api.model.MaasProducerRecord;
+import com.netcracker.maas.declarative.kafka.client.api.*;
+import com.netcracker.maas.declarative.kafka.client.api.model.MaasKafkaConsumerCreationRequest;
+import com.netcracker.maas.declarative.kafka.client.api.model.MaasKafkaProducerCreationRequest;
+import com.netcracker.maas.declarative.kafka.client.api.model.MaasProducerRecord;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;

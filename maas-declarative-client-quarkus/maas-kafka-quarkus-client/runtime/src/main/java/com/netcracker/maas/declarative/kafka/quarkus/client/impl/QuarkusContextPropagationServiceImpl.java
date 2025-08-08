@@ -1,6 +1,6 @@
 package com.netcracker.maas.declarative.kafka.quarkus.client.impl;
 
-import org.qubership.maas.declarative.kafka.client.impl.common.context.propagation.DefaultContextPropagationServiceImpl;
+import com.netcracker.maas.declarative.kafka.client.impl.common.context.propagation.DefaultContextPropagationServiceImpl;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.ManagedContext;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

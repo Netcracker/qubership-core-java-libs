@@ -1,12 +1,12 @@
 package com.netcracker.maas.declarative.kafka.quarkus.client.test;
 
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaClientFactory;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaConsumer;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaProducer;
-import org.qubership.maas.declarative.kafka.client.api.model.MaasKafkaConsumerCreationRequest;
-import org.qubership.maas.declarative.kafka.client.api.model.MaasKafkaProducerCreationRequest;
-import org.qubership.maas.declarative.kafka.client.api.model.MaasProducerRecord;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaClientFactory;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaConsumer;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaProducer;
+import com.netcracker.maas.declarative.kafka.client.api.model.MaasKafkaConsumerCreationRequest;
+import com.netcracker.maas.declarative.kafka.client.api.model.MaasKafkaProducerCreationRequest;
+import com.netcracker.maas.declarative.kafka.client.api.model.MaasProducerRecord;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
 import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.inject.Inject;
 import org.apache.kafka.common.serialization.Deserializer;

@@ -1,8 +1,8 @@
 package com.netcracker.maas.declarative.kafka.quarkus.deployment;
 
-import org.qubership.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants;
-import org.qubership.maas.declarative.kafka.quarkus.client.config.*;
-import org.qubership.maas.declarative.kafka.quarkus.client.config.local.dev.MaasKafkaLocalDevConfig;
+import com.netcracker.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants;
+import com.netcracker.maas.declarative.kafka.quarkus.client.config.*;
+import com.netcracker.maas.declarative.kafka.quarkus.client.config.local.dev.MaasKafkaLocalDevConfig;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
