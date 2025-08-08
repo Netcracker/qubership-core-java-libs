@@ -1,4 +1,4 @@
-package org.qubership.cloud.mongoevolution.basechangelogs;
+package com.netcracker.cloud.mongoevolution.basechangelogs;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;

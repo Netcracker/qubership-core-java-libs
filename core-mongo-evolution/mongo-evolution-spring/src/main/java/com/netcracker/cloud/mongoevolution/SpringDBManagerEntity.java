@@ -1,4 +1,4 @@
-package org.qubership.cloud.mongoevolution;
+package com.netcracker.cloud.mongoevolution;
 
 import org.qubership.cloud.mongoevolution.java.annotation.DBManagerEntity;
 import lombok.Data;

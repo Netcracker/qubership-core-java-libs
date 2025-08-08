@@ -1,4 +1,4 @@
-package org.qubership.cloud.mongoevolution.java;
+package com.netcracker.cloud.mongoevolution.java;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;

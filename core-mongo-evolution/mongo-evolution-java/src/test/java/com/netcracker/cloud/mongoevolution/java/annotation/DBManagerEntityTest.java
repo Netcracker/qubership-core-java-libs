@@ -1,4 +1,4 @@
-package org.qubership.cloud.mongoevolution.java.annotation;
+package com.netcracker.cloud.mongoevolution.java.annotation;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;

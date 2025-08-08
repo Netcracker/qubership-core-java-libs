@@ -1,4 +1,4 @@
-package org.qubership.cloud.mongoevolution.java;
+package com.netcracker.cloud.mongoevolution.java;
 
 import lombok.Data;
 import org.bson.types.ObjectId;

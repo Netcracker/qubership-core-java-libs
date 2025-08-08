@@ -1,4 +1,4 @@
-package org.qubership.cloud.mongoevolution.java.errorchangelogs;
+package com.netcracker.cloud.mongoevolution.java.errorchangelogs;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;

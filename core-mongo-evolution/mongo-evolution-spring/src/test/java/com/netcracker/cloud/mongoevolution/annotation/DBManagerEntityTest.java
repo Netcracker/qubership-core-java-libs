@@ -1,4 +1,4 @@
-package org.qubership.cloud.mongoevolution.annotation;
+package com.netcracker.cloud.mongoevolution.annotation;
 
 import com.mongodb.client.MongoClient;
 import lombok.extern.slf4j.Slf4j;

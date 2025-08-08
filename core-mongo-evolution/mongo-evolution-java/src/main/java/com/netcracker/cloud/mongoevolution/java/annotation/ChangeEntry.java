@@ -1,4 +1,4 @@
-package org.qubership.cloud.mongoevolution.java.annotation;
+package com.netcracker.cloud.mongoevolution.java.annotation;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;

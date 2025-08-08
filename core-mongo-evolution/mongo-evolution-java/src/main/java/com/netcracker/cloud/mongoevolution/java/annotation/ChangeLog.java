@@ -1,4 +1,4 @@
-package org.qubership.cloud.mongoevolution.java.annotation;
+package com.netcracker.cloud.mongoevolution.java.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

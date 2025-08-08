@@ -1,4 +1,4 @@
-package org.qubership.cloud.mongoevolution.java.dataaccess;
+package com.netcracker.cloud.mongoevolution.java.dataaccess;
 
 import lombok.Value;
 
