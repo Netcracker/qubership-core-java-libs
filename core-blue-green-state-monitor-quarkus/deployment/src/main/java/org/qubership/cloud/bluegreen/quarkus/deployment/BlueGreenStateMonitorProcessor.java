@@ -26,10 +26,12 @@ public class BlueGreenStateMonitorProcessor {
         AdditionalBeanBuildItem.Builder builder = AdditionalBeanBuildItem.builder();
         if (!blueGreenGlobal.enabled || devConfig.enabled) {
             builder.addBeanClass(InMemoryConfiguration.class);
+            builder.addBeanClass(BGStateSubscriberConfiguration.class);
             log.info("Enabled InMemoryConfiguration");
         } else {
             if (statePublisherConfig.enabled) {
                 builder.addBeanClass(ConsulBlueGreenStatePublisherConfiguration.class);
+                builder.addBeanClass(BGStateSubscriberConfiguration.class);
                 log.info("Enabled ConsulBlueGreenStatePublisherConfiguration");
             }
             if (globalMutexConfig.enabled) {
