@@ -1,4 +1,4 @@
-package org.qubership.cloud.restclient.webclient;
+package com.netcracker.cloud.restclient.webclient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;

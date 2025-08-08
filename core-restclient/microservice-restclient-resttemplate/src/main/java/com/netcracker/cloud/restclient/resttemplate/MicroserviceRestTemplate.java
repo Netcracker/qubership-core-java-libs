@@ -1,4 +1,4 @@
-package org.qubership.cloud.restclient.resttemplate;
+package com.netcracker.cloud.restclient.resttemplate;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;

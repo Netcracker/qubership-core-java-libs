@@ -1,4 +1,4 @@
-package org.qubership.cloud.restclient;
+package com.netcracker.cloud.restclient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.Headers;

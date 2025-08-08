@@ -1,4 +1,4 @@
-package org.qubership.cloud.restclient.exception;
+package com.netcracker.cloud.restclient.exception;
 
 import org.qubership.cloud.core.error.runtime.ErrorCodeException;
 import org.qubership.cloud.core.error.runtime.ErrorCodeHolder;

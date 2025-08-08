@@ -1,4 +1,4 @@
-package org.qubership.cloud.restclient;
+package com.netcracker.cloud.restclient;
 
 public enum HttpMethod {
     GET,

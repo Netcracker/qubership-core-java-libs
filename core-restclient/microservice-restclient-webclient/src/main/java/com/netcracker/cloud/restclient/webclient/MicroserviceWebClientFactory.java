@@ -1,4 +1,4 @@
-package org.qubership.cloud.restclient.webclient;
+package com.netcracker.cloud.restclient.webclient;
 
 import org.qubership.cloud.restclient.MicroserviceRestClient;
 import org.qubership.cloud.restclient.MicroserviceRestClientFactory;

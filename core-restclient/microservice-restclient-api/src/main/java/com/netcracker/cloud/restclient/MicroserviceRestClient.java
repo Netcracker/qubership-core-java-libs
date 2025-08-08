@@ -1,4 +1,4 @@
-package org.qubership.cloud.restclient;
+package com.netcracker.cloud.restclient;
 
 
 import org.qubership.cloud.restclient.entity.RestClientResponseEntity;

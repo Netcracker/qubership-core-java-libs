@@ -1,4 +1,4 @@
-package org.qubership.cloud.restclient.entity;
+package com.netcracker.cloud.restclient.entity;
 
 
 import org.junit.jupiter.api.Test;
