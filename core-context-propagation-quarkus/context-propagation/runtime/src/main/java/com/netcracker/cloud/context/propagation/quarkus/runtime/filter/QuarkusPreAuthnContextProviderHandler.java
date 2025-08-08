@@ -1,9 +1,9 @@
 package com.netcracker.cloud.context.propagation.quarkus.runtime.filter;
 
-import org.qubership.cloud.context.propagation.core.ContextInitializationStep;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.ContextProvider;
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.context.propagation.core.ContextInitializationStep;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.ContextProvider;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.RoutingContext;

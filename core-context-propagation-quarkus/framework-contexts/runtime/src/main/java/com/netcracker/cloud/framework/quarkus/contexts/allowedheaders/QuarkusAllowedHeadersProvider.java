@@ -1,10 +1,10 @@
 package com.netcracker.cloud.framework.quarkus.contexts.allowedheaders;
 
-import org.qubership.cloud.context.propagation.core.RegisterProvider;
-import org.qubership.cloud.context.propagation.core.Strategy;
-import org.qubership.cloud.context.propagation.core.supports.strategies.RestEasyDefaultStrategy;
-import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersContextObject;
-import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider;
+import com.netcracker.cloud.context.propagation.core.RegisterProvider;
+import com.netcracker.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.context.propagation.core.supports.strategies.RestEasyDefaultStrategy;
+import com.netcracker.cloud.framework.contexts.allowedheaders.AllowedHeadersContextObject;
+import com.netcracker.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider;
 
 @RegisterProvider
 public class QuarkusAllowedHeadersProvider extends AllowedHeadersProvider {

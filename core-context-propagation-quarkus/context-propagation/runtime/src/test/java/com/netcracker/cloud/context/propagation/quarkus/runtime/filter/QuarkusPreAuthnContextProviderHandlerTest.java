@@ -1,8 +1,8 @@
 package com.netcracker.cloud.context.propagation.quarkus.runtime.filter;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
-import org.qubership.cloud.headerstracking.filters.context.RequestIdContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
+import com.netcracker.cloud.headerstracking.filters.context.RequestIdContext;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.impl.headers.HeadersMultiMap;

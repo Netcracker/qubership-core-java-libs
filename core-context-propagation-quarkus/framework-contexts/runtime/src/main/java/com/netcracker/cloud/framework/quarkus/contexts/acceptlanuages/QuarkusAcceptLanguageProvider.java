@@ -1,10 +1,10 @@
 package com.netcracker.cloud.framework.quarkus.contexts.acceptlanuages;
 
-import org.qubership.cloud.context.propagation.core.RegisterProvider;
-import org.qubership.cloud.context.propagation.core.Strategy;
-import org.qubership.cloud.context.propagation.core.supports.strategies.RestEasyDefaultStrategy;
-import org.qubership.cloud.framework.contexts.acceptlanguage.AcceptLanguageContextObject;
-import org.qubership.cloud.framework.contexts.acceptlanguage.AcceptLanguageProvider;
+import com.netcracker.cloud.context.propagation.core.RegisterProvider;
+import com.netcracker.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.context.propagation.core.supports.strategies.RestEasyDefaultStrategy;
+import com.netcracker.cloud.framework.contexts.acceptlanguage.AcceptLanguageContextObject;
+import com.netcracker.cloud.framework.contexts.acceptlanguage.AcceptLanguageProvider;
 
 
 @RegisterProvider

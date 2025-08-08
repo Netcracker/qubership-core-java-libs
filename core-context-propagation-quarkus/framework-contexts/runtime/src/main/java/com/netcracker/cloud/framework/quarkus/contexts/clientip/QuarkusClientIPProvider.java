@@ -1,9 +1,9 @@
 package com.netcracker.cloud.framework.quarkus.contexts.clientip;
 
-import org.qubership.cloud.context.propagation.core.RegisterProvider;
-import org.qubership.cloud.context.propagation.core.Strategy;
-import org.qubership.cloud.framework.contexts.clientip.ClientIPContextObject;
-import org.qubership.cloud.framework.contexts.clientip.ClientIPProvider;
+import com.netcracker.cloud.context.propagation.core.RegisterProvider;
+import com.netcracker.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.framework.contexts.clientip.ClientIPContextObject;
+import com.netcracker.cloud.framework.contexts.clientip.ClientIPProvider;
 
 @RegisterProvider
 public class QuarkusClientIPProvider extends ClientIPProvider {

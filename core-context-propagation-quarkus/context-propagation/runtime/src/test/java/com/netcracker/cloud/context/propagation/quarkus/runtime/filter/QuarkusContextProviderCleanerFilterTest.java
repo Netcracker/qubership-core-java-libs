@@ -1,7 +1,7 @@
 package com.netcracker.cloud.context.propagation.quarkus.runtime.filter;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.headerstracking.filters.context.RequestIdContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.headerstracking.filters.context.RequestIdContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;

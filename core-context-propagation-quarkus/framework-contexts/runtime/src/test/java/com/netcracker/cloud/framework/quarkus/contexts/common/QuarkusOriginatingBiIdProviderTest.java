@@ -1,11 +1,11 @@
 package com.netcracker.cloud.framework.quarkus.contexts.common;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.framework.contexts.originatingbiid.OriginatingBiIdContextObject;
-import org.qubership.cloud.framework.contexts.strategies.AbstractOriginatingBiIdStrategy;
-import org.qubership.cloud.framework.quarkus.contexts.originatingbiid.QuarkusOriginatingBiIdProvider;
-import org.qubership.cloud.headerstracking.filters.context.OriginatingBiIdContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.framework.contexts.originatingbiid.OriginatingBiIdContextObject;
+import com.netcracker.cloud.framework.contexts.strategies.AbstractOriginatingBiIdStrategy;
+import com.netcracker.cloud.framework.quarkus.contexts.originatingbiid.QuarkusOriginatingBiIdProvider;
+import com.netcracker.cloud.headerstracking.filters.context.OriginatingBiIdContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

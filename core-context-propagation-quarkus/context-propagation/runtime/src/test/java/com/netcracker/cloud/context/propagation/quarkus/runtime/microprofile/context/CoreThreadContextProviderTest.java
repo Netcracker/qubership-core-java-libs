@@ -1,10 +1,10 @@
 package com.netcracker.cloud.context.propagation.quarkus.runtime.microprofile.context;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContextObject;
-import org.qubership.cloud.framework.contexts.xversion.XVersionContextObject;
-import org.qubership.cloud.headerstracking.filters.context.RequestIdContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.framework.contexts.xrequestid.XRequestIdContextObject;
+import com.netcracker.cloud.framework.contexts.xversion.XVersionContextObject;
+import com.netcracker.cloud.headerstracking.filters.context.RequestIdContext;
 import org.eclipse.microprofile.context.spi.ThreadContextController;
 import org.eclipse.microprofile.context.spi.ThreadContextProvider;
 import org.junit.jupiter.api.Assertions;

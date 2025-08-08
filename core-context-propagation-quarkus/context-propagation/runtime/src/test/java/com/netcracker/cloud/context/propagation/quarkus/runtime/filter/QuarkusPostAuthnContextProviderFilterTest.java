@@ -1,7 +1,7 @@
 package com.netcracker.cloud.context.propagation.quarkus.runtime.filter;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.UriInfo;

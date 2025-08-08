@@ -1,10 +1,10 @@
 package com.netcracker.cloud.framework.quarkus.contexts.xversionname;
 
-import org.qubership.cloud.context.propagation.core.RegisterProvider;
-import org.qubership.cloud.context.propagation.core.Strategy;
-import org.qubership.cloud.context.propagation.core.supports.strategies.RestEasyDefaultStrategy;
-import org.qubership.cloud.framework.contexts.xversionname.XVersionNameContextObject;
-import org.qubership.cloud.framework.contexts.xversionname.XVersionNameProvider;
+import com.netcracker.cloud.context.propagation.core.RegisterProvider;
+import com.netcracker.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.context.propagation.core.supports.strategies.RestEasyDefaultStrategy;
+import com.netcracker.cloud.framework.contexts.xversionname.XVersionNameContextObject;
+import com.netcracker.cloud.framework.contexts.xversionname.XVersionNameProvider;
 
 @RegisterProvider
 public class QuarkusXVersionNameProvider extends XVersionNameProvider {

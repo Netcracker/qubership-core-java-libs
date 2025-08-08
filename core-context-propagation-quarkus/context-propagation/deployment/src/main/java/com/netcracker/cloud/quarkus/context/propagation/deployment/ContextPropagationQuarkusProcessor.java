@@ -1,9 +1,9 @@
 package com.netcracker.cloud.quarkus.context.propagation.deployment;
 
-import org.qubership.cloud.context.propagation.quarkus.runtime.configuration.QuarkusContextProvidersRecorder;
-import org.qubership.cloud.context.propagation.quarkus.runtime.filter.QuarkusContextProviderResponseFilter;
-import org.qubership.cloud.context.propagation.quarkus.runtime.filter.QuarkusPostAuthnContextProviderFilter;
-import org.qubership.cloud.context.propagation.quarkus.runtime.interceptor.QuarkusRestClientInterceptor;
+import com.netcracker.cloud.context.propagation.quarkus.runtime.configuration.QuarkusContextProvidersRecorder;
+import com.netcracker.cloud.context.propagation.quarkus.runtime.filter.QuarkusContextProviderResponseFilter;
+import com.netcracker.cloud.context.propagation.quarkus.runtime.filter.QuarkusPostAuthnContextProviderFilter;
+import com.netcracker.cloud.context.propagation.quarkus.runtime.interceptor.QuarkusRestClientInterceptor;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.Capabilities;
 import io.quarkus.deployment.Capability;
@@ -16,8 +16,8 @@ import io.quarkus.resteasy.common.spi.ResteasyJaxrsProviderBuildItem;
 import io.quarkus.resteasy.reactive.spi.*;
 import io.quarkus.vertx.http.deployment.FilterBuildItem;
 
-import static org.qubership.cloud.context.propagation.quarkus.runtime.filter.Priorities.CORE_CONTEXT_PROPAGATION_INCOMING_REQUEST;
-import static org.qubership.cloud.context.propagation.quarkus.runtime.filter.Priorities.CORE_CONTEXT_PROPAGATION_OUTGOING_RESPONSE;
+import static com.netcracker.cloud.context.propagation.quarkus.runtime.filter.Priorities.CORE_CONTEXT_PROPAGATION_INCOMING_REQUEST;
+import static com.netcracker.cloud.context.propagation.quarkus.runtime.filter.Priorities.CORE_CONTEXT_PROPAGATION_OUTGOING_RESPONSE;
 import static io.quarkus.deployment.annotations.ExecutionTime.STATIC_INIT;
 
 public class ContextPropagationQuarkusProcessor {

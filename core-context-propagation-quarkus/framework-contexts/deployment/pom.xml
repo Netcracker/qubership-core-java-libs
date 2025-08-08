@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>framework-contexts-parent</artifactId>
-        <groupId>org.qubership.cloud.quarkus</groupId>
+        <groupId>com.netcracker.cloud.quarkus</groupId>
         <version>6.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
- 
+
     <artifactId>framework-contexts-deployment</artifactId>
-    <name>Framework Contexts - Deployment</name>    
+    <name>Framework Contexts - Deployment</name>
 
     <dependencies>
         <dependency>
@@ -17,7 +17,7 @@
             <artifactId>quarkus-core-deployment</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>framework-contexts</artifactId>
         </dependency>
         <dependency>

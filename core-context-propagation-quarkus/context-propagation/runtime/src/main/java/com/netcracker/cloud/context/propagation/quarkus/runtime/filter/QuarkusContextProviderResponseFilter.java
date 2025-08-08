@@ -1,7 +1,7 @@
 package com.netcracker.cloud.context.propagation.quarkus.runtime.filter;
 
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.context.propagation.quarkus.runtime.interceptor.QuarkusResponseContextData;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.context.propagation.quarkus.runtime.interceptor.QuarkusResponseContextData;
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-import static org.qubership.cloud.context.propagation.quarkus.runtime.filter.Priorities.CORE_CONTEXT_PROPAGATION_OUTGOING_RESPONSE;
+import static com.netcracker.cloud.context.propagation.quarkus.runtime.filter.Priorities.CORE_CONTEXT_PROPAGATION_OUTGOING_RESPONSE;
 
 @Priority(CORE_CONTEXT_PROPAGATION_OUTGOING_RESPONSE)
 public class QuarkusContextProviderResponseFilter implements ContainerResponseFilter {

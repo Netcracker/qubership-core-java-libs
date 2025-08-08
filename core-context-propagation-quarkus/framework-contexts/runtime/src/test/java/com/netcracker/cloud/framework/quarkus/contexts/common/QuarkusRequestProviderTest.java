@@ -1,9 +1,9 @@
 package com.netcracker.cloud.framework.quarkus.contexts.common;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.context.propagation.core.contexts.common.RequestContextObject;
-import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.context.propagation.core.contexts.common.RequestContextObject;
+import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

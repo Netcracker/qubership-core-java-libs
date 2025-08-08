@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.qubership.cloud.quarkus</groupId>
+        <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>cloud-core-context-propagation-build-parent</artifactId>
         <version>6.1.2-SNAPSHOT</version>
         <relativePath>../build-parent/pom.xml</relativePath>
@@ -11,7 +11,7 @@
 
     <artifactId>framework-contexts-parent</artifactId>
     <name>Framework Contexts - Internal</name>
-    
+
     <packaging>pom</packaging>
 
     <properties>

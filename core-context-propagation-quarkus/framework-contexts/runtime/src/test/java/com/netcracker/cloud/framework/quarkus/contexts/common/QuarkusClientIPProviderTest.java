@@ -1,11 +1,11 @@
 package com.netcracker.cloud.framework.quarkus.contexts.common;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.framework.contexts.clientip.ClientIPContextObject;
-import org.qubership.cloud.framework.contexts.strategies.AbstractClientIPStrategy;
-import org.qubership.cloud.framework.quarkus.contexts.clientip.QuarkusClientIPProvider;
-import org.qubership.cloud.headerstracking.filters.context.ClientIPContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.framework.contexts.clientip.ClientIPContextObject;
+import com.netcracker.cloud.framework.contexts.strategies.AbstractClientIPStrategy;
+import com.netcracker.cloud.framework.quarkus.contexts.clientip.QuarkusClientIPProvider;
+import com.netcracker.cloud.headerstracking.filters.context.ClientIPContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

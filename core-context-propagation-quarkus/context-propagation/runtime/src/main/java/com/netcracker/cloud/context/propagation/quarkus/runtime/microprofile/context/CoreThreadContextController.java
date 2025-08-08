@@ -1,6 +1,6 @@
 package com.netcracker.cloud.context.propagation.quarkus.runtime.microprofile.context;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
 import org.eclipse.microprofile.context.spi.ThreadContextController;
 
 import java.util.Map;

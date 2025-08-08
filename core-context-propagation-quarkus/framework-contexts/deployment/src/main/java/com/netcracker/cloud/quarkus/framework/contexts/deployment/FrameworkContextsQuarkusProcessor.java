@@ -1,7 +1,7 @@
 package com.netcracker.cloud.quarkus.framework.contexts.deployment;
 
-import org.qubership.cloud.framework.quarkus.contexts.allowedheaders.HeadersAllowedConfig;
-import org.qubership.cloud.framework.quarkus.contexts.allowedheaders.HeadersAllowedRecorder;
+import com.netcracker.cloud.framework.quarkus.contexts.allowedheaders.HeadersAllowedConfig;
+import com.netcracker.cloud.framework.quarkus.contexts.allowedheaders.HeadersAllowedRecorder;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;

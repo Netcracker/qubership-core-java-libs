@@ -1,8 +1,8 @@
 package com.netcracker.cloud.context.propagation.quarkus.runtime.filter;
 
-import org.qubership.cloud.context.propagation.quarkus.it.reactive.ReactiveClient;
-import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
-import org.qubership.cloud.headerstracking.filters.context.RequestIdContext;
+import com.netcracker.cloud.context.propagation.quarkus.it.reactive.ReactiveClient;
+import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
+import com.netcracker.cloud.headerstracking.filters.context.RequestIdContext;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import jakarta.ws.rs.core.GenericType;
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static org.qubership.cloud.context.propagation.quarkus.it.reactive.RestController.TEST_ENDPOINT;
+import static com.netcracker.cloud.context.propagation.quarkus.it.reactive.RestController.TEST_ENDPOINT;
 import static org.hamcrest.core.Is.is;
 
 @QuarkusTest

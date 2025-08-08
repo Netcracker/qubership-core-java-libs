@@ -1,10 +1,10 @@
 package com.netcracker.cloud.framework.quarkus.contexts.originatingbiid;
 
 
-import org.qubership.cloud.context.propagation.core.RegisterProvider;
-import org.qubership.cloud.context.propagation.core.Strategy;
-import org.qubership.cloud.framework.contexts.originatingbiid.OriginatingBiIdContextObject;
-import org.qubership.cloud.framework.contexts.originatingbiid.OriginatingBiIdProvider;
+import com.netcracker.cloud.context.propagation.core.RegisterProvider;
+import com.netcracker.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.framework.contexts.originatingbiid.OriginatingBiIdContextObject;
+import com.netcracker.cloud.framework.contexts.originatingbiid.OriginatingBiIdProvider;
 
 @RegisterProvider
 public class QuarkusOriginatingBiIdProvider extends OriginatingBiIdProvider {

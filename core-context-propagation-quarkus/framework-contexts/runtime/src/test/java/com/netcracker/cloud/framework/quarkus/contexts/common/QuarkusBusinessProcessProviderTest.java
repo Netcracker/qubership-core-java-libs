@@ -1,10 +1,10 @@
 package com.netcracker.cloud.framework.quarkus.contexts.common;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.framework.contexts.businessprocess.BusinessProcessContextObject;
-import org.qubership.cloud.framework.quarkus.contexts.businessprocess.QuarkusBusinessProcessProvider;
-import org.qubership.cloud.headerstracking.filters.context.BusinessProcessIdContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.framework.contexts.businessprocess.BusinessProcessContextObject;
+import com.netcracker.cloud.framework.quarkus.contexts.businessprocess.QuarkusBusinessProcessProvider;
+import com.netcracker.cloud.headerstracking.filters.context.BusinessProcessIdContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
