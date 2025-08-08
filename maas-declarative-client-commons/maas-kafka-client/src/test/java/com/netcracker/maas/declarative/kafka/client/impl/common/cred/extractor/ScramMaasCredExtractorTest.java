@@ -16,7 +16,7 @@ public class ScramMaasCredExtractorTest extends AbstractCredExtractorTest {
     @Test
     void testScramMaasCredExtractor() {
         MaasTopicDefinition topicDefinition = MaasTopicDefinition.builder()
-                .setName("/org/qubership/maas/declarative/kafka/client/impl/common/cred/extractor/SASL_PLAINTEXT.json")// Path in resource folder
+                .setName("/com/netcracker/maas/declarative/kafka/client/impl/common/cred/extractor/SASL_PLAINTEXT.json")// Path in resource folder
                 .setNamespace("test")
                 .setManagedBy(ManagedBy.SELF)
                 .build();

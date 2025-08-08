@@ -16,7 +16,7 @@ public class ScramPlainTextMaasCredExtractorTest extends AbstractCredExtractorTe
     @Test
     void testScramPlainTextMaasCredExtractor() {
         MaasTopicDefinition topicDefinition = MaasTopicDefinition.builder()
-                .setName("/org/qubership/maas/declarative/kafka/client/impl/common/cred/extractor/PLAINTEXT_SCRAM.json")// Path in resource folder
+                .setName("/com/netcracker/maas/declarative/kafka/client/impl/common/cred/extractor/PLAINTEXT_SCRAM.json")// Path in resource folder
                 .setNamespace("test")
                 .setManagedBy(ManagedBy.SELF)
                 .build();
