@@ -1,14 +1,14 @@
 package com.netcracker.cloud.microserviceframework.testconfig;
 
 import jakarta.annotation.PreDestroy;
-import org.qubership.cloud.dbaas.client.entity.connection.MongoDBConnection;
-import org.qubership.cloud.dbaas.client.entity.database.MongoDatabase;
+import com.netcracker.cloud.dbaas.client.entity.connection.MongoDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.MongoDatabase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.TreeMap;
 
-import static org.qubership.cloud.microserviceframework.testconfig.TestConstants.MONGO_DB_NAME;
+import static com.netcracker.cloud.microserviceframework.testconfig.TestConstants.MONGO_DB_NAME;
 
 @Configuration
 public class MongoTestConfiguration {

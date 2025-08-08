@@ -1,7 +1,7 @@
 package com.netcracker.cloud.microserviceframework.testconfig;
 
-import org.qubership.cloud.microserviceframework.config.MongoPackagesConfigHolder;
-import org.qubership.cloud.microserviceframework.dataaccess.MongoEvolutionPostProcessor;
+import com.netcracker.cloud.microserviceframework.config.MongoPackagesConfigHolder;
+import com.netcracker.cloud.microserviceframework.dataaccess.MongoEvolutionPostProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 
-import static org.qubership.cloud.microserviceframework.testconfig.TestConstants.*;
+import static com.netcracker.cloud.microserviceframework.testconfig.TestConstants.*;
 
 @Configuration
 public class MongoPackagesConfigHolderTestConfiguration {

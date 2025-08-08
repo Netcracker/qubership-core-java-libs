@@ -2,8 +2,8 @@ package com.netcracker.cloud.microserviceframework.dataaccess;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.dbaas.client.config.MSInfoProvider;
-import org.qubership.cloud.microserviceframework.config.annotation.EnableMSInfoProvider;
+import com.netcracker.cloud.dbaas.client.config.MSInfoProvider;
+import com.netcracker.cloud.microserviceframework.config.annotation.EnableMSInfoProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.TestContextManager;

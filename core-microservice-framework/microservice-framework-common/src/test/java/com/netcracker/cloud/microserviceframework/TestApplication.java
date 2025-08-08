@@ -1,7 +1,7 @@
 package com.netcracker.cloud.microserviceframework;
 
-import org.qubership.cloud.dbaas.client.config.EnableServiceDbaasPostgresql;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.dbaas.client.config.EnableServiceDbaasPostgresql;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;

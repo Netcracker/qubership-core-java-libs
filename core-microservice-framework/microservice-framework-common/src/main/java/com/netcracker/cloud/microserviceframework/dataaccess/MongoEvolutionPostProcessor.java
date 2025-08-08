@@ -6,12 +6,12 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.internal.MongoClientImpl;
-import org.qubership.cloud.dbaas.client.entity.connection.MongoDBConnection;
-import org.qubership.cloud.dbaas.client.entity.database.MongoDatabase;
-import org.qubership.cloud.dbaas.client.management.PostConnectProcessor;
-import org.qubership.cloud.microserviceframework.config.MongoPackagesConfigHolder;
-import org.qubership.cloud.mongoevolution.SpringMongoEvolution;
-import org.qubership.cloud.mongoevolution.java.dataaccess.ConnectionSearchKey;
+import com.netcracker.cloud.dbaas.client.entity.connection.MongoDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.MongoDatabase;
+import com.netcracker.cloud.dbaas.client.management.PostConnectProcessor;
+import com.netcracker.cloud.microserviceframework.config.MongoPackagesConfigHolder;
+import com.netcracker.cloud.mongoevolution.SpringMongoEvolution;
+import com.netcracker.cloud.mongoevolution.java.dataaccess.ConnectionSearchKey;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.qubership.cloud.microserviceframework.config.MongoEvolutionConfiguration.MICROSERVICE_MONGO_EVOLUTION_DATA_BEANS;
+import static com.netcracker.cloud.microserviceframework.config.MongoEvolutionConfiguration.MICROSERVICE_MONGO_EVOLUTION_DATA_BEANS;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 

@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.qubership.cloud.dbaas.client.entity.connection.MongoDBConnection;
-import org.qubership.cloud.dbaas.client.entity.database.MongoDatabase;
-import org.qubership.cloud.microserviceframework.config.MongoPackagesConfigHolder;
+import com.netcracker.cloud.dbaas.client.entity.connection.MongoDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.MongoDatabase;
+import com.netcracker.cloud.microserviceframework.config.MongoPackagesConfigHolder;
 import org.springframework.core.env.Environment;
 import org.springframework.test.util.ReflectionTestUtils;
 

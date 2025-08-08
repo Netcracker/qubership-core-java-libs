@@ -1,9 +1,9 @@
 package com.netcracker.cloud.microserviceframework.resttemplate.sample;
 
-import org.qubership.cloud.dbaas.client.config.EnableServiceDbaasPostgresql;
-import org.qubership.cloud.microserviceframework.BaseApplicationOnRestTemplate;
-import org.qubership.cloud.routesregistration.common.annotation.Route;
-import org.qubership.cloud.routesregistration.common.gateway.route.RouteType;
+import com.netcracker.cloud.dbaas.client.config.EnableServiceDbaasPostgresql;
+import com.netcracker.cloud.microserviceframework.BaseApplicationOnRestTemplate;
+import com.netcracker.cloud.routesregistration.common.annotation.Route;
+import com.netcracker.cloud.routesregistration.common.gateway.route.RouteType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;

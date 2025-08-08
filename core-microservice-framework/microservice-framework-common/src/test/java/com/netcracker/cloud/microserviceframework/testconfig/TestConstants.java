@@ -16,11 +16,11 @@ public class TestConstants {
     public final static String TEST_CODE = "test_massage";
     public final static String WRONG_TEST_CODE = "wrong.test.code";
 
-    public static final String TEST_MONGO_PACKAGE = "org.qubership.cloud";
-    public static final String MS_CHANGE_LOGS_PACKAGE = "org.qubership.changelogpackage";
-    public static final String TENANT_AWARE_CHANGE_LOGS_PACKAGE = "org.qubership.tenantawarepackage";
-    public static final String MS_CUSTOM_PACKAGE = "org.qubership.test-cloud.ms";
-    public static final String TENANT_AWARE_CUSTOM_PACKAGE = "org.qubership.test-cloud.ms";
+    public static final String TEST_MONGO_PACKAGE = "com.netcracker.cloud";
+    public static final String MS_CHANGE_LOGS_PACKAGE = "com.netcracker.changelogpackage";
+    public static final String TENANT_AWARE_CHANGE_LOGS_PACKAGE = "com.netcracker.tenantawarepackage";
+    public static final String MS_CUSTOM_PACKAGE = "com.netcracker.test-cloud.ms";
+    public static final String TENANT_AWARE_CUSTOM_PACKAGE = "com.netcracker.test-cloud.ms";
     public static final String NULL_PACKAGE = null;
     public static final String MONGO_DB_NAME = "admin";
 

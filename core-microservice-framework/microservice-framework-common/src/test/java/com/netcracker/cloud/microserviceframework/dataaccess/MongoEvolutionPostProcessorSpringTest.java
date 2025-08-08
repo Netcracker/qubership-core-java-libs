@@ -2,10 +2,10 @@ package com.netcracker.cloud.microserviceframework.dataaccess;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.qubership.cloud.dbaas.client.entity.database.MongoDatabase;
-import org.qubership.cloud.microserviceframework.config.MongoPackagesConfigHolder;
-import org.qubership.cloud.microserviceframework.testconfig.MongoPackagesConfigHolderTestConfiguration;
-import org.qubership.cloud.microserviceframework.testconfig.MongoTestConfiguration;
+import com.netcracker.cloud.dbaas.client.entity.database.MongoDatabase;
+import com.netcracker.cloud.microserviceframework.config.MongoPackagesConfigHolder;
+import com.netcracker.cloud.microserviceframework.testconfig.MongoPackagesConfigHolderTestConfiguration;
+import com.netcracker.cloud.microserviceframework.testconfig.MongoTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;

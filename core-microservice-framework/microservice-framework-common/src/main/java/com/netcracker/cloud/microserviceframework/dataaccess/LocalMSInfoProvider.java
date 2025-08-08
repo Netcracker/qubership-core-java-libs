@@ -1,6 +1,6 @@
 package com.netcracker.cloud.microserviceframework.dataaccess;
 
-import org.qubership.cloud.dbaas.client.config.MSInfoProvider;
+import com.netcracker.cloud.dbaas.client.config.MSInfoProvider;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -5,7 +5,7 @@ import org.testcontainers.containers.GenericContainer;
 
 import java.time.Duration;
 
-import static org.qubership.cloud.microserviceframework.testconfig.TestConstants.MONGO_DB_NAME;
+import static com.netcracker.cloud.microserviceframework.testconfig.TestConstants.MONGO_DB_NAME;
 
 @Slf4j
 public class MongoTestContainer extends GenericContainer<MongoTestContainer> {

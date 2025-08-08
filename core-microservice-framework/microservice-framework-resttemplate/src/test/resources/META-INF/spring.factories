@@ -1,2 +1,2 @@
 org.springframework.boot.context.config.ConfigDataLocationResolver=\
-org.qubership.cloud.microserviceframework.resttemplate.sample.configuration.ContextConfig
+com.netcracker.cloud.microserviceframework.resttemplate.sample.configuration.ContextConfig

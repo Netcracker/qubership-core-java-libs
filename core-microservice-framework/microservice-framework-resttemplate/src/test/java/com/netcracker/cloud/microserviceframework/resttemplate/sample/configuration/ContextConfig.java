@@ -1,9 +1,9 @@
 package com.netcracker.cloud.microserviceframework.resttemplate.sample.configuration;
 
 import org.mockito.Mockito;
-import org.qubership.cloud.configserver.common.configuration.AbstractCustomConfigServerConfigDataLocationResolver;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
-import org.qubership.cloud.restclient.entity.RestClientResponseEntity;
+import com.netcracker.cloud.configserver.common.configuration.AbstractCustomConfigServerConfigDataLocationResolver;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.restclient.entity.RestClientResponseEntity;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.cloud.config.environment.Environment;
 

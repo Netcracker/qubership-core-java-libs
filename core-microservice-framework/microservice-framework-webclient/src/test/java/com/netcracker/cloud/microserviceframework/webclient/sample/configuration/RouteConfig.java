@@ -1,9 +1,9 @@
 package com.netcracker.cloud.microserviceframework.webclient.sample.configuration;
 
-import org.qubership.cloud.restclient.MicroserviceRestClient;
-import org.qubership.cloud.routeregistration.webclient.EnableRouteRegistrationOnWebClient;
-import org.qubership.cloud.routesregistration.common.gateway.route.ControlPlaneClient;
-import org.qubership.cloud.routesregistration.common.spring.gateway.route.SpringControlPlaneClient;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.routeregistration.webclient.EnableRouteRegistrationOnWebClient;
+import com.netcracker.cloud.routesregistration.common.gateway.route.ControlPlaneClient;
+import com.netcracker.cloud.routesregistration.common.spring.gateway.route.SpringControlPlaneClient;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;

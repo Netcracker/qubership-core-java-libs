@@ -1,6 +1,6 @@
 package com.netcracker.cloud.microserviceframework.config.annotation;
 
-import org.qubership.cloud.microserviceframework.config.MSInfoProviderConfiguration;
+import com.netcracker.cloud.microserviceframework.config.MSInfoProviderConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.ElementType;

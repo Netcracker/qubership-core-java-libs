@@ -1,7 +1,7 @@
 package com.netcracker.cloud.microserviceframework.config;
 
-import org.qubership.cloud.microserviceframework.config.annotation.EnableCustomChangeLogsPackages;
-import org.qubership.cloud.microserviceframework.dataaccess.MongoEvolutionPostProcessor;
+import com.netcracker.cloud.microserviceframework.config.annotation.EnableCustomChangeLogsPackages;
+import com.netcracker.cloud.microserviceframework.dataaccess.MongoEvolutionPostProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,13 +20,13 @@ public class MongoEvolutionConfiguration {
 
     public static final String MICROSERVICE_MONGO_EVOLUTION_DATA_BEANS = "microservice.mongo.evolution.data.beans";
 
-    @Value("${microservice.mongo.evolution.package:org.qubership.cloud}")
+    @Value("${microservice.mongo.evolution.package:com.netcracker.cloud}")
     private String mongoEvolutionPackage;
 
     @Value("${microservice.mongo.evolution.package.common:#{null}}")
     private String mongoEvolutionPackageCommon;
 
-    @Value("${application.common.package:org.qubership.cloud}")
+    @Value("${application.common.package:com.netcracker.cloud}")
     private String applicationPackage;
 
     @Bean

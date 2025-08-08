@@ -1,13 +1,13 @@
 package com.netcracker.cloud.microserviceframework.config;
 
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.microserviceframework.config.annotation.EnableCustomChangeLogsPackages;
+import com.netcracker.cloud.microserviceframework.config.annotation.EnableCustomChangeLogsPackages;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.qubership.cloud.microserviceframework.testconfig.TestConstants.*;
+import static com.netcracker.cloud.microserviceframework.testconfig.TestConstants.*;
 
 class MongoPackagesConfigHolderTest {
 

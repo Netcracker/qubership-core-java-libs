@@ -1,8 +1,8 @@
 package com.netcracker.cloud.microserviceframework.application;
 
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.restclient.webclient.MicroserviceWebClient;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.restclient.webclient.MicroserviceWebClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;

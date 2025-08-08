@@ -1,8 +1,8 @@
 package com.netcracker.cloud.microserviceframework.application;
 
 import org.jetbrains.annotations.NotNull;
-import org.qubership.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
-import org.qubership.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
+import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
+import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.Banner;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -27,7 +27,7 @@ public final class MicroserviceApplicationBuilder {
 
     public MicroserviceApplicationBuilder() {
         this.filterPackagesToExclude = new HashSet<>();
-        this.filterPackagesToExclude.add("org.qubership");
+        this.filterPackagesToExclude.add("com.netcracker");
         this.filterClasses = new HashSet<>();
         this.filterClasses.add(SpringPreAuthnContextProviderFilter.class);
         this.filterClasses.add(SpringPostAuthnContextProviderFilter.class);

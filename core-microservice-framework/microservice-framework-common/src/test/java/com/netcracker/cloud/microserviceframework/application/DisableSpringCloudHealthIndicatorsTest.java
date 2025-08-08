@@ -12,7 +12,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.qubership.cloud.microserviceframework.testconfig.TestConstants.*;
+import static com.netcracker.cloud.microserviceframework.testconfig.TestConstants.*;
 
 class DisableSpringCloudHealthIndicatorsTest {
 

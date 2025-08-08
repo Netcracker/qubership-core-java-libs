@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>microservice-framework-parent</artifactId>
         <version>7.1.2-SNAPSHOT</version>
         <relativePath>../microservice-framework-parent/pom.xml</relativePath>
@@ -21,17 +21,17 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>microservice-framework-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>microservice-framework-resttemplate</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>microservice-framework-webclient</artifactId>
             <version>${project.version}</version>
         </dependency>
