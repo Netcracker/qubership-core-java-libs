@@ -2,3 +2,4 @@ org.qubership.cloud.bluegreen.spring.config.InMemoryConfig
 org.qubership.cloud.bluegreen.spring.config.BlueGreenStatePublisherConfiguration
 org.qubership.cloud.bluegreen.spring.config.BlueGreenMicroserviceMutexConfiguration
 org.qubership.cloud.bluegreen.spring.config.BlueGreenGlobalMutexConfiguration
+org.qubership.cloud.bluegreen.spring.config.BGStateConfiguration
