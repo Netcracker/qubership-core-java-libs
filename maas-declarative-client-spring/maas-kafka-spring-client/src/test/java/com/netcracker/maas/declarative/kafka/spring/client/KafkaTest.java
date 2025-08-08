@@ -1,13 +1,13 @@
 package com.netcracker.maas.declarative.kafka.spring.client;
 
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaClientFactory;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaConsumer;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaProducer;
-import org.qubership.maas.declarative.kafka.client.api.model.MaasKafkaConsumerCreationRequest;
-import org.qubership.maas.declarative.kafka.client.api.model.MaasKafkaProducerCreationRequest;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasTopicDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaClientFactory;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaConsumer;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaProducer;
+import com.netcracker.maas.declarative.kafka.client.api.model.MaasKafkaConsumerCreationRequest;
+import com.netcracker.maas.declarative.kafka.client.api.model.MaasKafkaProducerCreationRequest;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasTopicDefinition;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serializer;

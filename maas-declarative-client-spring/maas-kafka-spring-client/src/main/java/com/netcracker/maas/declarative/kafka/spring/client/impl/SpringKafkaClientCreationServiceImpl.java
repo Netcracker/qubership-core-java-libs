@@ -1,9 +1,9 @@
 package com.netcracker.maas.declarative.kafka.spring.client.impl;
 
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
-import org.qubership.cloud.maas.bluegreen.kafka.BGKafkaConsumer;
-import org.qubership.maas.declarative.kafka.client.impl.client.creator.KafkaClientCreationServiceImpl;
-import org.qubership.maas.declarative.kafka.client.impl.common.bg.KafkaConsumerConfiguration;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.maas.bluegreen.kafka.BGKafkaConsumer;
+import com.netcracker.maas.declarative.kafka.client.impl.client.creator.KafkaClientCreationServiceImpl;
+import com.netcracker.maas.declarative.kafka.client.impl.common.bg.KafkaConsumerConfiguration;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.kafka.KafkaClientMetrics;
 import io.opentelemetry.api.OpenTelemetry;

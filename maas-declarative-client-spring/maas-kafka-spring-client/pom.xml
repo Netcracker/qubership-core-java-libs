@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.qubership.cloud.maas.declarative</groupId>
+        <groupId>com.netcracker.cloud.maas.declarative</groupId>
         <artifactId>maas-declarative-kafka-client-spring-bom</artifactId>
         <version>6.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -14,11 +14,11 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.qubership.cloud.maas.client</groupId>
+            <groupId>com.netcracker.cloud.maas.client</groupId>
             <artifactId>maas-declarative-kafka-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.maas.client</groupId>
+            <groupId>com.netcracker.cloud.maas.client</groupId>
             <artifactId>maas-client-spring</artifactId>
         </dependency>
         <dependency>
@@ -26,9 +26,9 @@
             <artifactId>spring-boot-actuator-autoconfigure</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>blue-green-state-monitor-spring</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.micrometer</groupId>

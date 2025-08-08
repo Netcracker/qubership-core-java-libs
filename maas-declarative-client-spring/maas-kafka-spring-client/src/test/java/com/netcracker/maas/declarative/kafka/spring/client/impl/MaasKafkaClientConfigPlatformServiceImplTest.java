@@ -1,7 +1,7 @@
 package com.netcracker.maas.declarative.kafka.spring.client.impl;
 
-import org.qubership.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants;
-import org.qubership.maas.declarative.kafka.spring.client.config.MaasKafkaClientConfigKeeper;
+import com.netcracker.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants;
+import com.netcracker.maas.declarative.kafka.spring.client.config.MaasKafkaClientConfigKeeper;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

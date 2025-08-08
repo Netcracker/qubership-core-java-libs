@@ -1,23 +1,23 @@
 package com.netcracker.maas.declarative.kafka.spring.client.config;
 
-import org.qubership.cloud.maas.bluegreen.kafka.Record;
-import org.qubership.maas.declarative.kafka.client.api.context.propagation.ContextPropagationService;
-import org.qubership.maas.declarative.kafka.client.api.filter.ConsumerRecordFilter;
-import org.qubership.maas.declarative.kafka.client.impl.client.consumer.filter.Chain;
-import org.qubership.maas.declarative.kafka.client.impl.client.consumer.filter.impl.ContextPropagationFilter;
-import org.qubership.maas.declarative.kafka.client.impl.client.creator.KafkaClientCreationService;
-import org.qubership.maas.declarative.kafka.client.impl.client.notification.api.MaasKafkaClientStateChangeNotificationService;
-import org.qubership.maas.declarative.kafka.client.impl.client.notification.impl.MaasKafkaClientStateChangeNotificationServiceImpl;
-import org.qubership.maas.declarative.kafka.client.impl.common.context.propagation.DefaultContextPropagationServiceImpl;
-import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;
-import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.impl.DefaultInternalMaasTopicCredentialsExtractorImpl;
-import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.impl.InternalMaasTopicCredExtractorAggregatorImpl;
-import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.provider.api.InternalMaasCredExtractorProvider;
-import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.provider.impl.DefaultInternalMaasTopicCredentialsExtractorProviderImpl;
-import org.qubership.maas.declarative.kafka.client.impl.definition.api.MaasKafkaClientDefinitionService;
-import org.qubership.maas.declarative.kafka.client.impl.definition.impl.MaasKafkaClientDefinitionServiceImpl;
-import org.qubership.maas.declarative.kafka.spring.client.impl.MaasKafkaClientConfigPlatformServiceImpl;
-import org.qubership.maas.declarative.kafka.spring.client.impl.SpringKafkaClientCreationServiceImpl;
+import com.netcracker.cloud.maas.bluegreen.kafka.Record;
+import com.netcracker.maas.declarative.kafka.client.api.context.propagation.ContextPropagationService;
+import com.netcracker.maas.declarative.kafka.client.api.filter.ConsumerRecordFilter;
+import com.netcracker.maas.declarative.kafka.client.impl.client.consumer.filter.Chain;
+import com.netcracker.maas.declarative.kafka.client.impl.client.consumer.filter.impl.ContextPropagationFilter;
+import com.netcracker.maas.declarative.kafka.client.impl.client.creator.KafkaClientCreationService;
+import com.netcracker.maas.declarative.kafka.client.impl.client.notification.api.MaasKafkaClientStateChangeNotificationService;
+import com.netcracker.maas.declarative.kafka.client.impl.client.notification.impl.MaasKafkaClientStateChangeNotificationServiceImpl;
+import com.netcracker.maas.declarative.kafka.client.impl.common.context.propagation.DefaultContextPropagationServiceImpl;
+import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;
+import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.impl.DefaultInternalMaasTopicCredentialsExtractorImpl;
+import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.impl.InternalMaasTopicCredExtractorAggregatorImpl;
+import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.provider.api.InternalMaasCredExtractorProvider;
+import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.provider.impl.DefaultInternalMaasTopicCredentialsExtractorProviderImpl;
+import com.netcracker.maas.declarative.kafka.client.impl.definition.api.MaasKafkaClientDefinitionService;
+import com.netcracker.maas.declarative.kafka.client.impl.definition.impl.MaasKafkaClientDefinitionServiceImpl;
+import com.netcracker.maas.declarative.kafka.spring.client.impl.MaasKafkaClientConfigPlatformServiceImpl;
+import com.netcracker.maas.declarative.kafka.spring.client.impl.SpringKafkaClientCreationServiceImpl;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.context.Context;
@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
-import static org.qubership.maas.declarative.kafka.client.impl.client.consumer.filter.impl.ContextPropagationFilter.CONTEXT_PROPAGATION_ORDER;
+import static com.netcracker.maas.declarative.kafka.client.impl.client.consumer.filter.impl.ContextPropagationFilter.CONTEXT_PROPAGATION_ORDER;
 
 @Configuration
 public class MaasKafkaCommonConfig {

@@ -1,16 +1,16 @@
 package com.netcracker.maas.declarative.kafka.spring.client.config;
 
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaClientFactory;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaTopicService;
-import org.qubership.maas.declarative.kafka.client.api.context.propagation.ContextPropagationService;
-import org.qubership.maas.declarative.kafka.client.api.filter.ConsumerRecordFilter;
-import org.qubership.maas.declarative.kafka.client.impl.client.creator.KafkaClientCreationService;
-import org.qubership.maas.declarative.kafka.client.impl.client.factory.MaasKafkaClientFactoryImpl;
-import org.qubership.maas.declarative.kafka.client.impl.client.notification.api.MaasKafkaClientStateChangeNotificationService;
-import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;
-import org.qubership.maas.declarative.kafka.client.impl.definition.api.MaasKafkaClientDefinitionService;
-import org.qubership.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaClientFactory;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaTopicService;
+import com.netcracker.maas.declarative.kafka.client.api.context.propagation.ContextPropagationService;
+import com.netcracker.maas.declarative.kafka.client.api.filter.ConsumerRecordFilter;
+import com.netcracker.maas.declarative.kafka.client.impl.client.creator.KafkaClientCreationService;
+import com.netcracker.maas.declarative.kafka.client.impl.client.factory.MaasKafkaClientFactoryImpl;
+import com.netcracker.maas.declarative.kafka.client.impl.client.notification.api.MaasKafkaClientStateChangeNotificationService;
+import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;
+import com.netcracker.maas.declarative.kafka.client.impl.definition.api.MaasKafkaClientDefinitionService;
+import com.netcracker.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Collections;
 import java.util.List;
 
-import static org.qubership.maas.declarative.kafka.client.impl.common.constant.MaasKafkaConsumerConstants.DEFAULT_AWAIT_TIME_LIST;
+import static com.netcracker.maas.declarative.kafka.client.impl.common.constant.MaasKafkaConsumerConstants.DEFAULT_AWAIT_TIME_LIST;
 
 @Configuration
 public class MaasKafkaClientFactoryConfig {

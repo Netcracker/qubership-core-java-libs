@@ -1,13 +1,13 @@
 package com.netcracker.maas.declarative.kafka.spring.client.monitoring;
 
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaClientFactory;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaConsumer;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaProducer;
-import org.qubership.maas.declarative.kafka.client.api.model.MaasProducerRecord;
-import org.qubership.maas.declarative.kafka.spring.client.KafkaTest;
-import org.qubership.maas.declarative.kafka.spring.client.config.*;
-import org.qubership.maas.declarative.kafka.spring.client.config.local.dev.MaasKafkaLocalDevConfig;
-import org.qubership.maas.declarative.kafka.spring.client.config.local.dev.MaasKafkaLocalDevConfigProps;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaClientFactory;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaConsumer;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaProducer;
+import com.netcracker.maas.declarative.kafka.client.api.model.MaasProducerRecord;
+import com.netcracker.maas.declarative.kafka.spring.client.KafkaTest;
+import com.netcracker.maas.declarative.kafka.spring.client.config.*;
+import com.netcracker.maas.declarative.kafka.spring.client.config.local.dev.MaasKafkaLocalDevConfig;
+import com.netcracker.maas.declarative.kafka.spring.client.config.local.dev.MaasKafkaLocalDevConfigProps;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.simple.SimpleConfig;

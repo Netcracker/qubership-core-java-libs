@@ -1,15 +1,15 @@
 package com.netcracker.maas.declarative.kafka.spring.client.impl;
 
-import org.qubership.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants;
-import org.qubership.maas.declarative.kafka.client.impl.definition.api.MaasKafkaClientConfigPlatformService;
-import org.qubership.maas.declarative.kafka.spring.client.config.MaasKafkaClientConfigKeeper;
+import com.netcracker.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants;
+import com.netcracker.maas.declarative.kafka.client.impl.definition.api.MaasKafkaClientConfigPlatformService;
+import com.netcracker.maas.declarative.kafka.spring.client.config.MaasKafkaClientConfigKeeper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.qubership.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants.KAFKA_CONSUMER_PREFIX;
-import static org.qubership.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants.KAFKA_PRODUCER_PREFIX;
+import static com.netcracker.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants.KAFKA_CONSUMER_PREFIX;
+import static com.netcracker.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants.KAFKA_PRODUCER_PREFIX;
 
 
 public class MaasKafkaClientConfigPlatformServiceImpl implements MaasKafkaClientConfigPlatformService {

@@ -1,15 +1,15 @@
 package com.netcracker.maas.declarative.kafka.spring.client.config.local.dev;
 
-import org.qubership.cloud.maas.spring.localdev.MaasLocalDevConfig;
-import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.impl.LocalDevInternalTopicCredentialsExtractorImpl;
-import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.provider.api.InternalMaasCredExtractorProvider;
-import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.provider.impl.LocalDevInternalTopicCredentialsExtractorProviderImpl;
-import org.qubership.maas.declarative.kafka.client.impl.local.dev.config.api.MaasKafkaLocalDevConfigProviderService;
-import org.qubership.maas.declarative.kafka.client.impl.local.dev.config.impl.MaasKafkaLocalDevConfigProviderImpl;
-import org.qubership.maas.declarative.kafka.client.impl.local.dev.tenant.LocalDevInternalTenantServiceImpl;
-import org.qubership.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
-import org.qubership.maas.declarative.kafka.client.impl.topic.provider.api.MaasKafkaTopicServiceProvider;
-import org.qubership.maas.declarative.kafka.client.impl.topic.provider.impl.LocalDevMaasDirectKafkaTopicServiceProviderImpl;
+import com.netcracker.cloud.maas.spring.localdev.MaasLocalDevConfig;
+import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.impl.LocalDevInternalTopicCredentialsExtractorImpl;
+import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.provider.api.InternalMaasCredExtractorProvider;
+import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.provider.impl.LocalDevInternalTopicCredentialsExtractorProviderImpl;
+import com.netcracker.maas.declarative.kafka.client.impl.local.dev.config.api.MaasKafkaLocalDevConfigProviderService;
+import com.netcracker.maas.declarative.kafka.client.impl.local.dev.config.impl.MaasKafkaLocalDevConfigProviderImpl;
+import com.netcracker.maas.declarative.kafka.client.impl.local.dev.tenant.LocalDevInternalTenantServiceImpl;
+import com.netcracker.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
+import com.netcracker.maas.declarative.kafka.client.impl.topic.provider.api.MaasKafkaTopicServiceProvider;
+import com.netcracker.maas.declarative.kafka.client.impl.topic.provider.impl.LocalDevMaasDirectKafkaTopicServiceProviderImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -19,8 +19,8 @@ import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
-import static org.qubership.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants.KAFKA_LOCAL_DEV_ENABLED;
-import static org.qubership.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants.KAFKA_LOCAL_DEV_TENANTS_IDS;
+import static com.netcracker.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants.KAFKA_LOCAL_DEV_ENABLED;
+import static com.netcracker.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants.KAFKA_LOCAL_DEV_TENANTS_IDS;
 
 
 @Configuration
