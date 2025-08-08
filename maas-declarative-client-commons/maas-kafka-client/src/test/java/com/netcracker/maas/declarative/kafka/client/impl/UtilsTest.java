@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl;
+package com.netcracker.maas.declarative.kafka.client.impl;
 
 import org.junit.jupiter.api.Test;
 

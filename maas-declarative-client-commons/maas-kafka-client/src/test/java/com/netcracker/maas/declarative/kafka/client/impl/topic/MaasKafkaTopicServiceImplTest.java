@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.topic;
+package com.netcracker.maas.declarative.kafka.client.impl.topic;
 
 import org.qubership.cloud.maas.client.api.Classifier;
 import org.qubership.cloud.maas.client.api.kafka.KafkaMaaSClient;

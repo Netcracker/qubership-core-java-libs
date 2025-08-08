@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.api;
+package com.netcracker.maas.declarative.kafka.client.api;
 
 import org.qubership.cloud.bluegreen.api.model.BlueGreenState;
 import org.qubership.cloud.bluegreen.api.model.NamespaceVersion;

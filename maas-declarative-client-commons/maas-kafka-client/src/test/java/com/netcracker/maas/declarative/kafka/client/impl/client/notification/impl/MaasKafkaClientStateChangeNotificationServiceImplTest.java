@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.client.notification.impl;
+package com.netcracker.maas.declarative.kafka.client.impl.client.notification.impl;
 
 import org.junit.jupiter.api.Test;
 

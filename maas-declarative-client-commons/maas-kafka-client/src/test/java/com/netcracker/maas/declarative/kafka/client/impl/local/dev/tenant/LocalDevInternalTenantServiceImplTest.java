@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.local.dev.tenant;
+package com.netcracker.maas.declarative.kafka.client.impl.local.dev.tenant;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

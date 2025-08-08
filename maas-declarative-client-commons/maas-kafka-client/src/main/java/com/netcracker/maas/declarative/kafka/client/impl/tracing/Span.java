@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.tracing;
+package com.netcracker.maas.declarative.kafka.client.impl.tracing;
 
 public interface Span {
 

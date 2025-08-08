@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.common.constant;
+package com.netcracker.maas.declarative.kafka.client.impl.common.constant;
 
 public interface MaasKafkaCommonConstants {
     // Thread wait value

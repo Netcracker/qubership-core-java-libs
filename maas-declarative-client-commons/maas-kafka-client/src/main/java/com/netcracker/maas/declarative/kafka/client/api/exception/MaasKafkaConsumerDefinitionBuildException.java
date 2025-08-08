@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.api.exception;
+package com.netcracker.maas.declarative.kafka.client.api.exception;
 
 public class MaasKafkaConsumerDefinitionBuildException extends MaasKafkaException {
 

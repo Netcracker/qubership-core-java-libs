@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.tenant.impl;
+package com.netcracker.maas.declarative.kafka.client.impl.tenant.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -104,4 +104,4 @@ class InternalTenantServiceImplTest {
         verify(tenantManagerConnector).subscribe(callbackCaptor.capture());
         return callbackCaptor.getValue();
     }
-} 
+}

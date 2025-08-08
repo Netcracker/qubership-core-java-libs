@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.local.dev.config.api;
+package com.netcracker.maas.declarative.kafka.client.impl.local.dev.config.api;
 
 import java.util.Map;
 

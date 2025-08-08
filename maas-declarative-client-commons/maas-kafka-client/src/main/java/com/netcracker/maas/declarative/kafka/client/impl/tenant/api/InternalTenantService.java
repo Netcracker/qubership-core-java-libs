@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.tenant.api;
+package com.netcracker.maas.declarative.kafka.client.impl.tenant.api;
 
 import java.util.List;
 import java.util.function.Consumer;

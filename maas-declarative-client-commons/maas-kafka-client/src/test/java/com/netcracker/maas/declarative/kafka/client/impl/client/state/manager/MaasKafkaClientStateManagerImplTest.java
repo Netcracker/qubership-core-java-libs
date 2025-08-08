@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.client.state.manager;
+package com.netcracker.maas.declarative.kafka.client.impl.client.state.manager;
 
 import org.qubership.maas.declarative.kafka.client.api.MaasKafkaClient;
 import org.qubership.maas.declarative.kafka.client.api.MaasKafkaClientState;

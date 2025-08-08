@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.client.consumer.errorhandling.impl;
+package com.netcracker.maas.declarative.kafka.client.impl.client.consumer.errorhandling.impl;
 
 import org.qubership.maas.declarative.kafka.client.api.MaasKafkaConsumerErrorHandler;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

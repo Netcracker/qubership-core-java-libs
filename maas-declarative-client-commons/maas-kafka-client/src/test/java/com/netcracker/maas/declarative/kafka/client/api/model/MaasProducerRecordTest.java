@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.api.model;
+package com.netcracker.maas.declarative.kafka.client.api.model;
 
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.header.internals.RecordHeaders;

@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.client.producer;
+package com.netcracker.maas.declarative.kafka.client.impl.client.producer;
 
 import org.qubership.cloud.framework.contexts.tenant.context.TenantContext;
 import org.qubership.cloud.maas.client.api.kafka.TopicAddress;

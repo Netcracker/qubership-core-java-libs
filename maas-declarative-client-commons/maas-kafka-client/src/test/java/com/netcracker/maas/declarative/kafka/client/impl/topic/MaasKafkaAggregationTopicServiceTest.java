@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.topic;
+package com.netcracker.maas.declarative.kafka.client.impl.topic;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;

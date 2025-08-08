@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.api;
+package com.netcracker.maas.declarative.kafka.client.api;
 
 /**
  * Interface described client maas kafka client state change listener

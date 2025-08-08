@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.client.consumer.executor;
+package com.netcracker.maas.declarative.kafka.client.impl.client.consumer.executor;
 
 import org.qubership.cloud.bluegreen.api.model.NamespaceVersion;
 import org.qubership.cloud.bluegreen.api.model.State;

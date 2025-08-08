@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.local.dev.tenant;
+package com.netcracker.maas.declarative.kafka.client.impl.local.dev.tenant;
 
 import org.qubership.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
 

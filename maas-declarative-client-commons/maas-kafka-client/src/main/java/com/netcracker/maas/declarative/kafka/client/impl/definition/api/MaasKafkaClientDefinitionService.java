@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.definition.api;
+package com.netcracker.maas.declarative.kafka.client.impl.definition.api;
 
 import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaMandatoryPropertyAbsentException;
 import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;

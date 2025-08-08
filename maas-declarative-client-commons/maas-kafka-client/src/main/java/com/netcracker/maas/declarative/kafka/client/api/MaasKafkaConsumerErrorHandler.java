@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.api;
+package com.netcracker.maas.declarative.kafka.client.api;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

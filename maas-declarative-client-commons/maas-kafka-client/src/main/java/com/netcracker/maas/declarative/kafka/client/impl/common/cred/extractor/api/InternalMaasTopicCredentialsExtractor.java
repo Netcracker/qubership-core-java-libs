@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.api;
+package com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.api;
 
 import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
 

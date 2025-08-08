@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.api.model.definition;
+package com.netcracker.maas.declarative.kafka.client.api.model.definition;
 
 import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaTopicDefinitionBuildException;
 import lombok.*;

@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.common.bg;
+package com.netcracker.maas.declarative.kafka.client.impl.common.bg;
 
 import org.qubership.cloud.maas.bluegreen.kafka.ConsumerConsistencyMode;
 import org.qubership.cloud.maas.bluegreen.kafka.OffsetSetupStrategy;

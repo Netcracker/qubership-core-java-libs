@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.client.consumer;
+package com.netcracker.maas.declarative.kafka.client.impl.client.consumer;
 
 import org.apache.kafka.common.serialization.Deserializer;
 

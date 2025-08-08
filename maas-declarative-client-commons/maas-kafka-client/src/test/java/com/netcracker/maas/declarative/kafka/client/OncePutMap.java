@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client;
+package com.netcracker.maas.declarative.kafka.client;
 
 import java.util.HashMap;
 

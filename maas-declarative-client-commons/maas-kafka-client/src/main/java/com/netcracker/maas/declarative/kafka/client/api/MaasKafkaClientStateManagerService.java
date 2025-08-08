@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.api;
+package com.netcracker.maas.declarative.kafka.client.api;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;

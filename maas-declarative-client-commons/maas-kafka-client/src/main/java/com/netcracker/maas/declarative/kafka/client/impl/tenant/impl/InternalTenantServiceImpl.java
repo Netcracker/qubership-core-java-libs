@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.tenant.impl;
+package com.netcracker.maas.declarative.kafka.client.impl.tenant.impl;
 
 import org.qubership.cloud.tenantmanager.client.Tenant;
 import org.qubership.cloud.tenantmanager.client.TenantManagerConnector;

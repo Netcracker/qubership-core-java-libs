@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.api.model;
+package com.netcracker.maas.declarative.kafka.client.api.model;
 
 import org.qubership.maas.declarative.kafka.client.api.MaasKafkaConsumerErrorHandler;
 import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaConsumerCreationRequestBuildException;

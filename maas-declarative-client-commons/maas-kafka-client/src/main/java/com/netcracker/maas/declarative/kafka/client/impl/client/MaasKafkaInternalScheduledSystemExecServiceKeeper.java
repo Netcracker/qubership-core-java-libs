@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.client;
+package com.netcracker.maas.declarative.kafka.client.impl.client;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 

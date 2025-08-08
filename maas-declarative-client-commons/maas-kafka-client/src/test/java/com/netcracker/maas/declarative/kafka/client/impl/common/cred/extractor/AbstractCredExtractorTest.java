@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor;
+package com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor;
 
 import org.qubership.maas.declarative.kafka.client.api.MaasKafkaTopicService;
 import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;

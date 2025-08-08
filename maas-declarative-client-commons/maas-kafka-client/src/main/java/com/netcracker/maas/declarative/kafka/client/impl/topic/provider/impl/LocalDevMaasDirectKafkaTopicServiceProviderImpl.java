@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.topic.provider.impl;
+package com.netcracker.maas.declarative.kafka.client.impl.topic.provider.impl;
 
 import org.qubership.maas.declarative.kafka.client.api.MaasKafkaTopicService;
 import org.qubership.maas.declarative.kafka.client.impl.topic.LocalDevMaasDirectKafkaTopicServiceImpl;

@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client;
+package com.netcracker.maas.declarative.kafka.client;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

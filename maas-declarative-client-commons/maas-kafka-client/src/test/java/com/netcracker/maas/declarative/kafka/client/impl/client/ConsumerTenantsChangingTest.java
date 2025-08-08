@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.client;
+package com.netcracker.maas.declarative.kafka.client.impl.client;
 
 import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
 import org.qubership.cloud.maas.client.api.kafka.TopicAddress;

@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.common.context.propagation;
+package com.netcracker.maas.declarative.kafka.client.impl.common.context.propagation;
 
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.maas.client.context.kafka.KafkaContextPropagation;

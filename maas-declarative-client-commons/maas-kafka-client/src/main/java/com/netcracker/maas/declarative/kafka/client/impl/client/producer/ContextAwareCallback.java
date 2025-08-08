@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.client.impl.client.producer;
+package com.netcracker.maas.declarative.kafka.client.impl.client.producer;
 
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.apache.kafka.clients.producer.Callback;
