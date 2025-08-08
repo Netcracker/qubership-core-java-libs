@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.spring.client.config.local.dev;
+package com.netcracker.maas.declarative.kafka.spring.client.config.local.dev;
 
 import org.qubership.cloud.maas.spring.localdev.MaasLocalDevConfig;
 import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.impl.LocalDevInternalTopicCredentialsExtractorImpl;

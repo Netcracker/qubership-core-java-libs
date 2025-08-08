@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.spring.client.config;
+package com.netcracker.maas.declarative.kafka.spring.client.config;
 
 import org.qubership.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants;
 import org.springframework.beans.factory.annotation.Value;

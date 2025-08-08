@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.spring.client.config.local.dev;
+package com.netcracker.maas.declarative.kafka.spring.client.config.local.dev;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;

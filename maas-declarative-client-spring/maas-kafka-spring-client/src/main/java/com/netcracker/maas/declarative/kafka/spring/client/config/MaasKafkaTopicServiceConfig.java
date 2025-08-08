@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.spring.client.config;
+package com.netcracker.maas.declarative.kafka.spring.client.config;
 
 import org.qubership.maas.declarative.kafka.client.api.MaasKafkaTopicService;
 import org.qubership.maas.declarative.kafka.client.impl.topic.MaasKafkaAggregationTopicService;

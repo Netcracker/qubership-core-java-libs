@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.spring.client.tracing;
+package com.netcracker.maas.declarative.kafka.spring.client.tracing;
 
 import org.qubership.cloud.headerstracking.filters.context.RequestIdContext;
 import org.qubership.maas.declarative.kafka.client.api.MaasKafkaClientFactory;

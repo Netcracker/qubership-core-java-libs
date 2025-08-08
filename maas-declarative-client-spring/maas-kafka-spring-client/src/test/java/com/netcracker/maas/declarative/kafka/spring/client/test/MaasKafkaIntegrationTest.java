@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.spring.client.test;
+package com.netcracker.maas.declarative.kafka.spring.client.test;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
