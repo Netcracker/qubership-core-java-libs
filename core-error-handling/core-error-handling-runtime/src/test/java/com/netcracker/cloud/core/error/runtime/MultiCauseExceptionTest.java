@@ -1,4 +1,4 @@
-package org.qubership.cloud.core.error.runtime;
+package com.netcracker.cloud.core.error.runtime;
 
 import org.junit.jupiter.api.Test;
 
@@ -89,7 +89,7 @@ class MultiCauseExceptionTest {
         // Given
         ErrorCodeException errorCodeException = new ErrorCodeException(CUSTOM_ERROR_CODE, "error code exception");
         RuntimeException runtimeException = new RuntimeException("runtime exception");
-        
+
         // Create exception with mixed causes
         MultiCauseException exception = new MultiCauseException(Collections.singletonList(errorCodeException));
         exception.addSuppressed(runtimeException);

@@ -1,4 +1,4 @@
-package org.qubership.cloud.core.error.rest.exception;
+package com.netcracker.cloud.core.error.rest.exception;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

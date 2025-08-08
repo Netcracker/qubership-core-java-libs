@@ -1,4 +1,4 @@
-package org.qubership.cloud.core.error.rest.tmf;
+package com.netcracker.cloud.core.error.rest.tmf;
 
 import org.qubership.cloud.core.error.runtime.ErrorCode;
 import org.qubership.cloud.core.error.runtime.ErrorCodeHolder;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.utils;
+package com.netcracker.cloud.utils;
 
 import org.qubership.cloud.core.error.runtime.ErrorCodeException;
 import org.qubership.cloud.core.error.runtime.ErrorCodeHolder;

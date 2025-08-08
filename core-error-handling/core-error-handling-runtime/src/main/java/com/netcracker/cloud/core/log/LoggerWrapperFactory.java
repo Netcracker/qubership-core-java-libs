@@ -1,4 +1,4 @@
-package org.qubership.cloud.core.log;
+package com.netcracker.cloud.core.log;
 
 import org.slf4j.Logger;
 

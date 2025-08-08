@@ -1,4 +1,4 @@
-package org.qubership.cloud.core.error.runtime;
+package com.netcracker.cloud.core.error.runtime;
 
 import org.junit.jupiter.api.Test;
 

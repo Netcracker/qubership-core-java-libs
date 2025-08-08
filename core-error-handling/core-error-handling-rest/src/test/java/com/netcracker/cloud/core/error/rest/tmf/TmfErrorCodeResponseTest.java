@@ -1,4 +1,4 @@
-package org.qubership.cloud.core.error.rest.tmf;
+package com.netcracker.cloud.core.error.rest.tmf;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.qubership.cloud.core.error.rest.exception.RemoteCodeException;

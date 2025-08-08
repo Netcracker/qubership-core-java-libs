@@ -1,4 +1,4 @@
-package org.qubership.cloud.core.error.rest.exceptions;
+package com.netcracker.cloud.core.error.rest.exceptions;
 
 import org.qubership.cloud.core.error.rest.tmf.model.Source;
 import org.qubership.cloud.core.error.runtime.ErrorCode;

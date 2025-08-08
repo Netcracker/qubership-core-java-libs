@@ -1,4 +1,4 @@
-package org.qubership.cloud.core.error.rest.tmf.model;
+package com.netcracker.cloud.core.error.rest.tmf.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

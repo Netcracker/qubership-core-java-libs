@@ -1,4 +1,4 @@
-package org.qubership.cloud.core.error.rest.tmf;
+package com.netcracker.cloud.core.error.rest.tmf;
 
 import org.junit.jupiter.api.Test;
 import org.qubership.cloud.core.error.runtime.ErrorCode;
@@ -110,7 +110,7 @@ class TmfErrorTest {
         final Object source;
         final Map<String, Object> meta;
 
-        TestData(String id, String referenceError, String code, String reason, 
+        TestData(String id, String referenceError, String code, String reason,
                 String detail, String status, Object source, Map<String, Object> meta) {
             this.id = id;
             this.referenceError = referenceError;

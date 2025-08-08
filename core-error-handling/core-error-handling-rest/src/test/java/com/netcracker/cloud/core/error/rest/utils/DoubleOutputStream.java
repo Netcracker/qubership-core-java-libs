@@ -1,4 +1,4 @@
-package org.qubership.cloud.core.error.rest.utils;
+package com.netcracker.cloud.core.error.rest.utils;
 
 import java.io.IOException;
 import java.io.OutputStream;

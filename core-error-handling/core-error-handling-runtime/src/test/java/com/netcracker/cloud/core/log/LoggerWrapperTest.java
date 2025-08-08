@@ -1,4 +1,4 @@
-package org.qubership.cloud.core.log;
+package com.netcracker.cloud.core.log;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;

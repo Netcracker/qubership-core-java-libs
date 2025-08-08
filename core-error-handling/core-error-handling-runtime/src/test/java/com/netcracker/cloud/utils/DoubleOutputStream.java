@@ -1,4 +1,4 @@
-package org.qubership.cloud.utils;
+package com.netcracker.cloud.utils;
 
 import java.io.IOException;
 import java.io.OutputStream;

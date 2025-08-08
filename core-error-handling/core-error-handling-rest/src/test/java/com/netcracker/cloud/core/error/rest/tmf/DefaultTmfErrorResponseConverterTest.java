@@ -1,4 +1,4 @@
-package org.qubership.cloud.core.error.rest.tmf;
+package com.netcracker.cloud.core.error.rest.tmf;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,10 +51,10 @@ class DefaultTmfErrorResponseConverterTest {
         // Assert
         assertInstanceOf(RemoteMultiCauseException.class, exception);
         assertRemoteCodeException(exception, "PARENT_CODE", "Parent Reason", "[PARENT_CODE][parent-id] Parent Detail", "parent-id", null, null, null);
-        
+
         RemoteMultiCauseException multiCauseException = (RemoteMultiCauseException) exception;
         assertEquals(1, multiCauseException.getCauseExceptions().size());
-        
+
         ErrorCodeException cause = multiCauseException.getCauseExceptions().get(0);
         assertInstanceOf(RemoteCodeException.class, cause);
         RemoteCodeException remoteCause = (RemoteCodeException) cause;
@@ -121,7 +121,7 @@ class DefaultTmfErrorResponseConverterTest {
         return error;
     }
 
-    private void assertRemoteCodeException(RemoteCodeException exception, String code, String reason, String message, 
+    private void assertRemoteCodeException(RemoteCodeException exception, String code, String reason, String message,
                                          String id, Integer status, String source, String metaValue) {
         assertNotNull(exception);
         assertEquals(code, exception.getErrorCode().getCode());

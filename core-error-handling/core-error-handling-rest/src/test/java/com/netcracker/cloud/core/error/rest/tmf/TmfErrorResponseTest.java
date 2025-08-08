@@ -1,4 +1,4 @@
-package org.qubership.cloud.core.error.rest.tmf;
+package com.netcracker.cloud.core.error.rest.tmf;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -105,7 +105,7 @@ class TmfErrorResponseTest {
         Object source = new Object();
         Map<String, Object> meta = new HashMap<>();
         List<TmfError> errors = List.of(new TmfError());
-        
+
         response.setId(TEST_ID);
         response.setReferenceError(TEST_REFERENCE_ERROR);
         response.setCode(TEST_CODE);
@@ -135,4 +135,4 @@ class TmfErrorResponseTest {
         assertEquals(TEST_TYPE, response.getType());
         assertEquals(TEST_SCHEMA_LOCATION, response.getSchemaLocation());
     }
-} 
+}
