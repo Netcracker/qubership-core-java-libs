@@ -40,7 +40,7 @@
 You can use qubership extension for integration tests in your services. For this you need to put dependency in your pom.xml:
 ``` xml
         <dependency>
-            <groupId>org.qubership.cloud.junit.cloudcore</groupId>
+            <groupId>com.netcracker.cloud.junit.cloudcore</groupId>
             <artifactId>cloud-core-extension</artifactId>
             <version>{library version}</version>
         </dependency>

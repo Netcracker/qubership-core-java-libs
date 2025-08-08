@@ -1,1 +1,1 @@
-org.qubership.cloud.junit.cloudcore.extension.provider.PortForwardAwareAddressResolverProvider
+com.netcracker.cloud.junit.cloudcore.extension.provider.PortForwardAwareAddressResolverProvider

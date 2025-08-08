@@ -1,6 +1,6 @@
 package com.netcracker.cloud.junit.cloudcore.extension.client;
 
-import org.qubership.cloud.junit.cloudcore.extension.provider.CloudAndNamespace;
+import com.netcracker.cloud.junit.cloudcore.extension.provider.CloudAndNamespace;
 import io.fabric8.kubernetes.api.model.NamedContext;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;

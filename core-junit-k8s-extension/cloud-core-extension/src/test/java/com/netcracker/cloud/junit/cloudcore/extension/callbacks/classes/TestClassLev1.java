@@ -1,7 +1,7 @@
 package com.netcracker.cloud.junit.cloudcore.extension.callbacks.classes;
 
-import org.qubership.cloud.junit.cloudcore.extension.annotations.PortForward;
-import org.qubership.cloud.junit.cloudcore.extension.annotations.Value;
+import com.netcracker.cloud.junit.cloudcore.extension.annotations.PortForward;
+import com.netcracker.cloud.junit.cloudcore.extension.annotations.Value;
 
 import java.net.URI;
 

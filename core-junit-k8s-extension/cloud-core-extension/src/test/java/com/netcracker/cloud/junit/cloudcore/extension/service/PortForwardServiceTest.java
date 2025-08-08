@@ -1,6 +1,6 @@
 package com.netcracker.cloud.junit.cloudcore.extension.service;
 
-import org.qubership.cloud.junit.cloudcore.extension.provider.LocalHostAddressGenerator;
+import com.netcracker.cloud.junit.cloudcore.extension.provider.LocalHostAddressGenerator;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceList;
 import io.fabric8.kubernetes.client.KubernetesClient;

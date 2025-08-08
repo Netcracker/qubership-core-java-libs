@@ -1,14 +1,14 @@
 package com.netcracker.cloud.junit.cloudcore.extension.callbacks;
 
-import org.qubership.cloud.junit.cloudcore.extension.callbacks.classes.TestClass;
-import org.qubership.cloud.junit.cloudcore.extension.callbacks.classes.TestClassLev2;
-import org.qubership.cloud.junit.cloudcore.extension.provider.CloudCoreResourceFactory;
-import org.qubership.cloud.junit.cloudcore.extension.provider.CloudCoreResourceFactoryProvider;
-import org.qubership.cloud.junit.cloudcore.extension.provider.PortForwardConfig;
-import org.qubership.cloud.junit.cloudcore.extension.service.Endpoint;
-import org.qubership.cloud.junit.cloudcore.extension.service.NetSocketAddress;
-import org.qubership.cloud.junit.cloudcore.extension.service.PortForwardParams;
-import org.qubership.cloud.junit.cloudcore.extension.service.PortForwardService;
+import com.netcracker.cloud.junit.cloudcore.extension.callbacks.classes.TestClass;
+import com.netcracker.cloud.junit.cloudcore.extension.callbacks.classes.TestClassLev2;
+import com.netcracker.cloud.junit.cloudcore.extension.provider.CloudCoreResourceFactory;
+import com.netcracker.cloud.junit.cloudcore.extension.provider.CloudCoreResourceFactoryProvider;
+import com.netcracker.cloud.junit.cloudcore.extension.provider.PortForwardConfig;
+import com.netcracker.cloud.junit.cloudcore.extension.service.Endpoint;
+import com.netcracker.cloud.junit.cloudcore.extension.service.NetSocketAddress;
+import com.netcracker.cloud.junit.cloudcore.extension.service.PortForwardParams;
+import com.netcracker.cloud.junit.cloudcore.extension.service.PortForwardService;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

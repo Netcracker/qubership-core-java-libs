@@ -1,11 +1,11 @@
 package com.netcracker.cloud.junit.cloudcore.extension.callbacks.classes;
 
-import org.qubership.cloud.junit.cloudcore.extension.annotations.Cloud;
-import org.qubership.cloud.junit.cloudcore.extension.annotations.IntValue;
-import org.qubership.cloud.junit.cloudcore.extension.annotations.PortForward;
-import org.qubership.cloud.junit.cloudcore.extension.annotations.Value;
-import org.qubership.cloud.junit.cloudcore.extension.service.NetSocketAddress;
-import org.qubership.cloud.junit.cloudcore.extension.service.PortForwardService;
+import com.netcracker.cloud.junit.cloudcore.extension.annotations.Cloud;
+import com.netcracker.cloud.junit.cloudcore.extension.annotations.IntValue;
+import com.netcracker.cloud.junit.cloudcore.extension.annotations.PortForward;
+import com.netcracker.cloud.junit.cloudcore.extension.annotations.Value;
+import com.netcracker.cloud.junit.cloudcore.extension.service.NetSocketAddress;
+import com.netcracker.cloud.junit.cloudcore.extension.service.PortForwardService;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.Getter;
 

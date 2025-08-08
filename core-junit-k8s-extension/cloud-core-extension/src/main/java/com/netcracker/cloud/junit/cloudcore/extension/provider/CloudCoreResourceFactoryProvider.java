@@ -1,6 +1,6 @@
 package com.netcracker.cloud.junit.cloudcore.extension.provider;
 
-import org.qubership.cloud.junit.cloudcore.extension.client.KubernetesClientFactory;
+import com.netcracker.cloud.junit.cloudcore.extension.client.KubernetesClientFactory;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import org.junit.jupiter.api.extension.ExtensionContext;
 

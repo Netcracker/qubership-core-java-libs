@@ -1,6 +1,6 @@
 package com.netcracker.cloud.junit.cloudcore.extension.annotations;
 
-import org.qubership.cloud.junit.cloudcore.extension.callbacks.CloudCoreJunitCallback;
+import com.netcracker.cloud.junit.cloudcore.extension.callbacks.CloudCoreJunitCallback;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 
