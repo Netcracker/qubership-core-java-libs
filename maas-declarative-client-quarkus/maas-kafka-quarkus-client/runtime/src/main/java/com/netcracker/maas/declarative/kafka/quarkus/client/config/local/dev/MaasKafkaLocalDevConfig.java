@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.quarkus.client.config.local.dev;
+package com.netcracker.maas.declarative.kafka.quarkus.client.config.local.dev;
 
 import org.qubership.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants;
 import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.impl.LocalDevInternalTopicCredentialsExtractorImpl;

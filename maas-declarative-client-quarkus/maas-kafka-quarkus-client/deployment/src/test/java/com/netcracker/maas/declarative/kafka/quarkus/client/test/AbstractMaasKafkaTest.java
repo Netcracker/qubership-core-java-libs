@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.quarkus.client.test;
+package com.netcracker.maas.declarative.kafka.quarkus.client.test;
 
 
 import io.quarkus.test.QuarkusUnitTest;

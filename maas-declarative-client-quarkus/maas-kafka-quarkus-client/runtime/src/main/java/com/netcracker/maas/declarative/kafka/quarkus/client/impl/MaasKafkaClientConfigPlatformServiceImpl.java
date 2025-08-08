@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.quarkus.client.impl;
+package com.netcracker.maas.declarative.kafka.quarkus.client.impl;
 
 import org.qubership.maas.declarative.kafka.client.impl.definition.api.MaasKafkaClientConfigPlatformService;
 import org.qubership.maas.declarative.kafka.quarkus.client.ConfigUtils;

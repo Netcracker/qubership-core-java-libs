@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.quarkus.client;
+package com.netcracker.maas.declarative.kafka.quarkus.client;
 
 import org.eclipse.microprofile.config.Config;
 

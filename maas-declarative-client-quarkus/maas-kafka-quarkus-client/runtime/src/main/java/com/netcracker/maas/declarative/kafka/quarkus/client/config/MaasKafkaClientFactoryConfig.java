@@ -1,4 +1,4 @@
-package org.qubership.maas.declarative.kafka.quarkus.client.config;
+package com.netcracker.maas.declarative.kafka.quarkus.client.config;
 
 
 import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
