@@ -13,7 +13,7 @@ This approach allows avoiding version conflicts and add dependencies without thi
     <dependencyManagement>
            <dependencies>
                <dependency>
-                   <groupId>org.qubership.cloud</groupId>
+                   <groupId>com.netcracker.cloud</groupId>
                    <artifactId>cloud-core-java-bom</artifactId>
                    <version>{VERSION}</version>
                    <type>pom</type>
