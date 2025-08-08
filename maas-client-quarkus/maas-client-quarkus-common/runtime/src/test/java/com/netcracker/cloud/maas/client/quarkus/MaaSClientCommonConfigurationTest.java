@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.quarkus;
+package com.netcracker.cloud.maas.client.quarkus;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;

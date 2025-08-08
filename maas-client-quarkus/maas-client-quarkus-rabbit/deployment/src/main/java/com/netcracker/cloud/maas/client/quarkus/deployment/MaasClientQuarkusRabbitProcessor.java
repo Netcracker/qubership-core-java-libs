@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.quarkus.deployment;
+package com.netcracker.cloud.maas.client.quarkus.deployment;
 
 import org.qubership.cloud.maas.client.quarkus.MaaSClientRabbitConfiguration;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
