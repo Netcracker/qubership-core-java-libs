@@ -33,7 +33,7 @@ Default implementation loads .cql and .cql.ftl resource types from pathes specif
 MigrationExecutor migrationExecutor = MigrationExecutorImpl.builder().withSchemaVersionResourceReader(customSchemaVersionResourceReader).build();
 ```
 
-- AlreadyMigratedVersionsExtensionPoint - Provides information about schema versions that were already migrated before library usage. Optional extension point that is null by default. The library provides only the interface that can be implemented, see [here](src/main/java/org/qubership/cloud/dbaas/client/cassandra/migration/service/extension/AlreadyMigratedVersionsExtensionPoint.java).
+- AlreadyMigratedVersionsExtensionPoint - Provides information about schema versions that were already migrated before library usage. Optional extension point that is null by default. The library provides only the interface that can be implemented, see [here](src/main/java/com/netcracker/cloud/dbaas/client/cassandra/migration/service/extension/AlreadyMigratedVersionsExtensionPoint.java).
 ```java
 MigrationExecutor migrationExecutor = MigrationExecutorImpl.builder().withAlreadyMigratedVersionsExtensionPoint(customAlreadyMigratedVersionsExtensionPoint).build();
 ```

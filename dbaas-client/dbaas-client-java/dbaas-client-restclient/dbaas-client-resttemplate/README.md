@@ -56,5 +56,5 @@ To access this bean yourself you can autowire it:
 @Qualifier("dbaasRestClient")
 private MicroserviceRestClient dbaasRestClient;
 ```
-This bean can be passed to [DbaasClientImpl](<github link todo>/dbaas-client/blob/master/dbaas-client-java/dbaas-client-core/src/main/java/org/qubership/cloud/dbaas/client/DbaasClientImpl.java) 
+This bean can be passed to [DbaasClientImpl](<github link todo>/dbaas-client/blob/master/dbaas-client-java/dbaas-client-core/src/main/java/com/netcracker/cloud/dbaas/client/DbaasClientImpl.java) 
 constructor and used as REST client for DBaaS API. 
