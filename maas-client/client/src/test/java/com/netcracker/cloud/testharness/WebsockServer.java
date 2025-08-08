@@ -1,4 +1,4 @@
-package org.qubership.cloud.testharness;
+package com.netcracker.cloud.testharness;
 
 public interface WebsockServer {
 	void start();

@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.api.rabbit;
+package com.netcracker.cloud.maas.client.api.rabbit;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

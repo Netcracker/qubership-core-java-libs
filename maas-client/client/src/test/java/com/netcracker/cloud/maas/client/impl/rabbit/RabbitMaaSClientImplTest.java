@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl.rabbit;
+package com.netcracker.cloud.maas.client.impl.rabbit;
 
 import org.qubership.cloud.bluegreen.impl.service.LocalDevBlueGreenStatePublisher;
 import org.qubership.cloud.maas.client.api.Classifier;
@@ -106,7 +106,7 @@ class RabbitMaaSClientImplTest {
     @Test
     public void testGetVHost(ClientAndServer mockServer) {
         System.setProperty(Env.PROP_NAMESPACE, "core-dev");
-        
+
         mockServer.when(
                 request()
                         .withMethod("POST")
@@ -176,7 +176,7 @@ class RabbitMaaSClientImplTest {
     public void testTenantVHost(ClientAndServer mockServer) {
         UUID tenantId = UUID.randomUUID();
         System.setProperty(Env.PROP_NAMESPACE, "core-dev");
-		
+
         mockServer.when(
                 request()
                         .withMethod("POST")

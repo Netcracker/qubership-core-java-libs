@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl.apiversion;
+package com.netcracker.cloud.maas.client.impl.apiversion;
 
 import org.qubership.cloud.maas.client.impl.Lazy;
 import org.qubership.cloud.maas.client.impl.dto.ApiVersionResponse;

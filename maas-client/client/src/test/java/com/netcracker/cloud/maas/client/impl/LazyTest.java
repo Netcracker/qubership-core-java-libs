@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl;
+package com.netcracker.cloud.maas.client.impl;
 
 import org.junit.jupiter.api.Test;
 

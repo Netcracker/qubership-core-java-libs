@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.api.kafka;
+package com.netcracker.cloud.maas.client.api.kafka;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -11,5 +11,5 @@ import lombok.Value;
 public class SearchCriteria {
     String topic;
     String namespace;
-    String instance;    
+    String instance;
 }

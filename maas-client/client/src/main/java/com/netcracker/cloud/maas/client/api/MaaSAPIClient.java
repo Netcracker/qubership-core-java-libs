@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.api;
+package com.netcracker.cloud.maas.client.api;
 
 import org.qubership.cloud.maas.client.api.kafka.KafkaMaaSClient;
 import org.qubership.cloud.maas.client.api.rabbit.RabbitMaaSClient;

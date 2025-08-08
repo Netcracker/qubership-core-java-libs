@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.bluegreen.kafka.impl;
+package com.netcracker.cloud.maas.bluegreen.kafka.impl;
 
 interface OffsetAncestors {
 

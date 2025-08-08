@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.bluegreen.versiontracker.impl;
+package com.netcracker.cloud.maas.bluegreen.versiontracker.impl;
 
 import org.junit.jupiter.api.Test;
 

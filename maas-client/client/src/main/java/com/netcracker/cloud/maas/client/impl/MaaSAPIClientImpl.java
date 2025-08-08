@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl;
+package com.netcracker.cloud.maas.client.impl;
 
 import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
 import org.qubership.cloud.maas.client.api.MaaSAPIClient;

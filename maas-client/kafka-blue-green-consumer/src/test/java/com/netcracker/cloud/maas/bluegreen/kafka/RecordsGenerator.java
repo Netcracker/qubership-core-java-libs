@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.bluegreen.kafka;
+package com.netcracker.cloud.maas.bluegreen.kafka;
 
 import org.qubership.cloud.framework.contexts.xversion.XVersionContextObject;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

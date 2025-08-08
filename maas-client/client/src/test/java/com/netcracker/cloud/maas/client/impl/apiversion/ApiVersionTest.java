@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl.apiversion;
+package com.netcracker.cloud.maas.client.impl.apiversion;
 
 import org.junit.jupiter.api.Test;
 

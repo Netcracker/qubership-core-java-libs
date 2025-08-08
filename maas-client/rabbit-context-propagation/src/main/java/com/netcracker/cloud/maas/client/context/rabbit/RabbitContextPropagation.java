@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.context.rabbit;
+package com.netcracker.cloud.maas.client.context.rabbit;
 
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;

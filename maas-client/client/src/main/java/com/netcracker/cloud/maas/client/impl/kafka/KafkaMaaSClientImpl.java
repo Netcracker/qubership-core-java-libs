@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl.kafka;
+package com.netcracker.cloud.maas.client.impl.kafka;
 
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.tenantmanager.client.impl;
+package com.netcracker.cloud.tenantmanager.client.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

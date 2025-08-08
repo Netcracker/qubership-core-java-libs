@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl;
+package com.netcracker.cloud.maas.client.impl;
 
 import org.qubership.cloud.maas.client.api.kafka.protocolextractors.OnTopicExists;
 import org.qubership.cloud.maas.client.impl.apiversion.ServerApiVersion;

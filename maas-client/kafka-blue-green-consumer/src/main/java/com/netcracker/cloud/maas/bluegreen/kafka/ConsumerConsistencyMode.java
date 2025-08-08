@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.bluegreen.kafka;
+package com.netcracker.cloud.maas.bluegreen.kafka;
 
 /**
  * Message consuming consistency mode enum.

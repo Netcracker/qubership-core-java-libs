@@ -1,4 +1,4 @@
-package org.qubership.cloud.tenantmanager.client;
+package com.netcracker.cloud.tenantmanager.client;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;

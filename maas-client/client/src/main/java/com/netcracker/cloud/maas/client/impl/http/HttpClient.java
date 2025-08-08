@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl.http;
+package com.netcracker.cloud.maas.client.impl.http;
 
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.maas.client.impl.Env;

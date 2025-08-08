@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl.kafka;
+package com.netcracker.cloud.maas.client.impl.kafka;
 
 import static org.qubership.cloud.maas.client.Utils.readResourceAsString;
 import static org.qubership.cloud.maas.client.Utils.withProp;

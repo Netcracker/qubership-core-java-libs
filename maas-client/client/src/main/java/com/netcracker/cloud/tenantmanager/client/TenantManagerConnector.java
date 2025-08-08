@@ -1,4 +1,4 @@
-package org.qubership.cloud.tenantmanager.client;
+package com.netcracker.cloud.tenantmanager.client;
 
 import java.util.List;
 import java.util.function.Consumer;

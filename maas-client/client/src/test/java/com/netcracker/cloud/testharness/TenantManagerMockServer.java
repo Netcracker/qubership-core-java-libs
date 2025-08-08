@@ -1,4 +1,4 @@
-package org.qubership.cloud.testharness;
+package com.netcracker.cloud.testharness;
 
 import io.undertow.Undertow;
 import io.undertow.websockets.WebSocketConnectionCallback;

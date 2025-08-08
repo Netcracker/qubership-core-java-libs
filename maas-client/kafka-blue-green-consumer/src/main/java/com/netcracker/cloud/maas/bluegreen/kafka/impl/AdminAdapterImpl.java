@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.bluegreen.kafka.impl;
+package com.netcracker.cloud.maas.bluegreen.kafka.impl;
 
 import lombok.SneakyThrows;
 import org.apache.kafka.clients.admin.Admin;

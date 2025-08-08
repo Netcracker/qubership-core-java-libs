@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.context.kafka;
+package com.netcracker.cloud.maas.client.context.kafka;
 
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;

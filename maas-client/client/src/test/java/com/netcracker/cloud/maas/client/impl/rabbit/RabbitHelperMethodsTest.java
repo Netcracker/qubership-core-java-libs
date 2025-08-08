@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl.rabbit;
+package com.netcracker.cloud.maas.client.impl.rabbit;
 
 import org.qubership.cloud.bluegreen.impl.service.LocalDevBlueGreenStatePublisher;
 import org.junit.jupiter.api.BeforeEach;

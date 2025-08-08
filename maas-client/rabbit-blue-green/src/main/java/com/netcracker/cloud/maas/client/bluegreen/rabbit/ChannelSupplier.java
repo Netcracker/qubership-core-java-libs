@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.bluegreen.rabbit;
+package com.netcracker.cloud.maas.client.bluegreen.rabbit;
 
 import com.rabbitmq.client.Channel;
 

@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl.kafka.protocolextractors;
+package com.netcracker.cloud.maas.client.impl.kafka.protocolextractors;
 
 public class ScramPlaintextPropertiesExtractor extends ScramPropertiesExtractor {
     @Override

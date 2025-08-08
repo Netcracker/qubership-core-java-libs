@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.bluegreen.kafka.util;
+package com.netcracker.cloud.maas.bluegreen.kafka.util;
 
 import org.apache.kafka.common.Uuid;
 import org.rnorth.ducttape.unreliables.Unreliables;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.tenantmanager.client.impl;
+package com.netcracker.cloud.tenantmanager.client.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;

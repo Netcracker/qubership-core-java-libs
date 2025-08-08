@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.bluegreen.kafka.impl;
+package com.netcracker.cloud.maas.bluegreen.kafka.impl;
 
 import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
 import org.qubership.cloud.bluegreen.impl.service.InMemoryBlueGreenStatePublisher;

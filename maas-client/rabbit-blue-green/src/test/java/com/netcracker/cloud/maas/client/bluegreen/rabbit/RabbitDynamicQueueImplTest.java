@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.bluegreen.rabbit;
+package com.netcracker.cloud.maas.client.bluegreen.rabbit;
 
 import com.github.fridujo.rabbitmq.mock.MockConnectionFactory;
 import org.qubership.cloud.bluegreen.api.model.BlueGreenState;

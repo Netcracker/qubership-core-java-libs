@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl.http;
+package com.netcracker.cloud.maas.client.impl.http;
 
 @FunctionalInterface
 public interface OmnivoreFunction<T, R> {

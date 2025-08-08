@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl.kafka.protocolextractors;
+package com.netcracker.cloud.maas.client.impl.kafka.protocolextractors;
 
 import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
 import org.qubership.cloud.maas.client.api.kafka.TopicUserCredentials;

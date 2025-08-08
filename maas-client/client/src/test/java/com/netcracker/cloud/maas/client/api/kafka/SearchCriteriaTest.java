@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.api.kafka;
+package com.netcracker.cloud.maas.client.api.kafka;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ public class SearchCriteriaTest {
 
     @Test
     void testToString() {
-        assertEquals("SearchCriteria(topic=abc, namespace=null, instance=null)", 
+        assertEquals("SearchCriteria(topic=abc, namespace=null, instance=null)",
         SearchCriteria.builder().topic("abc").build().toString());
     }
 }

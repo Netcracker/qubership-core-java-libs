@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl.dto.kafka.v1.conf;
+package com.netcracker.cloud.maas.client.impl.dto.kafka.v1.conf;
 
 import org.qubership.cloud.maas.client.impl.dto.conf.ConfigureResponse;
 import org.qubership.cloud.maas.client.impl.dto.kafka.v1.TopicTemplateInfo;

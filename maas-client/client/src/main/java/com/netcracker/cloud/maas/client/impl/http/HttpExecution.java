@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl.http;
+package com.netcracker.cloud.maas.client.impl.http;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

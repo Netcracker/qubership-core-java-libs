@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.api.kafka;
+package com.netcracker.cloud.maas.client.api.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

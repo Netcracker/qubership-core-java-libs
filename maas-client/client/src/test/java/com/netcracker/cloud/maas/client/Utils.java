@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client;
+package com.netcracker.cloud.maas.client;
 
 import lombok.SneakyThrows;
 

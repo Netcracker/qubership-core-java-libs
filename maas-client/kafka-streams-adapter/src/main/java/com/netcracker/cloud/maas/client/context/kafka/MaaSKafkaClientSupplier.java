@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.context.kafka;
+package com.netcracker.cloud.maas.client.context.kafka;
 
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.ForwardingAdmin;

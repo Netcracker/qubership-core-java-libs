@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl;
+package com.netcracker.cloud.maas.client.impl;
 
 import lombok.SneakyThrows;
 import org.slf4j.Logger;

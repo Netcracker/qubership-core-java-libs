@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl.dto.kafka.v1;
+package com.netcracker.cloud.maas.client.impl.dto.kafka.v1;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

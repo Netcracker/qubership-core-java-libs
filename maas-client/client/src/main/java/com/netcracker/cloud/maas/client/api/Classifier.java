@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.api;
+package com.netcracker.cloud.maas.client.api;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;

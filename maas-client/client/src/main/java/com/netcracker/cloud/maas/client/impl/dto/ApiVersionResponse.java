@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl.dto;
+package com.netcracker.cloud.maas.client.impl.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;

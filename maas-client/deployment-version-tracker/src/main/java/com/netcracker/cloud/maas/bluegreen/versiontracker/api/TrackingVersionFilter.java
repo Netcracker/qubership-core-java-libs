@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.bluegreen.versiontracker.api;
+package com.netcracker.cloud.maas.bluegreen.versiontracker.api;
 
 import java.util.function.Predicate;
 

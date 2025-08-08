@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.impl.dto.conf;
+package com.netcracker.cloud.maas.client.impl.dto.conf;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

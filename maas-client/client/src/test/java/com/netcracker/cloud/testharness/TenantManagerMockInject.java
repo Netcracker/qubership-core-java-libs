@@ -1,4 +1,4 @@
-package org.qubership.cloud.testharness;
+package com.netcracker.cloud.testharness;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

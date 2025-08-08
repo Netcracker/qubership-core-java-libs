@@ -1,4 +1,4 @@
-package org.qubership.cloud.maas.client.context.kafka;
+package com.netcracker.cloud.maas.client.context.kafka;
 
 import org.qubership.cloud.maas.client.api.Classifier;
 import org.qubership.cloud.maas.client.api.kafka.KafkaMaaSClient;
