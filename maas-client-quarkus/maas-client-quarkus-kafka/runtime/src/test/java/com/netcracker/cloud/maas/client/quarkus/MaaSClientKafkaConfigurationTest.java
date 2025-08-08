@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.qubership.cloud.maas.client.api.MaaSAPIClient;
-import org.qubership.cloud.maas.client.api.kafka.KafkaMaaSClient;
+import com.netcracker.cloud.maas.client.api.MaaSAPIClient;
+import com.netcracker.cloud.maas.client.api.kafka.KafkaMaaSClient;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

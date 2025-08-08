@@ -4,8 +4,8 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.QuarkusTestProfile;
 import io.quarkus.test.junit.TestProfile;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
-import org.qubership.cloud.bluegreen.impl.service.InMemoryBlueGreenStatePublisher;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.bluegreen.impl.service.InMemoryBlueGreenStatePublisher;
 
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;

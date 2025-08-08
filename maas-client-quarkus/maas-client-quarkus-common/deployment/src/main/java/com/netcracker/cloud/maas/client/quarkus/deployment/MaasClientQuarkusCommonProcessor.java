@@ -1,6 +1,6 @@
 package com.netcracker.cloud.maas.client.quarkus.deployment;
 
-import org.qubership.cloud.maas.client.quarkus.MaaSClientCommonConfiguration;
+import com.netcracker.cloud.maas.client.quarkus.MaaSClientCommonConfiguration;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;

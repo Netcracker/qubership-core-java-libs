@@ -1,7 +1,7 @@
 package com.netcracker.cloud.maas.client.quarkus;
 
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
-import org.qubership.cloud.bluegreen.impl.service.InMemoryBlueGreenStatePublisher;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.bluegreen.impl.service.InMemoryBlueGreenStatePublisher;
 import io.quarkus.arc.properties.IfBuildProperty;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;

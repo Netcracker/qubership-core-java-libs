@@ -1,7 +1,7 @@
 package com.netcracker.cloud.maas.client.quarkus;
 
-import org.qubership.cloud.maas.client.api.MaaSAPIClient;
-import org.qubership.cloud.maas.client.impl.MaaSAPIClientImpl;
+import com.netcracker.cloud.maas.client.api.MaaSAPIClient;
+import com.netcracker.cloud.maas.client.impl.MaaSAPIClientImpl;
 import io.quarkus.arc.DefaultBean;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Produces;

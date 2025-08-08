@@ -1,8 +1,8 @@
 package com.netcracker.cloud.maas.client.quarkus;
 
-import org.qubership.cloud.bluegreen.api.model.BlueGreenState;
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
-import org.qubership.cloud.maas.client.bluegreen.rabbit.DynamicQueueBindingsManager;
+import com.netcracker.cloud.bluegreen.api.model.BlueGreenState;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.maas.client.bluegreen.rabbit.DynamicQueueBindingsManager;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

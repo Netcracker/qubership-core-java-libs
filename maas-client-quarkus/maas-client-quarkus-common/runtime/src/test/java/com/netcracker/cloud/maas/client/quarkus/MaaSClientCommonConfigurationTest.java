@@ -2,8 +2,8 @@ package com.netcracker.cloud.maas.client.quarkus;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.maas.client.api.MaaSAPIClient;
-import org.qubership.cloud.maas.client.impl.MaaSAPIClientImpl;
+import com.netcracker.cloud.maas.client.api.MaaSAPIClient;
+import com.netcracker.cloud.maas.client.impl.MaaSAPIClientImpl;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import static org.junit.jupiter.api.Assertions.*;

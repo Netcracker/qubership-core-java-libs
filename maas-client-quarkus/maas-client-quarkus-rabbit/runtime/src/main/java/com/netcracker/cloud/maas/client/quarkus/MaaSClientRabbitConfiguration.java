@@ -1,10 +1,10 @@
 package com.netcracker.cloud.maas.client.quarkus;
 
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
-import org.qubership.cloud.maas.client.api.MaaSAPIClient;
-import org.qubership.cloud.maas.client.api.rabbit.RabbitMaaSClient;
-import org.qubership.cloud.maas.client.bluegreen.rabbit.DynamicQueueBindingsManager;
-import org.qubership.cloud.maas.client.bluegreen.rabbit.DynamicQueueBindingsManagerImpl;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.maas.client.api.MaaSAPIClient;
+import com.netcracker.cloud.maas.client.api.rabbit.RabbitMaaSClient;
+import com.netcracker.cloud.maas.client.bluegreen.rabbit.DynamicQueueBindingsManager;
+import com.netcracker.cloud.maas.client.bluegreen.rabbit.DynamicQueueBindingsManagerImpl;
 import io.quarkus.arc.DefaultBean;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Produces;

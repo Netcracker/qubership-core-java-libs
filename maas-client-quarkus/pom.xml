@@ -4,7 +4,7 @@
 
 	<packaging>pom</packaging>
 	<artifactId>maas-client-quarkus-parent</artifactId>
-	<groupId>org.qubership.cloud.quarkus</groupId>
+	<groupId>com.netcracker.cloud.quarkus</groupId>
 	<version>8.1.2-SNAPSHOT</version>
 
     <licenses>
@@ -30,7 +30,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quarkus.version>3.15.6</quarkus.version>
-		<quarkus.core.extention.version>7.1.1</quarkus.core.extention.version>
+		<quarkus.core.extention.version>7.1.2-SNAPSHOT</quarkus.core.extention.version>
 
 		<cloud-core.maas-client.version>11.1.1</cloud-core.maas-client.version>
 
@@ -78,14 +78,14 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.qubership.cloud.quarkus</groupId>
+				<groupId>com.netcracker.cloud.quarkus</groupId>
 				<artifactId>cloud-core-quarkus-bom-internal</artifactId>
 				<version>${quarkus.core.extention.version}</version>
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
 			<dependency>
-				<groupId>org.qubership.cloud.quarkus</groupId>
+				<groupId>com.netcracker.cloud.quarkus</groupId>
 				<artifactId>cloud-core-quarkus-bom-publish</artifactId>
 				<version>${quarkus.core.extention.version}</version>
 				<scope>import</scope>
