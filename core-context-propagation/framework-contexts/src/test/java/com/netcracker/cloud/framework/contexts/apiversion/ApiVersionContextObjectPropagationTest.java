@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.contexts.apiversion;
+package com.netcracker.cloud.framework.contexts.apiversion;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;

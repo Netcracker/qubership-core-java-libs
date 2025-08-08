@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.core;
+package com.netcracker.cloud.context.propagation.core;
 
 import org.jboss.jandex.Main;
 import org.junit.jupiter.api.extension.BeforeAllCallback;

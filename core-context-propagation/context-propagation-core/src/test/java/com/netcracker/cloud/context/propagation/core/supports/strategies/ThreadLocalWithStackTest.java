@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.core.supports.strategies;
+package com.netcracker.cloud.context.propagation.core.supports.strategies;
 
 
 import org.junit.jupiter.api.BeforeEach;

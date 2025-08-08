@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.spring.rabbit;
+package com.netcracker.cloud.context.propagation.spring.rabbit;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Bean;

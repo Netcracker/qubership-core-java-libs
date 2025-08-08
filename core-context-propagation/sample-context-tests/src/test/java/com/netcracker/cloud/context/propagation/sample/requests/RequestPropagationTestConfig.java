@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.sample.requests;
+package com.netcracker.cloud.context.propagation.sample.requests;
 
 import org.qubership.cloud.context.propagation.spring.resttemplate.annotation.EnableResttemplateContextProvider;
 import org.qubership.cloud.context.propagation.spring.resttemplate.interceptor.SpringRestTemplateInterceptor;

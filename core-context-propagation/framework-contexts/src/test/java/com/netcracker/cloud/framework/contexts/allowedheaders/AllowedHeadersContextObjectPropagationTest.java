@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.contexts.allowedheaders;
+package com.netcracker.cloud.framework.contexts.allowedheaders;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;

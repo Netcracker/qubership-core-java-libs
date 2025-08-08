@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.sample.requests;
+package com.netcracker.cloud.context.propagation.sample.requests;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

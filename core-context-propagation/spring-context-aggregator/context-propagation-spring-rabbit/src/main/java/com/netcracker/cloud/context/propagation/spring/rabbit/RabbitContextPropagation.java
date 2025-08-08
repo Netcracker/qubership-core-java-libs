@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.spring.rabbit;
+package com.netcracker.cloud.context.propagation.spring.rabbit;
 
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;

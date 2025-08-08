@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.core.providers.explicitregistration;
+package com.netcracker.cloud.context.propagation.core.providers.explicitregistration;
 
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
 import org.qubership.cloud.context.propagation.core.supports.providers.AbstractContextProviderOnThreadLocal;

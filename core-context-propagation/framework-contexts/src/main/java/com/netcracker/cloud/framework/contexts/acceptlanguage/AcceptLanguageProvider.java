@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.contexts.acceptlanguage;
+package com.netcracker.cloud.framework.contexts.acceptlanguage;
 
 import org.qubership.cloud.context.propagation.core.RegisterProvider;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;

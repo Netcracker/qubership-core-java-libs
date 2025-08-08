@@ -1,4 +1,4 @@
-package org.qubership.cloud.headerstracking.filters.context;
+package com.netcracker.cloud.headerstracking.filters.context;
 
 import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;

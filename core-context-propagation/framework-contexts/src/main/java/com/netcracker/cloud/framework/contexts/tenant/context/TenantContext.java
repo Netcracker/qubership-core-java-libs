@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.contexts.tenant.context;
+package com.netcracker.cloud.framework.contexts.tenant.context;
 
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;

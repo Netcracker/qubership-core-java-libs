@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.core.contextdata;
+package com.netcracker.cloud.context.propagation.core.contextdata;
 
 import java.util.List;
 import java.util.Map;

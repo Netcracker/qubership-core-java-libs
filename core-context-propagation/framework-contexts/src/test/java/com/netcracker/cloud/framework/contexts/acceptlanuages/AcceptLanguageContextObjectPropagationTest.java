@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.contexts.acceptlanuages;
+package com.netcracker.cloud.framework.contexts.acceptlanuages;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;

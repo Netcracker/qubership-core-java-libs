@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.contexts.utils;
+package com.netcracker.cloud.framework.contexts.utils;
 
 import org.apache.commons.lang3.StringUtils;
 

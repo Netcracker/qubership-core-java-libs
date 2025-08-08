@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.core.executors;
+package com.netcracker.cloud.context.propagation.core.executors;
 
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.providers.xversion.XVersionContextObject;

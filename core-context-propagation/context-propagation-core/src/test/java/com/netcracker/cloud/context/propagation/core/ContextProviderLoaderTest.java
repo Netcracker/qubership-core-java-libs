@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.core;
+package com.netcracker.cloud.context.propagation.core;
 
 import com.foo.bar.ComSampleContext;
 import org.junit.jupiter.api.Test;

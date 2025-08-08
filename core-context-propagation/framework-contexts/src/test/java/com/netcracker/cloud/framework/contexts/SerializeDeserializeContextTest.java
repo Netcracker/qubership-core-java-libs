@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.contexts;
+package com.netcracker.cloud.framework.contexts;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

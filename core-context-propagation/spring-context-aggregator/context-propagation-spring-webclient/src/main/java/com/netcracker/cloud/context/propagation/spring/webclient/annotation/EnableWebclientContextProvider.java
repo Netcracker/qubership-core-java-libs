@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.spring.webclient.annotation;
+package com.netcracker.cloud.context.propagation.spring.webclient.annotation;
 
 import org.qubership.cloud.context.propagation.spring.common.annotation.EnableSpringContextProvider;
 import org.qubership.cloud.context.propagation.spring.webclient.configuration.SpringWebClientInterceptorConfiguration;

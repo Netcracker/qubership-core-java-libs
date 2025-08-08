@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.spring.webclient.interceptor;
+package com.netcracker.cloud.context.propagation.spring.webclient.interceptor;
 
 import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;

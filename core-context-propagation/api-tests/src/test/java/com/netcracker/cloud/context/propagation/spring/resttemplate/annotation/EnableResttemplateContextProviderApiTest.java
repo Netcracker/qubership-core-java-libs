@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.spring.resttemplate.annotation;
+package com.netcracker.cloud.context.propagation.spring.resttemplate.annotation;
 
 
 import org.junit.jupiter.api.Test;

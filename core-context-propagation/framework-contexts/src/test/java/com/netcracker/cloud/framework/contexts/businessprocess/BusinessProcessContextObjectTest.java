@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.contexts.businessprocess;
+package com.netcracker.cloud.framework.contexts.businessprocess;
 
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;

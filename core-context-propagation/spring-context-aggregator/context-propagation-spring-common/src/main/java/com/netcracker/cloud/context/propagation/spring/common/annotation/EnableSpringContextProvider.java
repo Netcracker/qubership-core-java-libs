@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.spring.common.annotation;
+package com.netcracker.cloud.context.propagation.spring.common.annotation;
 
 import org.qubership.cloud.context.propagation.spring.common.configuration.SpringContextProviderConfiguration;
 import org.springframework.context.annotation.Import;

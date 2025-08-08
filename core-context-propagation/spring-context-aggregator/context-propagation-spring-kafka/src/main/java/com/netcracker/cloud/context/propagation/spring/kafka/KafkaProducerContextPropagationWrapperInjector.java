@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.spring.kafka;
+package com.netcracker.cloud.context.propagation.spring.kafka;
 
 import org.apache.kafka.clients.producer.Producer;
 import org.slf4j.Logger;

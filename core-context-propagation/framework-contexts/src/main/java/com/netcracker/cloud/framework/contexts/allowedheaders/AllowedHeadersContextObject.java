@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.contexts.allowedheaders;
+package com.netcracker.cloud.framework.contexts.allowedheaders;
 
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;

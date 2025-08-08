@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.spring.resttemplate.interceptor;
+package com.netcracker.cloud.context.propagation.spring.resttemplate.interceptor;
 
 import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
 import org.slf4j.Logger;

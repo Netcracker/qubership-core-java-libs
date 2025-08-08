@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.core.supports.providers;
+package com.netcracker.cloud.context.propagation.core.supports.providers;
 
 import org.qubership.cloud.context.propagation.core.Strategy;
 import org.qubership.cloud.context.propagation.core.supports.strategies.DefaultStrategies;

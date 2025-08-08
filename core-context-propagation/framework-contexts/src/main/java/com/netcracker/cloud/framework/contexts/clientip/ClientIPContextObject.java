@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.contexts.clientip;
+package com.netcracker.cloud.framework.contexts.clientip;
 
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
 import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;

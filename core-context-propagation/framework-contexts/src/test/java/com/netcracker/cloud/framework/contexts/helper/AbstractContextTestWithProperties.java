@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.contexts.helper;
+package com.netcracker.cloud.framework.contexts.helper;
 
 import java.util.Map;
 

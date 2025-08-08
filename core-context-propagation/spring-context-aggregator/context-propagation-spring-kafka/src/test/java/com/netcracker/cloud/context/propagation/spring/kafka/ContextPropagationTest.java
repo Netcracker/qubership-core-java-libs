@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.spring.kafka;
+package com.netcracker.cloud.context.propagation.spring.kafka;
 
 import jakarta.ws.rs.core.HttpHeaders;
 import org.apache.kafka.clients.consumer.Consumer;

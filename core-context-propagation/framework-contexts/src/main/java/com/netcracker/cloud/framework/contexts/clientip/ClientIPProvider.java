@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.contexts.clientip;
+package com.netcracker.cloud.framework.contexts.clientip;
 
 import org.qubership.cloud.context.propagation.core.ContextProvider;
 import org.qubership.cloud.context.propagation.core.RegisterProvider;

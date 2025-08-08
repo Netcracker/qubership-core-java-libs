@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.contexts.xrequestid;
+package com.netcracker.cloud.framework.contexts.xrequestid;
 
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
 import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;

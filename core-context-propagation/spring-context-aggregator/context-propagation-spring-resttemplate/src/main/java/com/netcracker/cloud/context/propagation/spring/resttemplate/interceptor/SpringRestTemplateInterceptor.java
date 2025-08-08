@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.spring.resttemplate.interceptor;
+package com.netcracker.cloud.context.propagation.spring.resttemplate.interceptor;
 
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.springframework.http.HttpRequest;

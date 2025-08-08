@@ -1,4 +1,4 @@
-package org.qubership.cloud.contexts;
+package com.netcracker.cloud.contexts;
 
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
 

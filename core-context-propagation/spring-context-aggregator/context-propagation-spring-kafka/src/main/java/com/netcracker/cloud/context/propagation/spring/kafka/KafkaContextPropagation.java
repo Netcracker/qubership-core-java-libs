@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.spring.kafka;
+package com.netcracker.cloud.context.propagation.spring.kafka;
 
 import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;

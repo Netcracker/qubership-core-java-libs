@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.spring.kafka;
+package com.netcracker.cloud.context.propagation.spring.kafka;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Bean;

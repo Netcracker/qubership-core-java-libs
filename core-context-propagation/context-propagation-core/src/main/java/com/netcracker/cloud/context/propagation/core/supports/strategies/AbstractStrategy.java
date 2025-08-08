@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.core.supports.strategies;
+package com.netcracker.cloud.context.propagation.core.supports.strategies;
 
 import org.qubership.cloud.context.propagation.core.Strategy;
 import org.jetbrains.annotations.Nullable;

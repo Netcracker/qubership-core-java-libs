@@ -1,4 +1,4 @@
-package org.qubership.cloud.contexts.apiversion;
+package com.netcracker.cloud.contexts.apiversion;
 
 import org.junit.jupiter.api.Test;
 import org.qubership.cloud.contexts.IncomingContextDataFactory;

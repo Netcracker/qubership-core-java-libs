@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.spring.resttemplate.interceptor;
+package com.netcracker.cloud.context.propagation.spring.resttemplate.interceptor;
 
 
 import org.junit.jupiter.api.BeforeEach;

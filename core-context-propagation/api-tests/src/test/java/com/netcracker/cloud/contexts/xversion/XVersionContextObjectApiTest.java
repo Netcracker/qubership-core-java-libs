@@ -1,4 +1,4 @@
-package org.qubership.cloud.contexts.xversion;
+package com.netcracker.cloud.contexts.xversion;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

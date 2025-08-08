@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.core.executors;
+package com.netcracker.cloud.context.propagation.core.executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

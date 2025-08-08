@@ -1,4 +1,4 @@
-package org.qubership.cloud.contexts.xrequestid;
+package com.netcracker.cloud.contexts.xrequestid;
 
 import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;

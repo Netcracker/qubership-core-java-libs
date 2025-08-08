@@ -1,4 +1,4 @@
-package org.qubership.cloud;
+package com.netcracker.cloud;
 
 import org.qubership.cloud.context.propagation.core.ContextManager;
 

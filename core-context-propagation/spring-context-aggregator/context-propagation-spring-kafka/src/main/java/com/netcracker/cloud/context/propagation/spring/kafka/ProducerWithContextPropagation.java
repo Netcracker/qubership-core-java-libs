@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.spring.kafka;
+package com.netcracker.cloud.context.propagation.spring.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerGroupMetadata;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;

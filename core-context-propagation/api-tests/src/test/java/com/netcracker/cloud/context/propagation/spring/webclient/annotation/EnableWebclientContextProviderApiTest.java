@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.spring.webclient.annotation;
+package com.netcracker.cloud.context.propagation.spring.webclient.annotation;
 
 
 import org.junit.jupiter.api.Test;

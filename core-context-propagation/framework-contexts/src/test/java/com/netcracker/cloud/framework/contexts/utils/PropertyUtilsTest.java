@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.contexts.utils;
+package com.netcracker.cloud.framework.contexts.utils;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

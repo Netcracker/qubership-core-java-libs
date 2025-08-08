@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.spring.rabbit;
+package com.netcracker.cloud.context.propagation.spring.rabbit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

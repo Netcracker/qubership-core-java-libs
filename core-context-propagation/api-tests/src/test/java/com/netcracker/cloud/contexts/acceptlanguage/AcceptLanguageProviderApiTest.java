@@ -1,4 +1,4 @@
-package org.qubership.cloud.contexts.acceptlanguage;
+package com.netcracker.cloud.contexts.acceptlanguage;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

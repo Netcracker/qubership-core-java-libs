@@ -1,4 +1,4 @@
-package org.qubership.cloud.contexts.allowedheaders;
+package com.netcracker.cloud.contexts.allowedheaders;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

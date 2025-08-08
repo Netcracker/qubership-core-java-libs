@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.contexts.tenant;
+package com.netcracker.cloud.framework.contexts.tenant;
 
 import org.jetbrains.annotations.NotNull;
 

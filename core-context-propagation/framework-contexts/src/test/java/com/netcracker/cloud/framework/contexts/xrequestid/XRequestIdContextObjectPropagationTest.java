@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.contexts.xrequestid;
+package com.netcracker.cloud.framework.contexts.xrequestid;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;

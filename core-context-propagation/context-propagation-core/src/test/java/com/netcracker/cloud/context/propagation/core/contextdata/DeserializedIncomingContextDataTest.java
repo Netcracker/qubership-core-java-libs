@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.core.contextdata;
+package com.netcracker.cloud.context.propagation.core.contextdata;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

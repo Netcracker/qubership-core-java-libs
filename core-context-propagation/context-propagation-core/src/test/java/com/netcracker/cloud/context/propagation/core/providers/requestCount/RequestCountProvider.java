@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.core.providers.requestCount;
+package com.netcracker.cloud.context.propagation.core.providers.requestCount;
 
 import org.qubership.cloud.context.propagation.core.RegisterProvider;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;

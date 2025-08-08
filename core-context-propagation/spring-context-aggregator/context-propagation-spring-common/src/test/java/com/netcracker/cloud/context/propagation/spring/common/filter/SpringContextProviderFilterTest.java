@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.spring.common.filter;
+package com.netcracker.cloud.context.propagation.spring.common.filter;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

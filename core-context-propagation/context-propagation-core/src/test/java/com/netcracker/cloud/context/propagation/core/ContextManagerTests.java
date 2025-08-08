@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.core;
+package com.netcracker.cloud.context.propagation.core;
 
 import org.junit.jupiter.api.*;
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;

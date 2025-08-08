@@ -1,4 +1,4 @@
-package org.qubership.cloud.context.propagation.core.providers.xversion;
+package com.netcracker.cloud.context.propagation.core.providers.xversion;
 
 import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
 import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;

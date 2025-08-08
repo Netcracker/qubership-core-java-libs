@@ -1,4 +1,4 @@
-package org.qubership.cloud.framework.contexts.xversion;
+package com.netcracker.cloud.framework.contexts.xversion;
 
 import org.junit.jupiter.api.Test;
 import org.qubership.cloud.context.propagation.core.ContextManager;
