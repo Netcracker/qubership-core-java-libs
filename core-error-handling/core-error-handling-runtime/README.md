@@ -129,7 +129,7 @@ LoggerWrapper meets the following requirements to log message:
 * create lombok.config file in your maven module directory
 * populate this file with the following content:
   ```
-  lombok.log.custom.declaration = org.slf4j.Logger org.qubership.cloud.core.log.LoggerWrapperFactory.getLogger(NAME)
+  lombok.log.custom.declaration = org.slf4j.Logger com.netcracker.cloud.core.log.LoggerWrapperFactory.getLogger(NAME)
   ```
 * annotate your classes where you will invoke log methods with @lombok.CustomLog annotation
 * write to log with the following code
@@ -140,16 +140,16 @@ LoggerWrapper meets the following requirements to log message:
   ```
   [2022-05-19 13:49:23,605] [ERROR] [request_id=-] [tenant_id=-] [traceId=-] [spanId=-] [thread=http-nio-0.0.0.0-8001-exec-1] 
   [class=c.n.c.e.t.a.m.c.ErrorHandler] [error_code=MS-1-1002] [error_id=4a3447c3-60f4-45b7-b888-5fe20cd5e52e] caught exception
-  org.qubership.cloud.errors.test.app.ms2.error.SimpleServiceException: 
+  com.netcracker.cloud.errors.test.app.ms2.error.SimpleServiceException: 
   [MS-1-1002][4a3447c3-60f4-45b7-b888-5fe20cd5e52e] Failed to proxy request due to remote error
-    at org.qubership.cloud.errors.test.app.ms2.service.SimpleService.lambda$proxy$0(SimpleService.java:44)
-	at org.qubership.cloud.errors.test.app.ms2.error.ErrorProxyException.lambda$new$0(ErrorProxyException.java:19)
-	at org.qubership.cloud.errors.test.app.ms2.controller.ErrorHandler.handleErrorCodeException(ErrorHandler.java:46)
+    at com.netcracker.cloud.errors.test.app.ms2.service.SimpleService.lambda$proxy$0(SimpleService.java:44)
+	at com.netcracker.cloud.errors.test.app.ms2.error.ErrorProxyException.lambda$new$0(ErrorProxyException.java:19)
+	at com.netcracker.cloud.errors.test.app.ms2.controller.ErrorHandler.handleErrorCodeException(ErrorHandler.java:46)
     ...
-  Caused by: org.qubership.cloud.error.rest.exception.RemoteMultiCauseException: 
+  Caused by: com.netcracker.cloud.error.rest.exception.RemoteMultiCauseException: 
   [NC-COMMON-2100][98fc5e1d-b332-412a-9a86-d4695f248c62] multi-cause error
-	Suppressed: org.qubership.cloud.error.rest.exception.RemoteCodeException: 
+	Suppressed: com.netcracker.cloud.error.rest.exception.RemoteCodeException: 
 	[MS-2-4001][69eedf03-851d-4d89-9559-943acade5aa2] validation error (simple msg)
-	Suppressed: org.qubership.cloud.error.rest.exception.RemoteCodeException: 
+	Suppressed: com.netcracker.cloud.error.rest.exception.RemoteCodeException: 
 	[MS-2-4002][7c2e3f67-6b74-4015-8d9c-fa244be89021] validation error (simple msg)
   ```

@@ -1,6 +1,6 @@
 package com.netcracker.cloud.core.log;
 
-import org.qubership.cloud.core.error.runtime.ErrorCodeException;
+import com.netcracker.cloud.core.error.runtime.ErrorCodeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;

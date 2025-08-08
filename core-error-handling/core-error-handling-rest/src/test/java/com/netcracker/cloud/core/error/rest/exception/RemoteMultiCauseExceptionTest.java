@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.qubership.cloud.core.error.runtime.ErrorCode;
-import org.qubership.cloud.core.error.runtime.ErrorCodeException;
+import com.netcracker.cloud.core.error.runtime.ErrorCode;
+import com.netcracker.cloud.core.error.runtime.ErrorCodeException;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
 package com.netcracker.cloud.core.error.rest.exceptions;
 
-import org.qubership.cloud.core.error.rest.tmf.model.Source;
-import org.qubership.cloud.core.error.runtime.ErrorCode;
-import org.qubership.cloud.core.error.runtime.ErrorCodeException;
+import com.netcracker.cloud.core.error.rest.tmf.model.Source;
+import com.netcracker.cloud.core.error.runtime.ErrorCode;
+import com.netcracker.cloud.core.error.runtime.ErrorCodeException;
 import lombok.Getter;
 
 public class DbaasAggregatorValidationException extends ErrorCodeException {

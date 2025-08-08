@@ -1,7 +1,7 @@
 package com.netcracker.cloud.core.error.rest.tmf;
 
-import org.qubership.cloud.core.error.runtime.ErrorCode;
-import org.qubership.cloud.core.error.runtime.ErrorCodeHolder;
+import com.netcracker.cloud.core.error.runtime.ErrorCode;
+import com.netcracker.cloud.core.error.runtime.ErrorCodeHolder;
 
 public class ErrorCodes {
     public static final ErrorCode DBAAS_VALIDATION_4001 = new ErrorCodeHolder("DBAAS-4001", "field cannot be empty");

@@ -1,15 +1,15 @@
 package com.netcracker.cloud.core.error.rest.tmf;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.qubership.cloud.core.error.rest.exception.RemoteCodeException;
-import org.qubership.cloud.core.error.rest.exceptions.DbaasAggregatorValidationException;
-import org.qubership.cloud.core.error.rest.exceptions.DbaasClientLibException;
-import org.qubership.cloud.core.error.rest.exceptions.ProjectClientLibException;
-import org.qubership.cloud.core.error.rest.exceptions.ProjectMsInternalException;
-import org.qubership.cloud.core.error.rest.tmf.model.Source;
-import org.qubership.cloud.core.error.rest.utils.DoubleOutputStream;
-import org.qubership.cloud.core.error.runtime.MultiCauseException;
-import org.qubership.cloud.core.log.LoggerWrapper;
+import com.netcracker.cloud.core.error.rest.exception.RemoteCodeException;
+import com.netcracker.cloud.core.error.rest.exceptions.DbaasAggregatorValidationException;
+import com.netcracker.cloud.core.error.rest.exceptions.DbaasClientLibException;
+import com.netcracker.cloud.core.error.rest.exceptions.ProjectClientLibException;
+import com.netcracker.cloud.core.error.rest.exceptions.ProjectMsInternalException;
+import com.netcracker.cloud.core.error.rest.tmf.model.Source;
+import com.netcracker.cloud.core.error.rest.utils.DoubleOutputStream;
+import com.netcracker.cloud.core.error.runtime.MultiCauseException;
+import com.netcracker.cloud.core.log.LoggerWrapper;
 import lombok.CustomLog;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;

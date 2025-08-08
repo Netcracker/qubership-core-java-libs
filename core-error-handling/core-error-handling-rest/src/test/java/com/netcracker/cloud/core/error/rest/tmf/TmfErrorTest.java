@@ -1,8 +1,8 @@
 package com.netcracker.cloud.core.error.rest.tmf;
 
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.core.error.runtime.ErrorCode;
-import org.qubership.cloud.core.error.runtime.ErrorCodeException;
+import com.netcracker.cloud.core.error.runtime.ErrorCode;
+import com.netcracker.cloud.core.error.runtime.ErrorCodeException;
 
 import java.util.HashMap;
 import java.util.Map;

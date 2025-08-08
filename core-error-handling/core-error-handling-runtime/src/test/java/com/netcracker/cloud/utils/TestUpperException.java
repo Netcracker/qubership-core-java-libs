@@ -1,7 +1,7 @@
 package com.netcracker.cloud.utils;
 
-import org.qubership.cloud.core.error.runtime.ErrorCodeException;
-import org.qubership.cloud.core.error.runtime.ErrorCodeHolder;
+import com.netcracker.cloud.core.error.runtime.ErrorCodeException;
+import com.netcracker.cloud.core.error.runtime.ErrorCodeHolder;
 
 public class TestUpperException extends ErrorCodeException {
     public static final String CODE = "TEST-UPPER-1000";

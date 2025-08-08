@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.qubership.cloud.utils.TestLowerException;
-import org.qubership.cloud.utils.TestUpperException;
+import com.netcracker.cloud.utils.TestLowerException;
+import com.netcracker.cloud.utils.TestUpperException;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 

@@ -1,7 +1,7 @@
 package com.netcracker.cloud.core.error.rest.exceptions;
 
-import org.qubership.cloud.core.error.runtime.ErrorCodeException;
-import org.qubership.cloud.core.error.runtime.ErrorCodeHolder;
+import com.netcracker.cloud.core.error.runtime.ErrorCodeException;
+import com.netcracker.cloud.core.error.runtime.ErrorCodeHolder;
 
 public class ProjectClientLibException extends ErrorCodeException {
     public ProjectClientLibException(String message, Throwable cause) {

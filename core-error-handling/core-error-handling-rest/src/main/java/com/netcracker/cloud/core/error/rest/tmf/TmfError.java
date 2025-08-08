@@ -1,7 +1,7 @@
 package com.netcracker.cloud.core.error.rest.tmf;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.qubership.cloud.core.error.runtime.ErrorCodeException;
+import com.netcracker.cloud.core.error.runtime.ErrorCodeException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
