@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.test.configuration;
 
-import org.qubership.cloud.dbaas.client.test.container.MongoTestContainer;
+import com.netcracker.cloud.dbaas.client.test.container.MongoTestContainer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

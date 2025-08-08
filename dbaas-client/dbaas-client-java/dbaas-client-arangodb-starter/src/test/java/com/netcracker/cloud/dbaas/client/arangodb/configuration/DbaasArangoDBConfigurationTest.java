@@ -1,12 +1,12 @@
 package com.netcracker.cloud.dbaas.client.arangodb.configuration;
 
 import com.arangodb.springframework.core.template.ArangoTemplate;
-import org.qubership.cloud.framework.contexts.tenant.context.TenantContext;
-import org.qubership.cloud.dbaas.client.arangodb.entity.database.type.ArangoDBType;
-import org.qubership.cloud.dbaas.client.arangodb.test.configuration.TestArangoDBConfiguration;
-import org.qubership.cloud.dbaas.client.entity.DbaasApiProperties;
-import org.qubership.cloud.dbaas.client.management.ArangoDatabaseProvider;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.framework.contexts.tenant.context.TenantContext;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.database.type.ArangoDBType;
+import com.netcracker.cloud.dbaas.client.arangodb.test.configuration.TestArangoDBConfiguration;
+import com.netcracker.cloud.dbaas.client.entity.DbaasApiProperties;
+import com.netcracker.cloud.dbaas.client.management.ArangoDatabaseProvider;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -26,10 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.qubership.cloud.dbaas.client.arangodb.configuration.ServiceArangoTemplateConfiguration.*;
-import static org.qubership.cloud.dbaas.client.arangodb.configuration.ServiceDbaasArangoConfiguration.*;
-import static org.qubership.cloud.dbaas.client.arangodb.configuration.TenantArangoTemplateConfiguration.*;
-import static org.qubership.cloud.dbaas.client.arangodb.configuration.TenantDbaasArangoConfiguration.*;
+import static com.netcracker.cloud.dbaas.client.arangodb.configuration.ServiceArangoTemplateConfiguration.*;
+import static com.netcracker.cloud.dbaas.client.arangodb.configuration.ServiceDbaasArangoConfiguration.*;
+import static com.netcracker.cloud.dbaas.client.arangodb.configuration.TenantArangoTemplateConfiguration.*;
+import static com.netcracker.cloud.dbaas.client.arangodb.configuration.TenantDbaasArangoConfiguration.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {TestArangoDBConfiguration.class, TenantArangoTemplateConfiguration.class})

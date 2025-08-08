@@ -14,11 +14,11 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import javax.sql.DataSource;
 import java.util.Properties;
 
-import static org.qubership.cloud.dbaas.client.config.DbaasPostgresConfiguration.SERVICE_POSTGRES_DATASOURCE;
+import static com.netcracker.cloud.dbaas.client.config.DbaasPostgresConfiguration.SERVICE_POSTGRES_DATASOURCE;
 
 @Configuration
 @EnableJpaRepositories(value = SERVICE_POSTGRES_DATASOURCE,
-        basePackages = "org.qubership.cloud.dbaas.client.it.postgresql.service",
+        basePackages = "com.netcracker.cloud.dbaas.client.it.postgresql.service",
         entityManagerFactoryRef = "serviceEntityManager",
         transactionManagerRef = "serviceTransactionManager")
 public class ServiceDataAccessConfiguration {
@@ -42,7 +42,7 @@ public class ServiceDataAccessConfiguration {
 
         entityManagerFactory.setDataSource(dataSource);
 
-        entityManagerFactory.setPackagesToScan("org.qubership.cloud.dbaas.client.it.postgresql.service");
+        entityManagerFactory.setPackagesToScan("com.netcracker.cloud.dbaas.client.it.postgresql.service");
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         entityManagerFactory.setJpaVendorAdapter(vendorAdapter);

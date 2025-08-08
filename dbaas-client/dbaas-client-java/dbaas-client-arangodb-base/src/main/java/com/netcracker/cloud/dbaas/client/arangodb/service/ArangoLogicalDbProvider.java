@@ -1,15 +1,15 @@
 package com.netcracker.cloud.dbaas.client.arangodb.service;
 
-import org.qubership.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
-import org.qubership.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.service.LogicalDbProvider;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.service.LogicalDbProvider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.SortedMap;
 
-import static org.qubership.cloud.dbaas.client.arangodb.service.ArangoLogicalDbProvider.ArangoConnectionProperty;
+import static com.netcracker.cloud.dbaas.client.arangodb.service.ArangoLogicalDbProvider.ArangoConnectionProperty;
 
 public abstract class ArangoLogicalDbProvider implements LogicalDbProvider<ArangoConnectionProperty, ArangoDatabase> {
     protected static final String TYPE = "arangodb";

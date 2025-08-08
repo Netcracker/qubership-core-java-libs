@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.service;
 
-import org.qubership.cloud.dbaas.client.entity.database.AbstractDatabase;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.management.SupportedDatabaseType;
+import com.netcracker.cloud.dbaas.client.entity.database.AbstractDatabase;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.management.SupportedDatabaseType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.SortedMap;

@@ -10,11 +10,11 @@ import com.datastax.oss.driver.api.core.metadata.Metadata;
 import com.datastax.oss.driver.api.core.metrics.Metrics;
 import com.datastax.oss.driver.api.core.session.Request;
 import com.datastax.oss.driver.api.core.type.reflect.GenericType;
-import org.qubership.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
-import org.qubership.cloud.dbaas.client.cassandra.entity.database.type.CassandraDBType;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.dbaas.client.management.classifier.DbaaSClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.database.type.CassandraDBType;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSClassifierBuilder;
 
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;

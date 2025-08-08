@@ -1,15 +1,15 @@
 package com.netcracker.cloud.dbaas.client.config;
 
-import org.qubership.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperties;
-import org.qubership.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
-import org.qubership.cloud.dbaas.client.cassandra.migration.MigrationExecutor;
-import org.qubership.cloud.dbaas.client.cassandra.service.CassandraSessionBuilder;
-import org.qubership.cloud.dbaas.client.cassandra.service.DbaasCqlSessionBuilderCustomizer;
-import org.qubership.cloud.dbaas.client.cassandra.service.DefaultDbaasCqlSessionBuilderCustomizer;
-import org.qubership.cloud.dbaas.client.entity.DbaasApiProperties;
-import org.qubership.cloud.dbaas.client.management.CassandraPostConnectProcessor;
-import org.qubership.cloud.dbaas.client.management.PostConnectProcessor;
-import org.qubership.cloud.dbaas.client.metrics.DbaaSMetricsRegistrar;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperties;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.MigrationExecutor;
+import com.netcracker.cloud.dbaas.client.cassandra.service.CassandraSessionBuilder;
+import com.netcracker.cloud.dbaas.client.cassandra.service.DbaasCqlSessionBuilderCustomizer;
+import com.netcracker.cloud.dbaas.client.cassandra.service.DefaultDbaasCqlSessionBuilderCustomizer;
+import com.netcracker.cloud.dbaas.client.entity.DbaasApiProperties;
+import com.netcracker.cloud.dbaas.client.management.CassandraPostConnectProcessor;
+import com.netcracker.cloud.dbaas.client.management.PostConnectProcessor;
+import com.netcracker.cloud.dbaas.client.metrics.DbaaSMetricsRegistrar;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.ObjectProvider;

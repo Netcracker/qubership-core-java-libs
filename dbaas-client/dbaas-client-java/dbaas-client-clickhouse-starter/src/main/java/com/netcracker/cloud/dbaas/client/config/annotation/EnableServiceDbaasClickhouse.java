@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.config.annotation;
 
-import org.qubership.cloud.dbaas.client.config.DbaasServiceClickhouseConfiguration;
+import com.netcracker.cloud.dbaas.client.config.DbaasServiceClickhouseConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.ElementType;

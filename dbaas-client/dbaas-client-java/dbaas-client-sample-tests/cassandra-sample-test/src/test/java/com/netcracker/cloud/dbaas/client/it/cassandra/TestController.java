@@ -1,9 +1,9 @@
 package com.netcracker.cloud.dbaas.client.it.cassandra;
 
-import org.qubership.cloud.dbaas.client.it.cassandra.service.ServiceFilm;
-import org.qubership.cloud.dbaas.client.it.cassandra.service.ServiceFilmRepository;
-import org.qubership.cloud.dbaas.client.it.cassandra.tenant.TenantFilm;
-import org.qubership.cloud.dbaas.client.it.cassandra.tenant.TenantFilmRepository;
+import com.netcracker.cloud.dbaas.client.it.cassandra.service.ServiceFilm;
+import com.netcracker.cloud.dbaas.client.it.cassandra.service.ServiceFilmRepository;
+import com.netcracker.cloud.dbaas.client.it.cassandra.tenant.TenantFilm;
+import com.netcracker.cloud.dbaas.client.it.cassandra.tenant.TenantFilmRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;

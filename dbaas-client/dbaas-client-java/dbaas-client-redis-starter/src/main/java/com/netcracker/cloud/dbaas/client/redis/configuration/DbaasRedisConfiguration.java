@@ -1,10 +1,10 @@
 package com.netcracker.cloud.dbaas.client.redis.configuration;
 
-import org.qubership.cloud.dbaas.client.config.EnableDbaasDefault;
-import org.qubership.cloud.dbaas.client.entity.DbaasApiProperties;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.dbaas.client.redis.connection.DbaasRedisConnectionFactoryBuilder;
-import org.qubership.cloud.dbaas.client.redis.management.JedisClientCreator;
+import com.netcracker.cloud.dbaas.client.config.EnableDbaasDefault;
+import com.netcracker.cloud.dbaas.client.entity.DbaasApiProperties;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.redis.connection.DbaasRedisConnectionFactoryBuilder;
+import com.netcracker.cloud.dbaas.client.redis.management.JedisClientCreator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

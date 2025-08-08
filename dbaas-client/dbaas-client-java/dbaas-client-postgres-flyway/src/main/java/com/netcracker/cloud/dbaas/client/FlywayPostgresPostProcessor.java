@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client;
 
-import org.qubership.cloud.dbaas.client.entity.database.PostgresDatabase;
-import org.qubership.cloud.dbaas.client.management.PostConnectProcessor;
+import com.netcracker.cloud.dbaas.client.entity.database.PostgresDatabase;
+import com.netcracker.cloud.dbaas.client.management.PostConnectProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
@@ -12,9 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.CUSTOM_KEYS;
-import static org.qubership.cloud.dbaas.client.DbaasConst.LOGICAL_DB_NAME;
-import static org.qubership.cloud.dbaas.client.FlywayPostgresPostProcessor.FLYWAY_POSTGRES_POST_PROCESSOR_ORDER;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.CUSTOM_KEYS;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.LOGICAL_DB_NAME;
+import static com.netcracker.cloud.dbaas.client.FlywayPostgresPostProcessor.FLYWAY_POSTGRES_POST_PROCESSOR_ORDER;
 
 @Slf4j
 @Order(FLYWAY_POSTGRES_POST_PROCESSOR_ORDER)

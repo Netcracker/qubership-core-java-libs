@@ -1,9 +1,9 @@
 package com.netcracker.cloud.dbaas.client.it.postgresql;
 
-import org.qubership.cloud.dbaas.client.it.postgresql.service.Person;
-import org.qubership.cloud.dbaas.client.it.postgresql.service.PersonServiceRepository;
-import org.qubership.cloud.dbaas.client.it.postgresql.tenant.Customer;
-import org.qubership.cloud.dbaas.client.it.postgresql.tenant.PersonTenantRepository;
+import com.netcracker.cloud.dbaas.client.it.postgresql.service.Person;
+import com.netcracker.cloud.dbaas.client.it.postgresql.service.PersonServiceRepository;
+import com.netcracker.cloud.dbaas.client.it.postgresql.tenant.Customer;
+import com.netcracker.cloud.dbaas.client.it.postgresql.tenant.PersonTenantRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;

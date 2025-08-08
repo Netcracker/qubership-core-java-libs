@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.redis.entity.database;
 
-import org.qubership.cloud.dbaas.client.entity.database.AbstractConnectorSettings;
-import org.qubership.cloud.dbaas.client.entity.database.Discriminator;
+import com.netcracker.cloud.dbaas.client.entity.database.AbstractConnectorSettings;
+import com.netcracker.cloud.dbaas.client.entity.database.Discriminator;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 

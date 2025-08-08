@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.config;
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

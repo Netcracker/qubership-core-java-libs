@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client;
 
-import org.qubership.cloud.dbaas.client.config.EnableDbaasMongo;
-import org.qubership.cloud.dbaas.client.entity.DbaasApiProperties;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.dbaas.client.config.EnableDbaasMongo;
+import com.netcracker.cloud.dbaas.client.entity.DbaasApiProperties;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

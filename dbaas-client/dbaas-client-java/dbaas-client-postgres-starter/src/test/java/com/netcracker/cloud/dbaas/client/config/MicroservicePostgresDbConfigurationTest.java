@@ -4,10 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.dbaas.client.DbaasConst;
-import org.qubership.cloud.dbaas.client.management.DbaasPostgresProxyDataSource;
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.dbaas.client.DbaasConst;
+import com.netcracker.cloud.dbaas.client.management.DbaasPostgresProxyDataSource;
+import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.DirtiesContext;
@@ -19,11 +19,11 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.qubership.cloud.dbaas.client.DbaasConst.SCOPE;
-import static org.qubership.cloud.dbaas.client.DbaasConst.SERVICE;
-import static org.qubership.cloud.dbaas.client.config.DbaasPostgresConfiguration.SERVICE_POSTGRES_DATASOURCE;
-import static org.qubership.cloud.dbaas.client.config.DbaasPostgresConfiguration.TENANT_POSTGRES_DATASOURCE;
-import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SCOPE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SERVICE;
+import static com.netcracker.cloud.dbaas.client.config.DbaasPostgresConfiguration.SERVICE_POSTGRES_DATASOURCE;
+import static com.netcracker.cloud.dbaas.client.config.DbaasPostgresConfiguration.TENANT_POSTGRES_DATASOURCE;
+import static com.netcracker.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = PostgresDbTestContext.class)

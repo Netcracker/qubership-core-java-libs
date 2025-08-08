@@ -3,9 +3,9 @@ package com.netcracker.cloud.dbaas.client.cassandra.service;
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoaderBuilder;
-import org.qubership.cloud.dbaas.client.cassandra.entity.DbaasCassandraMetricsProperties;
-import org.qubership.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperties;
-import org.qubership.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.DbaasCassandraMetricsProperties;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperties;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

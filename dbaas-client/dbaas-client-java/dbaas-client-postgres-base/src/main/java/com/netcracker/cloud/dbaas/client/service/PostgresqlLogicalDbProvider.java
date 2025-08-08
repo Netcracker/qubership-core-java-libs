@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.service;
 
-import org.qubership.cloud.dbaas.client.entity.connection.PostgresDBConnection;
-import org.qubership.cloud.dbaas.client.entity.database.PostgresDatabase;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.entity.connection.PostgresDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.PostgresDatabase;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
@@ -15,7 +15,7 @@ import org.postgresql.PGProperty;
 import java.util.Properties;
 import java.util.SortedMap;
 
-import static org.qubership.cloud.dbaas.client.service.PostgresqlLogicalDbProvider.PostgresConnectionProperty;
+import static com.netcracker.cloud.dbaas.client.service.PostgresqlLogicalDbProvider.PostgresConnectionProperty;
 
 @Slf4j
 public abstract class PostgresqlLogicalDbProvider implements LogicalDbProvider<PostgresConnectionProperty, PostgresDatabase> {

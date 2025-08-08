@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration.service.resource;
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.util.ResourceUtils;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.util.ResourceUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;

@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.config;
 
-import org.qubership.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
-import org.qubership.cloud.dbaas.client.cassandra.metrics.CassandraMetricsProvider;
-import org.qubership.cloud.dbaas.client.metrics.MetricsProvider;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
+import com.netcracker.cloud.dbaas.client.cassandra.metrics.CassandraMetricsProvider;
+import com.netcracker.cloud.dbaas.client.metrics.MetricsProvider;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;

@@ -1,11 +1,11 @@
 package com.netcracker.cloud.dbaas.client.management.classifier;
 
-import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
+import com.netcracker.cloud.dbaas.client.management.DbaasDbClassifier;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.*;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

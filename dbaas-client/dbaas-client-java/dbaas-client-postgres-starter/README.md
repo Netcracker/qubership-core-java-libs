@@ -20,7 +20,7 @@ This module can be included as a dependency directly to your microservice.
 1. Add dependencies to your pom.xml: 
 ```xml
  <dependency>
-     <groupId>org.qubership.cloud</groupId>
+     <groupId>com.netcracker.cloud</groupId>
      <artifactId>dbaas-client-postgres-starter</artifactId>
      <version>${dbaas-client-postgres-starter.version}</version>
  </dependency>
@@ -30,7 +30,7 @@ This module can be included as a dependency directly to your microservice.
     if you use resstemplate:
  
   <dependency>
-      <groupId>org.qubership.cloud</groupId>
+      <groupId>com.netcracker.cloud</groupId>
       <artifactId>dbaas-client-resttemplate</artifactId>
       <version>{version}</version>
   </dependency>
@@ -39,7 +39,7 @@ This module can be included as a dependency directly to your microservice.
     if you use webclient:
  
   <dependency>
-      <groupId>org.qubership.cloud</groupId>
+      <groupId>com.netcracker.cloud</groupId>
       <artifactId>dbaas-client-webclient</artifactId>
       <version>{version}</version>
   </dependency>
@@ -62,7 +62,7 @@ These annotations create service and tenant `datasource` beans.
 #### Usage `@EnableServiceDbaasPostgresql` annotation
 This annotation creates `only service datasource` with `servicePostgresDatasource` qualifier. You can inject this datasource by the following way:
 ```java
-import static org.qubership.cloud.dbaas.client.config.DbaasPostgresConfiguration.SERVICE_POSTGRES_DATASOURCE;
+import static com.netcracker.cloud.dbaas.client.config.DbaasPostgresConfiguration.SERVICE_POSTGRES_DATASOURCE;
 
 @Autowired
 @Qualifier(SERVICE_POSTGRES_DATASOURCE)
@@ -74,7 +74,7 @@ Besides that, you can use `spring data JPA` with a DbaaS solution. For it, you j
 #### Usage `@EnableTenantDbaasPostgresql` annotation
 This annotation creates `only tenant datasource` with a `tenantPostgresDatasource` qualifier. You can inject this datasource by the following way:
 ```java
-import static org.qubership.cloud.dbaas.client.config.DbaasPostgresConfiguration.TENANT_POSTGRES_DATASOURCE;
+import static com.netcracker.cloud.dbaas.client.config.DbaasPostgresConfiguration.TENANT_POSTGRES_DATASOURCE;
 
 @Autowired
 @Qualifier(TENANT_POSTGRES_DATASOURCE)
@@ -89,7 +89,7 @@ datasources.
 Service datasource has `servicePostgresDatasource` qualifier and tenant one has `tenantPostgresDatasource` qualifier. You may inject them by the following way: 
 
 ```java
-import static org.qubership.cloud.dbaas.client.config.DbaasPostgresConfiguration.*;
+import static com.netcracker.cloud.dbaas.client.config.DbaasPostgresConfiguration.*;
 
 @Autowired
 @Qualifier(SERVICE_POSTGRES_DATASOURCE) // it's a primary bean by default

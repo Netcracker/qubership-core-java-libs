@@ -1,12 +1,12 @@
 package com.netcracker.cloud.dbaas.client;
 
-import org.qubership.cloud.dbaas.client.entity.database.MongoDatabase;
-import org.qubership.cloud.dbaas.client.entity.database.type.MongoDBType;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
-import org.qubership.cloud.dbaas.client.management.PostConnectProcessor;
-import org.qubership.cloud.dbaas.client.test.configuration.TestMongoConfiguration;
+import com.netcracker.cloud.dbaas.client.entity.database.MongoDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.type.MongoDBType;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.management.DbaasDbClassifier;
+import com.netcracker.cloud.dbaas.client.management.PostConnectProcessor;
+import com.netcracker.cloud.dbaas.client.test.configuration.TestMongoConfiguration;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;

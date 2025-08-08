@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.config;
 
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.DbaasClientImpl;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.DbaasClientImpl;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

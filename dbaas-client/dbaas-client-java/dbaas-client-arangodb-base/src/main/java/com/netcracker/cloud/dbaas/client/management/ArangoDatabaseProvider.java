@@ -2,10 +2,10 @@ package com.netcracker.cloud.dbaas.client.management;
 
 import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDatabase;
-import org.qubership.cloud.dbaas.client.arangodb.classifier.ArangoDBClassifierBuilder;
-import org.qubership.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
-import org.qubership.cloud.dbaas.client.arangodb.entity.database.type.ArangoDBType;
-import org.qubership.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.arangodb.classifier.ArangoDBClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.database.type.ArangoDBType;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

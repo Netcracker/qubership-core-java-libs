@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.redis.configuration;
 
-import org.qubership.cloud.dbaas.client.entity.DbaasApiProperties;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.dbaas.client.redis.test.configuration.MockedRedisDBConfiguration;
+import com.netcracker.cloud.dbaas.client.entity.DbaasApiProperties;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.redis.test.configuration.MockedRedisDBConfiguration;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

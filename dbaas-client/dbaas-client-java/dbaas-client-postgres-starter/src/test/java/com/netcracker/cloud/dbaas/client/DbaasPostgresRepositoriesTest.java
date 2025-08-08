@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client;
 
-import org.qubership.cloud.dbaas.client.testconfiguration.PostgresTestContainerConfiguration;
-import org.qubership.cloud.dbaas.client.testconfiguration.TestPostgresWithRepositoriesConfig;
+import com.netcracker.cloud.dbaas.client.testconfiguration.PostgresTestContainerConfiguration;
+import com.netcracker.cloud.dbaas.client.testconfiguration.TestPostgresWithRepositoriesConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

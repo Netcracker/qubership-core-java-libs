@@ -1,15 +1,15 @@
 package com.netcracker.cloud.dbaas.client.opensearch.config;
 
-import org.qubership.cloud.dbaas.client.config.EnableDbaasDefault;
-import org.qubership.cloud.dbaas.client.entity.database.DatabaseSettings;
-import org.qubership.cloud.dbaas.client.management.PostConnectProcessor;
-import org.qubership.cloud.dbaas.client.metrics.DbaaSMetricsRegistrar;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchDatabaseSettings;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchIndex;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchProperties;
-import org.qubership.cloud.dbaas.client.opensearch.management.OpensearchPostConnectProcessor;
-import org.qubership.cloud.dbaas.client.opensearch.DbaasOpensearchClientBuilderCustomizer;
-import org.qubership.cloud.dbaas.client.opensearch.DefaultDbaasOpensearchClientBuilderCustomizer;
+import com.netcracker.cloud.dbaas.client.config.EnableDbaasDefault;
+import com.netcracker.cloud.dbaas.client.entity.database.DatabaseSettings;
+import com.netcracker.cloud.dbaas.client.management.PostConnectProcessor;
+import com.netcracker.cloud.dbaas.client.metrics.DbaaSMetricsRegistrar;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchDatabaseSettings;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchIndex;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchProperties;
+import com.netcracker.cloud.dbaas.client.opensearch.management.OpensearchPostConnectProcessor;
+import com.netcracker.cloud.dbaas.client.opensearch.DbaasOpensearchClientBuilderCustomizer;
+import com.netcracker.cloud.dbaas.client.opensearch.DefaultDbaasOpensearchClientBuilderCustomizer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;

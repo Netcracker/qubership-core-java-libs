@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.management;
 
-import org.qubership.cloud.dbaas.client.entity.database.PostgresDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.PostgresDatabase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

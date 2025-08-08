@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.entity.database;
 
-import org.qubership.cloud.dbaas.client.entity.connection.MongoDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.connection.MongoDBConnection;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.management;
 
-import org.qubership.cloud.dbaas.client.entity.database.AbstractDatabase;
-import org.qubership.cloud.dbaas.client.entity.database.type.DatabaseType;
+import com.netcracker.cloud.dbaas.client.entity.database.AbstractDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.type.DatabaseType;
 import lombok.Value;
 
 import java.util.Map;

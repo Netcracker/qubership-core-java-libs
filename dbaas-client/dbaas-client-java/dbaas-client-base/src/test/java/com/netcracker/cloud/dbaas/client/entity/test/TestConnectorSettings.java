@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.entity.test;
 
-import org.qubership.cloud.dbaas.client.entity.database.AbstractConnectorSettings;
-import org.qubership.cloud.dbaas.client.entity.database.Discriminator;
+import com.netcracker.cloud.dbaas.client.entity.database.AbstractConnectorSettings;
+import com.netcracker.cloud.dbaas.client.entity.database.Discriminator;
 
 public class TestConnectorSettings extends AbstractConnectorSettings {
 

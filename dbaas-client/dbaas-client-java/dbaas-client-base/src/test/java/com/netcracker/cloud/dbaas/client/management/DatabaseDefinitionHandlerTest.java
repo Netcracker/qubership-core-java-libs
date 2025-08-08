@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.management;
 
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.annotaion.Role;
-import org.qubership.cloud.dbaas.client.entity.test.*;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.annotaion.Role;
+import com.netcracker.cloud.dbaas.client.entity.test.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

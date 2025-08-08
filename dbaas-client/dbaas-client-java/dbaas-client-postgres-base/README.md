@@ -8,7 +8,7 @@ Here are the steps describing how to use dbaas-client-postgres-base library:
 1. Add maven dependency: 
     ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-postgres-base</artifactId>
         <version>${dbaas-client-postgres-base.version}</version>
     </dependency>

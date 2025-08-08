@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.opensearch;
 
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchIndexConnection;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchIndexConnection;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.http.HttpStatus;
 import org.opensearch.client.opensearch.OpenSearchClient;

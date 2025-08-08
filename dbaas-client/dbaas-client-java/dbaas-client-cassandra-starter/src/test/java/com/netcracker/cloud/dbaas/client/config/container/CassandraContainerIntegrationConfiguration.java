@@ -1,12 +1,12 @@
 package com.netcracker.cloud.dbaas.client.config.container;
 
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
-import org.qubership.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
-import org.qubership.cloud.dbaas.client.cassandra.entity.database.type.CassandraDBType;
-import org.qubership.cloud.dbaas.client.config.EnableDbaasCassandra;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.database.type.CassandraDBType;
+import com.netcracker.cloud.dbaas.client.config.EnableDbaasCassandra;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
 
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
@@ -21,9 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.SCOPE;
-import static org.qubership.cloud.dbaas.client.DbaasConst.TENANT;
-import static org.qubership.cloud.dbaas.client.DbaasConst.TENANT_ID;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SCOPE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.TENANT;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.TENANT_ID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;

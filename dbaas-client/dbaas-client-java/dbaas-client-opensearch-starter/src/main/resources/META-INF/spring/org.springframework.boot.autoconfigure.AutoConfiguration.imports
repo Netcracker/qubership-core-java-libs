@@ -1,1 +1,1 @@
-org.qubership.cloud.dbaas.client.opensearch.config.metrics.DbaasOpensearchMetricsAutoConfiguration
+com.netcracker.cloud.dbaas.client.opensearch.config.metrics.DbaasOpensearchMetricsAutoConfiguration

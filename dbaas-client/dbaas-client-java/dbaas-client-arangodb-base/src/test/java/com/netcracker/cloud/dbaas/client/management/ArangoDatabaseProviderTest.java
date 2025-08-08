@@ -2,17 +2,17 @@ package com.netcracker.cloud.dbaas.client.management;
 
 import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDatabase;
-import org.qubership.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
-import org.qubership.cloud.dbaas.client.arangodb.entity.database.type.ArangoDBType;
-import org.qubership.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;
-import org.qubership.cloud.dbaas.client.management.classifier.ServiceDbaaSClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.database.type.ArangoDBType;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.management.classifier.ServiceDbaaSClassifierBuilder;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.qubership.cloud.dbaas.client.arangodb.classifier.ArangoDBClassifierBuilder.DB_ID_CLASSIFIER_PROPERTY;
+import static com.netcracker.cloud.dbaas.client.arangodb.classifier.ArangoDBClassifierBuilder.DB_ID_CLASSIFIER_PROPERTY;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -39,7 +39,7 @@ public class ArangoDatabaseProviderTest {
                     ArangoConnection arangoConnection = new ArangoConnection();
                     arangoConnection.setArangoDatabase(arangoDatabase);
                     Mockito.when(arangoDatabase.query(any(), eq(Integer.class))).thenReturn(cursor);
-                    org.qubership.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase result = new org.qubership.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase();
+                    com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase result = new com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase();
                     result.setConnectionProperties(arangoConnection);
                     return result;
                 }

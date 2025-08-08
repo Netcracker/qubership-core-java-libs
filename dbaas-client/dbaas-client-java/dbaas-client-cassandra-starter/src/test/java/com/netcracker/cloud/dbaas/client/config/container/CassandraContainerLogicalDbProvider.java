@@ -1,9 +1,9 @@
 package com.netcracker.cloud.dbaas.client.config.container;
 
-import org.qubership.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
-import org.qubership.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.service.LogicalDbProvider;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.service.LogicalDbProvider;
 import lombok.AllArgsConstructor;
 
 import java.net.InetSocketAddress;
@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.SCOPE;
-import static org.qubership.cloud.dbaas.client.DbaasConst.TENANT;
-import static org.qubership.cloud.dbaas.client.DbaasConst.TENANT_ID;
-import static org.qubership.cloud.dbaas.client.config.container.CassandraContainerIntegrationConfiguration.*;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SCOPE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.TENANT;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.TENANT_ID;
+import static com.netcracker.cloud.dbaas.client.config.container.CassandraContainerIntegrationConfiguration.*;
 
 @AllArgsConstructor
 public class CassandraContainerLogicalDbProvider implements LogicalDbProvider<CassandraDBConnection, CassandraDatabase> {

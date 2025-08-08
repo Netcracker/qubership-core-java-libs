@@ -1,14 +1,14 @@
 package com.netcracker.cloud.dbaas.client;
 
-import org.qubership.cloud.dbaas.client.config.EnableDbaasPostgresql;
-import org.qubership.cloud.dbaas.client.entity.DatabaseCreateRequest;
-import org.qubership.cloud.dbaas.client.entity.connection.PostgresDBConnection;
-import org.qubership.cloud.dbaas.client.entity.database.PostgresDatabase;
-import org.qubership.cloud.dbaas.client.management.AbstractPostgresDefinitionProcess;
-import org.qubership.cloud.dbaas.client.management.PostgresDatasourceCreator;
-import org.qubership.cloud.restclient.HttpMethod;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
-import org.qubership.cloud.restclient.entity.RestClientResponseEntity;
+import com.netcracker.cloud.dbaas.client.config.EnableDbaasPostgresql;
+import com.netcracker.cloud.dbaas.client.entity.DatabaseCreateRequest;
+import com.netcracker.cloud.dbaas.client.entity.connection.PostgresDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.PostgresDatabase;
+import com.netcracker.cloud.dbaas.client.management.AbstractPostgresDefinitionProcess;
+import com.netcracker.cloud.dbaas.client.management.PostgresDatasourceCreator;
+import com.netcracker.cloud.restclient.HttpMethod;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.restclient.entity.RestClientResponseEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -26,7 +26,7 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.qubership.cloud.dbaas.client.config.DbaasPostgresConfiguration.*;
+import static com.netcracker.cloud.dbaas.client.config.DbaasPostgresConfiguration.*;
 
 @SpringBootTest(classes = {PostgresDefinitionProcessTest.TestConfig.class},
         properties = {

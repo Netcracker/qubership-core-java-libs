@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.management;
 
-import org.qubership.cloud.dbaas.client.entity.database.ClickhouseDatasourceConnectorSettings;
-import org.qubership.cloud.dbaas.client.entity.database.type.ClickhouseDBType;
-import org.qubership.cloud.dbaas.client.management.classifier.ServiceDbaaSClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.entity.database.ClickhouseDatasourceConnectorSettings;
+import com.netcracker.cloud.dbaas.client.entity.database.type.ClickhouseDBType;
+import com.netcracker.cloud.dbaas.client.management.classifier.ServiceDbaaSClassifierBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;

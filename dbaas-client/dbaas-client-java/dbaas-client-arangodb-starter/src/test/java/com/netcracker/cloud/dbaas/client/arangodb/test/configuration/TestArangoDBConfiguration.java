@@ -5,12 +5,12 @@ import com.arangodb.springframework.core.convert.ArangoConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.arangodb.configuration.EnableServiceDbaasArangoDB;
-import org.qubership.cloud.dbaas.client.arangodb.entity.Person;
-import org.qubership.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
-import org.qubership.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.arangodb.configuration.EnableServiceDbaasArangoDB;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.Person;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
 import lombok.extern.slf4j.Slf4j;
 
 import org.mockito.Mockito;
@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.qubership.cloud.dbaas.client.arangodb.test.ArangoTestCommon.*;
+import static com.netcracker.cloud.dbaas.client.arangodb.test.ArangoTestCommon.*;
 
 @EnableServiceDbaasArangoDB
 @Configuration

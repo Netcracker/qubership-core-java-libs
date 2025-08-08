@@ -1,13 +1,13 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration.service;
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.cql.SimpleCQLScriptParser;
-import org.qubership.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.cql.SimpleCQLScriptParser;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.output.StringBuilderWriter;
-import org.qubership.cloud.dbaas.client.cassandra.migration.util.ResourceUtils;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.util.ResourceUtils;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.*;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.*;
 
 @Slf4j
 public class CqlScriptParsingService {

@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.service.migration;
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinder;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinder;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -10,7 +10,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.DEFAULT_RESOURCE_SEPARATOR;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.DEFAULT_RESOURCE_SEPARATOR;
 
 public class SpringBootJarSchemaVersionResourceFinder implements SchemaVersionResourceFinder {
     private final static String GET_ALL_SYMBOL = "*";

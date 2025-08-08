@@ -1,10 +1,10 @@
 package com.netcracker.cloud.dbaas.client.redis.jpa;
 
-import org.qubership.cloud.dbaas.client.redis.configuration.annotation.EnableDbaasRedisRepositories;
-import org.qubership.cloud.dbaas.client.redis.configuration.annotation.EnableServiceDbaasRedis;
-import org.qubership.cloud.dbaas.client.redis.entity.Person;
-import org.qubership.cloud.dbaas.client.redis.repository.PersonRepository;
-import org.qubership.cloud.dbaas.client.redis.test.configuration.TestRedisConfiguration;
+import com.netcracker.cloud.dbaas.client.redis.configuration.annotation.EnableDbaasRedisRepositories;
+import com.netcracker.cloud.dbaas.client.redis.configuration.annotation.EnableServiceDbaasRedis;
+import com.netcracker.cloud.dbaas.client.redis.entity.Person;
+import com.netcracker.cloud.dbaas.client.redis.repository.PersonRepository;
+import com.netcracker.cloud.dbaas.client.redis.test.configuration.TestRedisConfiguration;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {TestRedisConfiguration.class})
 @WebAppConfiguration
-@EnableRedisRepositories(basePackages = "org.qubership.cloud.dbaas.client.redis.repository")
+@EnableRedisRepositories(basePackages = "com.netcracker.cloud.dbaas.client.redis.repository")
 @EnableDbaasRedisRepositories
 @EnableServiceDbaasRedis
 class RedisRepositoriesTest {

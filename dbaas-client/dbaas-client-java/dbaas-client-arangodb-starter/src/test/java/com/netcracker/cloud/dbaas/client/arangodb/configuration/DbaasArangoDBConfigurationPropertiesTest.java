@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.arangodb.configuration;
 
-import org.qubership.cloud.dbaas.client.arangodb.test.configuration.MockedArangoDBConfiguration;
-import org.qubership.cloud.dbaas.client.entity.DbaasApiProperties;
+import com.netcracker.cloud.dbaas.client.arangodb.test.configuration.MockedArangoDBConfiguration;
+import com.netcracker.cloud.dbaas.client.entity.DbaasApiProperties;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

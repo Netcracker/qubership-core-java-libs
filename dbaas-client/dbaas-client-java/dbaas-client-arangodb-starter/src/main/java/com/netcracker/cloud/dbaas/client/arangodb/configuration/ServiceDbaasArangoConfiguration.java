@@ -1,14 +1,14 @@
 package com.netcracker.cloud.dbaas.client.arangodb.configuration;
 
 import com.arangodb.serde.ArangoSerde;
-import org.qubership.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
-import org.qubership.cloud.dbaas.client.arangodb.management.ArangoPostProcessor;
-import org.qubership.cloud.dbaas.client.entity.DbaasApiProperties;
-import org.qubership.cloud.dbaas.client.management.ArangoDatabaseProvider;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.dbaas.client.management.PostConnectProcessor;
-import org.qubership.cloud.dbaas.client.management.classifier.DbaasClassifierFactory;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
+import com.netcracker.cloud.dbaas.client.arangodb.management.ArangoPostProcessor;
+import com.netcracker.cloud.dbaas.client.entity.DbaasApiProperties;
+import com.netcracker.cloud.dbaas.client.management.ArangoDatabaseProvider;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.management.PostConnectProcessor;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaasClassifierFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

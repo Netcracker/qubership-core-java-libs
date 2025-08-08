@@ -1,12 +1,12 @@
 package com.netcracker.cloud.dbaas.client.test.configuration;
 
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.test.PersonService;
-import org.qubership.cloud.dbaas.client.config.EnableDbaasMongo;
-import org.qubership.cloud.dbaas.client.entity.connection.MongoDBConnection;
-import org.qubership.cloud.dbaas.client.entity.database.MongoDatabase;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.test.container.MongoTestContainer;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.test.PersonService;
+import com.netcracker.cloud.dbaas.client.config.EnableDbaasMongo;
+import com.netcracker.cloud.dbaas.client.entity.connection.MongoDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.MongoDatabase;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.test.container.MongoTestContainer;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +18,16 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 import java.util.Map;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.*;
-import static org.qubership.cloud.dbaas.client.test.container.MongoTestContainer.*;
-import static org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration.SERVICE_MONGO_TEMPLATE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.*;
+import static com.netcracker.cloud.dbaas.client.test.container.MongoTestContainer.*;
+import static com.netcracker.cloud.dbaas.client.config.DbaasMongoConfiguration.SERVICE_MONGO_TEMPLATE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @Configuration
 @EnableDbaasMongo
 @EnableMongoRepositories(
-        basePackages = "org.qubership.cloud.dbaas.client",
+        basePackages = "com.netcracker.cloud.dbaas.client",
         mongoTemplateRef = SERVICE_MONGO_TEMPLATE)
 public class TestMongoRepositoriesConfiguration {
     @Bean

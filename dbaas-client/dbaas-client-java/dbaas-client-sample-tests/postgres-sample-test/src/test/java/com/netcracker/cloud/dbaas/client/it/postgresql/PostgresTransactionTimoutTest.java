@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.dbaas.client.it.postgresql.access.ServiceDataAccessConfiguration;
-import org.qubership.cloud.dbaas.client.it.postgresql.access.TenantDataAccessConfiguration;
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.dbaas.client.it.postgresql.access.ServiceDataAccessConfiguration;
+import com.netcracker.cloud.dbaas.client.it.postgresql.access.TenantDataAccessConfiguration;
+import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
+import static com.netcracker.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration

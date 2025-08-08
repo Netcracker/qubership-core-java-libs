@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.entity.database.type;
 
-import org.qubership.cloud.dbaas.client.entity.connection.PostgresDBConnection;
-import org.qubership.cloud.dbaas.client.entity.database.PostgresDatabase;
-import org.qubership.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.entity.connection.PostgresDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.PostgresDatabase;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
 
 /**
  * The class used to invoke the API of {@link DbaasClient}

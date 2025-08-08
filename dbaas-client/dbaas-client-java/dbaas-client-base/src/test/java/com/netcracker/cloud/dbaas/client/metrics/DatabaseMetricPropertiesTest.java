@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.SCOPE;
-import static org.qubership.cloud.dbaas.client.DbaasConst.SERVICE;
-import static org.qubership.cloud.dbaas.client.metrics.DatabaseMetricProperties.CLASSIFIER_TAG_PREFIX;
-import static org.qubership.cloud.dbaas.client.metrics.DatabaseMetricProperties.ROLE_TAG;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SCOPE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SERVICE;
+import static com.netcracker.cloud.dbaas.client.metrics.DatabaseMetricProperties.CLASSIFIER_TAG_PREFIX;
+import static com.netcracker.cloud.dbaas.client.metrics.DatabaseMetricProperties.ROLE_TAG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DatabaseMetricPropertiesTest {

@@ -1,16 +1,16 @@
 package com.netcracker.cloud.dbaas.client.it.cassandra;
 
-import org.qubership.cloud.dbaas.client.cassandra.entity.database.type.CassandraDBType;
-import org.qubership.cloud.dbaas.client.config.EnableDbaasCassandra;
-import org.qubership.cloud.dbaas.client.it.cassandra.config.CassandraTestConfiguration;
-import org.qubership.cloud.dbaas.client.it.cassandra.config.CassandraTestContainer;
-import org.qubership.cloud.dbaas.client.it.cassandra.config.DataInitializePostConnectProcessor;
-import org.qubership.cloud.dbaas.client.it.cassandra.config.ServiceDataAccessConfiguration;
-import org.qubership.cloud.dbaas.client.it.cassandra.service.ServiceFilm;
-import org.qubership.cloud.dbaas.client.it.cassandra.service.ServiceFilmRepository;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;
-import org.qubership.cloud.dbaas.client.management.classifier.DbaasClassifierFactory;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.database.type.CassandraDBType;
+import com.netcracker.cloud.dbaas.client.config.EnableDbaasCassandra;
+import com.netcracker.cloud.dbaas.client.it.cassandra.config.CassandraTestConfiguration;
+import com.netcracker.cloud.dbaas.client.it.cassandra.config.CassandraTestContainer;
+import com.netcracker.cloud.dbaas.client.it.cassandra.config.DataInitializePostConnectProcessor;
+import com.netcracker.cloud.dbaas.client.it.cassandra.config.ServiceDataAccessConfiguration;
+import com.netcracker.cloud.dbaas.client.it.cassandra.service.ServiceFilm;
+import com.netcracker.cloud.dbaas.client.it.cassandra.service.ServiceFilmRepository;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaasClassifierFactory;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

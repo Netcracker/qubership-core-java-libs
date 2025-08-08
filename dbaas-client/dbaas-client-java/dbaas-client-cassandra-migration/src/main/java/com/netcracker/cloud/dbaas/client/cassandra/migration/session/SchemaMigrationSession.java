@@ -8,14 +8,14 @@ import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import com.datastax.oss.driver.api.core.cql.Statement;
 import com.datastax.oss.driver.api.core.metadata.Metadata;
-import org.qubership.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.SchemaAgreementSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.SchemaAgreementSettings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.*;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.*;
 
 
 @Slf4j

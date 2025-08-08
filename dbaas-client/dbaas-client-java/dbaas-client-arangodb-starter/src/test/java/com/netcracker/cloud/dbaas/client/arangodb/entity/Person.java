@@ -4,7 +4,7 @@ package com.netcracker.cloud.dbaas.client.arangodb.entity;
 import com.arangodb.springframework.annotation.ArangoId;
 import com.arangodb.springframework.annotation.Document;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.qubership.cloud.dbaas.client.arangodb.test.configuration.PersonSerializer;
+import com.netcracker.cloud.dbaas.client.arangodb.test.configuration.PersonSerializer;
 import lombok.Data;
 import lombok.ToString;
 

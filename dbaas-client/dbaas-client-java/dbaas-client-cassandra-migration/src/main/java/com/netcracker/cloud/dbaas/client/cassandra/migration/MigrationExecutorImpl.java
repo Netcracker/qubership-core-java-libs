@@ -1,17 +1,17 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration;
 
 import com.datastax.oss.driver.api.core.CqlSession;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.SchemaMigrationPreparationService;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.SchemaVersionResourceReader;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.SchemaVersionResourceReaderImpl;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.extension.AlreadyMigratedVersionsExtensionPoint;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinderRegistry;
-import org.qubership.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.SchemaMigrationPreparationService;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.SchemaVersionResourceReader;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.SchemaVersionResourceReaderImpl;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.extension.AlreadyMigratedVersionsExtensionPoint;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinderRegistry;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.MIGRATION_LOG_PREFIX;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.MIGRATION_LOG_PREFIX;
 
 @AllArgsConstructor
 @Slf4j

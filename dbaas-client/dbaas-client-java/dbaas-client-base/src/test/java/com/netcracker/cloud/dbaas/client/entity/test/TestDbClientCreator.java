@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.entity.test;
 
-import org.qubership.cloud.dbaas.client.management.DatabaseClientCreator;
+import com.netcracker.cloud.dbaas.client.management.DatabaseClientCreator;
 
 public class TestDbClientCreator implements DatabaseClientCreator<TestDatabase, TestConnectorSettings> {
 

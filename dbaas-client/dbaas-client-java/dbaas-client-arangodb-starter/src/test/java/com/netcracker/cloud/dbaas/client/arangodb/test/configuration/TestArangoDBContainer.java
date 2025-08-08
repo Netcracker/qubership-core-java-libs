@@ -14,7 +14,7 @@ import org.testcontainers.utility.TestcontainersConfiguration;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.qubership.cloud.dbaas.client.arangodb.test.ArangoTestCommon.*;
+import static com.netcracker.cloud.dbaas.client.arangodb.test.ArangoTestCommon.*;
 
 public class TestArangoDBContainer extends GenericContainer<TestArangoDBContainer> {
     private static final DockerImageName ARANGODB_IMAGE = DockerImageName.parse("arangodb/arangodb:3.11.10");

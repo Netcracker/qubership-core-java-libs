@@ -1,12 +1,12 @@
 package com.netcracker.cloud.dbaas.client.opensearch.config;
 
-import org.qubership.cloud.dbaas.client.entity.database.DatabaseSettings;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.dbaas.client.management.classifier.DbaasClassifierFactory;
-import org.qubership.cloud.dbaas.client.opensearch.DbaasOpensearchClient;
-import org.qubership.cloud.dbaas.client.opensearch.DbaasOpensearchClientImpl;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchProperties;
+import com.netcracker.cloud.dbaas.client.entity.database.DatabaseSettings;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaasClassifierFactory;
+import com.netcracker.cloud.dbaas.client.opensearch.DbaasOpensearchClient;
+import com.netcracker.cloud.dbaas.client.opensearch.DbaasOpensearchClientImpl;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

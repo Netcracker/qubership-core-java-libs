@@ -1,12 +1,12 @@
 package com.netcracker.cloud.dbaas.client.redis.connection;
 
-import org.qubership.cloud.framework.contexts.tenant.context.TenantContext;
-import org.qubership.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;
-import org.qubership.cloud.dbaas.client.redis.test.configuration.MockedRedisDBConfiguration;
+import com.netcracker.cloud.framework.contexts.tenant.context.TenantContext;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.redis.test.configuration.MockedRedisDBConfiguration;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.qubership.cloud.dbaas.client.redis.test.RedisTestCommon;
+import com.netcracker.cloud.dbaas.client.redis.test.RedisTestCommon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.test.context.ContextConfiguration;

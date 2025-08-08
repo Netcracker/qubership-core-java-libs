@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.entity.database;
 
-import org.qubership.cloud.dbaas.client.entity.test.TestDBConnection;
-import org.qubership.cloud.dbaas.client.entity.test.TestDatabase;
+import com.netcracker.cloud.dbaas.client.entity.test.TestDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.test.TestDatabase;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;

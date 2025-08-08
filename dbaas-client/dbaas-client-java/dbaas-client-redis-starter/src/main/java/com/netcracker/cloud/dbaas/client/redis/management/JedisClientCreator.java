@@ -1,9 +1,9 @@
 package com.netcracker.cloud.dbaas.client.redis.management;
 
-import org.qubership.cloud.dbaas.client.management.DatabaseClientCreator;
-import org.qubership.cloud.dbaas.client.redis.entity.connection.RedisDBConnection;
-import org.qubership.cloud.dbaas.client.redis.entity.database.RedisConnectorSettings;
-import org.qubership.cloud.dbaas.client.redis.entity.database.RedisDatabase;
+import com.netcracker.cloud.dbaas.client.management.DatabaseClientCreator;
+import com.netcracker.cloud.dbaas.client.redis.entity.connection.RedisDBConnection;
+import com.netcracker.cloud.dbaas.client.redis.entity.database.RedisConnectorSettings;
+import com.netcracker.cloud.dbaas.client.redis.entity.database.RedisDatabase;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.JedisPoolConfig;

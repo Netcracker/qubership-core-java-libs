@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.entity.postgres;
 
-import org.qubership.cloud.dbaas.client.entity.database.type.DatabaseType;
+import com.netcracker.cloud.dbaas.client.entity.database.type.DatabaseType;
 
 /**
  * Test postgresql database type.

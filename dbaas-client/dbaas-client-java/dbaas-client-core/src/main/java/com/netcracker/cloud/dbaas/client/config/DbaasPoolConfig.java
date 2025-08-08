@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.config;
 
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.management.*;
-import org.qubership.cloud.dbaas.client.service.LogicalDbProvider;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.management.*;
+import com.netcracker.cloud.dbaas.client.service.LogicalDbProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +28,7 @@ public class DbaasPoolConfig {
 
         List<String> postProcessorsWithIllegalOrder = postProcessors != null ? postProcessors.stream()
                 .filter(postConnectProcessor -> postProcessorComparator.getPostprocessorOrder(postConnectProcessor) < 0)
-                .filter(postConnectProcessor -> !postConnectProcessor.getClass().getPackage().getName().startsWith("org.qubership.cloud.dbaas.client"))
+                .filter(postConnectProcessor -> !postConnectProcessor.getClass().getPackage().getName().startsWith("com.netcracker.cloud.dbaas.client"))
                 .map(postConnectProcessor -> postConnectProcessor.getClass().getName())
                 .collect(Collectors.toList()) : Collections.emptyList();
 

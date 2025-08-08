@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.entity.test;
 
-import org.qubership.cloud.dbaas.client.entity.database.DatabaseSettings;
+import com.netcracker.cloud.dbaas.client.entity.database.DatabaseSettings;
 import lombok.EqualsAndHashCode;
 
 import java.util.UUID;

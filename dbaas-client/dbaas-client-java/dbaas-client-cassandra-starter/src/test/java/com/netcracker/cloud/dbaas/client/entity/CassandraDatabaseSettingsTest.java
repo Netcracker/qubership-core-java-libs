@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.entity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;

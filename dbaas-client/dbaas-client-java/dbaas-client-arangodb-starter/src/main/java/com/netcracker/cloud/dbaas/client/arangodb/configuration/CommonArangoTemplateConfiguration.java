@@ -4,7 +4,7 @@ import com.arangodb.serde.ArangoSerde;
 import com.arangodb.springframework.config.ArangoConfiguration;
 import com.arangodb.springframework.core.convert.ArangoConverter;
 import com.arangodb.springframework.core.mapping.ArangoMappingContext;
-import org.qubership.cloud.dbaas.client.arangodb.util.ArangoTemplateCreationUtils;
+import com.netcracker.cloud.dbaas.client.arangodb.util.ArangoTemplateCreationUtils;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

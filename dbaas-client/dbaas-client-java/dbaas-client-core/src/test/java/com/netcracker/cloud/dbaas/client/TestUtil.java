@@ -3,7 +3,7 @@ package com.netcracker.cloud.dbaas.client;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.*;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.*;
 
 public class TestUtil {
 

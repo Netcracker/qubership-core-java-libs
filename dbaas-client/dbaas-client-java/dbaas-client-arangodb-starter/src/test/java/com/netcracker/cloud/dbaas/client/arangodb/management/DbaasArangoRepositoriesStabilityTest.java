@@ -1,10 +1,10 @@
 package com.netcracker.cloud.dbaas.client.arangodb.management;
 
 import com.arangodb.springframework.annotation.EnableArangoRepositories;
-import org.qubership.cloud.dbaas.client.arangodb.entity.Person;
-import org.qubership.cloud.dbaas.client.arangodb.repository.PersonRepository;
-import org.qubership.cloud.dbaas.client.arangodb.test.configuration.TestArangoDBConfiguration;
-import org.qubership.cloud.dbaas.client.arangodb.test.configuration.TestArangoDBContainer;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.Person;
+import com.netcracker.cloud.dbaas.client.arangodb.repository.PersonRepository;
+import com.netcracker.cloud.dbaas.client.arangodb.test.configuration.TestArangoDBConfiguration;
+import com.netcracker.cloud.dbaas.client.arangodb.test.configuration.TestArangoDBContainer;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {TestArangoDBConfiguration.class})
 @WebAppConfiguration
-@EnableArangoRepositories(basePackages = "org.qubership.cloud.dbaas.client.arangodb.repository")
+@EnableArangoRepositories(basePackages = "com.netcracker.cloud.dbaas.client.arangodb.repository")
 @TestPropertySource(properties = {
         "dbaas.arangodb.dbId=db-test-name-1"
 })

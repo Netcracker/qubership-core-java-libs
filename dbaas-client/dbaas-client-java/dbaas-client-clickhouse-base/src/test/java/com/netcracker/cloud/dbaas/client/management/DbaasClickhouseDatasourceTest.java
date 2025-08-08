@@ -2,10 +2,10 @@ package com.netcracker.cloud.dbaas.client.management;
 
 import com.clickhouse.jdbc.ClickHouseConnection;
 import com.clickhouse.jdbc.ClickHouseDataSource;
-import org.qubership.cloud.dbaas.client.entity.connection.ClickhouseConnection;
-import org.qubership.cloud.dbaas.client.entity.database.ClickhouseDatabase;
-import org.qubership.cloud.dbaas.client.entity.database.type.ClickhouseDBType;
-import org.qubership.cloud.dbaas.client.management.classifier.DbaaSClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.entity.connection.ClickhouseConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.ClickhouseDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.type.ClickhouseDBType;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSClassifierBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

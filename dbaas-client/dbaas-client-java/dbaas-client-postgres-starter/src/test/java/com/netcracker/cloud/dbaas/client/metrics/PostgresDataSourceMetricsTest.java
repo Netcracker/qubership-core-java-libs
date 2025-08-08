@@ -4,17 +4,17 @@ import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.dbaas.client.config.metrics.PostgresMetricsConfiguration;
-import org.qubership.cloud.dbaas.client.entity.database.PostgresDatabase;
-import org.qubership.cloud.dbaas.client.entity.database.type.PostgresDBType;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
-import org.qubership.cloud.dbaas.client.management.classifier.ServiceDbaaSClassifierBuilder;
-import org.qubership.cloud.dbaas.client.management.classifier.TenantDbaaSClassifierBuilder;
-import org.qubership.cloud.dbaas.client.testconfiguration.TestMicrometerConfiguration;
-import org.qubership.cloud.dbaas.client.testconfiguration.TestPostgresConfig;
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.dbaas.client.config.metrics.PostgresMetricsConfiguration;
+import com.netcracker.cloud.dbaas.client.entity.database.PostgresDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.type.PostgresDBType;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.management.DbaasDbClassifier;
+import com.netcracker.cloud.dbaas.client.management.classifier.ServiceDbaaSClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.management.classifier.TenantDbaaSClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.testconfiguration.TestMicrometerConfiguration;
+import com.netcracker.cloud.dbaas.client.testconfiguration.TestPostgresConfig;
+import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,9 +23,9 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.*;
-import static org.qubership.cloud.dbaas.client.metrics.DatabaseMetricProperties.CLASSIFIER_TAG_PREFIX;
-import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.*;
+import static com.netcracker.cloud.dbaas.client.metrics.DatabaseMetricProperties.CLASSIFIER_TAG_PREFIX;
+import static com.netcracker.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 @SpringBootTest(properties = {"dbaas.postgres.datasource.initializationFailTimeout=-1"})
 @ContextConfiguration(classes = {TestMicrometerConfiguration.class, TestPostgresConfig.class, PostgresMetricsConfiguration.class})

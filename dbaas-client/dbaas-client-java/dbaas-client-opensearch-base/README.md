@@ -18,7 +18,7 @@ Here are the steps describing how to use dbaas-client-opensearch-base library:
 1. Add maven dependency: 
     ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-opensearch-base</artifactId>
         <version>${dbaas-client-opensearch-base.version}</version>
     </dependency>

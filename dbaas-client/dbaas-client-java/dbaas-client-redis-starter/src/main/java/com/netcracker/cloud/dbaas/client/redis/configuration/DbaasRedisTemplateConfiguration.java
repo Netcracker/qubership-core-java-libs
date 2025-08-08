@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.SERVICE;
-import static org.qubership.cloud.dbaas.client.DbaasConst.TENANT;
-import static org.qubership.cloud.dbaas.client.redis.configuration.ServiceDbaasRedisConfiguration.SERVICE_DBAAS_REDIS_TEMPLATE;
-import static org.qubership.cloud.dbaas.client.redis.configuration.TenantDbaasRedisConfiguration.TENANT_DBAAS_REDIS_TEMPLATE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SERVICE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.TENANT;
+import static com.netcracker.cloud.dbaas.client.redis.configuration.ServiceDbaasRedisConfiguration.SERVICE_DBAAS_REDIS_TEMPLATE;
+import static com.netcracker.cloud.dbaas.client.redis.configuration.TenantDbaasRedisConfiguration.TENANT_DBAAS_REDIS_TEMPLATE;
 
 @Configuration
 public class DbaasRedisTemplateConfiguration {

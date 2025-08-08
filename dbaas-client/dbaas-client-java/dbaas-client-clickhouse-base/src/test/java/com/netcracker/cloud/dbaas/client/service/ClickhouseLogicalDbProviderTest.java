@@ -1,16 +1,16 @@
 package com.netcracker.cloud.dbaas.client.service;
 
-import org.qubership.cloud.dbaas.client.entity.connection.ClickhouseConnection;
-import org.qubership.cloud.dbaas.client.entity.database.ClickhouseDatabase;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.entity.connection.ClickhouseConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.ClickhouseDatabase;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.SortedMap;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.ADMIN_ROLE;
-import static org.qubership.cloud.dbaas.client.service.ClickhouseLogicalDbProviderImpl.*;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.ADMIN_ROLE;
+import static com.netcracker.cloud.dbaas.client.service.ClickhouseLogicalDbProviderImpl.*;
 
 class ClickhouseLogicalDbProviderTest {
     @Test

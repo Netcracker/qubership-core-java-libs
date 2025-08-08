@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.entity.settings;
 
-import org.qubership.cloud.dbaas.client.entity.database.DatabaseSettings;
+import com.netcracker.cloud.dbaas.client.entity.database.DatabaseSettings;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

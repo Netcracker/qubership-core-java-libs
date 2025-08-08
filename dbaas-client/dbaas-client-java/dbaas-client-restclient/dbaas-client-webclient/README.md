@@ -25,7 +25,7 @@ In case you need to use this library explicitly, then follow the steps:
 1. Add library to your dependencies section of pom.xml: 
     ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-webclient</artifactId>
         <version>${dbaas-client-webclient.version}</version>
     </dependency>
@@ -33,7 +33,7 @@ In case you need to use this library explicitly, then follow the steps:
     Where `${dbaas-client-webclient.version}` is the latest release version
     
     Omit tag `version` if you use [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md). if you use [qubership-springboot-starter-parent](https://<github link todo>/DEMO.Platform.Saas_Cloud_Catalog/springboot-starter) or [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md).
-2. Enable Spring component-scan for package `org.qubership.cloud.dbaas.client.restclient` to locate `dbaasRestClient` bean automatically 
+2. Enable Spring component-scan for package `com.netcracker.cloud.dbaas.client.restclient` to locate `dbaasRestClient` bean automatically 
     or import `DbaasWebClientConfiguration` class in your configuration. 
 
 Now `dbaasRestClient` bean will be registered in your application context and used by all the database-specific starters you use. 

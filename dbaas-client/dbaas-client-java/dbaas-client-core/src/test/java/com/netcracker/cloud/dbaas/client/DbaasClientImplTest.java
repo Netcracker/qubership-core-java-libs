@@ -1,15 +1,15 @@
 package com.netcracker.cloud.dbaas.client;
 
-import org.qubership.cloud.dbaas.client.entity.GetDatabaseByClassifierRequest;
-import org.qubership.cloud.dbaas.client.entity.PhysicalDatabaseDescription;
-import org.qubership.cloud.dbaas.client.entity.PhysicalDatabases;
-import org.qubership.cloud.dbaas.client.entity.database.type.DatabaseType;
-import org.qubership.cloud.dbaas.client.entity.postgres.PostgresDBConnection;
-import org.qubership.cloud.dbaas.client.entity.postgres.PostgresDatabase;
-import org.qubership.cloud.restclient.HttpMethod;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
-import org.qubership.cloud.restclient.entity.RestClientResponseEntity;
-import org.qubership.cloud.restclient.exception.MicroserviceRestClientResponseException;
+import com.netcracker.cloud.dbaas.client.entity.GetDatabaseByClassifierRequest;
+import com.netcracker.cloud.dbaas.client.entity.PhysicalDatabaseDescription;
+import com.netcracker.cloud.dbaas.client.entity.PhysicalDatabases;
+import com.netcracker.cloud.dbaas.client.entity.database.type.DatabaseType;
+import com.netcracker.cloud.dbaas.client.entity.postgres.PostgresDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.postgres.PostgresDatabase;
+import com.netcracker.cloud.restclient.HttpMethod;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.restclient.entity.RestClientResponseEntity;
+import com.netcracker.cloud.restclient.exception.MicroserviceRestClientResponseException;
 import lombok.NoArgsConstructor;
 
 import org.apache.hc.core5.http.HttpStatus;
@@ -30,12 +30,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.qubership.cloud.dbaas.client.DbaasClientApiConst.ASYNC_CREATE_DATABASE_TEMPLATE_ENDPOINT;
-import static org.qubership.cloud.dbaas.client.DbaasClientApiConst.GET_CONNECTION_TEMPLATE_ENDPOINT;
-import static org.qubership.cloud.dbaas.client.DbaasClientApiConst.GET_PHYSICAL_DATABASES_TEMPLATE_ENDPOINT;
-import static org.qubership.cloud.dbaas.client.DbaasConst.SCOPE;
-import static org.qubership.cloud.dbaas.client.DbaasConst.SERVICE;
-import static org.qubership.cloud.dbaas.client.entity.database.type.PhysicalDbType.POSTGRESQL;
+import static com.netcracker.cloud.dbaas.client.DbaasClientApiConst.ASYNC_CREATE_DATABASE_TEMPLATE_ENDPOINT;
+import static com.netcracker.cloud.dbaas.client.DbaasClientApiConst.GET_CONNECTION_TEMPLATE_ENDPOINT;
+import static com.netcracker.cloud.dbaas.client.DbaasClientApiConst.GET_PHYSICAL_DATABASES_TEMPLATE_ENDPOINT;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SCOPE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SERVICE;
+import static com.netcracker.cloud.dbaas.client.entity.database.type.PhysicalDbType.POSTGRESQL;
 
 public class DbaasClientImplTest {
     private static final String DBAAS_TEST_HOST = "http://test.dbaas.host:8080";

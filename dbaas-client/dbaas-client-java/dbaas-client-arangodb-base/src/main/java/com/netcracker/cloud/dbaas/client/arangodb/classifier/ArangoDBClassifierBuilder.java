@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.arangodb.classifier;
 
-import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
-import org.qubership.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.management.DbaasDbClassifier;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;
 
 public class ArangoDBClassifierBuilder extends DbaaSChainClassifierBuilder {
     public static final String DB_ID_CLASSIFIER_PROPERTY = "dbId";

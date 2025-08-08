@@ -1,12 +1,12 @@
 package com.netcracker.cloud.dbaas.client.opensearch.metrics;
 
-import org.qubership.cloud.dbaas.client.metrics.DatabaseMetricProperties;
-import org.qubership.cloud.dbaas.client.opensearch.DbaasOpensearchClient;
-import org.qubership.cloud.dbaas.client.opensearch.config.DbaaSOpensearchConfigurationProperty;
-import org.qubership.cloud.dbaas.client.opensearch.config.DbaasOpensearchConfiguration;
-import org.qubership.cloud.dbaas.client.opensearch.config.metrics.DbaasOpensearchMetricsAutoConfiguration;
-import org.qubership.cloud.dbaas.client.opensearch.config.metrics.TestMicrometerConfiguration;
-import org.qubership.cloud.dbaas.client.opensearch.restclient.configuration.OpensearchTestConfiguration;
+import com.netcracker.cloud.dbaas.client.metrics.DatabaseMetricProperties;
+import com.netcracker.cloud.dbaas.client.opensearch.DbaasOpensearchClient;
+import com.netcracker.cloud.dbaas.client.opensearch.config.DbaaSOpensearchConfigurationProperty;
+import com.netcracker.cloud.dbaas.client.opensearch.config.DbaasOpensearchConfiguration;
+import com.netcracker.cloud.dbaas.client.opensearch.config.metrics.DbaasOpensearchMetricsAutoConfiguration;
+import com.netcracker.cloud.dbaas.client.opensearch.config.metrics.TestMicrometerConfiguration;
+import com.netcracker.cloud.dbaas.client.opensearch.restclient.configuration.OpensearchTestConfiguration;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;

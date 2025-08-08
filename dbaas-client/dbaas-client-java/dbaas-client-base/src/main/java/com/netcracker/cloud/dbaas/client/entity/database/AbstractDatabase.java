@@ -1,13 +1,13 @@
 package com.netcracker.cloud.dbaas.client.entity.database;
 
-import org.qubership.cloud.dbaas.client.entity.connection.DatabaseConnection;
+import com.netcracker.cloud.dbaas.client.entity.connection.DatabaseConnection;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 import java.util.SortedMap;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.*;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.*;
 
 
 @Data

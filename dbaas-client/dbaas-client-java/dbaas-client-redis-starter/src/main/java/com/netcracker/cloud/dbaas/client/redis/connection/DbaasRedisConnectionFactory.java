@@ -1,10 +1,10 @@
 package com.netcracker.cloud.dbaas.client.redis.connection;
 
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;
-import org.qubership.cloud.dbaas.client.redis.entity.database.RedisDatabase;
-import org.qubership.cloud.dbaas.client.redis.entity.database.type.RedisDBType;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.redis.entity.database.RedisDatabase;
+import com.netcracker.cloud.dbaas.client.redis.entity.database.type.RedisDBType;
 import lombok.AllArgsConstructor;
 
 import org.springframework.dao.DataAccessException;

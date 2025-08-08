@@ -1,20 +1,20 @@
 package com.netcracker.cloud.dbaas.client.opensearch.restclient.configuration;
 
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.management.PostConnectProcessor;
-import org.qubership.cloud.dbaas.client.metrics.DatabaseMetricProperties;
-import org.qubership.cloud.dbaas.client.metrics.DbaaSMetricsRegistrar;
-import org.qubership.cloud.dbaas.client.opensearch.config.DbaaSOpensearchConfigurationProperty;
-import org.qubership.cloud.dbaas.client.opensearch.config.EnableDbaasOpensearch;
-import org.qubership.cloud.dbaas.client.opensearch.config.metrics.TestMicrometerConfiguration;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchDBType;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchIndex;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchIndexConnection;
-import org.qubership.cloud.dbaas.client.opensearch.management.OpensearchPostConnectProcessor;
-import org.qubership.cloud.dbaas.client.opensearch.DefaultDbaasOpensearchClientBuilderCustomizer;
-import org.qubership.cloud.dbaas.client.opensearch.metrics.OpensearchClientRequestsSecondsObservationHandler;
-import org.qubership.cloud.dbaas.client.opensearch.metrics.OpensearchMetricsProvider;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.management.PostConnectProcessor;
+import com.netcracker.cloud.dbaas.client.metrics.DatabaseMetricProperties;
+import com.netcracker.cloud.dbaas.client.metrics.DbaaSMetricsRegistrar;
+import com.netcracker.cloud.dbaas.client.opensearch.config.DbaaSOpensearchConfigurationProperty;
+import com.netcracker.cloud.dbaas.client.opensearch.config.EnableDbaasOpensearch;
+import com.netcracker.cloud.dbaas.client.opensearch.config.metrics.TestMicrometerConfiguration;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchDBType;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchIndex;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchIndexConnection;
+import com.netcracker.cloud.dbaas.client.opensearch.management.OpensearchPostConnectProcessor;
+import com.netcracker.cloud.dbaas.client.opensearch.DefaultDbaasOpensearchClientBuilderCustomizer;
+import com.netcracker.cloud.dbaas.client.opensearch.metrics.OpensearchClientRequestsSecondsObservationHandler;
+import com.netcracker.cloud.dbaas.client.opensearch.metrics.OpensearchMetricsProvider;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.http.HttpHost;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.*;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 

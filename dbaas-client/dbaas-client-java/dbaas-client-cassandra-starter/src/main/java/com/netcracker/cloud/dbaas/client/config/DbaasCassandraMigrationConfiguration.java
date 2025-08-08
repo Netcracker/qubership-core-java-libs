@@ -1,16 +1,16 @@
 package com.netcracker.cloud.dbaas.client.config;
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.MigrationExecutorImpl;
-import org.qubership.cloud.dbaas.client.cassandra.migration.MigrationExecutor;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.*;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.ak.AmazonKeyspacesSettings;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.ak.TableStatusCheckSettings;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.SchemaVersionResourceReader;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.SchemaVersionResourceReaderImpl;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.extension.AlreadyMigratedVersionsExtensionPoint;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinderRegistry;
-import org.qubership.cloud.dbaas.client.config.properties.DbaasCassandraMigrationProperties;
-import org.qubership.cloud.dbaas.client.service.migration.SpringBootJarSchemaVersionResourceFinder;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.MigrationExecutorImpl;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.MigrationExecutor;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.*;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.ak.AmazonKeyspacesSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.ak.TableStatusCheckSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.SchemaVersionResourceReader;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.SchemaVersionResourceReaderImpl;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.extension.AlreadyMigratedVersionsExtensionPoint;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinderRegistry;
+import com.netcracker.cloud.dbaas.client.config.properties.DbaasCassandraMigrationProperties;
+import com.netcracker.cloud.dbaas.client.service.migration.SpringBootJarSchemaVersionResourceFinder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -19,11 +19,11 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.qubership.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinderRegistry.JAR_SCHEME;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinderRegistry.JAR_SCHEME;
 
 @Configuration
 @ConditionalOnProperty(value = "dbaas.cassandra.migration.enabled", havingValue = "true", matchIfMissing = true)
-@ConfigurationPropertiesScan("org.qubership.cloud.dbaas.client.config.properties")
+@ConfigurationPropertiesScan("com.netcracker.cloud.dbaas.client.config.properties")
 public class DbaasCassandraMigrationConfiguration {
 
     @Bean

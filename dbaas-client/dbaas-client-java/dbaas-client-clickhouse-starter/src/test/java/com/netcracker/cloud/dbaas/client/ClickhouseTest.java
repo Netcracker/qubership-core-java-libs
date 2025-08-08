@@ -12,7 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import static org.qubership.cloud.dbaas.client.config.DbaasClickhouseConfiguration.*;
+import static com.netcracker.cloud.dbaas.client.config.DbaasClickhouseConfiguration.*;
 
 @SpringBootTest
 @ContextConfiguration(classes = {ClickhouseTestContainerConfiguration.class,

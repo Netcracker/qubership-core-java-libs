@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.annotation;
 
-import org.qubership.cloud.dbaas.client.config.annotation.EnableDbaasClickhouseDatasourceBuilder;
-import org.qubership.cloud.dbaas.client.management.DbaasClickhouseDatasourceBuilder;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.dbaas.client.config.annotation.EnableDbaasClickhouseDatasourceBuilder;
+import com.netcracker.cloud.dbaas.client.management.DbaasClickhouseDatasourceBuilder;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

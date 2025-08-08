@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.entity.test;
 
-import org.qubership.cloud.dbaas.client.entity.connection.DatabaseConnection;
+import com.netcracker.cloud.dbaas.client.entity.connection.DatabaseConnection;
 import lombok.Getter;
 import lombok.Setter;
 

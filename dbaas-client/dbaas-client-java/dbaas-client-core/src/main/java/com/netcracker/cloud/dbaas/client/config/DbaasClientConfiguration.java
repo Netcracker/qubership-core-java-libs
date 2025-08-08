@@ -1,11 +1,11 @@
 package com.netcracker.cloud.dbaas.client.config;
 
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.DbaasClientImpl;
-import org.qubership.cloud.dbaas.client.exceptions.DatabaseNotReadyException;
-import org.qubership.cloud.dbaas.client.management.classifier.DbaasClassifierFactory;
-import org.qubership.cloud.dbaas.client.util.RetryTemplateUtils;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.DbaasClientImpl;
+import com.netcracker.cloud.dbaas.client.exceptions.DatabaseNotReadyException;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaasClassifierFactory;
+import com.netcracker.cloud.dbaas.client.util.RetryTemplateUtils;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import org.springframework.retry.support.RetryTemplate;
 
 @Slf4j
 @Configuration
-@ComponentScan(basePackages = "org.qubership.cloud.dbaas.client.restclient") // For searching a dbaasRestClient bean
+@ComponentScan(basePackages = "com.netcracker.cloud.dbaas.client.restclient") // For searching a dbaasRestClient bean
 public class DbaasClientConfiguration {
 
     @Bean

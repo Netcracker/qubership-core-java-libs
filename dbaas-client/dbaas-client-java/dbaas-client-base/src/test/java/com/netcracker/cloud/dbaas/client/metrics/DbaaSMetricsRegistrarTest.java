@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.metrics;
 
-import org.qubership.cloud.dbaas.client.entity.test.TestDBType;
-import org.qubership.cloud.dbaas.client.exceptions.MetricsRegistrationException;
+import com.netcracker.cloud.dbaas.client.entity.test.TestDBType;
+import com.netcracker.cloud.dbaas.client.exceptions.MetricsRegistrationException;
 
 import org.junit.jupiter.api.Test;
 
@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.SCOPE;
-import static org.qubership.cloud.dbaas.client.DbaasConst.SERVICE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SCOPE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SERVICE;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;

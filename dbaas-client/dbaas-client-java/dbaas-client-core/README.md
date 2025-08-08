@@ -16,7 +16,7 @@ If you still decided to use dbaas-client-core, follow these steps:
 1. Add maven dependency: 
     ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-core</artifactId>
         <version>${dbaas-client-core.version}</version>
     </dependency>
@@ -26,7 +26,7 @@ If you still decided to use dbaas-client-core, follow these steps:
    if you use resstemplate:
    
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-resttemplate</artifactId>
         <version>{version}</version>
     </dependency>
@@ -35,7 +35,7 @@ If you still decided to use dbaas-client-core, follow these steps:
    if you use webclient:
    
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-webclient</artifactId>
         <version>{version}</version>
     </dependency>

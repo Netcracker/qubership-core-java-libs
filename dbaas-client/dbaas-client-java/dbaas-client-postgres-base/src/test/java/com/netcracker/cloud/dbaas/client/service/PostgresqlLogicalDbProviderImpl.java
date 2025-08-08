@@ -1,11 +1,11 @@
 package com.netcracker.cloud.dbaas.client.service;
 
-import org.qubership.cloud.dbaas.client.entity.database.PostgresDatabase;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.entity.database.PostgresDatabase;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
 
 import java.util.SortedMap;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.*;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.*;
 
 public class PostgresqlLogicalDbProviderImpl extends PostgresqlLogicalDbProvider {
     static final String URL = "url";

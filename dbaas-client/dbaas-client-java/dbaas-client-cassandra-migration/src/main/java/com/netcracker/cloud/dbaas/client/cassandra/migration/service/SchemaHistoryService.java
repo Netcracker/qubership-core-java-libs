@@ -1,14 +1,14 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration.service;
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromDb;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionMigrationResult;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionToApply;
-import org.qubership.cloud.dbaas.client.cassandra.migration.repository.SchemaHistoryRepository;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromDb;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionMigrationResult;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionToApply;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.repository.SchemaHistoryRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.*;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.*;
 
 @Slf4j
 public class SchemaHistoryService {

@@ -1,13 +1,13 @@
 package com.netcracker.cloud.dbaas.client.cassandra.it;
 
-import org.qubership.cloud.dbaas.client.cassandra.entity.DbaasCassandraMetricsProperties;
-import org.qubership.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperties;
-import org.qubership.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
-import org.qubership.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
-import org.qubership.cloud.dbaas.client.cassandra.metrics.CassandraMetricsProvider;
-import org.qubership.cloud.dbaas.client.cassandra.service.CassandraSessionBuilder;
-import org.qubership.cloud.dbaas.client.cassandra.service.DefaultDbaasCqlSessionBuilderCustomizer;
-import org.qubership.cloud.dbaas.client.metrics.DbaaSMetricsRegistrar;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.DbaasCassandraMetricsProperties;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperties;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
+import com.netcracker.cloud.dbaas.client.cassandra.metrics.CassandraMetricsProvider;
+import com.netcracker.cloud.dbaas.client.cassandra.service.CassandraSessionBuilder;
+import com.netcracker.cloud.dbaas.client.cassandra.service.DefaultDbaasCqlSessionBuilderCustomizer;
+import com.netcracker.cloud.dbaas.client.metrics.DbaaSMetricsRegistrar;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Metrics;
 
@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.SCOPE;
-import static org.qubership.cloud.dbaas.client.DbaasConst.SERVICE;
-import static org.qubership.cloud.dbaas.client.DbaasConst.TENANT;
-import static org.qubership.cloud.dbaas.client.DbaasConst.TENANT_ID;
-import static org.qubership.cloud.dbaas.client.metrics.DatabaseMetricProperties.CLASSIFIER_TAG_PREFIX;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SCOPE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SERVICE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.TENANT;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.TENANT_ID;
+import static com.netcracker.cloud.dbaas.client.metrics.DatabaseMetricProperties.CLASSIFIER_TAG_PREFIX;
 
 class CassandraContainerTests {
 

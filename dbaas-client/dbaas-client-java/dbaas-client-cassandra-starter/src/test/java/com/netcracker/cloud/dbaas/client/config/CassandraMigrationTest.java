@@ -2,15 +2,15 @@ package com.netcracker.cloud.dbaas.client.config;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
-import org.qubership.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
-import org.qubership.cloud.dbaas.client.cassandra.entity.database.type.CassandraDBType;
-import org.qubership.cloud.dbaas.client.config.container.CassandraContainerIntegrationConfiguration;
-import org.qubership.cloud.dbaas.client.config.container.CassandraContainerLogicalDbProvider;
-import org.qubership.cloud.dbaas.client.config.container.CassandraTestContainer;
-import org.qubership.cloud.dbaas.client.config.container.CassandraTestContainerConfiguration;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
-import org.qubership.cloud.dbaas.client.management.classifier.ServiceDbaaSClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.database.type.CassandraDBType;
+import com.netcracker.cloud.dbaas.client.config.container.CassandraContainerIntegrationConfiguration;
+import com.netcracker.cloud.dbaas.client.config.container.CassandraContainerLogicalDbProvider;
+import com.netcracker.cloud.dbaas.client.config.container.CassandraTestContainer;
+import com.netcracker.cloud.dbaas.client.config.container.CassandraTestContainerConfiguration;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.management.DbaasDbClassifier;
+import com.netcracker.cloud.dbaas.client.management.classifier.ServiceDbaaSClassifierBuilder;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

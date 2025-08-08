@@ -1,9 +1,9 @@
 package com.netcracker.cloud.dbaas.client.opensearch.metrics;
 
-import org.qubership.cloud.dbaas.client.exceptions.MetricsRegistrationException;
-import org.qubership.cloud.dbaas.client.metrics.DatabaseMetricProperties;
-import org.qubership.cloud.dbaas.client.opensearch.entity.DbaasOpensearchMetricsProperties;
-import org.qubership.cloud.dbaas.client.opensearch.entity.metrics.OpensearchClientRequestsSecondsMetricType;
+import com.netcracker.cloud.dbaas.client.exceptions.MetricsRegistrationException;
+import com.netcracker.cloud.dbaas.client.metrics.DatabaseMetricProperties;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.DbaasOpensearchMetricsProperties;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.metrics.OpensearchClientRequestsSecondsMetricType;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.httpcomponents.hc5.ObservationExecChainHandler;

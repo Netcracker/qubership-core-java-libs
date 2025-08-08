@@ -5,16 +5,16 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.isNull;
 import static org.mockito.Mockito.when;
 
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.DbaasClientImpl;
-import org.qubership.cloud.dbaas.client.arangodb.configuration.EnableTenantDbaasArangoDB;
-import org.qubership.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
-import org.qubership.cloud.restclient.HttpMethod;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
-import org.qubership.cloud.restclient.entity.RestClientResponseEntity;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.DbaasClientImpl;
+import com.netcracker.cloud.dbaas.client.arangodb.configuration.EnableTenantDbaasArangoDB;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
+import com.netcracker.cloud.restclient.HttpMethod;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.restclient.entity.RestClientResponseEntity;
 
 import org.mockito.Mockito;
-import org.qubership.cloud.dbaas.client.arangodb.test.ArangoTestCommon;
+import com.netcracker.cloud.dbaas.client.arangodb.test.ArangoTestCommon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;

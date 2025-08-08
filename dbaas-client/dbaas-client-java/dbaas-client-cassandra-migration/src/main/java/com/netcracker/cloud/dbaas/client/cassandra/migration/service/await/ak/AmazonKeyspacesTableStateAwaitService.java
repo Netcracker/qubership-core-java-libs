@@ -1,11 +1,11 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration.service.await.ak;
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.operation.TableOperation;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.ak.TableStatusCheckSettings;
-import org.qubership.cloud.dbaas.client.cassandra.migration.repository.AmazonKeyspacesMcsTablesRepository;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.await.TableStateAwaitService;
-import org.qubership.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.operation.TableOperation;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.ak.TableStatusCheckSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.repository.AmazonKeyspacesMcsTablesRepository;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.await.TableStateAwaitService;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.MIGRATION_LOG_PREFIX;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.MIGRATION_LOG_PREFIX;
 
 @Slf4j
 public class AmazonKeyspacesTableStateAwaitService implements TableStateAwaitService {

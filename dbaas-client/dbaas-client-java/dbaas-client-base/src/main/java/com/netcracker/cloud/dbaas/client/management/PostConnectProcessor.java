@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.management;
 
 
-import org.qubership.cloud.dbaas.client.entity.database.AbstractDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.AbstractDatabase;
 
 /**
  * PostProcessor to perform additional work for particular type of databases

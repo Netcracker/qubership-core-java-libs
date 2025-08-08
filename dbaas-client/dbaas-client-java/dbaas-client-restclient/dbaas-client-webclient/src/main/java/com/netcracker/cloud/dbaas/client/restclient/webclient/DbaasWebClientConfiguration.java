@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.restclient.webclient;
 
-import org.qubership.cloud.restclient.MicroserviceRestClient;
-import org.qubership.cloud.restclient.webclient.MicroserviceWebClient;
-import org.qubership.cloud.smartclient.config.annotation.EnableFrameworkWebClient;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.restclient.webclient.MicroserviceWebClient;
+import com.netcracker.cloud.smartclient.config.annotation.EnableFrameworkWebClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

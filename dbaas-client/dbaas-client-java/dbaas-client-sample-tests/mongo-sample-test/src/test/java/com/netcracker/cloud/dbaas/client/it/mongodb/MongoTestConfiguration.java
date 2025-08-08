@@ -1,9 +1,9 @@
 package com.netcracker.cloud.dbaas.client.it.mongodb;
 
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.entity.connection.MongoDBConnection;
-import org.qubership.cloud.dbaas.client.entity.database.MongoDatabase;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.entity.connection.MongoDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.MongoDatabase;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Primary;
 
 import java.util.HashMap;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.*;
-import static org.qubership.cloud.dbaas.client.it.mongodb.MongoTestContainer.*;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.*;
+import static com.netcracker.cloud.dbaas.client.it.mongodb.MongoTestContainer.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 

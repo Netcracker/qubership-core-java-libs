@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.management.classifier;
 
-import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
+import com.netcracker.cloud.dbaas.client.management.DbaasDbClassifier;
 
 public abstract class DbaaSChainClassifierBuilder implements DbaaSClassifierBuilder {
     private DbaasDbClassifier.Builder wrapped;

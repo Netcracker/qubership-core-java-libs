@@ -1,12 +1,12 @@
 package com.netcracker.cloud.dbaas.client.entity.database.type;
 
-import org.qubership.cloud.dbaas.client.entity.connection.MongoDBConnection;
-import org.qubership.cloud.dbaas.client.entity.database.MongoDatabase;
+import com.netcracker.cloud.dbaas.client.entity.connection.MongoDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.MongoDatabase;
 
-import static org.qubership.cloud.dbaas.client.entity.database.type.PhysicalDbType.MONGODB;
+import static com.netcracker.cloud.dbaas.client.entity.database.type.PhysicalDbType.MONGODB;
 
 /**
- * The class used to invoke the API of {@link org.qubership.cloud.dbaas.client.DbaasClient}
+ * The class used to invoke the API of {@link com.netcracker.cloud.dbaas.client.DbaasClient}
  * which can operate with mongodb database
  * <p>
  * usage example:

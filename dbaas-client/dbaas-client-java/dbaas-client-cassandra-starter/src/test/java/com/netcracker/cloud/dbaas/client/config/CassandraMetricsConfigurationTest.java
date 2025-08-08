@@ -1,13 +1,13 @@
 package com.netcracker.cloud.dbaas.client.config;
 
-import org.qubership.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperties;
-import org.qubership.cloud.dbaas.client.cassandra.entity.database.type.CassandraDBType;
-import org.qubership.cloud.dbaas.client.cassandra.metrics.CassandraMetricsProvider;
-import org.qubership.cloud.dbaas.client.config.container.CassandraContainerIntegrationConfiguration;
-import org.qubership.cloud.dbaas.client.config.container.CassandraTestContainerConfiguration;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
-import org.qubership.cloud.dbaas.client.management.classifier.ServiceDbaaSClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperties;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.database.type.CassandraDBType;
+import com.netcracker.cloud.dbaas.client.cassandra.metrics.CassandraMetricsProvider;
+import com.netcracker.cloud.dbaas.client.config.container.CassandraContainerIntegrationConfiguration;
+import com.netcracker.cloud.dbaas.client.config.container.CassandraTestContainerConfiguration;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.management.DbaasDbClassifier;
+import com.netcracker.cloud.dbaas.client.management.classifier.ServiceDbaaSClassifierBuilder;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 
@@ -25,10 +25,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.time.Duration;
 import java.util.List;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.SCOPE;
-import static org.qubership.cloud.dbaas.client.DbaasConst.SERVICE;
-import static org.qubership.cloud.dbaas.client.config.container.CassandraContainerIntegrationConfiguration.SERVICE_KEYSPACE;
-import static org.qubership.cloud.dbaas.client.metrics.DatabaseMetricProperties.CLASSIFIER_TAG_PREFIX;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SCOPE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SERVICE;
+import static com.netcracker.cloud.dbaas.client.config.container.CassandraContainerIntegrationConfiguration.SERVICE_KEYSPACE;
+import static com.netcracker.cloud.dbaas.client.metrics.DatabaseMetricProperties.CLASSIFIER_TAG_PREFIX;
 
 @EnableAutoConfiguration(exclude = CassandraAutoConfiguration.class)
 @ExtendWith(SpringExtension.class)

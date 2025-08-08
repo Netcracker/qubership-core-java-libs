@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.opensearch.restclient;
 
-import org.qubership.cloud.dbaas.client.opensearch.DbaasOpensearchClient;
-import org.qubership.cloud.dbaas.client.opensearch.restclient.configuration.OpensearchTestConfiguration;
+import com.netcracker.cloud.dbaas.client.opensearch.DbaasOpensearchClient;
+import com.netcracker.cloud.dbaas.client.opensearch.restclient.configuration.OpensearchTestConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +28,7 @@ import org.opensearch.client.opensearch.indices.get_index_template.IndexTemplate
 import org.opensearch.client.opensearch.indices.get_mapping.IndexMappingRecord;
 import org.opensearch.client.opensearch.indices.put_index_template.IndexTemplateMapping;
 import org.opensearch.client.opensearch.indices.update_aliases.Action;
-import org.qubership.cloud.dbaas.client.opensearch.config.DbaasOpensearchConfiguration;
+import com.netcracker.cloud.dbaas.client.opensearch.config.DbaasOpensearchConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.qubership.cloud.dbaas.client.opensearch.restclient.configuration.OpensearchTestConfiguration.*;
+import static com.netcracker.cloud.dbaas.client.opensearch.restclient.configuration.OpensearchTestConfiguration.*;
 
 @SpringBootTest
 @ContextConfiguration(classes = {OpensearchTestConfiguration.class})

@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.opensearch.metrics;
 
-import org.qubership.cloud.dbaas.client.metrics.DatabaseMetricProperties;
+import com.netcracker.cloud.dbaas.client.metrics.DatabaseMetricProperties;
 import io.micrometer.common.KeyValue;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.Meter;

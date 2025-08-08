@@ -1,11 +1,11 @@
 package com.netcracker.cloud.dbaas.client;
 
-import org.qubership.cloud.dbaas.client.exceptions.DbaasException;
-import org.qubership.cloud.dbaas.client.exceptions.DbaasUnavailableException;
-import org.qubership.cloud.restclient.HttpMethod;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
-import org.qubership.cloud.restclient.entity.RestClientResponseEntity;
-import org.qubership.cloud.restclient.exception.MicroserviceRestClientException;
+import com.netcracker.cloud.dbaas.client.exceptions.DbaasException;
+import com.netcracker.cloud.dbaas.client.exceptions.DbaasUnavailableException;
+import com.netcracker.cloud.restclient.HttpMethod;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.restclient.entity.RestClientResponseEntity;
+import com.netcracker.cloud.restclient.exception.MicroserviceRestClientException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +20,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.qubership.cloud.dbaas.client.DbaasClientApiConst.HEALTH_ENDPOINT;
+import static com.netcracker.cloud.dbaas.client.DbaasClientApiConst.HEALTH_ENDPOINT;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;

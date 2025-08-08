@@ -1,10 +1,10 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration.service;
 
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromResource;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.ak.AmazonKeyspacesSettings;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinderRegistry;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromResource;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.ak.AmazonKeyspacesSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinderRegistry;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

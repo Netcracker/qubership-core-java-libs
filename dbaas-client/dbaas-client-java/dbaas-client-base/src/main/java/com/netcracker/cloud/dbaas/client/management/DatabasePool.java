@@ -1,12 +1,12 @@
 package com.netcracker.cloud.dbaas.client.management;
 
 
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.DbaasConst;
-import org.qubership.cloud.dbaas.client.entity.database.AbstractConnectorSettings;
-import org.qubership.cloud.dbaas.client.entity.database.AbstractDatabase;
-import org.qubership.cloud.dbaas.client.entity.database.type.DatabaseType;
-import org.qubership.cloud.dbaas.client.service.LogicalDbProvider;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.DbaasConst;
+import com.netcracker.cloud.dbaas.client.entity.database.AbstractConnectorSettings;
+import com.netcracker.cloud.dbaas.client.entity.database.AbstractDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.type.DatabaseType;
+import com.netcracker.cloud.dbaas.client.service.LogicalDbProvider;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 

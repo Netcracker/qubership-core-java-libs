@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.opensearch.entity;
 
-import org.qubership.cloud.dbaas.client.opensearch.entity.metrics.OpensearchClientRequestsSecondsMetricsProperties;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.metrics.OpensearchClientRequestsSecondsMetricsProperties;
 import lombok.Data;
 
 @Data

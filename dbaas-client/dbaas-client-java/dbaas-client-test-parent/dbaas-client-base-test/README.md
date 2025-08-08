@@ -13,7 +13,7 @@ This is a plain java DBaaS client library that provides utility methods for your
 To set up the library, add the following dependencies to your `pom.xml`:
 ```xml
 <dependency>
-    <groupId>org.qubership.cloud</groupId>
+    <groupId>com.netcracker.cloud</groupId>
     <artifactId>dbaas-client-base-test</artifactId>
     <version>${dbaas-client-base-test.version}</version>
 </dependency>
@@ -23,7 +23,7 @@ To set up the library, add the following dependencies to your `pom.xml`:
 <dependencyManagement>
     <dependencies>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-bom</artifactId>
             <version>${dbaas-client-bom.version}</version>
             <type>pom</type>
@@ -33,7 +33,7 @@ To set up the library, add the following dependencies to your `pom.xml`:
 </dependencyManagement>
 
 <dependency>
-    <groupId>org.qubership.cloud</groupId>
+    <groupId>com.netcracker.cloud</groupId>
     <artifactId>dbaas-client-base-test</artifactId>
 </dependency>
 ```

@@ -5,11 +5,11 @@ import org.testcontainers.utility.TestcontainersConfiguration;
 
 import java.time.Duration;
 
-import static org.qubership.cloud.dbaas.client.test.container.MongoTestContainer.IMAGE_VERSION;
-import static org.qubership.cloud.dbaas.client.test.container.MongoTestContainer.MONGO_ADMIN_DB;
-import static org.qubership.cloud.dbaas.client.test.container.MongoTestContainer.MONGO_PORT;
-import static org.qubership.cloud.dbaas.client.test.container.MongoTestContainer.RYUK_CONTAINER_IMAGE;
-import static org.qubership.cloud.dbaas.client.test.container.MongoTestContainer.RYUK_CONTAINER_IMAGE_PROPERTY;
+import static com.netcracker.cloud.dbaas.client.test.container.MongoTestContainer.IMAGE_VERSION;
+import static com.netcracker.cloud.dbaas.client.test.container.MongoTestContainer.MONGO_ADMIN_DB;
+import static com.netcracker.cloud.dbaas.client.test.container.MongoTestContainer.MONGO_PORT;
+import static com.netcracker.cloud.dbaas.client.test.container.MongoTestContainer.RYUK_CONTAINER_IMAGE;
+import static com.netcracker.cloud.dbaas.client.test.container.MongoTestContainer.RYUK_CONTAINER_IMAGE_PROPERTY;
 
 /**
  * Test container for MongoDB with configured replica set (for support transactions)

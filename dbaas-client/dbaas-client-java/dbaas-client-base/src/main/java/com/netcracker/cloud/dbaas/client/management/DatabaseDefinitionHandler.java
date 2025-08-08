@@ -1,10 +1,10 @@
 package com.netcracker.cloud.dbaas.client.management;
 
 
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.annotaion.Role;
-import org.qubership.cloud.dbaas.client.entity.database.AbstractDatabase;
-import org.qubership.cloud.dbaas.client.entity.database.type.DatabaseType;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.annotaion.Role;
+import com.netcracker.cloud.dbaas.client.entity.database.AbstractDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.type.DatabaseType;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;

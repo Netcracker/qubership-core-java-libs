@@ -1,19 +1,19 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration.service;
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.operation.TableOperation;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.operation.TableOperationType;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
-import org.qubership.cloud.dbaas.client.cassandra.migration.repository.AbstractMetadataAwareCqlRepository;
-import org.qubership.cloud.dbaas.client.cassandra.migration.repository.SchemaMigrationPreparationRepository;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.await.TableStateAwaitService;
-import org.qubership.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.operation.TableOperation;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.operation.TableOperationType;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.repository.AbstractMetadataAwareCqlRepository;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.repository.SchemaMigrationPreparationRepository;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.await.TableStateAwaitService;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.*;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.*;
 
 @Slf4j
 public class SchemaMigrationPreparationService extends AbstractMetadataAwareCqlRepository {

@@ -1,15 +1,15 @@
 package com.netcracker.cloud.dbaas.client.opensearch.service;
 
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchIndex;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchIndexConnection;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchIndex;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchIndexConnection;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.ADMIN_ROLE;
-import static org.qubership.cloud.dbaas.client.opensearch.service.OpensearchLogicalDbProviderImpl.*;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.ADMIN_ROLE;
+import static com.netcracker.cloud.dbaas.client.opensearch.service.OpensearchLogicalDbProviderImpl.*;
 
 public class OpensearchLogicalDbProviderTest {
 

@@ -2,8 +2,8 @@ package com.netcracker.cloud.dbaas.client.cassandra.migration.repository;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.metadata.schema.KeyspaceMetadata;
-import org.qubership.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;
-import org.qubership.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
 
 public abstract class AbstractMetadataAwareCqlRepository extends AbstractCqlRepository {
     protected final KeyspaceMetadata keyspaceMetadata;

@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings;
 
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.DEFAULT_DEFINITIONS_RESOURCE_PATH;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.DEFAULT_DEFINITIONS_RESOURCE_PATH;
 
 /**
  * Schema migration template settings.

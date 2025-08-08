@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.cassandra.entity;
 
-import org.qubership.cloud.dbaas.client.cassandra.entity.metrics.NodeMetricsConfiguration;
-import org.qubership.cloud.dbaas.client.cassandra.entity.metrics.SessionMetricsConfiguration;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.metrics.NodeMetricsConfiguration;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.metrics.SessionMetricsConfiguration;
 import lombok.Data;
 
 @Data

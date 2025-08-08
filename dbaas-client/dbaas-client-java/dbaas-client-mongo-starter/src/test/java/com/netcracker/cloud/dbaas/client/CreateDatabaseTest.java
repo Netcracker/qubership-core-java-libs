@@ -1,18 +1,18 @@
 package com.netcracker.cloud.dbaas.client;
 
-import org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration;
-import org.qubership.cloud.dbaas.client.entity.DatabaseCreateRequest;
-import org.qubership.cloud.dbaas.client.entity.connection.MongoDBConnection;
-import org.qubership.cloud.dbaas.client.entity.database.MongoDatabase;
-import org.qubership.cloud.dbaas.client.entity.database.type.MongoDBType;
-import org.qubership.cloud.dbaas.client.management.DatabaseDefinitionHandler;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
-import org.qubership.cloud.dbaas.client.management.PostConnectProcessor;
-import org.qubership.cloud.dbaas.client.test.configuration.CreateDatabaseConfig;
-import org.qubership.cloud.restclient.HttpMethod;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
-import org.qubership.cloud.restclient.entity.RestClientResponseEntity;
+import com.netcracker.cloud.dbaas.client.config.DbaasMongoConfiguration;
+import com.netcracker.cloud.dbaas.client.entity.DatabaseCreateRequest;
+import com.netcracker.cloud.dbaas.client.entity.connection.MongoDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.MongoDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.type.MongoDBType;
+import com.netcracker.cloud.dbaas.client.management.DatabaseDefinitionHandler;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.management.DbaasDbClassifier;
+import com.netcracker.cloud.dbaas.client.management.PostConnectProcessor;
+import com.netcracker.cloud.dbaas.client.test.configuration.CreateDatabaseConfig;
+import com.netcracker.cloud.restclient.HttpMethod;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.restclient.entity.RestClientResponseEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
@@ -25,8 +25,8 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Arrays;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.*;
-import static org.qubership.cloud.dbaas.client.test.TestConstants.*;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.*;
+import static com.netcracker.cloud.dbaas.client.test.TestConstants.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 

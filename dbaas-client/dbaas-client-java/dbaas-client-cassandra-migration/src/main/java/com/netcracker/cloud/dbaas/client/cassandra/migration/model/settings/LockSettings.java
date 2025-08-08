@@ -2,7 +2,7 @@ package com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings;
 
 import java.time.Duration;
 
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.DEFAULT_SCHEMA_MIGRATION_LOCK_TABLE_NAME;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.DEFAULT_SCHEMA_MIGRATION_LOCK_TABLE_NAME;
 
 /**
  * Schema migration lock settings. Due to the Cassandra specific lock is acquired for the limited time period and then

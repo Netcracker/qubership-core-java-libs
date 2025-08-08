@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration.util;
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionContentChecksum;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionContentChecksum;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

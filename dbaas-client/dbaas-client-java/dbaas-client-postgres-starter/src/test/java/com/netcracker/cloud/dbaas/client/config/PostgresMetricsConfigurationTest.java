@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.config;
 
-import org.qubership.cloud.dbaas.client.config.metrics.PostgresMetricsConfiguration;
-import org.qubership.cloud.dbaas.client.metrics.MetricsProvider;
-import org.qubership.cloud.dbaas.client.testconfiguration.TestPostgresConfig;
+import com.netcracker.cloud.dbaas.client.config.metrics.PostgresMetricsConfiguration;
+import com.netcracker.cloud.dbaas.client.metrics.MetricsProvider;
+import com.netcracker.cloud.dbaas.client.testconfiguration.TestPostgresConfig;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.junit.jupiter.api.Test;

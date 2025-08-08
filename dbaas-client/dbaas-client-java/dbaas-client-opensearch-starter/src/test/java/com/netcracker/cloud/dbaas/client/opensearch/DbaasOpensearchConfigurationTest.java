@@ -1,16 +1,16 @@
 package com.netcracker.cloud.dbaas.client.opensearch;
 
-import org.qubership.cloud.framework.contexts.tenant.context.TenantContext;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.dbaas.client.opensearch.entity.*;
-import org.qubership.cloud.dbaas.client.opensearch.management.OpensearchPostConnectProcessor;
+import com.netcracker.cloud.framework.contexts.tenant.context.TenantContext;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.*;
+import com.netcracker.cloud.dbaas.client.opensearch.management.OpensearchPostConnectProcessor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.opensearch.client.opensearch.OpenSearchClient;
-import org.qubership.cloud.dbaas.client.opensearch.entity.*;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.qubership.cloud.dbaas.client.opensearch.config.DbaasOpensearchConfiguration.*;
+import static com.netcracker.cloud.dbaas.client.opensearch.config.DbaasOpensearchConfiguration.*;
 
 @SpringBootTest(properties = {
         "dbaas.api.opensearch.runtime-user-role=rw"

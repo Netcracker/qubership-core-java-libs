@@ -1,10 +1,10 @@
 package com.netcracker.cloud.dbaas.client.redis.test;
 
-import org.qubership.cloud.dbaas.client.config.MSInfoProvider;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.management.classifier.DbaasClassifierFactory;
-import org.qubership.cloud.dbaas.client.redis.entity.connection.RedisDBConnection;
-import org.qubership.cloud.dbaas.client.redis.entity.database.RedisDatabase;
+import com.netcracker.cloud.dbaas.client.config.MSInfoProvider;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaasClassifierFactory;
+import com.netcracker.cloud.dbaas.client.redis.entity.connection.RedisDBConnection;
+import com.netcracker.cloud.dbaas.client.redis.entity.database.RedisDatabase;
 
 public class RedisTestCommon {
     public static final String TEST_MICROSERVICE_NAME = "test-microservice";

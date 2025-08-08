@@ -1,11 +1,11 @@
 package com.netcracker.cloud.dbaas.client.config.msframeworkspecific;
 
 import com.mongodb.client.MongoClient;
-import org.qubership.cloud.dbaas.client.config.msframeworkspecific.testconfig.TestMongoDbConfiguration;
-import org.qubership.cloud.dbaas.client.entity.connection.MongoDBConnection;
-import org.qubership.cloud.dbaas.client.entity.database.MongoDatabase;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.config.msframeworkspecific.testconfig.TestMongoDbConfiguration;
+import com.netcracker.cloud.dbaas.client.entity.connection.MongoDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.MongoDatabase;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,12 +19,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.TreeMap;
 
-import static org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration.SERVICE_MONGO_DB_FACTORY;
+import static com.netcracker.cloud.dbaas.client.config.DbaasMongoConfiguration.SERVICE_MONGO_DB_FACTORY;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
-import static org.qubership.cloud.dbaas.client.config.msframeworkspecific.testconfig.TestMongoDbConfiguration.*;
+import static com.netcracker.cloud.dbaas.client.config.msframeworkspecific.testconfig.TestMongoDbConfiguration.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {TestMongoDbConfiguration.class}, properties = "dbaas.api.mongo.runtime-user-role=admin")

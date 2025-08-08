@@ -1,9 +1,9 @@
 package com.netcracker.cloud.dbaas.client;
 
-import org.qubership.cloud.dbaas.client.test.Person;
-import org.qubership.cloud.dbaas.client.test.PersonService;
-import org.qubership.cloud.dbaas.client.test.configuration.MongoTestContainerConfiguration;
-import org.qubership.cloud.dbaas.client.test.configuration.TestMongoRepositoriesConfiguration;
+import com.netcracker.cloud.dbaas.client.test.Person;
+import com.netcracker.cloud.dbaas.client.test.PersonService;
+import com.netcracker.cloud.dbaas.client.test.configuration.MongoTestContainerConfiguration;
+import com.netcracker.cloud.dbaas.client.test.configuration.TestMongoRepositoriesConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

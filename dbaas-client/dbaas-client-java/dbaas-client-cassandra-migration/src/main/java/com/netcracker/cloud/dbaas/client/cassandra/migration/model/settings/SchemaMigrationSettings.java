@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings;
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.ak.AmazonKeyspacesSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.ak.AmazonKeyspacesSettings;
 
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.DEFAULT_SCHEMA_HISTORY_TABLE_NAME;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.DEFAULT_SCHEMA_HISTORY_TABLE_NAME;
 
 /**
  * Schema migration settings. Use {@link SchemaMigrationSettingsBuilder} for creation.

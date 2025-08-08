@@ -1,9 +1,9 @@
 package com.netcracker.cloud.dbaas.client.management;
 
-import org.qubership.cloud.dbaas.client.entity.test.TestConnectorSettings;
-import org.qubership.cloud.dbaas.client.entity.test.TestDBConnection;
-import org.qubership.cloud.dbaas.client.entity.test.TestDatabase;
-import org.qubership.cloud.dbaas.client.entity.test.TestDbClientCreator;
+import com.netcracker.cloud.dbaas.client.entity.test.TestConnectorSettings;
+import com.netcracker.cloud.dbaas.client.entity.test.TestDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.test.TestDatabase;
+import com.netcracker.cloud.dbaas.client.entity.test.TestDbClientCreator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

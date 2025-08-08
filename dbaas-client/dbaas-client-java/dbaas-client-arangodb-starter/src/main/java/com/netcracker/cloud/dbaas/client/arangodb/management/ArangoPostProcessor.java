@@ -2,11 +2,11 @@ package com.netcracker.cloud.dbaas.client.arangodb.management;
 
 import com.arangodb.ArangoDB;
 import com.arangodb.serde.ArangoSerde;
-import org.qubership.cloud.dbaas.client.arangodb.configuration.DbaasArangoDBClientProperties;
-import org.qubership.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
-import org.qubership.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
-import org.qubership.cloud.dbaas.client.management.PostConnectProcessor;
-import org.qubership.cloud.security.core.utils.tls.TlsUtils;
+import com.netcracker.cloud.dbaas.client.arangodb.configuration.DbaasArangoDBClientProperties;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
+import com.netcracker.cloud.dbaas.client.management.PostConnectProcessor;
+import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

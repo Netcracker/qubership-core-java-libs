@@ -1,9 +1,9 @@
 package com.netcracker.cloud.dbaas.client.redis.test.configuration;
 
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.redis.entity.connection.RedisDBConnection;
-import org.qubership.cloud.dbaas.client.redis.entity.database.RedisDatabase;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.redis.entity.connection.RedisDBConnection;
+import com.netcracker.cloud.dbaas.client.redis.entity.database.RedisDatabase;
 import lombok.extern.slf4j.Slf4j;
 
 import org.mockito.Mockito;
@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Primary;
 
 import java.util.HashMap;
 
-import static org.qubership.cloud.dbaas.client.redis.test.RedisTestCommon.TEST_DB_PORT;
-import static org.qubership.cloud.dbaas.client.redis.test.RedisTestCommon.TEST_PASSWORD;
+import static com.netcracker.cloud.dbaas.client.redis.test.RedisTestCommon.TEST_DB_PORT;
+import static com.netcracker.cloud.dbaas.client.redis.test.RedisTestCommon.TEST_PASSWORD;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 

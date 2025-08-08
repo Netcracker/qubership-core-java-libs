@@ -1,11 +1,11 @@
 package com.netcracker.cloud.dbaas.client.service;
 
-import org.qubership.cloud.dbaas.client.entity.database.ClickhouseDatabase;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.entity.database.ClickhouseDatabase;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
 
 import java.util.SortedMap;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.ADMIN_ROLE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.ADMIN_ROLE;
 
 public class ClickhouseLogicalDbProviderImpl extends ClickhouseLogicalDbProvider {
     static final String URL = "url";

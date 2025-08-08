@@ -1,11 +1,11 @@
 package com.netcracker.cloud.dbaas.client.opensearch.config.metrics;
 
-import org.qubership.cloud.dbaas.client.config.MetricsConfiguration;
-import org.qubership.cloud.dbaas.client.metrics.MetricsProvider;
-import org.qubership.cloud.dbaas.client.opensearch.config.DbaaSOpensearchConfigurationProperty;
-import org.qubership.cloud.dbaas.client.opensearch.config.DbaasOpensearchConfiguration;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchIndex;
-import org.qubership.cloud.dbaas.client.opensearch.metrics.OpensearchMetricsProvider;
+import com.netcracker.cloud.dbaas.client.config.MetricsConfiguration;
+import com.netcracker.cloud.dbaas.client.metrics.MetricsProvider;
+import com.netcracker.cloud.dbaas.client.opensearch.config.DbaaSOpensearchConfigurationProperty;
+import com.netcracker.cloud.dbaas.client.opensearch.config.DbaasOpensearchConfiguration;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchIndex;
+import com.netcracker.cloud.dbaas.client.opensearch.metrics.OpensearchMetricsProvider;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;

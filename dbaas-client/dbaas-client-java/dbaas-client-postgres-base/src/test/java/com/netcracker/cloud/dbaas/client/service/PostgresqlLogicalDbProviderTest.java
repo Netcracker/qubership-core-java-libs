@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.service;
 
-import org.qubership.cloud.dbaas.client.entity.connection.PostgresDBConnection;
-import org.qubership.cloud.dbaas.client.entity.database.PostgresDatabase;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.entity.connection.PostgresDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.PostgresDatabase;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -10,10 +10,10 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.SortedMap;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.*;
-import static org.qubership.cloud.dbaas.client.service.PostgresqlLogicalDbProviderImpl.PASSWORD;
-import static org.qubership.cloud.dbaas.client.service.PostgresqlLogicalDbProviderImpl.URL;
-import static org.qubership.cloud.dbaas.client.service.PostgresqlLogicalDbProviderImpl.USERNAME;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.*;
+import static com.netcracker.cloud.dbaas.client.service.PostgresqlLogicalDbProviderImpl.PASSWORD;
+import static com.netcracker.cloud.dbaas.client.service.PostgresqlLogicalDbProviderImpl.URL;
+import static com.netcracker.cloud.dbaas.client.service.PostgresqlLogicalDbProviderImpl.USERNAME;
 
 public class PostgresqlLogicalDbProviderTest {
     @Test

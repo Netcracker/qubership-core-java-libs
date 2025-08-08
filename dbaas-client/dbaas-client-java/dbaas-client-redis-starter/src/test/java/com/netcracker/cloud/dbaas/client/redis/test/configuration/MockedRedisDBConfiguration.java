@@ -1,13 +1,13 @@
 package com.netcracker.cloud.dbaas.client.redis.test.configuration;
 
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.DbaasClientImpl;
-import org.qubership.cloud.dbaas.client.entity.DatabaseCreateRequest;
-import org.qubership.cloud.dbaas.client.redis.configuration.annotation.EnableDbaasRedis;
-import org.qubership.cloud.dbaas.client.redis.entity.database.RedisDatabase;
-import org.qubership.cloud.restclient.HttpMethod;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
-import org.qubership.cloud.restclient.entity.RestClientResponseEntity;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.DbaasClientImpl;
+import com.netcracker.cloud.dbaas.client.entity.DatabaseCreateRequest;
+import com.netcracker.cloud.dbaas.client.redis.configuration.annotation.EnableDbaasRedis;
+import com.netcracker.cloud.dbaas.client.redis.entity.database.RedisDatabase;
+import com.netcracker.cloud.restclient.HttpMethod;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.restclient.entity.RestClientResponseEntity;
 
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
@@ -21,11 +21,11 @@ import org.springframework.retry.support.RetryTemplate;
 
 import java.util.Map;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.SCOPE;
-import static org.qubership.cloud.dbaas.client.DbaasConst.SERVICE;
-import static org.qubership.cloud.dbaas.client.DbaasConst.TENANT;
-import static org.qubership.cloud.dbaas.client.DbaasConst.TENANT_ID;
-import static org.qubership.cloud.dbaas.client.redis.test.RedisTestCommon.*;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SCOPE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SERVICE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.TENANT;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.TENANT_ID;
+import static com.netcracker.cloud.dbaas.client.redis.test.RedisTestCommon.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.isNull;

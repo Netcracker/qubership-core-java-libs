@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>dbaas-client-spring-parent</artifactId>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <version>8.1.2-SNAPSHOT</version>
         <relativePath>./../dbaas-client-spring-parent/pom.xml</relativePath>
     </parent>
@@ -20,7 +20,7 @@
             <artifactId>httpclient5</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-base</artifactId>
         </dependency>
         <dependency>

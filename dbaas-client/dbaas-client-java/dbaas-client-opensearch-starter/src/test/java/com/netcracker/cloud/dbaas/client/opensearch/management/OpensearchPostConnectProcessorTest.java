@@ -1,12 +1,12 @@
 package com.netcracker.cloud.dbaas.client.opensearch.management;
 
-import org.qubership.cloud.dbaas.client.exceptions.DbaasException;
-import org.qubership.cloud.dbaas.client.metrics.DbaaSMetricsRegistrar;
-import org.qubership.cloud.dbaas.client.opensearch.DbaasOpensearchClientBuilderCustomizer;
-import org.qubership.cloud.dbaas.client.opensearch.config.DbaaSOpensearchConfigurationProperty;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchIndex;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchIndexConnection;
-import org.qubership.cloud.dbaas.client.opensearch.DefaultDbaasOpensearchClientBuilderCustomizer;
+import com.netcracker.cloud.dbaas.client.exceptions.DbaasException;
+import com.netcracker.cloud.dbaas.client.metrics.DbaaSMetricsRegistrar;
+import com.netcracker.cloud.dbaas.client.opensearch.DbaasOpensearchClientBuilderCustomizer;
+import com.netcracker.cloud.dbaas.client.opensearch.config.DbaaSOpensearchConfigurationProperty;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchIndex;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchIndexConnection;
+import com.netcracker.cloud.dbaas.client.opensearch.DefaultDbaasOpensearchClientBuilderCustomizer;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -1,13 +1,13 @@
 package com.netcracker.cloud.dbaas.client.config.msframeworkspecific.testconfig;
 
 import com.mongodb.client.MongoClients;
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.DbaasClientImpl;
-import org.qubership.cloud.dbaas.client.config.DefaultMSInfoProvider;
-import org.qubership.cloud.dbaas.client.config.EnableDbaasMongo;
-import org.qubership.cloud.dbaas.client.config.MSInfoProvider;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.DbaasClientImpl;
+import com.netcracker.cloud.dbaas.client.config.DefaultMSInfoProvider;
+import com.netcracker.cloud.dbaas.client.config.EnableDbaasMongo;
+import com.netcracker.cloud.dbaas.client.config.MSInfoProvider;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import de.bwaldvogel.mongo.MongoServer;
 import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
 import org.mockito.Mockito;
@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @Configuration
-@EnableMongoRepositories(basePackages = "org.qubership.cloud.dbaas.client.config.msframeworkspecific")
+@EnableMongoRepositories(basePackages = "com.netcracker.cloud.dbaas.client.config.msframeworkspecific")
 @EnableDbaasMongo
 public class TestMongoDbConfiguration {
 

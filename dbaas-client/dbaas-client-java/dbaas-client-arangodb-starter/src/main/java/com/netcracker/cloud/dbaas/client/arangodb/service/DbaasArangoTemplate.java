@@ -11,8 +11,8 @@ import com.arangodb.springframework.core.UserOperations;
 import com.arangodb.springframework.core.convert.ArangoConverter;
 import com.arangodb.springframework.core.convert.resolver.ResolverFactory;
 import com.arangodb.springframework.core.template.ArangoTemplate;
-import org.qubership.cloud.dbaas.client.arangodb.configuration.DbaasArangoDBConfigurationProperties;
-import org.qubership.cloud.dbaas.client.management.ArangoDatabaseProvider;
+import com.netcracker.cloud.dbaas.client.arangodb.configuration.DbaasArangoDBConfigurationProperties;
+import com.netcracker.cloud.dbaas.client.management.ArangoDatabaseProvider;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.BeansException;

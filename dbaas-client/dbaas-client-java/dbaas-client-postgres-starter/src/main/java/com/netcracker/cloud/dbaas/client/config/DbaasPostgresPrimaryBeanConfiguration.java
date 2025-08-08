@@ -9,9 +9,9 @@ import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.SERVICE;
-import static org.qubership.cloud.dbaas.client.DbaasConst.TENANT;
-import static org.qubership.cloud.dbaas.client.config.DbaasPostgresConfiguration.*;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SERVICE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.TENANT;
+import static com.netcracker.cloud.dbaas.client.config.DbaasPostgresConfiguration.*;
 
 @Configuration
 public class DbaasPostgresPrimaryBeanConfiguration {

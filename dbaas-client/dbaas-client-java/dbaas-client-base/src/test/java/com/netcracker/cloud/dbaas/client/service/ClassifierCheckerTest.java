@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.service;
 
-import org.qubership.cloud.dbaas.client.DbaasConst;
-import org.qubership.cloud.dbaas.client.exceptions.DbaaSClassifierNotValidException;
+import com.netcracker.cloud.dbaas.client.DbaasConst;
+import com.netcracker.cloud.dbaas.client.exceptions.DbaaSClassifierNotValidException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

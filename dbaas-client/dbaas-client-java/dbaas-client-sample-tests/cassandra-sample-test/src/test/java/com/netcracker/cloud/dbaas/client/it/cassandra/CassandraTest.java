@@ -4,13 +4,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.dbaas.client.config.EnableDbaasCassandra;
-import org.qubership.cloud.dbaas.client.it.cassandra.config.CassandraTestConfiguration;
-import org.qubership.cloud.dbaas.client.it.cassandra.config.DataInitializePostConnectProcessor;
-import org.qubership.cloud.dbaas.client.it.cassandra.config.ServiceDataAccessConfiguration;
-import org.qubership.cloud.dbaas.client.it.cassandra.config.TenantDataAccessConfiguration;
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.dbaas.client.config.EnableDbaasCassandra;
+import com.netcracker.cloud.dbaas.client.it.cassandra.config.CassandraTestConfiguration;
+import com.netcracker.cloud.dbaas.client.it.cassandra.config.DataInitializePostConnectProcessor;
+import com.netcracker.cloud.dbaas.client.it.cassandra.config.ServiceDataAccessConfiguration;
+import com.netcracker.cloud.dbaas.client.it.cassandra.config.TenantDataAccessConfiguration;
+import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,7 +26,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
+import static com.netcracker.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 
 @ExtendWith(SpringExtension.class)

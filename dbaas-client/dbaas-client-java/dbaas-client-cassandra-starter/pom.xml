@@ -6,14 +6,14 @@
 
     <parent>
         <artifactId>dbaas-client-spring-parent</artifactId>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <version>8.1.2-SNAPSHOT</version>
         <relativePath>./../dbaas-client-spring-parent/</relativePath>
     </parent>
 
     <dependencies>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-core</artifactId>
         </dependency>
         <dependency>
@@ -22,11 +22,11 @@
             <version>4.4.7</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-cassandra-base</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-cassandra-migration</artifactId>
         </dependency>
         <dependency>

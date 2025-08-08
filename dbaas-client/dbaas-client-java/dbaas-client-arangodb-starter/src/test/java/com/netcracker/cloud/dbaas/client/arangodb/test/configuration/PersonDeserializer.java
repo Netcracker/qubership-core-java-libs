@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.qubership.cloud.dbaas.client.arangodb.entity.Person;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.Person;
 
 import java.io.IOException;
 

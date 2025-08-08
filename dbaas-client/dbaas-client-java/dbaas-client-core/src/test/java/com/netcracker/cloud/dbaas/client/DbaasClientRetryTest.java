@@ -1,11 +1,11 @@
 package com.netcracker.cloud.dbaas.client;
 
-import org.qubership.cloud.dbaas.client.config.TestDbaasCoreConfiguration;
-import org.qubership.cloud.dbaas.client.exceptions.DbaasUnavailableException;
-import org.qubership.cloud.restclient.HttpMethod;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
-import org.qubership.cloud.restclient.exception.MicroserviceRestClientException;
-import org.qubership.cloud.restclient.exception.MicroserviceRestClientResponseException;
+import com.netcracker.cloud.dbaas.client.config.TestDbaasCoreConfiguration;
+import com.netcracker.cloud.dbaas.client.exceptions.DbaasUnavailableException;
+import com.netcracker.cloud.restclient.HttpMethod;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.restclient.exception.MicroserviceRestClientException;
+import com.netcracker.cloud.restclient.exception.MicroserviceRestClientResponseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

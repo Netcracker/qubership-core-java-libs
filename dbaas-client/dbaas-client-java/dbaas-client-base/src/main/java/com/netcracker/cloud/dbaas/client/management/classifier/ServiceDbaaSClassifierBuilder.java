@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.management.classifier;
 
-import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
+import com.netcracker.cloud.dbaas.client.management.DbaasDbClassifier;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.*;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.*;
 
 public class ServiceDbaaSClassifierBuilder extends DbaaSChainClassifierBuilder {
 

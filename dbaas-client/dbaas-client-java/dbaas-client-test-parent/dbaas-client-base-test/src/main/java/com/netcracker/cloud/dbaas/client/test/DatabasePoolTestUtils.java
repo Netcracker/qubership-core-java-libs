@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.test;
 
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
 
 import java.lang.reflect.Field;
 import java.util.Map;

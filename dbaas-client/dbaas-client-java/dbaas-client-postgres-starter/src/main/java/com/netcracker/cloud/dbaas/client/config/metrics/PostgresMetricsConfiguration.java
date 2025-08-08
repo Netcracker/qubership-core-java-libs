@@ -1,10 +1,10 @@
 package com.netcracker.cloud.dbaas.client.config.metrics;
 
-import org.qubership.cloud.dbaas.client.config.DbaasPostgresConfiguration;
-import org.qubership.cloud.dbaas.client.config.MetricsConfiguration;
-import org.qubership.cloud.dbaas.client.entity.database.PostgresDatabase;
-import org.qubership.cloud.dbaas.client.metrics.MetricsProvider;
-import org.qubership.cloud.dbaas.client.metrics.PostgresMetricsProvider;
+import com.netcracker.cloud.dbaas.client.config.DbaasPostgresConfiguration;
+import com.netcracker.cloud.dbaas.client.config.MetricsConfiguration;
+import com.netcracker.cloud.dbaas.client.entity.database.PostgresDatabase;
+import com.netcracker.cloud.dbaas.client.metrics.MetricsProvider;
+import com.netcracker.cloud.dbaas.client.metrics.PostgresMetricsProvider;
 import com.zaxxer.hikari.HikariDataSource;
 import io.micrometer.core.instrument.MeterRegistry;
 

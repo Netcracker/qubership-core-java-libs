@@ -2,8 +2,8 @@ package com.netcracker.cloud.dbaas.client.entity.database;
 
 import com.clickhouse.client.config.ClickHouseDefaults;
 import com.clickhouse.jdbc.ClickHouseDataSource;
-import org.qubership.cloud.dbaas.client.entity.connection.ClickhouseConnection;
-import org.qubership.cloud.dbaas.client.management.DatabaseClientCreator;
+import com.netcracker.cloud.dbaas.client.entity.connection.ClickhouseConnection;
+import com.netcracker.cloud.dbaas.client.management.DatabaseClientCreator;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;

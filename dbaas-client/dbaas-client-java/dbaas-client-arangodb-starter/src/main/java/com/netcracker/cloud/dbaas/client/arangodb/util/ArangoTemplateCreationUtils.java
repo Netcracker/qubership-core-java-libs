@@ -2,9 +2,9 @@ package com.netcracker.cloud.dbaas.client.arangodb.util;
 
 import com.arangodb.ArangoDB;
 import com.arangodb.springframework.config.ArangoConfiguration;
-import org.qubership.cloud.dbaas.client.arangodb.configuration.DbaasArangoDBConfigurationProperties;
-import org.qubership.cloud.dbaas.client.arangodb.service.DbaasArangoTemplate;
-import org.qubership.cloud.dbaas.client.management.ArangoDatabaseProvider;
+import com.netcracker.cloud.dbaas.client.arangodb.configuration.DbaasArangoDBConfigurationProperties;
+import com.netcracker.cloud.dbaas.client.arangodb.service.DbaasArangoTemplate;
+import com.netcracker.cloud.dbaas.client.management.ArangoDatabaseProvider;
 
 import org.springframework.context.ApplicationContext;
 

@@ -1,9 +1,9 @@
 package com.netcracker.cloud.dbaas.client.opensearch.service;
 
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchIndex;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchIndexConnection;
-import org.qubership.cloud.dbaas.client.service.LogicalDbProvider;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchIndex;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchIndexConnection;
+import com.netcracker.cloud.dbaas.client.service.LogicalDbProvider;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.Setter;
 
 import java.util.SortedMap;
 
-import static org.qubership.cloud.dbaas.client.opensearch.service.OpensearchLogicalDbProvider.OpensearchConnectionProperty;
+import static com.netcracker.cloud.dbaas.client.opensearch.service.OpensearchLogicalDbProvider.OpensearchConnectionProperty;
 
 public abstract class OpensearchLogicalDbProvider implements LogicalDbProvider<OpensearchConnectionProperty, OpensearchIndex> {
     protected static final String TYPE = "opensearch";

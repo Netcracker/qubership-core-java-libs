@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.config;
 
-import org.qubership.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

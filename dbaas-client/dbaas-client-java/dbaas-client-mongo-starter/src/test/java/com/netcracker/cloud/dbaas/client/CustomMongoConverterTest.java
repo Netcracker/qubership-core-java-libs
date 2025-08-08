@@ -6,10 +6,10 @@ import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.dbaas.client.test.configuration.MongoTestContainerConfiguration;
-import org.qubership.cloud.dbaas.client.test.configuration.TestMongoRepositoriesConfiguration;
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.dbaas.client.test.configuration.MongoTestContainerConfiguration;
+import com.netcracker.cloud.dbaas.client.test.configuration.TestMongoRepositoriesConfiguration;
+import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -32,8 +32,8 @@ import java.util.UUID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration.*;
-import static org.qubership.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
+import static com.netcracker.cloud.dbaas.client.config.DbaasMongoConfiguration.*;
+import static com.netcracker.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
 public class CustomMongoConverterTest {
     private static final UUID ENTITY_ID = UUID.fromString("6b81580f-9cae-458f-a3b5-08050129bc79");

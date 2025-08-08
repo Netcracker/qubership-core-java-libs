@@ -1,11 +1,11 @@
 package com.netcracker.cloud.dbaas.client.management;
 
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.config.annotation.EnableDbaasClickhouse;
-import org.qubership.cloud.dbaas.client.entity.connection.ClickhouseConnection;
-import org.qubership.cloud.dbaas.client.entity.database.ClickhouseDatabase;
-import org.qubership.cloud.dbaas.client.entity.database.type.ClickhouseDBType;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.config.annotation.EnableDbaasClickhouse;
+import com.netcracker.cloud.dbaas.client.entity.connection.ClickhouseConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.ClickhouseDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.type.ClickhouseDBType;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.ADMIN_ROLE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.ADMIN_ROLE;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 

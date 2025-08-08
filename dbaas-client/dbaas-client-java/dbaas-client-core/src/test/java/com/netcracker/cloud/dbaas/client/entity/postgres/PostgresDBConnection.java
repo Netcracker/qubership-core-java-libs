@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.entity.postgres;
 
 
-import org.qubership.cloud.dbaas.client.entity.connection.DatabaseConnection;
+import com.netcracker.cloud.dbaas.client.entity.connection.DatabaseConnection;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;

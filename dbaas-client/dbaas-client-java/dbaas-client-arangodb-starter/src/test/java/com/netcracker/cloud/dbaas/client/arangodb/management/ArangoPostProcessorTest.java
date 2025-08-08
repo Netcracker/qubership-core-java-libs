@@ -3,10 +3,10 @@ package com.netcracker.cloud.dbaas.client.arangodb.management;
 import com.arangodb.ArangoDB;
 import com.arangodb.internal.config.ArangoConfig;
 import com.arangodb.serde.ArangoSerde;
-import org.qubership.cloud.dbaas.client.arangodb.configuration.DbaasArangoDBClientProperties;
-import org.qubership.cloud.dbaas.client.arangodb.configuration.DbaasArangoDBConfigurationProperties;
-import org.qubership.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
-import org.qubership.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
+import com.netcracker.cloud.dbaas.client.arangodb.configuration.DbaasArangoDBClientProperties;
+import com.netcracker.cloud.dbaas.client.arangodb.configuration.DbaasArangoDBConfigurationProperties;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.qubership.cloud.dbaas.client.arangodb.test.ArangoTestCommon.*;
+import static com.netcracker.cloud.dbaas.client.arangodb.test.ArangoTestCommon.*;
 
 public class ArangoPostProcessorTest {
 

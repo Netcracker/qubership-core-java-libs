@@ -6,7 +6,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
-import static org.qubership.cloud.dbaas.client.redis.test.RedisTestCommon.TEST_DB_PORT;
+import static com.netcracker.cloud.dbaas.client.redis.test.RedisTestCommon.TEST_DB_PORT;
 
 public class TestRedisContainer extends GenericContainer<TestRedisContainer> {
     private static final DockerImageName REDIS_IMAGE = DockerImageName.parse("redis:7.4.1-alpine3.20");

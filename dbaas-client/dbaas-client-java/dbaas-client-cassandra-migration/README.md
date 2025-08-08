@@ -9,7 +9,7 @@ This library supports migration for Cassandra databases.
 
     ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-cassandra-migration</artifactId>
         <version>last_version</version>
     </dependency>

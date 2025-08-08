@@ -1,13 +1,13 @@
 package com.netcracker.cloud.dbaas.client.cassandra.entity.database.type;
 
-import org.qubership.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
-import org.qubership.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
-import org.qubership.cloud.dbaas.client.entity.database.type.DatabaseType;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.type.DatabaseType;
 
-import static org.qubership.cloud.dbaas.client.entity.database.type.PhysicalDbType.CASSANDRA;
+import static com.netcracker.cloud.dbaas.client.entity.database.type.PhysicalDbType.CASSANDRA;
 
 /**
- * The class used to invoke the API of {@link org.qubership.cloud.dbaas.client.DbaasClient}
+ * The class used to invoke the API of {@link com.netcracker.cloud.dbaas.client.DbaasClient}
  * which can operate with cassandra database
  * <p>
  * usage example:

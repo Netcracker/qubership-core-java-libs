@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.management;
 
-import org.qubership.cloud.dbaas.client.entity.database.ClickhouseDatasourceConnectorSettings;
-import org.qubership.cloud.dbaas.client.entity.database.ClickhouseDiscriminator;
-import org.qubership.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.entity.database.ClickhouseDatasourceConnectorSettings;
+import com.netcracker.cloud.dbaas.client.entity.database.ClickhouseDiscriminator;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;
 
 import javax.sql.DataSource;
 import java.util.Properties;

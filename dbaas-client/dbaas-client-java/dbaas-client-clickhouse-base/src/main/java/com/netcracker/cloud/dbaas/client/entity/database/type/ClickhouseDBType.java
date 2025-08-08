@@ -1,9 +1,9 @@
 package com.netcracker.cloud.dbaas.client.entity.database.type;
 
-import org.qubership.cloud.dbaas.client.entity.connection.ClickhouseConnection;
-import org.qubership.cloud.dbaas.client.entity.database.ClickhouseDatabase;
+import com.netcracker.cloud.dbaas.client.entity.connection.ClickhouseConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.ClickhouseDatabase;
 
-import static org.qubership.cloud.dbaas.client.entity.database.type.PhysicalDbType.CLICKHOUSE;
+import static com.netcracker.cloud.dbaas.client.entity.database.type.PhysicalDbType.CLICKHOUSE;
 
 public class ClickhouseDBType extends DatabaseType<ClickhouseConnection, ClickhouseDatabase> {
 

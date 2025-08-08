@@ -1,16 +1,16 @@
 package com.netcracker.cloud.dbaas.client.opensearch;
 
-import org.qubership.cloud.dbaas.client.entity.database.DatabaseSettings;
-import org.qubership.cloud.dbaas.client.entity.database.type.DatabaseType;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
-import org.qubership.cloud.dbaas.client.management.classifier.DbaaSClassifierBuilder;
-import org.qubership.cloud.dbaas.client.opensearch.config.OpensearchConfig;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchDBType;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchDatabaseSettings;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchIndex;
-import org.qubership.cloud.dbaas.client.opensearch.entity.OpensearchIndexConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.DatabaseSettings;
+import com.netcracker.cloud.dbaas.client.entity.database.type.DatabaseType;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.management.DbaasDbClassifier;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.opensearch.config.OpensearchConfig;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchDBType;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchDatabaseSettings;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchIndex;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchIndexConnection;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Collections;
 import java.util.Objects;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.*;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.*;
 
 @Slf4j
 @AllArgsConstructor

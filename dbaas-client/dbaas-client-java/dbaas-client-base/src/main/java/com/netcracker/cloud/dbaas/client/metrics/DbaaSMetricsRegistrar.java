@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.metrics;
 
-import org.qubership.cloud.dbaas.client.entity.database.AbstractDatabase;
-import org.qubership.cloud.dbaas.client.entity.database.type.DatabaseType;
-import org.qubership.cloud.dbaas.client.exceptions.MetricsRegistrationException;
+import com.netcracker.cloud.dbaas.client.entity.database.AbstractDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.type.DatabaseType;
+import com.netcracker.cloud.dbaas.client.exceptions.MetricsRegistrationException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;

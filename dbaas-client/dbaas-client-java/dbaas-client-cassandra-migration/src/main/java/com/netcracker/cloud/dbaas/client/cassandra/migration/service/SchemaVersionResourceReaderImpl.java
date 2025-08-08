@@ -2,18 +2,18 @@ package com.netcracker.cloud.dbaas.client.cassandra.migration.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.qubership.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionContentChecksum;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromResource;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionSettings;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.VersionSettings;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinder;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinderRegistry;
-import org.qubership.cloud.dbaas.client.cassandra.migration.util.ResourceUtils;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionContentChecksum;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromResource;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.VersionSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinder;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinderRegistry;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.util.ResourceUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.maven.artifact.versioning.ComparableVersion;
-import org.qubership.cloud.dbaas.client.cassandra.migration.util.ChecksumUtils;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.util.ChecksumUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.Collections.emptyMap;
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.*;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.*;
 
 /**
  * Common resource reader implementation.

@@ -7,11 +7,11 @@ import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoaderBui
 import com.datastax.oss.driver.internal.core.loadbalancing.DcInferringLoadBalancingPolicy;
 import com.datastax.oss.driver.internal.core.ssl.DefaultSslEngineFactory;
 import com.datastax.oss.driver.internal.metrics.micrometer.MicrometerMetricsFactory;
-import org.qubership.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperties;
-import org.qubership.cloud.dbaas.client.cassandra.entity.metrics.MetricConfigurationParameters;
-import org.qubership.cloud.dbaas.client.cassandra.entity.metrics.NodeMetricsConfiguration;
-import org.qubership.cloud.dbaas.client.cassandra.entity.metrics.SessionMetricsConfiguration;
-import org.qubership.cloud.dbaas.client.cassandra.metrics.DbaasTaggingMetricIdGenerator;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperties;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.metrics.MetricConfigurationParameters;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.metrics.NodeMetricsConfiguration;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.metrics.SessionMetricsConfiguration;
+import com.netcracker.cloud.dbaas.client.cassandra.metrics.DbaasTaggingMetricIdGenerator;
 import jakarta.annotation.Priority;
 
 import java.time.Duration;

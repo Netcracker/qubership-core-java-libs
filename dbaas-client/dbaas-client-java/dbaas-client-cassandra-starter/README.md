@@ -18,7 +18,7 @@ This module can be included as a dependency directly to your microservice.
 1. Add dependencies to your pom.xml: 
     ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-cassandra-starter</artifactId>
         <version>${dbaas-client-cassandra-starter.version}</version>
     </dependency>
@@ -28,7 +28,7 @@ This module can be included as a dependency directly to your microservice.
    if you use resstemplate:
    
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-resttemplate</artifactId>
         <version>{version}</version>
     </dependency>
@@ -37,7 +37,7 @@ This module can be included as a dependency directly to your microservice.
    if you use webclient:
    
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-webclient</artifactId>
         <version>{version}</version>
     </dependency>
@@ -282,9 +282,9 @@ If for example your `V1.0__schema_migration.cql` script contains creation of `sa
 
 #### Custom migration implementation
 
-* It is possible to override migration implementation by registering your own bean implementing `org.qubership.cloud.dbaas.client.cassandra.migration.MigrationExecutor` interface.
+* It is possible to override migration implementation by registering your own bean implementing `com.netcracker.cloud.dbaas.client.cassandra.migration.MigrationExecutor` interface.
 In that case default migration logic provided by the library will be ignored.
-* It is also possible to use `org.qubership.cloud.dbaas.client.cassandra.migration.MigrationExecutorImpl` bean provided by dbaas-client-cassandra-migration library and if necessary override some functional bean(s) participated in the migration procedure. Refer to [cassandra migration guide](../dbaas-client-cassandra-migration/README.md).
+* It is also possible to use `com.netcracker.cloud.dbaas.client.cassandra.migration.MigrationExecutorImpl` bean provided by dbaas-client-cassandra-migration library and if necessary override some functional bean(s) participated in the migration procedure. Refer to [cassandra migration guide](../dbaas-client-cassandra-migration/README.md).
 
 
 ## Sample microservice

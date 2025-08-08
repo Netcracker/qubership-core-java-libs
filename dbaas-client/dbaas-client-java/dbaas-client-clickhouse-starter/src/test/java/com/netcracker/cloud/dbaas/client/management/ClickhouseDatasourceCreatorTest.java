@@ -1,9 +1,9 @@
 package com.netcracker.cloud.dbaas.client.management;
 
-import org.qubership.cloud.dbaas.client.entity.database.ClickhouseDatasourceCreator;
-import org.qubership.cloud.dbaas.client.entity.connection.ClickhouseConnection;
-import org.qubership.cloud.dbaas.client.entity.database.ClickhouseDatabase;
-import org.qubership.cloud.dbaas.client.entity.database.DbaasClickhouseDatasourceProperties;
+import com.netcracker.cloud.dbaas.client.entity.database.ClickhouseDatasourceCreator;
+import com.netcracker.cloud.dbaas.client.entity.connection.ClickhouseConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.ClickhouseDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.DbaasClickhouseDatasourceProperties;
 import org.junit.jupiter.api.Test;
 import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.ADMIN_ROLE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.ADMIN_ROLE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 

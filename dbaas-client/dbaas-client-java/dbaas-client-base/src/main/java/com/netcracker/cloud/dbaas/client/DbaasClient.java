@@ -1,12 +1,12 @@
 package com.netcracker.cloud.dbaas.client;
 
 
-import org.qubership.cloud.dbaas.client.entity.PhysicalDatabases;
-import org.qubership.cloud.dbaas.client.entity.database.AbstractDatabase;
-import org.qubership.cloud.dbaas.client.entity.database.type.DatabaseType;
-import org.qubership.cloud.dbaas.client.exceptions.DbaasException;
-import org.qubership.cloud.dbaas.client.exceptions.DbaasUnavailableException;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.entity.PhysicalDatabases;
+import com.netcracker.cloud.dbaas.client.entity.database.AbstractDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.type.DatabaseType;
+import com.netcracker.cloud.dbaas.client.exceptions.DbaasException;
+import com.netcracker.cloud.dbaas.client.exceptions.DbaasUnavailableException;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;

@@ -1,11 +1,11 @@
 package com.netcracker.cloud.dbaas.client.config;
 
 
-import org.qubership.cloud.dbaas.client.entity.DbaasApiProperties;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.dbaas.client.management.DbaasPostgresqlDatasourceBuilder;
-import org.qubership.cloud.dbaas.client.management.PostgresDatasourceCreator;
-import org.qubership.cloud.dbaas.client.metrics.DbaaSMetricsRegistrar;
+import com.netcracker.cloud.dbaas.client.entity.DbaasApiProperties;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.management.DbaasPostgresqlDatasourceBuilder;
+import com.netcracker.cloud.dbaas.client.management.PostgresDatasourceCreator;
+import com.netcracker.cloud.dbaas.client.metrics.DbaaSMetricsRegistrar;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

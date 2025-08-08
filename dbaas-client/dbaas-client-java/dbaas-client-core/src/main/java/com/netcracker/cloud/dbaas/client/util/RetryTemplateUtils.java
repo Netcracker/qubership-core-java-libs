@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.util;
 
-import org.qubership.cloud.dbaas.client.exceptions.DatabaseNotReadyException;
+import com.netcracker.cloud.dbaas.client.exceptions.DatabaseNotReadyException;
 
 import org.springframework.classify.BinaryExceptionClassifier;
 import org.springframework.retry.RetryPolicy;

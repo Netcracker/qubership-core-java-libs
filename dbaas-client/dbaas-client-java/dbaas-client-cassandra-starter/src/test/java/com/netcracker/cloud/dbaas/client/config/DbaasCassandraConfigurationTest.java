@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.config;
 
-import org.qubership.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperties;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperties;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,7 @@ import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.qubership.cloud.dbaas.client.config.DbaasCassandraConfiguration.*;
+import static com.netcracker.cloud.dbaas.client.config.DbaasCassandraConfiguration.*;
 
 @EnableDbaasCassandra
 @ExtendWith(SpringExtension.class)

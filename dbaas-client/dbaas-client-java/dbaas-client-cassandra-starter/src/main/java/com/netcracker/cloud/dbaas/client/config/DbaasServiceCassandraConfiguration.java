@@ -1,11 +1,11 @@
 package com.netcracker.cloud.dbaas.client.config;
 
-import org.qubership.cloud.dbaas.client.CassandraDbaaSSessionProxy;
-import org.qubership.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperties;
-import org.qubership.cloud.dbaas.client.entity.DbaasApiProperties;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.dbaas.client.management.classifier.DbaasClassifierFactory;
+import com.netcracker.cloud.dbaas.client.CassandraDbaaSSessionProxy;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperties;
+import com.netcracker.cloud.dbaas.client.entity.DbaasApiProperties;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaasClassifierFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -17,7 +17,7 @@ import org.springframework.data.cassandra.core.convert.CassandraConverter;
 
 import lombok.extern.slf4j.Slf4j;
 
-import static org.qubership.cloud.dbaas.client.config.DbaasCassandraConfiguration.SERVICE_CASSANDRA_TEMPLATE;
+import static com.netcracker.cloud.dbaas.client.config.DbaasCassandraConfiguration.SERVICE_CASSANDRA_TEMPLATE;
 
 @Configuration
 @Import(DbaasCassandraConfiguration.class)

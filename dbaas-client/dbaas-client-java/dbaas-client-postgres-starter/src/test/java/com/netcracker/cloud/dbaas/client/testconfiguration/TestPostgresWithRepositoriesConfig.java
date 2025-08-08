@@ -1,13 +1,13 @@
 package com.netcracker.cloud.dbaas.client.testconfiguration;
 
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.PersonService;
-import org.qubership.cloud.dbaas.client.config.EnableDbaasPostgresql;
-import org.qubership.cloud.dbaas.client.entity.connection.PostgresDBConnection;
-import org.qubership.cloud.dbaas.client.entity.database.PostgresDatabase;
-import org.qubership.cloud.dbaas.client.entity.database.type.PostgresDBType;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.PersonService;
+import com.netcracker.cloud.dbaas.client.config.EnableDbaasPostgresql;
+import com.netcracker.cloud.dbaas.client.entity.connection.PostgresDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.PostgresDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.type.PostgresDBType;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,13 +23,13 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import javax.sql.DataSource;
 import java.util.Properties;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.ADMIN_ROLE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.ADMIN_ROLE;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @Configuration
 @EnableDbaasPostgresql
-@EnableJpaRepositories(basePackages = "org.qubership.cloud.dbaas.client",
+@EnableJpaRepositories(basePackages = "com.netcracker.cloud.dbaas.client",
         entityManagerFactoryRef = "localContainerEntityManagerFactoryBean")
 public class TestPostgresWithRepositoriesConfig {
     int UNNECESSARY_URL_PARAMS_AMOUNT = 20;
@@ -80,7 +80,7 @@ public class TestPostgresWithRepositoriesConfig {
         entityManagerFactory.setDataSource(dataSource);
 
         // Classpath scanning of @Component, @Service, etc annotated class
-        entityManagerFactory.setPackagesToScan("org.qubership.cloud.dbaas.client");
+        entityManagerFactory.setPackagesToScan("com.netcracker.cloud.dbaas.client");
 
         // Vendor adapter
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();

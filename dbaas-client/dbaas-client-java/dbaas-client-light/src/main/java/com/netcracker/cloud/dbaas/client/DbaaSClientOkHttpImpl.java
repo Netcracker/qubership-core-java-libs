@@ -3,16 +3,16 @@ package com.netcracker.cloud.dbaas.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.qubership.cloud.dbaas.client.entity.ApiVersionInfo;
-import org.qubership.cloud.dbaas.client.entity.DatabaseCreateRequest;
-import org.qubership.cloud.dbaas.client.entity.GetDatabaseByClassifierRequest;
-import org.qubership.cloud.dbaas.client.entity.PhysicalDatabases;
-import org.qubership.cloud.dbaas.client.entity.database.AbstractDatabase;
-import org.qubership.cloud.dbaas.client.entity.database.type.DatabaseType;
-import org.qubership.cloud.dbaas.client.exceptions.DbaasException;
-import org.qubership.cloud.dbaas.client.exceptions.DbaasUnavailableException;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.service.ClassifierChecker;
+import com.netcracker.cloud.dbaas.client.entity.ApiVersionInfo;
+import com.netcracker.cloud.dbaas.client.entity.DatabaseCreateRequest;
+import com.netcracker.cloud.dbaas.client.entity.GetDatabaseByClassifierRequest;
+import com.netcracker.cloud.dbaas.client.entity.PhysicalDatabases;
+import com.netcracker.cloud.dbaas.client.entity.database.AbstractDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.type.DatabaseType;
+import com.netcracker.cloud.dbaas.client.exceptions.DbaasException;
+import com.netcracker.cloud.dbaas.client.exceptions.DbaasUnavailableException;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.service.ClassifierChecker;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 
-import static org.qubership.cloud.dbaas.client.DbaasClientApiConst.*;
+import static com.netcracker.cloud.dbaas.client.DbaasClientApiConst.*;
 
 @Slf4j
 public class DbaaSClientOkHttpImpl implements DbaasClient {

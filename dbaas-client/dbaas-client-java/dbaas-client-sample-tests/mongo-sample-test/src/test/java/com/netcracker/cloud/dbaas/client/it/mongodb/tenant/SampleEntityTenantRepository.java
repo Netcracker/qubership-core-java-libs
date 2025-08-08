@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.it.mongodb.tenant;
 
-import org.qubership.cloud.dbaas.client.it.mongodb.SampleEntity;
+import com.netcracker.cloud.dbaas.client.it.mongodb.SampleEntity;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

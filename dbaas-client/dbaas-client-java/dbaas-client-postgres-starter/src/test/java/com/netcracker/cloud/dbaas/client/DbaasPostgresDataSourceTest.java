@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client;
 
-import org.qubership.cloud.dbaas.client.testconfiguration.PostgresTestContainerConfiguration;
-import org.qubership.cloud.dbaas.client.testconfiguration.TestPostgresWithDatasourceConfig;
+import com.netcracker.cloud.dbaas.client.testconfiguration.PostgresTestContainerConfiguration;
+import com.netcracker.cloud.dbaas.client.testconfiguration.TestPostgresWithDatasourceConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;

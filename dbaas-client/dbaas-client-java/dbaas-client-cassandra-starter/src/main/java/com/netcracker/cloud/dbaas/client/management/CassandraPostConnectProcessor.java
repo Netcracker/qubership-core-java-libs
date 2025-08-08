@@ -1,9 +1,9 @@
 package com.netcracker.cloud.dbaas.client.management;
 
 import com.datastax.oss.driver.api.core.CqlSession;
-import org.qubership.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
-import org.qubership.cloud.dbaas.client.cassandra.migration.MigrationExecutor;
-import org.qubership.cloud.dbaas.client.cassandra.service.CassandraSessionBuilder;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.MigrationExecutor;
+import com.netcracker.cloud.dbaas.client.cassandra.service.CassandraSessionBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

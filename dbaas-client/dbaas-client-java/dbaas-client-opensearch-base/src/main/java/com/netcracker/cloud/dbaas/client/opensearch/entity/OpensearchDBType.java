@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.opensearch.entity;
 
-import org.qubership.cloud.dbaas.client.entity.database.type.DatabaseType;
+import com.netcracker.cloud.dbaas.client.entity.database.type.DatabaseType;
 
-import static org.qubership.cloud.dbaas.client.entity.database.type.PhysicalDbType.OPENSEARCH;
+import static com.netcracker.cloud.dbaas.client.entity.database.type.PhysicalDbType.OPENSEARCH;
 
 public class OpensearchDBType extends DatabaseType<OpensearchIndexConnection, OpensearchIndex> {
 

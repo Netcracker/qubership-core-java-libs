@@ -8,10 +8,10 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * The class used to invoke the API of {@link org.qubership.cloud.dbaas.client.DbaasClient}
+ * The class used to invoke the API of {@link com.netcracker.cloud.dbaas.client.DbaasClient}
  * which can operate with any type of database known to dbaas running behind it
  * <pre>
- * for usage example see {@link org.qubership.cloud.dbaas.client.entity.database.type.DatabaseType}
+ * for usage example see {@link com.netcracker.cloud.dbaas.client.entity.database.type.DatabaseType}
  * </pre>
  */
 @Getter

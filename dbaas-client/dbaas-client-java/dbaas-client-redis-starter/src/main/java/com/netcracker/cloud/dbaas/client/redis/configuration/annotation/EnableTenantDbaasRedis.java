@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.redis.configuration.annotation;
 
-import org.qubership.cloud.dbaas.client.redis.configuration.TenantDbaasRedisConfiguration;
+import com.netcracker.cloud.dbaas.client.redis.configuration.TenantDbaasRedisConfiguration;
 
 import org.springframework.context.annotation.Import;
 

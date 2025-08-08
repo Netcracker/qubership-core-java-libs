@@ -1,13 +1,13 @@
 package com.netcracker.cloud.dbaas.client.entity.database.type;
 
 
-import org.qubership.cloud.dbaas.client.entity.database.AbstractDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.AbstractDatabase;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 /**
- * The class used to invoke the API of {@link org.qubership.cloud.dbaas.client.DbaasClient}
+ * The class used to invoke the API of {@link com.netcracker.cloud.dbaas.client.DbaasClient}
  * which can operate with any type of database known to dbaas running behind this client
  *
  * usage example:

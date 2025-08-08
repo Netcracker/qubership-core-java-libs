@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.config.msframeworkspecific;
 
-import org.qubership.cloud.dbaas.client.config.EnableDbaasMongo;
-import org.qubership.cloud.dbaas.client.config.msframeworkspecific.testconfig.TestMongoDbConfiguration;
+import com.netcracker.cloud.dbaas.client.config.EnableDbaasMongo;
+import com.netcracker.cloud.dbaas.client.config.msframeworkspecific.testconfig.TestMongoDbConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

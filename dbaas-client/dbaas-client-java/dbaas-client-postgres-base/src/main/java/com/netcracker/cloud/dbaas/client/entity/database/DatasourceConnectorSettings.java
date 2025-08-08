@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.entity.database;
 
-import org.qubership.cloud.dbaas.client.service.flyway.FlywayRunner;
+import com.netcracker.cloud.dbaas.client.service.flyway.FlywayRunner;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.entity.postgres;
 
 
-import org.qubership.cloud.dbaas.client.entity.database.AbstractDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.AbstractDatabase;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

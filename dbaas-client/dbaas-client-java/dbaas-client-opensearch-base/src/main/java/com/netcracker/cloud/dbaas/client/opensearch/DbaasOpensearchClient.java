@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.opensearch;
 
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
 import org.opensearch.client.opensearch.OpenSearchClient;
 
 public interface DbaasOpensearchClient {

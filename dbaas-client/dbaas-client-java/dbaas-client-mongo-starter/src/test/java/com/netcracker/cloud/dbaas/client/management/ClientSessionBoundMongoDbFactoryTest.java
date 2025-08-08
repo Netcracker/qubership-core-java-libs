@@ -2,7 +2,7 @@ package com.netcracker.cloud.dbaas.client.management;
 
 import com.mongodb.ClientSessionOptions;
 import com.mongodb.client.ClientSession;
-import org.qubership.cloud.dbaas.client.entity.database.type.MongoDBType;
+import com.netcracker.cloud.dbaas.client.entity.database.type.MongoDBType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

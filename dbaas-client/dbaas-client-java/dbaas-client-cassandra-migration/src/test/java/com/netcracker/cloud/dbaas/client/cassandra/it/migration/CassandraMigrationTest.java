@@ -2,20 +2,20 @@ package com.netcracker.cloud.dbaas.client.cassandra.it.migration;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
-import org.qubership.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperties;
-import org.qubership.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
-import org.qubership.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
-import org.qubership.cloud.dbaas.client.cassandra.it.CassandraTestContainer;
-import org.qubership.cloud.dbaas.client.cassandra.metrics.CassandraMetricsProvider;
-import org.qubership.cloud.dbaas.client.cassandra.migration.MigrationExecutorImpl;
-import org.qubership.cloud.dbaas.client.cassandra.migration.MigrationExecutor;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.SchemaVersionResourceReader;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.SchemaVersionResourceReaderImpl;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinderRegistry;
-import org.qubership.cloud.dbaas.client.cassandra.service.CassandraSessionBuilder;
-import org.qubership.cloud.dbaas.client.cassandra.service.DefaultDbaasCqlSessionBuilderCustomizer;
-import org.qubership.cloud.dbaas.client.metrics.DbaaSMetricsRegistrar;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperties;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
+import com.netcracker.cloud.dbaas.client.cassandra.it.CassandraTestContainer;
+import com.netcracker.cloud.dbaas.client.cassandra.metrics.CassandraMetricsProvider;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.MigrationExecutorImpl;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.MigrationExecutor;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.SchemaVersionResourceReader;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.SchemaVersionResourceReaderImpl;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinderRegistry;
+import com.netcracker.cloud.dbaas.client.cassandra.service.CassandraSessionBuilder;
+import com.netcracker.cloud.dbaas.client.cassandra.service.DefaultDbaasCqlSessionBuilderCustomizer;
+import com.netcracker.cloud.dbaas.client.metrics.DbaaSMetricsRegistrar;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.SCOPE;
-import static org.qubership.cloud.dbaas.client.DbaasConst.SERVICE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SCOPE;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.SERVICE;
 
 class CassandraMigrationTest {
 

@@ -1,17 +1,17 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration;
 
 import com.datastax.oss.driver.api.core.DriverException;
-import org.qubership.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;
-import org.qubership.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationVersionProcessingException;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionMigrationResult;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionToApply;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.ak.AmazonKeyspacesSettings;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.CqlScriptParsingService;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.SchemaHistoryService;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.await.TableStateAwaitService;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.lock.MigrationLockService;
-import org.qubership.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationVersionProcessingException;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionMigrationResult;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionToApply;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.ak.AmazonKeyspacesSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.CqlScriptParsingService;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.SchemaHistoryService;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.await.TableStateAwaitService;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.lock.MigrationLockService;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.*;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.*;
 
 @Slf4j
 public class SchemaMigrationVersionProcessor {

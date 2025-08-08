@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration.repository;
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
-import org.qubership.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
 
 public class SchemaMigrationPreparationRepository extends AbstractCqlRepository {
     private static final String CREATE_LOCK_TABLE_QUERY = """

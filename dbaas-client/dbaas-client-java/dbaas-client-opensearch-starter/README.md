@@ -39,7 +39,7 @@ Since 5.0.0 version `dbaas-client-opensearch-renovated-starter` has been renamed
 1. Add dependencies to your pom.xml:
     ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-opensearch-starter</artifactId>
         <version>${dbaas-client-opensearch-starter.version}</version>
     </dependency>
@@ -49,7 +49,7 @@ Since 5.0.0 version `dbaas-client-opensearch-renovated-starter` has been renamed
    if you use resstemplate:
    
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-resttemplate</artifactId>
         <version>{version}</version>
     </dependency>
@@ -58,7 +58,7 @@ Since 5.0.0 version `dbaas-client-opensearch-renovated-starter` has been renamed
    if you use webclient:
    
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-webclient</artifactId>
         <version>{version}</version>
     </dependency>   

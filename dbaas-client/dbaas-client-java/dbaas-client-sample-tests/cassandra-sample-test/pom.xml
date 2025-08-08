@@ -3,7 +3,7 @@
 
     <parent>
         <artifactId>dbaas-client-sample-tests</artifactId>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <version>8.1.2-SNAPSHOT</version>
     </parent>
 
@@ -27,7 +27,7 @@
             <version>2.0.17</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-cassandra-starter</artifactId>
         </dependency>
         <dependency>

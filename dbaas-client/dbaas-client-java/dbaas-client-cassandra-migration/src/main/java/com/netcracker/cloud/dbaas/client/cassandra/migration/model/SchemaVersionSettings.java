@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration.model;
 
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.operation.TableOperation;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.operation.TableOperation;
 
 import java.util.List;
 

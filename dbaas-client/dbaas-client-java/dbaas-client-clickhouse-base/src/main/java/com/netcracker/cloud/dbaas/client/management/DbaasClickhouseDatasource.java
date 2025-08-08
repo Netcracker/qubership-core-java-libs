@@ -2,10 +2,10 @@ package com.netcracker.cloud.dbaas.client.management;
 
 
 import com.clickhouse.jdbc.JdbcWrapper;
-import org.qubership.cloud.dbaas.client.entity.database.ClickhouseDatabase;
-import org.qubership.cloud.dbaas.client.entity.database.ClickhouseDatasourceConnectorSettings;
-import org.qubership.cloud.dbaas.client.entity.database.type.ClickhouseDBType;
-import org.qubership.cloud.dbaas.client.management.classifier.DbaaSClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.entity.database.ClickhouseDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.ClickhouseDatasourceConnectorSettings;
+import com.netcracker.cloud.dbaas.client.entity.database.type.ClickhouseDBType;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSClassifierBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;

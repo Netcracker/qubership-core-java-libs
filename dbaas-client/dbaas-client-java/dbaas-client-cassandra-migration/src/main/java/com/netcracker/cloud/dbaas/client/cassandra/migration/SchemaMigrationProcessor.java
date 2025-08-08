@@ -1,19 +1,19 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration;
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;
-import org.qubership.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationVersionProcessingException;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromDb;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromResource;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionPreviousState;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionToApply;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
-import org.qubership.cloud.dbaas.client.cassandra.migration.repository.SchemaHistoryRepository;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.SchemaHistoryService;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.SchemaVersionResourceReader;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.compatibility.AlreadyMigratedVersionsService;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.extension.AlreadyMigratedVersionsExtensionPoint;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.lock.MigrationLockService;
-import org.qubership.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationVersionProcessingException;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromDb;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromResource;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionPreviousState;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionToApply;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.repository.SchemaHistoryRepository;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.SchemaHistoryService;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.SchemaVersionResourceReader;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.compatibility.AlreadyMigratedVersionsService;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.extension.AlreadyMigratedVersionsExtensionPoint;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.lock.MigrationLockService;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.*;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.*;
 
 
 @Slf4j

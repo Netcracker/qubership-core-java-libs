@@ -1,13 +1,13 @@
 package com.netcracker.cloud.dbaas.client.management;
 
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.DbaasClientImpl;
-import org.qubership.cloud.dbaas.client.config.DefaultMSInfoProvider;
-import org.qubership.cloud.dbaas.client.config.EnableDbaasDefault;
-import org.qubership.cloud.dbaas.client.config.MSInfoProvider;
-import org.qubership.cloud.dbaas.client.entity.mongo.MongoDatabase;
-import org.qubership.cloud.dbaas.client.entity.postgres.PostgresDatabase;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.DbaasClientImpl;
+import com.netcracker.cloud.dbaas.client.config.DefaultMSInfoProvider;
+import com.netcracker.cloud.dbaas.client.config.EnableDbaasDefault;
+import com.netcracker.cloud.dbaas.client.config.MSInfoProvider;
+import com.netcracker.cloud.dbaas.client.entity.mongo.MongoDatabase;
+import com.netcracker.cloud.dbaas.client.entity.postgres.PostgresDatabase;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

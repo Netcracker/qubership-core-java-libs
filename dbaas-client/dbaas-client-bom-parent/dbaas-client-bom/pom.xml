@@ -3,7 +3,7 @@
 
     <parent>
         <artifactId>dbaas-client-parent</artifactId>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <version>8.1.2-SNAPSHOT</version>
         <relativePath>./../../dbaas-client-parent/pom.xml</relativePath>
     </parent>
@@ -12,7 +12,7 @@
 
 
     <artifactId>dbaas-client-bom</artifactId>
-    <!-- This module should contain versions of all modules 
+    <!-- This module should contain versions of all modules
     of dbaas-client for external dependencies to bound to -->
 
     <dependencyManagement>

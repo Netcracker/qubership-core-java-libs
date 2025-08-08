@@ -1,14 +1,14 @@
 package com.netcracker.cloud.dbaas.client.test.configuration;
 
-import org.qubership.cloud.dbaas.client.DbaasClient;
-import org.qubership.cloud.dbaas.client.config.DefaultMSInfoProvider;
-import org.qubership.cloud.dbaas.client.config.EnableDbaasMongo;
-import org.qubership.cloud.dbaas.client.config.MSInfoProvider;
-import org.qubership.cloud.dbaas.client.entity.connection.MongoDBConnection;
-import org.qubership.cloud.dbaas.client.entity.database.MongoDatabase;
-import org.qubership.cloud.dbaas.client.entity.database.type.MongoDBType;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.dbaas.client.DbaasClient;
+import com.netcracker.cloud.dbaas.client.config.DefaultMSInfoProvider;
+import com.netcracker.cloud.dbaas.client.config.EnableDbaasMongo;
+import com.netcracker.cloud.dbaas.client.config.MSInfoProvider;
+import com.netcracker.cloud.dbaas.client.entity.connection.MongoDBConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.MongoDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.type.MongoDBType;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;

@@ -1,11 +1,11 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration.service.compatibility;
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.AlreadyMigratedVersion;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromDb;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromResource;
-import org.qubership.cloud.dbaas.client.cassandra.migration.repository.SchemaHistoryRepository;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.extension.AlreadyMigratedVersionsExtensionPoint;
-import org.qubership.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.AlreadyMigratedVersion;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromDb;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromResource;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.repository.SchemaHistoryRepository;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.extension.AlreadyMigratedVersionsExtensionPoint;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.HOST_NAME;
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.MIGRATION_LOG_PREFIX;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.HOST_NAME;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.MIGRATION_LOG_PREFIX;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 

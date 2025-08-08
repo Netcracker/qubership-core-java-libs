@@ -1,10 +1,10 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings;
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionSettings;
 
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.DEFAULT_VERSIONS_DIRECTORY_PATH;
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.DEFAULT_RESOURCE_NAME_PATTERN;
-import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.DEFAULT_SETTINGS_RESOURCE_PATH;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.DEFAULT_VERSIONS_DIRECTORY_PATH;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.DEFAULT_RESOURCE_NAME_PATTERN;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.DEFAULT_SETTINGS_RESOURCE_PATH;
 
 /**
  * Schema migration version settings.

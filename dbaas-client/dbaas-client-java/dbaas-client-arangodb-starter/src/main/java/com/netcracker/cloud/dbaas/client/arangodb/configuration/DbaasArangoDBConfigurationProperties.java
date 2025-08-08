@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.arangodb.configuration;
 
 import com.arangodb.config.ArangoConfigProperties;
-import org.qubership.cloud.dbaas.client.entity.DbaasApiProperties;
+import com.netcracker.cloud.dbaas.client.entity.DbaasApiProperties;
 import lombok.Getter;
 import lombok.Setter;
 

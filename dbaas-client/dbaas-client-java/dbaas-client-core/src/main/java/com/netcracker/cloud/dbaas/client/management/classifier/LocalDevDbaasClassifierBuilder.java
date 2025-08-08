@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.management.classifier;
 
-import org.qubership.cloud.dbaas.client.config.MSInfoProvider;
-import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
+import com.netcracker.cloud.dbaas.client.config.MSInfoProvider;
+import com.netcracker.cloud.dbaas.client.management.DbaasDbClassifier;
 
 public class LocalDevDbaasClassifierBuilder extends DbaaSChainClassifierBuilder {
     private static final String LOCAL_DEV_KEY = "localdev";

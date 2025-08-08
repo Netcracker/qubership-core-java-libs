@@ -1,9 +1,9 @@
 package com.netcracker.cloud.dbaas.client.service;
 
 import com.clickhouse.jdbc.internal.ClickHouseJdbcUrlParser;
-import org.qubership.cloud.dbaas.client.entity.connection.ClickhouseConnection;
-import org.qubership.cloud.dbaas.client.entity.database.ClickhouseDatabase;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.entity.connection.ClickhouseConnection;
+import com.netcracker.cloud.dbaas.client.entity.database.ClickhouseDatabase;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;

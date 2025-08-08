@@ -1,10 +1,10 @@
 package com.netcracker.cloud.dbaas.client.arangodb.entity.database.type;
 
-import org.qubership.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
-import org.qubership.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
-import org.qubership.cloud.dbaas.client.entity.database.type.DatabaseType;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.type.DatabaseType;
 
-import static org.qubership.cloud.dbaas.client.entity.database.type.PhysicalDbType.ARANGODB;
+import static com.netcracker.cloud.dbaas.client.entity.database.type.PhysicalDbType.ARANGODB;
 
 public class ArangoDBType extends DatabaseType<ArangoConnection, ArangoDatabase> {
 

@@ -1,17 +1,17 @@
 package com.netcracker.cloud.dbaas.client.cassandra.service;
 
-import org.qubership.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
-import org.qubership.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
-import org.qubership.cloud.dbaas.client.management.DatabaseConfig;
-import org.qubership.cloud.dbaas.client.service.LogicalDbProvider;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
+import com.netcracker.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.service.LogicalDbProvider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.List;
 import java.util.SortedMap;
 
-import static org.qubership.cloud.dbaas.client.cassandra.service.CassandraLogicalDbProvider.CassandraConnectionProperty;
-import static org.qubership.cloud.dbaas.client.entity.database.type.PhysicalDbType.CASSANDRA;
+import static com.netcracker.cloud.dbaas.client.cassandra.service.CassandraLogicalDbProvider.CassandraConnectionProperty;
+import static com.netcracker.cloud.dbaas.client.entity.database.type.PhysicalDbType.CASSANDRA;
 
 public abstract class CassandraLogicalDbProvider implements LogicalDbProvider<CassandraConnectionProperty, CassandraDatabase> {
     protected static final String TYPE = CASSANDRA;

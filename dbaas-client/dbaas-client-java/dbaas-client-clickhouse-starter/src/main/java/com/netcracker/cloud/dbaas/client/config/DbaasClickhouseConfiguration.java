@@ -1,10 +1,10 @@
 package com.netcracker.cloud.dbaas.client.config;
 
-import org.qubership.cloud.dbaas.client.entity.DbaasApiProperties;
-import org.qubership.cloud.dbaas.client.entity.database.ClickhouseDatasourceCreator;
-import org.qubership.cloud.dbaas.client.entity.database.DbaasClickhouseDatasourceProperties;
-import org.qubership.cloud.dbaas.client.management.DatabasePool;
-import org.qubership.cloud.dbaas.client.management.DbaasClickhouseDatasourceBuilder;
+import com.netcracker.cloud.dbaas.client.entity.DbaasApiProperties;
+import com.netcracker.cloud.dbaas.client.entity.database.ClickhouseDatasourceCreator;
+import com.netcracker.cloud.dbaas.client.entity.database.DbaasClickhouseDatasourceProperties;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.management.DbaasClickhouseDatasourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;

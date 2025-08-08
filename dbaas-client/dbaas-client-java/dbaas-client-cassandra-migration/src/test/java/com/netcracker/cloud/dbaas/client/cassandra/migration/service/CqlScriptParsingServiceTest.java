@@ -1,10 +1,10 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration.service;
 
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromResource;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.ak.AmazonKeyspacesSettings;
-import org.qubership.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinderRegistry;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromResource;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.ak.AmazonKeyspacesSettings;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinderRegistry;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.Assertions;
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.qubership.cloud.dbaas.client.cassandra.migration.util.ResourceUtils.FTL_EXTENSION;
+import static com.netcracker.cloud.dbaas.client.cassandra.migration.util.ResourceUtils.FTL_EXTENSION;
 
 class CqlScriptParsingServiceTest {
 

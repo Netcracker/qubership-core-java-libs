@@ -3,7 +3,7 @@ package com.netcracker.cloud.dbaas.client.arangodb.test.configuration;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import org.qubership.cloud.dbaas.client.arangodb.entity.Person;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.Person;
 
 import java.io.IOException;
 

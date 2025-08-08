@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.management;
 
-import org.qubership.cloud.dbaas.client.entity.database.AbstractDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.AbstractDatabase;
 
 public interface DatabaseDefinitionProcessor<D extends AbstractDatabase<?>> extends SupportedDatabaseType<D>  {
 

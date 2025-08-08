@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.entity.test;
 
-import org.qubership.cloud.dbaas.client.entity.database.AbstractDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.AbstractDatabase;
 
 public class TestDatabase extends AbstractDatabase<TestDBConnection> {
 }

@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.arangodb.test;
 
-import org.qubership.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
-import org.qubership.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
+import com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
 
 public class ArangoTestCommon {
     public static final String DB_NAME = "db-test-name";

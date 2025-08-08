@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.entity.test;
 
-import org.qubership.cloud.dbaas.client.management.DatabaseDefinitionProcessor;
+import com.netcracker.cloud.dbaas.client.management.DatabaseDefinitionProcessor;
 
 public class TestDbDefinitionProcessor implements DatabaseDefinitionProcessor<TestDatabase> {
 

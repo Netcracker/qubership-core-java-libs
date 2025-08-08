@@ -1,9 +1,9 @@
 package com.netcracker.cloud.dbaas.client.management;
 
-import org.qubership.cloud.dbaas.client.management.classifier.ServiceDbaaSClassifierBuilder;
-import org.qubership.cloud.dbaas.client.service.flyway.FlywayRunner;
-import org.qubership.cloud.dbaas.client.testconfiguration.PostgresTestContainerConfiguration;
-import org.qubership.cloud.dbaas.client.testconfiguration.TestPostgresWithDatasourceConfig;
+import com.netcracker.cloud.dbaas.client.management.classifier.ServiceDbaaSClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.service.flyway.FlywayRunner;
+import com.netcracker.cloud.dbaas.client.testconfiguration.PostgresTestContainerConfiguration;
+import com.netcracker.cloud.dbaas.client.testconfiguration.TestPostgresWithDatasourceConfig;
 import org.flywaydb.core.Flyway;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;

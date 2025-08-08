@@ -1,14 +1,14 @@
 package com.netcracker.cloud.dbaas.client.management;
 
 
-import org.qubership.cloud.dbaas.client.management.classifier.DbaaSClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSClassifierBuilder;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.qubership.cloud.dbaas.client.DbaasConst.*;
+import static com.netcracker.cloud.dbaas.client.DbaasConst.*;
 
 /**
  * This classifier is used as API type for dbaas-client's users and

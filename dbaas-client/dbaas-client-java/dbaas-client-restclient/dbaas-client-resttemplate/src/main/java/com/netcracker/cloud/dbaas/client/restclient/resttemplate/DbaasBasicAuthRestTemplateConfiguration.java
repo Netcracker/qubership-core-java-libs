@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client.restclient.resttemplate;
 
-import org.qubership.cloud.restclient.MicroserviceRestClient;
-import org.qubership.cloud.restclient.resttemplate.MicroserviceRestTemplate;
-import org.qubership.cloud.security.core.utils.tls.TlsUtils;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.restclient.resttemplate.MicroserviceRestTemplate;
+import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
 
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;

@@ -1,9 +1,9 @@
 package com.netcracker.cloud.dbaas.client.opensearch.config.metrics;
 
-import org.qubership.cloud.dbaas.client.opensearch.config.DbaaSOpensearchConfigurationProperty;
-import org.qubership.cloud.dbaas.client.opensearch.entity.metrics.OpensearchClientRequestsSecondsMetricType;
-import org.qubership.cloud.dbaas.client.opensearch.metrics.OpensearchMetricsProvider;
-import org.qubership.cloud.dbaas.client.opensearch.restclient.configuration.OpensearchTestConfiguration;
+import com.netcracker.cloud.dbaas.client.opensearch.config.DbaaSOpensearchConfigurationProperty;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.metrics.OpensearchClientRequestsSecondsMetricType;
+import com.netcracker.cloud.dbaas.client.opensearch.metrics.OpensearchMetricsProvider;
+import com.netcracker.cloud.dbaas.client.opensearch.restclient.configuration.OpensearchTestConfiguration;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;

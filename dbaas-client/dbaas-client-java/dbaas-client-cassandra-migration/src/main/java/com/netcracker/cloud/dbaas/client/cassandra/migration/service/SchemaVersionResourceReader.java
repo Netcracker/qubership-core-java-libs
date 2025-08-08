@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.cassandra.migration.service;
 
-import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromResource;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromResource;
 
 import java.util.List;
 
