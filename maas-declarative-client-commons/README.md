@@ -20,3 +20,4 @@ supports local development mode.
         <artifactId>maas-declarative-kafka-client</artifactId>
     </dependency>
 ```
+
