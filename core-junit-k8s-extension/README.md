@@ -152,7 +152,7 @@ For example:
     }
 ```
 
-#### More examples how to inject tests util services can be found [here](cloud-core-extension/src/test/java/org/qubership/cloud/junit/cloudcore/extension/callbacks/classes/TestClass.java)
+#### More examples how to inject tests util services can be found [here](cloud-core-extension/src/test/java/com/netcracker/cloud/junit/cloudcore/extension/callbacks/classes/TestClass.java)
 
 #### Pod Scale > 1
 By default, port-forward is linked to any of pods found by service selector.
