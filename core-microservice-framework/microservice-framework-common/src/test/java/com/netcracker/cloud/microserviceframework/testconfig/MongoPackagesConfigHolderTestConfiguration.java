@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.testconfig;
+package com.netcracker.cloud.microserviceframework.testconfig;
 
 import org.qubership.cloud.microserviceframework.config.MongoPackagesConfigHolder;
 import org.qubership.cloud.microserviceframework.dataaccess.MongoEvolutionPostProcessor;

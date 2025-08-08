@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.resttemplate.sample;
+package com.netcracker.cloud.microserviceframework.resttemplate.sample;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.resttemplate.sample.configuration;
+package com.netcracker.cloud.microserviceframework.resttemplate.sample.configuration;
 
 import org.qubership.cloud.restclient.MicroserviceRestClient;
 import org.qubership.cloud.routeregistration.resttemplate.EnableRouteRegistrationOnRestTemplate;

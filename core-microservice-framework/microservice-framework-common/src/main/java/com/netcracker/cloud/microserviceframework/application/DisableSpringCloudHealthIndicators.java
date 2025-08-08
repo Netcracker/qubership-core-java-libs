@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.application;
+package com.netcracker.cloud.microserviceframework.application;
 
 import org.springframework.boot.context.event.ApplicationContextInitializedEvent;
 import org.springframework.context.ApplicationListener;

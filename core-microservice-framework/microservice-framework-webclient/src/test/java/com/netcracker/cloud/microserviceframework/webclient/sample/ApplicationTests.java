@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.webclient.sample;
+package com.netcracker.cloud.microserviceframework.webclient.sample;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.webclient.sample;
+package com.netcracker.cloud.microserviceframework.webclient.sample;
 
 import org.qubership.cloud.dbaas.client.config.EnableServiceDbaasPostgresql;
 import org.qubership.cloud.microserviceframework.BaseApplicationOnWebClient;

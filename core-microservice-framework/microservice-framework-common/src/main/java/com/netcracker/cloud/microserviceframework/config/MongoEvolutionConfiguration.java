@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.config;
+package com.netcracker.cloud.microserviceframework.config;
 
 import org.qubership.cloud.microserviceframework.config.annotation.EnableCustomChangeLogsPackages;
 import org.qubership.cloud.microserviceframework.dataaccess.MongoEvolutionPostProcessor;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.resttemplate.sample;
+package com.netcracker.cloud.microserviceframework.resttemplate.sample;
 
 import org.qubership.cloud.dbaas.client.config.EnableServiceDbaasPostgresql;
 import org.qubership.cloud.microserviceframework.BaseApplicationOnRestTemplate;

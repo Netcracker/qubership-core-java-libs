@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.application;
+package com.netcracker.cloud.microserviceframework.application;
 
 import org.jetbrains.annotations.NotNull;
 import org.qubership.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;

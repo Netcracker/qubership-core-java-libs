@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework;
+package com.netcracker.cloud.microserviceframework;
 
 import org.qubership.cloud.restlegacy.restclient.configuration.annotation.EnableControllersAdvice;
 import org.qubership.cloud.restlegacy.restclient.configuration.annotation.EnableMessagesResolving;

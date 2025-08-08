@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.testconfig;
+package com.netcracker.cloud.microserviceframework.testconfig;
 
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.GenericContainer;

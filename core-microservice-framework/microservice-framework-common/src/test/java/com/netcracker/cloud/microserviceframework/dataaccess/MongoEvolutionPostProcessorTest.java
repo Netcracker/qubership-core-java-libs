@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.dataaccess;
+package com.netcracker.cloud.microserviceframework.dataaccess;
 
 import com.mongodb.MongoCredential;
 import org.junit.jupiter.api.BeforeEach;

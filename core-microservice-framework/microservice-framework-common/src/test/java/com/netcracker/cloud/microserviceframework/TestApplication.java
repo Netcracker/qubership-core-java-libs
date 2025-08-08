@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework;
+package com.netcracker.cloud.microserviceframework;
 
 import org.qubership.cloud.dbaas.client.config.EnableServiceDbaasPostgresql;
 import org.qubership.cloud.restclient.MicroserviceRestClient;

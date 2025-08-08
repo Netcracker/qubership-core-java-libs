@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.config;
+package com.netcracker.cloud.microserviceframework.config;
 
 import org.junit.jupiter.api.Test;
 import org.qubership.cloud.microserviceframework.config.annotation.EnableCustomChangeLogsPackages;

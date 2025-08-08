@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.resttemplate.sample.configuration;
+package com.netcracker.cloud.microserviceframework.resttemplate.sample.configuration;
 
 import org.mockito.Mockito;
 import org.qubership.cloud.configserver.common.configuration.AbstractCustomConfigServerConfigDataLocationResolver;

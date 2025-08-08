@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.config.annotation;
+package com.netcracker.cloud.microserviceframework.config.annotation;
 
 import org.qubership.cloud.microserviceframework.config.MongoEvolutionConfiguration;
 import org.springframework.context.annotation.Import;

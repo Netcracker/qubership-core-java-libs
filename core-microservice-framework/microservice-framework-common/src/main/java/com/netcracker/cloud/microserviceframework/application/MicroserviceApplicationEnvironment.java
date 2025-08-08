@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.application;
+package com.netcracker.cloud.microserviceframework.application;
 
 import org.springframework.core.env.StandardEnvironment;
 

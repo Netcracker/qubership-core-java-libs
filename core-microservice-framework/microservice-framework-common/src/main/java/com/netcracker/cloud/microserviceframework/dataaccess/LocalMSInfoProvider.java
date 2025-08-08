@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.dataaccess;
+package com.netcracker.cloud.microserviceframework.dataaccess;
 
 import org.qubership.cloud.dbaas.client.config.MSInfoProvider;
 import lombok.Getter;

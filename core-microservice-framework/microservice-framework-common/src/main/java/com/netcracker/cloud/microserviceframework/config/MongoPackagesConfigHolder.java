@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.config;
+package com.netcracker.cloud.microserviceframework.config;
 
 import lombok.Getter;
 import lombok.Setter;

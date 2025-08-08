@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.config;
+package com.netcracker.cloud.microserviceframework.config;
 
 import org.qubership.cloud.dbaas.client.config.MSInfoProvider;
 import org.qubership.cloud.microserviceframework.dataaccess.LocalMSInfoProvider;

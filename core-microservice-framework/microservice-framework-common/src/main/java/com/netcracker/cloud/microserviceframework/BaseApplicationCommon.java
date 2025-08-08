@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework;
+package com.netcracker.cloud.microserviceframework;
 
 import org.qubership.cloud.frameworkextensions.metrics.config.annotation.EnableCustomMetrics;
 import org.qubership.cloud.microserviceframework.config.MicroserviceFrameworkConfiguration;

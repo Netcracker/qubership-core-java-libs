@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.testconfig;
+package com.netcracker.cloud.microserviceframework.testconfig;
 
 import jakarta.annotation.PreDestroy;
 import org.qubership.cloud.dbaas.client.entity.connection.MongoDBConnection;

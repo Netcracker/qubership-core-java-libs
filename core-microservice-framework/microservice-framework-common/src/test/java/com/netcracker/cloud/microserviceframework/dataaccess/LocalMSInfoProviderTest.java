@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.dataaccess;
+package com.netcracker.cloud.microserviceframework.dataaccess;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

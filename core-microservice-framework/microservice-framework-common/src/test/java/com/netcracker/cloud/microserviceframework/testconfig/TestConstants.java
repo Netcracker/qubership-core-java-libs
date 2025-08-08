@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.testconfig;
+package com.netcracker.cloud.microserviceframework.testconfig;
 
 import org.apache.commons.lang3.StringUtils;
 

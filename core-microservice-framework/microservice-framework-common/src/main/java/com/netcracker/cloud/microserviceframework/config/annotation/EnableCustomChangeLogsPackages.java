@@ -1,4 +1,4 @@
-package org.qubership.cloud.microserviceframework.config.annotation;
+package com.netcracker.cloud.microserviceframework.config.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
