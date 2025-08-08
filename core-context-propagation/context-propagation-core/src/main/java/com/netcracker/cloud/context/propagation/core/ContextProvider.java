@@ -1,7 +1,7 @@
 package com.netcracker.cloud.context.propagation.core;
 
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.contexts.SerializableDataContext;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.contexts.SerializableDataContext;
 import org.jetbrains.annotations.Nullable;
 
 /**

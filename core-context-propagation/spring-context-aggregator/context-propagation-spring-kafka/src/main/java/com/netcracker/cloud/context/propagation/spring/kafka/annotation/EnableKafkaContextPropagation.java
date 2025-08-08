@@ -1,6 +1,6 @@
 package com.netcracker.cloud.context.propagation.spring.kafka.annotation;
 
-import org.qubership.cloud.context.propagation.spring.kafka.KafkaContextPropagationConfiguration;
+import com.netcracker.cloud.context.propagation.spring.kafka.KafkaContextPropagationConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.ElementType;

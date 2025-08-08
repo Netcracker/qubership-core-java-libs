@@ -2,7 +2,7 @@ package com.netcracker.cloud.context.propagation.core;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.ContextPropagationHelperTest;
+import com.netcracker.cloud.ContextPropagationHelperTest;
 
 
 import java.lang.reflect.Method;
@@ -11,8 +11,8 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.qubership.cloud.context.propagation.core.ContextManager.CORE_CONTEXTPROPAGATION_PROVIDERS_LOOKUP;
-import static org.qubership.cloud.context.propagation.core.ContextManager.LOOKUP_CONTEXT_PROVIDERS_PATH;
+import static com.netcracker.cloud.context.propagation.core.ContextManager.CORE_CONTEXTPROPAGATION_PROVIDERS_LOOKUP;
+import static com.netcracker.cloud.context.propagation.core.ContextManager.LOOKUP_CONTEXT_PROVIDERS_PATH;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -72,7 +72,7 @@ class ContextManagerApiTest {
 
         String genericTypeName = getGenericName(returnedType);
 
-        assertEquals("org.qubership.cloud.context.propagation.core.ContextProvider<?>", genericTypeName);
+        assertEquals("com.netcracker.cloud.context.propagation.core.ContextProvider<?>", genericTypeName);
     }
 
     @Test
@@ -93,7 +93,7 @@ class ContextManagerApiTest {
         assertEquals(Collection.class.getName(), getContainerReturnedType(returnedType).getTypeName());
 
         String genericTypeName = getGenericName(returnedType);
-        assertEquals("org.qubership.cloud.context.propagation.core.ContextProvider<?>", genericTypeName);
+        assertEquals("com.netcracker.cloud.context.propagation.core.ContextProvider<?>", genericTypeName);
 
         assertEquals(1, registerMethod.getParameterCount());
         assertEquals(List.class, registerMethod.getParameterTypes()[0]);

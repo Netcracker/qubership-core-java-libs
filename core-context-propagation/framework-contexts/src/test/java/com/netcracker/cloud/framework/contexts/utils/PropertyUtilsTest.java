@@ -2,7 +2,7 @@ package com.netcracker.cloud.framework.contexts.utils;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.qubership.cloud.framework.contexts.utils.PropertyUtils;
+import com.netcracker.cloud.framework.contexts.utils.PropertyUtils;
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;

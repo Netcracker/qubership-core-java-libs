@@ -1,12 +1,12 @@
 package com.netcracker.cloud.framework.contexts.acceptlanguage;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
-import org.qubership.cloud.context.propagation.core.contexts.DefaultValueAwareContext;
-import org.qubership.cloud.context.propagation.core.contexts.SerializableContext;
-import org.qubership.cloud.context.propagation.core.contexts.SerializableDataContext;
-import org.qubership.cloud.context.propagation.core.contexts.common.RequestContextObject;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.contextdata.OutgoingContextData;
+import com.netcracker.cloud.context.propagation.core.contexts.DefaultValueAwareContext;
+import com.netcracker.cloud.context.propagation.core.contexts.SerializableContext;
+import com.netcracker.cloud.context.propagation.core.contexts.SerializableDataContext;
+import com.netcracker.cloud.context.propagation.core.contexts.common.RequestContextObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;

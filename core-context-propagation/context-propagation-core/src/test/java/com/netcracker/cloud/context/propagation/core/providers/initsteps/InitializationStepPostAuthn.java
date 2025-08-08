@@ -1,9 +1,9 @@
 package com.netcracker.cloud.context.propagation.core.providers.initsteps;
 
-import org.qubership.cloud.context.propagation.core.ContextInitializationStep;
-import org.qubership.cloud.context.propagation.core.RegisterProvider;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.supports.providers.AbstractContextProviderOnThreadLocal;
+import com.netcracker.cloud.context.propagation.core.ContextInitializationStep;
+import com.netcracker.cloud.context.propagation.core.RegisterProvider;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.supports.providers.AbstractContextProviderOnThreadLocal;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;

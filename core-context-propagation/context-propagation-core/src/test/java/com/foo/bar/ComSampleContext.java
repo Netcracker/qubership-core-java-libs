@@ -1,9 +1,9 @@
 package com.foo.bar;
 
 import org.jetbrains.annotations.Nullable;
-import org.qubership.cloud.context.propagation.core.RegisterProvider;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.supports.providers.AbstractContextProviderOnThreadLocal;
+import com.netcracker.cloud.context.propagation.core.RegisterProvider;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.supports.providers.AbstractContextProviderOnThreadLocal;
 
 @RegisterProvider
 public class ComSampleContext extends AbstractContextProviderOnThreadLocal<Object> {

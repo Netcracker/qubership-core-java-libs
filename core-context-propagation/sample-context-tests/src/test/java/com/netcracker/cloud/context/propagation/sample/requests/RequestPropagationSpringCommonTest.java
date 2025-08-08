@@ -2,8 +2,8 @@ package com.netcracker.cloud.context.propagation.sample.requests;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.spring.common.annotation.EnableSpringContextProvider;
-import org.qubership.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
+import com.netcracker.cloud.context.propagation.spring.common.annotation.EnableSpringContextProvider;
+import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;

@@ -1,7 +1,7 @@
 package com.netcracker.cloud.context.propagation.core.providers.explicitregistration;
 
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.supports.providers.AbstractContextProviderOnThreadLocal;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.supports.providers.AbstractContextProviderOnThreadLocal;
 import org.jetbrains.annotations.Nullable;
 
 //@RegisterProvider

@@ -2,9 +2,9 @@ package com.netcracker.cloud.context.propagation.sample.threads;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersContextObject;
-import org.qubership.cloud.headerstracking.filters.context.AllowedHeadersContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.framework.contexts.allowedheaders.AllowedHeadersContextObject;
+import com.netcracker.cloud.headerstracking.filters.context.AllowedHeadersContext;
 
 import java.util.Collections;
 import java.util.HashMap;

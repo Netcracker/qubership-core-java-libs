@@ -1,9 +1,9 @@
 package com.netcracker.cloud.context.propagation.core.contexts.common;
 
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.contexts.IncomingContextDataFactory;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.contexts.IncomingContextDataFactory;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.qubership.cloud.context.propagation.core.contexts.common.RequestProvider.REQUEST_CONTEXT_NAME;
+import static com.netcracker.cloud.context.propagation.core.contexts.common.RequestProvider.REQUEST_CONTEXT_NAME;
 
 class RequestContextObjectApiTest {
     @Test

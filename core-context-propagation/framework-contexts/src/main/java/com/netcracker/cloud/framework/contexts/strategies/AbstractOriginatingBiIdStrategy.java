@@ -1,9 +1,9 @@
 package com.netcracker.cloud.framework.contexts.strategies;
 
-import org.qubership.cloud.context.propagation.core.Strategy;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.supports.strategies.AbstractStrategy;
-import org.qubership.cloud.framework.contexts.originatingbiid.OriginatingBiIdContextObject;
+import com.netcracker.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.supports.strategies.AbstractStrategy;
+import com.netcracker.cloud.framework.contexts.originatingbiid.OriginatingBiIdContextObject;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.MDC;
 

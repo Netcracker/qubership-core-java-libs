@@ -1,9 +1,9 @@
 package com.netcracker.cloud.headerstracking.filters.context;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.framework.contexts.apiversion.ApiVersionContextObject;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.framework.contexts.apiversion.ApiVersionContextObject;
 
-import static org.qubership.cloud.framework.contexts.apiversion.ApiVersionProvider.API_VERSION_CONTEXT_NAME;
+import static com.netcracker.cloud.framework.contexts.apiversion.ApiVersionProvider.API_VERSION_CONTEXT_NAME;
 
 public class ApiVersionContext {
 

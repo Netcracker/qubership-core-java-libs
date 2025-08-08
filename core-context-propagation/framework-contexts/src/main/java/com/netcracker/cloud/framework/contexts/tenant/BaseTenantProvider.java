@@ -1,6 +1,6 @@
 package com.netcracker.cloud.framework.contexts.tenant;
 
-import org.qubership.cloud.context.propagation.core.supports.providers.AbstractContextProvider;
+import com.netcracker.cloud.context.propagation.core.supports.providers.AbstractContextProvider;
 
 public abstract class BaseTenantProvider extends AbstractContextProvider<TenantContextObject> {
     public static final int DEFAULT_LEVEL = 0;

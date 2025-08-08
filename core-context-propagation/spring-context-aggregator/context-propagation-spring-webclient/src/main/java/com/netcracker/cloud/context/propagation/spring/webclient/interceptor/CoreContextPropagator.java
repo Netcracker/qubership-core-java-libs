@@ -1,6 +1,6 @@
 package com.netcracker.cloud.context.propagation.spring.webclient.interceptor;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
 import org.reactivestreams.Subscription;
 import org.springframework.lang.Nullable;
 import reactor.core.CoreSubscriber;

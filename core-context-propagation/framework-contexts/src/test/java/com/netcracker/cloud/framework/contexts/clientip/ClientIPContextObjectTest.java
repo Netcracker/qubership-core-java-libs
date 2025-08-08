@@ -1,17 +1,17 @@
 package com.netcracker.cloud.framework.contexts.clientip;
 
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
-import org.qubership.cloud.headerstracking.filters.context.ClientIPContext;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.contextdata.OutgoingContextData;
+import com.netcracker.cloud.headerstracking.filters.context.ClientIPContext;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.qubership.cloud.framework.contexts.clientip.ClientIPContextObject.X_FORWARDED_FOR;
-import static org.qubership.cloud.framework.contexts.clientip.ClientIPContextObject.X_NC_CLIENT_IP;
+import static com.netcracker.cloud.framework.contexts.clientip.ClientIPContextObject.X_FORWARDED_FOR;
+import static com.netcracker.cloud.framework.contexts.clientip.ClientIPContextObject.X_NC_CLIENT_IP;
 
 class ClientIPContextObjectTest {
 

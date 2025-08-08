@@ -1,8 +1,8 @@
 package com.netcracker.cloud.framework.contexts.originatingbiid;
 
-import org.qubership.cloud.context.propagation.core.Strategy;
-import org.qubership.cloud.context.propagation.core.supports.strategies.DefaultStrategies;
-import org.qubership.cloud.framework.contexts.strategies.AbstractOriginatingBiIdStrategy;
+import com.netcracker.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.context.propagation.core.supports.strategies.DefaultStrategies;
+import com.netcracker.cloud.framework.contexts.strategies.AbstractOriginatingBiIdStrategy;
 
 import java.util.function.Supplier;
 

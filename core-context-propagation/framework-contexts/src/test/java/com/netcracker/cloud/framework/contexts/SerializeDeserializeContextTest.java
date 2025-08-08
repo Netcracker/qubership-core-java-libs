@@ -10,32 +10,32 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.contextdata.DeserializedIncomingContextData;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.contexts.common.RequestContextObject;
-import org.qubership.cloud.context.propagation.core.contexts.common.RequestProvider;
-import org.qubership.cloud.framework.contexts.acceptlanguage.AcceptLanguageContextObject;
-import org.qubership.cloud.framework.contexts.acceptlanguage.AcceptLanguageProvider;
-import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersContextObject;
-import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider;
-import org.qubership.cloud.framework.contexts.apiversion.ApiVersionContextObject;
-import org.qubership.cloud.framework.contexts.apiversion.ApiVersionProvider;
-import org.qubership.cloud.framework.contexts.businessprocess.BusinessProcessContextObject;
-import org.qubership.cloud.framework.contexts.businessprocess.BusinessProcessProvider;
-import org.qubership.cloud.framework.contexts.helper.AbstractContextTestWithProperties;
-import org.qubership.cloud.framework.contexts.originatingbiid.OriginatingBiIdContextObject;
-import org.qubership.cloud.framework.contexts.originatingbiid.OriginatingBiIdProvider;
-import org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContextObject;
-import org.qubership.cloud.framework.contexts.xversion.XVersionContextObject;
-import org.qubership.cloud.framework.contexts.xversion.XVersionContextObjectTest;
-import org.qubership.cloud.framework.contexts.xversion.XVersionProvider;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.contextdata.DeserializedIncomingContextData;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.contexts.common.RequestContextObject;
+import com.netcracker.cloud.context.propagation.core.contexts.common.RequestProvider;
+import com.netcracker.cloud.framework.contexts.acceptlanguage.AcceptLanguageContextObject;
+import com.netcracker.cloud.framework.contexts.acceptlanguage.AcceptLanguageProvider;
+import com.netcracker.cloud.framework.contexts.allowedheaders.AllowedHeadersContextObject;
+import com.netcracker.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider;
+import com.netcracker.cloud.framework.contexts.apiversion.ApiVersionContextObject;
+import com.netcracker.cloud.framework.contexts.apiversion.ApiVersionProvider;
+import com.netcracker.cloud.framework.contexts.businessprocess.BusinessProcessContextObject;
+import com.netcracker.cloud.framework.contexts.businessprocess.BusinessProcessProvider;
+import com.netcracker.cloud.framework.contexts.helper.AbstractContextTestWithProperties;
+import com.netcracker.cloud.framework.contexts.originatingbiid.OriginatingBiIdContextObject;
+import com.netcracker.cloud.framework.contexts.originatingbiid.OriginatingBiIdProvider;
+import com.netcracker.cloud.framework.contexts.xrequestid.XRequestIdContextObject;
+import com.netcracker.cloud.framework.contexts.xversion.XVersionContextObject;
+import com.netcracker.cloud.framework.contexts.xversion.XVersionContextObjectTest;
+import com.netcracker.cloud.framework.contexts.xversion.XVersionProvider;
 
 import java.util.*;
 
-import static org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider.HEADERS_PROPERTY;
-import static org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContextObject.X_REQUEST_ID;
-import static org.qubership.cloud.framework.contexts.xversion.XVersionContextObject.X_VERSION_SERIALIZATION_NAME;
+import static com.netcracker.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider.HEADERS_PROPERTY;
+import static com.netcracker.cloud.framework.contexts.xrequestid.XRequestIdContextObject.X_REQUEST_ID;
+import static com.netcracker.cloud.framework.contexts.xversion.XVersionContextObject.X_VERSION_SERIALIZATION_NAME;
 
 @Slf4j
 class SerializeDeserializeContextTest extends AbstractContextTestWithProperties {

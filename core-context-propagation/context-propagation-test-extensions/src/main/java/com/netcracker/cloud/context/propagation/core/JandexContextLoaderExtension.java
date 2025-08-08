@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import java.io.File;
 import java.net.URL;
 
-import static org.qubership.cloud.context.propagation.core.ContextProviderLoader.JANDEX_INDEX;
+import static com.netcracker.cloud.context.propagation.core.ContextProviderLoader.JANDEX_INDEX;
 
 public class JandexContextLoaderExtension implements BeforeAllCallback {
 

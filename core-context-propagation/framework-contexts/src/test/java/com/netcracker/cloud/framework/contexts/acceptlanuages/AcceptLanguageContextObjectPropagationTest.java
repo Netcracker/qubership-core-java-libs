@@ -4,20 +4,20 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.framework.contexts.acceptlanguage.AcceptLanguageContextObject;
-import org.qubership.cloud.framework.contexts.acceptlanguage.AcceptLanguageProvider;
-import org.qubership.cloud.framework.contexts.data.ContextDataRequest;
-import org.qubership.cloud.framework.contexts.data.ContextDataResponse;
-import org.qubership.cloud.framework.contexts.data.SimpleIncomingContextData;
-import org.qubership.cloud.framework.contexts.helper.AbstractContextTestWithProperties;
-import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.framework.contexts.acceptlanguage.AcceptLanguageContextObject;
+import com.netcracker.cloud.framework.contexts.acceptlanguage.AcceptLanguageProvider;
+import com.netcracker.cloud.framework.contexts.data.ContextDataRequest;
+import com.netcracker.cloud.framework.contexts.data.ContextDataResponse;
+import com.netcracker.cloud.framework.contexts.data.SimpleIncomingContextData;
+import com.netcracker.cloud.framework.contexts.helper.AbstractContextTestWithProperties;
+import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
 
 import java.util.Map;
 
 import static jakarta.ws.rs.core.HttpHeaders.ACCEPT_LANGUAGE;
-import static org.qubership.cloud.framework.contexts.data.ContextDataRequest.CUSTOM_HEADER;
+import static com.netcracker.cloud.framework.contexts.data.ContextDataRequest.CUSTOM_HEADER;
 
 class AcceptLanguageContextObjectPropagationTest extends AbstractContextTestWithProperties {
 

@@ -1,7 +1,7 @@
 package com.netcracker.cloud.context.propagation.spring.webclient.interceptor;
 
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.context.propagation.core.contexts.SerializableContext;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.context.propagation.core.contexts.SerializableContext;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;

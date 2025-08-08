@@ -1,6 +1,6 @@
 package com.netcracker.cloud.context.propagation.spring.common.filter;
 
-import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
+import com.netcracker.cloud.context.propagation.core.contextdata.OutgoingContextData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

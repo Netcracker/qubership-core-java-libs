@@ -2,14 +2,14 @@ package com.netcracker.cloud.context.propagation.core.contexts.common;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.contexts.IncomingContextDataFactory;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.contexts.IncomingContextDataFactory;
 
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.qubership.cloud.context.propagation.core.contexts.common.RequestProvider.REQUEST_CONTEXT_NAME;
+import static com.netcracker.cloud.context.propagation.core.contexts.common.RequestProvider.REQUEST_CONTEXT_NAME;
 
 class RequestProviderApiTest {
     @BeforeEach

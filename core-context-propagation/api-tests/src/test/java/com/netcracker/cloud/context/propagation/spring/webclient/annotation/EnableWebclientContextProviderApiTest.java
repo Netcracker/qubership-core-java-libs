@@ -9,6 +9,6 @@ class EnableWebclientContextProviderApiTest {
 
     @Test
     void checkEnableWebclientContextProvider() {
-        assertEquals("org.qubership.cloud.context.propagation.spring.webclient.annotation.EnableWebclientContextProvider", EnableWebclientContextProvider.class.getName());
+        assertEquals("com.netcracker.cloud.context.propagation.spring.webclient.annotation.EnableWebclientContextProvider", EnableWebclientContextProvider.class.getName());
     }
 }

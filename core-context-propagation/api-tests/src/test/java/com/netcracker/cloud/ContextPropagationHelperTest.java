@@ -1,6 +1,6 @@
 package com.netcracker.cloud;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
 
 import java.lang.reflect.Field;
 import java.util.Map;

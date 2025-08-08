@@ -1,8 +1,8 @@
 package com.netcracker.cloud.headerstracking.filters.context;
 
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.contexts.common.RequestContextObject;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.contexts.common.RequestContextObject;
 import jakarta.ws.rs.core.HttpHeaders;
 
 import java.util.HashMap;

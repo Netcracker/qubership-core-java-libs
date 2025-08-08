@@ -1,12 +1,12 @@
 package com.netcracker.cloud.framework.contexts.originatingbiid;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.framework.contexts.data.ContextDataRequest;
-import org.qubership.cloud.framework.contexts.data.ContextDataResponse;
-import org.qubership.cloud.framework.contexts.data.SimpleIncomingContextData;
-import org.qubership.cloud.framework.contexts.helper.AbstractContextTestWithProperties;
-import org.qubership.cloud.headerstracking.filters.context.OriginatingBiIdContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.framework.contexts.data.ContextDataRequest;
+import com.netcracker.cloud.framework.contexts.data.ContextDataResponse;
+import com.netcracker.cloud.framework.contexts.data.SimpleIncomingContextData;
+import com.netcracker.cloud.framework.contexts.helper.AbstractContextTestWithProperties;
+import com.netcracker.cloud.headerstracking.filters.context.OriginatingBiIdContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.qubership.cloud.framework.contexts.originatingbiid.OriginatingBiIdContextObject.ORIGINATING_BI_ID_SERIALIZATION_NAME;
+import static com.netcracker.cloud.framework.contexts.originatingbiid.OriginatingBiIdContextObject.ORIGINATING_BI_ID_SERIALIZATION_NAME;
 
 class OriginatingBiIdContextObjectTest extends AbstractContextTestWithProperties {
 

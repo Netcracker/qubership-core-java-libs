@@ -1,6 +1,6 @@
 package com.netcracker.cloud.context.propagation.core.contextdata;
 
-import org.qubership.cloud.context.propagation.core.ContextProvider;
+import com.netcracker.cloud.context.propagation.core.ContextProvider;
 
 /**
  * Implementation of the interface contains key:value data that should be propagated

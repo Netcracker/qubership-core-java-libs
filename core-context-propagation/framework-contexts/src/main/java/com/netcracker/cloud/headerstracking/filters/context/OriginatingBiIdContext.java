@@ -1,9 +1,9 @@
 package com.netcracker.cloud.headerstracking.filters.context;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.framework.contexts.originatingbiid.OriginatingBiIdContextObject;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.framework.contexts.originatingbiid.OriginatingBiIdContextObject;
 
-import static org.qubership.cloud.framework.contexts.originatingbiid.OriginatingBiIdProvider.CONTEXT_NAME;
+import static com.netcracker.cloud.framework.contexts.originatingbiid.OriginatingBiIdProvider.CONTEXT_NAME;
 
 public class OriginatingBiIdContext {
 

@@ -1,7 +1,7 @@
 package com.netcracker.cloud.context.propagation.spring.webclient.configuration;
 
-import org.qubership.cloud.context.propagation.spring.webclient.interceptor.CoreContextPropagator;
-import org.qubership.cloud.context.propagation.spring.webclient.interceptor.SpringWebClientInterceptor;
+import com.netcracker.cloud.context.propagation.spring.webclient.interceptor.CoreContextPropagator;
+import com.netcracker.cloud.context.propagation.spring.webclient.interceptor.SpringWebClientInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

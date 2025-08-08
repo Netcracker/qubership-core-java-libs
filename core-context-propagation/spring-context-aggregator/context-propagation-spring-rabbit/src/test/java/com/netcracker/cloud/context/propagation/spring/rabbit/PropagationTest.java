@@ -1,9 +1,9 @@
 package com.netcracker.cloud.context.propagation.spring.rabbit;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.spring.rabbit.annotation.EnableRabbitContextPropagation;
-import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
-import org.qubership.cloud.headerstracking.filters.context.AllowedHeadersContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.spring.rabbit.annotation.EnableRabbitContextPropagation;
+import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
+import com.netcracker.cloud.headerstracking.filters.context.AllowedHeadersContext;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import jakarta.ws.rs.core.HttpHeaders;

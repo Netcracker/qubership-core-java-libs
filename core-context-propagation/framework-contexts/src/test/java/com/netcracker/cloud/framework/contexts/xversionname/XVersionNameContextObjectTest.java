@@ -1,11 +1,11 @@
 package com.netcracker.cloud.framework.contexts.xversionname;
 
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
-import org.qubership.cloud.framework.contexts.data.SimpleIncomingContextData;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.contextdata.OutgoingContextData;
+import com.netcracker.cloud.framework.contexts.data.SimpleIncomingContextData;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.qubership.cloud.framework.contexts.xversionname.XVersionNameContextObject.X_VERSION_NAME_SERIALIZATION_NAME;
+import static com.netcracker.cloud.framework.contexts.xversionname.XVersionNameContextObject.X_VERSION_NAME_SERIALIZATION_NAME;
 
 class XVersionNameContextObjectTest {
     private final static String CANDIDATE = "candidate";

@@ -1,10 +1,10 @@
 package com.netcracker.cloud.context.propagation.core.strategies;
 
-import org.qubership.cloud.context.propagation.core.Strategy;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.providers.xversion.XVersionContextObject;
-import org.qubership.cloud.context.propagation.core.supports.strategies.DefaultStrategies;
-import org.qubership.cloud.context.propagation.core.supports.strategies.ThreadLocalDefaultStrategy;
+import com.netcracker.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.providers.xversion.XVersionContextObject;
+import com.netcracker.cloud.context.propagation.core.supports.strategies.DefaultStrategies;
+import com.netcracker.cloud.context.propagation.core.supports.strategies.ThreadLocalDefaultStrategy;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

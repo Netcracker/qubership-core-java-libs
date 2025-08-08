@@ -2,9 +2,9 @@ package com.netcracker.cloud.context.propagation.spring.common.filter;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
-import org.qubership.cloud.headerstracking.filters.context.RequestIdContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
+import com.netcracker.cloud.headerstracking.filters.context.RequestIdContext;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.qubership.cloud.context.propagation.core.ContextManager.getSafe;
+import static com.netcracker.cloud.context.propagation.core.ContextManager.getSafe;
 import static jakarta.ws.rs.core.HttpHeaders.ACCEPT_LANGUAGE;
 import static org.mockito.Mockito.*;
 

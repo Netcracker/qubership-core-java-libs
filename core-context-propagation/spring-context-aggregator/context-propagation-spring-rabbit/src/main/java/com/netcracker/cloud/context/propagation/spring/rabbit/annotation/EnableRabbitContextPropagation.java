@@ -1,6 +1,6 @@
 package com.netcracker.cloud.context.propagation.spring.rabbit.annotation;
 
-import org.qubership.cloud.context.propagation.spring.rabbit.RabbitContextPropagationConfiguration;
+import com.netcracker.cloud.context.propagation.spring.rabbit.RabbitContextPropagationConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.ElementType;

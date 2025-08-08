@@ -1,8 +1,8 @@
 package com.netcracker.cloud.context.propagation.spring.rabbit;
 
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.contextdata.OutgoingContextData;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Delivery;
 

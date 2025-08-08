@@ -1,11 +1,11 @@
 package com.netcracker.cloud.framework.contexts.strategies;
 
-import org.qubership.cloud.context.propagation.core.Strategy;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.supports.strategies.AbstractStrategy;
+import com.netcracker.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.supports.strategies.AbstractStrategy;
 import org.jetbrains.annotations.Nullable;
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
-import org.qubership.cloud.framework.contexts.tenant.TenantNotFoundException;
+import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
+import com.netcracker.cloud.framework.contexts.tenant.TenantNotFoundException;
 import org.slf4j.MDC;
 
 import java.util.function.Supplier;

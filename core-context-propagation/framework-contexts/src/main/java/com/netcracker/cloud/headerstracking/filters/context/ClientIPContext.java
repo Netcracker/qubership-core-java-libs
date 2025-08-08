@@ -1,8 +1,8 @@
 package com.netcracker.cloud.headerstracking.filters.context;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.framework.contexts.clientip.ClientIPContextObject;
-import org.qubership.cloud.framework.contexts.clientip.ClientIPProvider;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.framework.contexts.clientip.ClientIPContextObject;
+import com.netcracker.cloud.framework.contexts.clientip.ClientIPProvider;
 
 public class ClientIPContext {
     public static String get() {

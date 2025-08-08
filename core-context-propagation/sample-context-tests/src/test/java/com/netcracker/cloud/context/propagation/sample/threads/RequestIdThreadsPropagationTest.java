@@ -1,15 +1,15 @@
 package com.netcracker.cloud.context.propagation.sample.threads;
 
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContextObject;
-import org.qubership.cloud.headerstracking.filters.context.RequestIdContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.framework.contexts.xrequestid.XRequestIdContextObject;
+import com.netcracker.cloud.headerstracking.filters.context.RequestIdContext;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContextObject.X_REQUEST_ID;
+import static com.netcracker.cloud.framework.contexts.xrequestid.XRequestIdContextObject.X_REQUEST_ID;
 
 class RequestIdThreadsPropagationTest extends AbstractThreadTest {
     private static final String REQUEST_ID = "some-id";

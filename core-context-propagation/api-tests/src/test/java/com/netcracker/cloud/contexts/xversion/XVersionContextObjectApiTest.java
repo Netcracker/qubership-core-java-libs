@@ -2,13 +2,13 @@ package com.netcracker.cloud.contexts.xversion;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.contexts.common.RequestProvider;
-import org.qubership.cloud.contexts.IncomingContextDataFactory;
-import org.qubership.cloud.framework.contexts.xversion.XVersionContextObject;
-import org.qubership.cloud.framework.contexts.xversion.XVersionProvider;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.contexts.common.RequestProvider;
+import com.netcracker.cloud.contexts.IncomingContextDataFactory;
+import com.netcracker.cloud.framework.contexts.xversion.XVersionContextObject;
+import com.netcracker.cloud.framework.contexts.xversion.XVersionProvider;
 
 import java.util.Collections;
 

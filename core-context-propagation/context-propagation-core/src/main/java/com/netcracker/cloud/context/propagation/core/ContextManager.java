@@ -1,7 +1,7 @@
 package com.netcracker.cloud.context.propagation.core;
 
-import org.qubership.cloud.context.propagation.core.contextdata.DeserializedIncomingContextData;
-import org.qubership.cloud.context.propagation.core.contexts.SerializableDataContext;
+import com.netcracker.cloud.context.propagation.core.contextdata.DeserializedIncomingContextData;
+import com.netcracker.cloud.context.propagation.core.contexts.SerializableDataContext;
 
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -11,8 +11,8 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static org.qubership.cloud.context.propagation.core.ContextProviderLoader.loadContextProviders;
-import static org.qubership.cloud.context.propagation.core.Scope.NOOP_SCOPE;
+import static com.netcracker.cloud.context.propagation.core.ContextProviderLoader.loadContextProviders;
+import static com.netcracker.cloud.context.propagation.core.Scope.NOOP_SCOPE;
 
 /**
  * ContextManager is the main class that allows operating on registered context. All manipulations on

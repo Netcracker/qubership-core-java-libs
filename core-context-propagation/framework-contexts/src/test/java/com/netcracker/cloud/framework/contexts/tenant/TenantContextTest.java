@@ -2,9 +2,9 @@ package com.netcracker.cloud.framework.contexts.tenant;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.context.propagation.core.contextdata.OutgoingContextData;
 import org.slf4j.MDC;
 
 import java.util.HashMap;
@@ -13,8 +13,8 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.qubership.cloud.framework.contexts.tenant.DefaultTenantProvider.TENANT_CONTEXT_NAME;
-import static org.qubership.cloud.framework.contexts.tenant.TenantContextObject.TENANT_HEADER;
+import static com.netcracker.cloud.framework.contexts.tenant.DefaultTenantProvider.TENANT_CONTEXT_NAME;
+import static com.netcracker.cloud.framework.contexts.tenant.TenantContextObject.TENANT_HEADER;
 
 
 class TenantContextTest {

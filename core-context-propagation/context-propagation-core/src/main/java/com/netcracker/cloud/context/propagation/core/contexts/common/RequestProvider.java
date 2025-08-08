@@ -1,10 +1,10 @@
 package com.netcracker.cloud.context.propagation.core.contexts.common;
 
-import org.qubership.cloud.context.propagation.core.RegisterProvider;
-import org.qubership.cloud.context.propagation.core.Strategy;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.supports.providers.AbstractContextProvider;
-import org.qubership.cloud.context.propagation.core.supports.strategies.DefaultStrategies;
+import com.netcracker.cloud.context.propagation.core.RegisterProvider;
+import com.netcracker.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.supports.providers.AbstractContextProvider;
+import com.netcracker.cloud.context.propagation.core.supports.strategies.DefaultStrategies;
 import org.jetbrains.annotations.Nullable;
 
 @RegisterProvider

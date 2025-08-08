@@ -4,21 +4,21 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.framework.contexts.data.ContextDataRequest;
-import org.qubership.cloud.framework.contexts.data.ContextDataResponse;
-import org.qubership.cloud.framework.contexts.data.SimpleIncomingContextData;
-import org.qubership.cloud.framework.contexts.helper.AbstractContextTestWithProperties;
-import org.qubership.cloud.headerstracking.filters.context.RequestIdContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.framework.contexts.data.ContextDataRequest;
+import com.netcracker.cloud.framework.contexts.data.ContextDataResponse;
+import com.netcracker.cloud.framework.contexts.data.SimpleIncomingContextData;
+import com.netcracker.cloud.framework.contexts.helper.AbstractContextTestWithProperties;
+import com.netcracker.cloud.headerstracking.filters.context.RequestIdContext;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.qubership.cloud.framework.contexts.data.ContextDataRequest.CUSTOM_HEADER;
-import static org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContextProvider.X_REQUEST_ID_CONTEXT_NAME;
+import static com.netcracker.cloud.framework.contexts.data.ContextDataRequest.CUSTOM_HEADER;
+import static com.netcracker.cloud.framework.contexts.xrequestid.XRequestIdContextProvider.X_REQUEST_ID_CONTEXT_NAME;
 
 class XRequestIdContextObjectPropagationTest extends AbstractContextTestWithProperties {
     public static final String X_REQUEST_ID = "X-Request-Id";

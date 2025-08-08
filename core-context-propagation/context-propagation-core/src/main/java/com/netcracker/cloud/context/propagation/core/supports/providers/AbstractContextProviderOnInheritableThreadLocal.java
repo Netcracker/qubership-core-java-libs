@@ -1,8 +1,8 @@
 package com.netcracker.cloud.context.propagation.core.supports.providers;
 
-import org.qubership.cloud.context.propagation.core.Strategy;
-import org.qubership.cloud.context.propagation.core.supports.strategies.DefaultStrategies;
-import org.qubership.cloud.context.propagation.core.supports.strategies.ThreadLocalWithInheritanceDefaultStrategy;
+import com.netcracker.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.context.propagation.core.supports.strategies.DefaultStrategies;
+import com.netcracker.cloud.context.propagation.core.supports.strategies.ThreadLocalWithInheritanceDefaultStrategy;
 
 public abstract class AbstractContextProviderOnInheritableThreadLocal<V> extends AbstractContextProvider<V> {
 

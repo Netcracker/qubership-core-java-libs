@@ -1,6 +1,6 @@
 package com.netcracker.cloud.context.propagation.core.providers.xversion;
 
-import org.qubership.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.context.propagation.core.Strategy;
 
 import java.util.Optional;
 

@@ -1,15 +1,15 @@
 package com.netcracker.cloud.context.propagation.sample.threads;
 
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.framework.contexts.apiversion.ApiVersionContextObject;
-import org.qubership.cloud.headerstracking.filters.context.ApiVersionContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.framework.contexts.apiversion.ApiVersionContextObject;
+import com.netcracker.cloud.headerstracking.filters.context.ApiVersionContext;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.qubership.cloud.framework.contexts.apiversion.ApiVersionProvider.API_VERSION_CONTEXT_NAME;
+import static com.netcracker.cloud.framework.contexts.apiversion.ApiVersionProvider.API_VERSION_CONTEXT_NAME;
 
 class ApiVersionThreadsPropagationTest extends AbstractThreadTest {
     private static final String API_VERSION_VALUE = "v0";

@@ -1,13 +1,13 @@
 package com.netcracker.cloud.context.propagation.core;
 
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
-import org.qubership.cloud.context.propagation.core.providers.initsteps.InitializationStepPostAuthn;
-import org.qubership.cloud.context.propagation.core.providers.initsteps.InitializationStepPreAuthn;
-import org.qubership.cloud.context.propagation.core.providers.requestCount.RequestCountContextObject;
-import org.qubership.cloud.context.propagation.core.providers.requestCount.RequestCountProvider;
-import org.qubership.cloud.context.propagation.core.providers.xversion.XVersionContextObject;
-import org.qubership.cloud.context.propagation.core.providers.xversion.XVersionProvider;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.contextdata.OutgoingContextData;
+import com.netcracker.cloud.context.propagation.core.providers.initsteps.InitializationStepPostAuthn;
+import com.netcracker.cloud.context.propagation.core.providers.initsteps.InitializationStepPreAuthn;
+import com.netcracker.cloud.context.propagation.core.providers.requestCount.RequestCountContextObject;
+import com.netcracker.cloud.context.propagation.core.providers.requestCount.RequestCountProvider;
+import com.netcracker.cloud.context.propagation.core.providers.xversion.XVersionContextObject;
+import com.netcracker.cloud.context.propagation.core.providers.xversion.XVersionProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static org.qubership.cloud.context.propagation.core.providers.xversion.XVersionContextObject.X_VERSION_SERIALIZATION_NAME;
+import static com.netcracker.cloud.context.propagation.core.providers.xversion.XVersionContextObject.X_VERSION_SERIALIZATION_NAME;
 
 class RequestContextPropagationTest {
     @BeforeEach

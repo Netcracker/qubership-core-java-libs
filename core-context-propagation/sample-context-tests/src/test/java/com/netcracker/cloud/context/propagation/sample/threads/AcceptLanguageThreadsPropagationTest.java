@@ -1,16 +1,16 @@
 package com.netcracker.cloud.context.propagation.sample.threads;
 
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.framework.contexts.acceptlanguage.AcceptLanguageContextObject;
-import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.framework.contexts.acceptlanguage.AcceptLanguageContextObject;
+import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.qubership.cloud.framework.contexts.acceptlanguage.AcceptLanguageProvider.ACCEPT_LANGUAGE;
+import static com.netcracker.cloud.framework.contexts.acceptlanguage.AcceptLanguageProvider.ACCEPT_LANGUAGE;
 
 class AcceptLanguageThreadsPropagationTest extends AbstractThreadTest {
 

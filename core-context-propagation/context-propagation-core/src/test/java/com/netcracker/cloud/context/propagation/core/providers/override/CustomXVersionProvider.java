@@ -1,8 +1,8 @@
 package com.netcracker.cloud.context.propagation.core.providers.override;
 
-import org.qubership.cloud.context.propagation.core.Strategy;
-import org.qubership.cloud.context.propagation.core.providers.xversion.XVersionContextObject;
-import org.qubership.cloud.context.propagation.core.providers.xversion.XVersionProvider;
+import com.netcracker.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.context.propagation.core.providers.xversion.XVersionContextObject;
+import com.netcracker.cloud.context.propagation.core.providers.xversion.XVersionProvider;
 
 public class CustomXVersionProvider extends XVersionProvider {
 

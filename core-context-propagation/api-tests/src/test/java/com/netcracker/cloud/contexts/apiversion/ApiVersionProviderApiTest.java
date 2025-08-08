@@ -1,10 +1,10 @@
 package com.netcracker.cloud.contexts.apiversion;
 
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.contexts.IncomingContextDataFactory;
-import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider;
-import org.qubership.cloud.framework.contexts.apiversion.ApiVersionContextObject;
-import org.qubership.cloud.framework.contexts.apiversion.ApiVersionProvider;
+import com.netcracker.cloud.contexts.IncomingContextDataFactory;
+import com.netcracker.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider;
+import com.netcracker.cloud.framework.contexts.apiversion.ApiVersionContextObject;
+import com.netcracker.cloud.framework.contexts.apiversion.ApiVersionProvider;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

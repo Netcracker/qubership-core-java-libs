@@ -2,8 +2,8 @@ package com.netcracker.cloud.context.propagation.spring.resttemplate.interceptor
 
 
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.headerstracking.filters.context.AcceptLanguageContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
 import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;

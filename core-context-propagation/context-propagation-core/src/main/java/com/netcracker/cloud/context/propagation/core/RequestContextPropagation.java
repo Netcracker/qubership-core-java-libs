@@ -1,10 +1,10 @@
 package com.netcracker.cloud.context.propagation.core;
 
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
-import org.qubership.cloud.context.propagation.core.contexts.ResponsePropagatableContext;
-import org.qubership.cloud.context.propagation.core.contexts.SerializableContext;
-import org.qubership.cloud.context.propagation.core.contexts.SerializableDataContext;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.contextdata.OutgoingContextData;
+import com.netcracker.cloud.context.propagation.core.contexts.ResponsePropagatableContext;
+import com.netcracker.cloud.context.propagation.core.contexts.SerializableContext;
+import com.netcracker.cloud.context.propagation.core.contexts.SerializableDataContext;
 
 import java.util.HashSet;
 import java.util.Set;

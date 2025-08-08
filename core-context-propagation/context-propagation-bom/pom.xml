@@ -3,7 +3,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.qubership.cloud</groupId>
+    <groupId>com.netcracker.cloud</groupId>
     <artifactId>context-propagation-bom</artifactId>
     <version>7.1.4-SNAPSHOT</version>
     <packaging>pom</packaging>

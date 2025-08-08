@@ -1,15 +1,15 @@
 package com.netcracker.cloud.context.propagation.core;
 
 import org.junit.jupiter.api.*;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.providers.explicitregistration.ContextProviderWithoutAnnotation;
-import org.qubership.cloud.context.propagation.core.providers.initlevels.CheckInitLevelOne;
-import org.qubership.cloud.context.propagation.core.providers.initlevels.CheckInitLevelThree;
-import org.qubership.cloud.context.propagation.core.providers.initlevels.CheckInitLevelTwo;
-import org.qubership.cloud.context.propagation.core.providers.requestCount.RequestCountContextObject;
-import org.qubership.cloud.context.propagation.core.providers.requestCount.RequestCountProvider;
-import org.qubership.cloud.context.propagation.core.providers.xversion.XVersionContextObject;
-import org.qubership.cloud.context.propagation.core.providers.xversion.XVersionProvider;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.providers.explicitregistration.ContextProviderWithoutAnnotation;
+import com.netcracker.cloud.context.propagation.core.providers.initlevels.CheckInitLevelOne;
+import com.netcracker.cloud.context.propagation.core.providers.initlevels.CheckInitLevelThree;
+import com.netcracker.cloud.context.propagation.core.providers.initlevels.CheckInitLevelTwo;
+import com.netcracker.cloud.context.propagation.core.providers.requestCount.RequestCountContextObject;
+import com.netcracker.cloud.context.propagation.core.providers.requestCount.RequestCountProvider;
+import com.netcracker.cloud.context.propagation.core.providers.xversion.XVersionContextObject;
+import com.netcracker.cloud.context.propagation.core.providers.xversion.XVersionProvider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.qubership.cloud.context.propagation.core.ContextManager.LOOKUP_CONTEXT_PROVIDERS_PATH;
+import static com.netcracker.cloud.context.propagation.core.ContextManager.LOOKUP_CONTEXT_PROVIDERS_PATH;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -42,7 +42,7 @@ class ContextManagerTests {
 
     @BeforeEach
     void setUp() throws Exception {
-        setRegistrationPath("org.qubership.cloud"); // in some tests registration path is changed, so we need to set default value
+        setRegistrationPath("com.netcracker.cloud"); // in some tests registration path is changed, so we need to set default value
         clearRegistry();
         fillRegistry();
     }
@@ -216,7 +216,7 @@ class ContextManagerTests {
         List<ContextProvider<?>> contextProviders = ContextManager
                 .getContextProviders()
                 .stream()
-                .filter(contextProvider -> contextProvider.getClass().getName().startsWith("org.qubership.cloud.context.propagation.core.providers.initlevels"))
+                .filter(contextProvider -> contextProvider.getClass().getName().startsWith("com.netcracker.cloud.context.propagation.core.providers.initlevels"))
                 .collect(Collectors.toList());
 
         assertEquals(3, contextProviders.size());

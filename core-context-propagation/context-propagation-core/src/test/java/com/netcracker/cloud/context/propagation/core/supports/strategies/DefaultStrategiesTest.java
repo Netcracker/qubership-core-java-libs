@@ -1,7 +1,7 @@
 package com.netcracker.cloud.context.propagation.core.supports.strategies;
 
-import org.qubership.cloud.context.propagation.core.contexts.common.RequestContextObject;
-import org.qubership.cloud.context.propagation.core.contexts.common.RequestProvider;
+import com.netcracker.cloud.context.propagation.core.contexts.common.RequestContextObject;
+import com.netcracker.cloud.context.propagation.core.contexts.common.RequestProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

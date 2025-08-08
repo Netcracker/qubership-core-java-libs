@@ -2,19 +2,19 @@ package com.netcracker.cloud.contexts.allowedheaders;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.ContextPropagationHelperTest;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.context.propagation.core.contexts.common.RequestProvider;
-import org.qubership.cloud.contexts.IncomingContextDataFactory;
-import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersContextObject;
-import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider;
+import com.netcracker.cloud.ContextPropagationHelperTest;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.context.propagation.core.contexts.common.RequestProvider;
+import com.netcracker.cloud.contexts.IncomingContextDataFactory;
+import com.netcracker.cloud.framework.contexts.allowedheaders.AllowedHeadersContextObject;
+import com.netcracker.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider;
 
 import java.util.Collections;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider.HEADERS_PROPERTY;
+import static com.netcracker.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider.HEADERS_PROPERTY;
 
 class AllowedHeadersContextObjectApiTest {
 

@@ -1,9 +1,9 @@
 package com.netcracker.cloud.context.propagation.core.executors;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.context.propagation.core.providers.xversion.XVersionContextObject;
-import org.qubership.cloud.context.propagation.core.providers.xversion.XVersionProvider;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.providers.xversion.XVersionContextObject;
+import com.netcracker.cloud.context.propagation.core.providers.xversion.XVersionProvider;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

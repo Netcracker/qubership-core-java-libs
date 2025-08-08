@@ -1,6 +1,6 @@
 package com.netcracker.cloud.context.propagation.spring.resttemplate.configuration;
 
-import org.qubership.cloud.context.propagation.spring.resttemplate.interceptor.SpringRestTemplateInterceptor;
+import com.netcracker.cloud.context.propagation.spring.resttemplate.interceptor.SpringRestTemplateInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

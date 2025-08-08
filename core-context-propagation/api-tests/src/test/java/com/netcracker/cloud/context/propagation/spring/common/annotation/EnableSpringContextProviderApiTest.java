@@ -9,6 +9,6 @@ class EnableSpringContextProviderApiTest {
 
     @Test
     void checkEnableSpringContextProviderAnnotationName() {
-        assertEquals("org.qubership.cloud.context.propagation.spring.common.annotation.EnableSpringContextProvider", EnableSpringContextProvider.class.getName());
+        assertEquals("com.netcracker.cloud.context.propagation.spring.common.annotation.EnableSpringContextProvider", EnableSpringContextProvider.class.getName());
     }
 }

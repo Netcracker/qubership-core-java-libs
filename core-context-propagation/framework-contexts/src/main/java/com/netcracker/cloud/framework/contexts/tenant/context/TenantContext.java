@@ -1,9 +1,9 @@
 package com.netcracker.cloud.framework.contexts.tenant.context;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.framework.contexts.tenant.TenantContextObject;
-import org.qubership.cloud.framework.contexts.tenant.TenantNotFoundException;
-import static org.qubership.cloud.framework.contexts.tenant.DefaultTenantProvider.TENANT_CONTEXT_NAME;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
+import com.netcracker.cloud.framework.contexts.tenant.TenantNotFoundException;
+import static com.netcracker.cloud.framework.contexts.tenant.DefaultTenantProvider.TENANT_CONTEXT_NAME;
 
 import java.util.Optional;
 

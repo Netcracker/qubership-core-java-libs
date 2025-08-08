@@ -1,7 +1,7 @@
 package com.netcracker.cloud.context.propagation.spring.common.filter;
 
-import org.qubership.cloud.context.propagation.core.ContextInitializationStep;
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.context.propagation.core.ContextInitializationStep;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.filter.OncePerRequestFilter;
 

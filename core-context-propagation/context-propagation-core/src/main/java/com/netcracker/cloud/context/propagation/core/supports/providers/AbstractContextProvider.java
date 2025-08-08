@@ -1,8 +1,8 @@
 package com.netcracker.cloud.context.propagation.core.supports.providers;
 
-import org.qubership.cloud.context.propagation.core.ContextProvider;
-import org.qubership.cloud.context.propagation.core.Strategy;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.ContextProvider;
+import com.netcracker.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;

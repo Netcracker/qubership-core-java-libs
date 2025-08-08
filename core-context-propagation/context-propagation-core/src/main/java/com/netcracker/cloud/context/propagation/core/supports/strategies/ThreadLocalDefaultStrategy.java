@@ -1,6 +1,6 @@
 package com.netcracker.cloud.context.propagation.core.supports.strategies;
 
-import org.qubership.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.context.propagation.core.Strategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

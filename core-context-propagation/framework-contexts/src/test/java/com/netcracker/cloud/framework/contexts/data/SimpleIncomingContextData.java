@@ -1,6 +1,6 @@
 package com.netcracker.cloud.framework.contexts.data;
 
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
 
 import java.util.List;
 import java.util.Map;

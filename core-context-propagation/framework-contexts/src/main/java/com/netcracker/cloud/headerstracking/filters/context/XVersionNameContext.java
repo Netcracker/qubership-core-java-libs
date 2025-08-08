@@ -1,8 +1,8 @@
 package com.netcracker.cloud.headerstracking.filters.context;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.framework.contexts.xversionname.XVersionNameContextObject;
-import org.qubership.cloud.framework.contexts.xversionname.XVersionNameProvider;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.framework.contexts.xversionname.XVersionNameContextObject;
+import com.netcracker.cloud.framework.contexts.xversionname.XVersionNameProvider;
 
 
 public class XVersionNameContext {

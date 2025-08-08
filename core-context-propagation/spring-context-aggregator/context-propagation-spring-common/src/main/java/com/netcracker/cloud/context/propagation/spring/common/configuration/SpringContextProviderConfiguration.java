@@ -1,7 +1,7 @@
 package com.netcracker.cloud.context.propagation.spring.common.configuration;
 
-import org.qubership.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
-import org.qubership.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
+import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
+import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -9,6 +9,6 @@ class RegisterProviderApiTest {
 
     @Test
     void checkRegisterProviderAnnotationName(){
-        assertEquals("org.qubership.cloud.context.propagation.core.RegisterProvider", RegisterProvider.class.getName());
+        assertEquals("com.netcracker.cloud.context.propagation.core.RegisterProvider", RegisterProvider.class.getName());
     }
 }

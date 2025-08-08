@@ -2,11 +2,11 @@ package com.netcracker.cloud.contexts.acceptlanguage;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.contexts.common.RequestProvider;
-import org.qubership.cloud.contexts.IncomingContextDataFactory;
-import org.qubership.cloud.framework.contexts.acceptlanguage.AcceptLanguageContextObject;
-import org.qubership.cloud.framework.contexts.acceptlanguage.AcceptLanguageProvider;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.contexts.common.RequestProvider;
+import com.netcracker.cloud.contexts.IncomingContextDataFactory;
+import com.netcracker.cloud.framework.contexts.acceptlanguage.AcceptLanguageContextObject;
+import com.netcracker.cloud.framework.contexts.acceptlanguage.AcceptLanguageProvider;
 
 import java.util.Collections;
 

@@ -1,10 +1,10 @@
 package com.netcracker.cloud.headerstracking.filters.context;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContextObject;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.framework.contexts.xrequestid.XRequestIdContextObject;
 import org.jetbrains.annotations.NotNull;
 
-import static org.qubership.cloud.framework.contexts.xrequestid.XRequestIdContextObject.X_REQUEST_ID;
+import static com.netcracker.cloud.framework.contexts.xrequestid.XRequestIdContextObject.X_REQUEST_ID;
 
 
 public class RequestIdContext {

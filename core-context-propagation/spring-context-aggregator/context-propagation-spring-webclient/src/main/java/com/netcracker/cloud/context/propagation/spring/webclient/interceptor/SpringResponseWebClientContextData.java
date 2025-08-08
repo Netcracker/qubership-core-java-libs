@@ -1,6 +1,6 @@
 package com.netcracker.cloud.context.propagation.spring.webclient.interceptor;
 
-import org.qubership.cloud.context.propagation.core.contextdata.OutgoingContextData;
+import com.netcracker.cloud.context.propagation.core.contextdata.OutgoingContextData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.reactive.function.client.ClientRequest;

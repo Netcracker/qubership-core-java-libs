@@ -1,9 +1,9 @@
 package com.netcracker.cloud.framework.contexts.xrequestid;
 
 import org.junit.jupiter.api.*;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.Scope;
-import org.qubership.cloud.framework.contexts.strategies.AbstractXRequestIdStrategy;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.Scope;
+import com.netcracker.cloud.framework.contexts.strategies.AbstractXRequestIdStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;

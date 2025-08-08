@@ -1,8 +1,8 @@
 package com.netcracker.cloud.framework.contexts.tenant;
 
-import org.qubership.cloud.framework.contexts.strategies.AbstractTenantStrategy;
-import org.qubership.cloud.context.propagation.core.Strategy;
-import org.qubership.cloud.context.propagation.core.supports.strategies.DefaultStrategies;
+import com.netcracker.cloud.framework.contexts.strategies.AbstractTenantStrategy;
+import com.netcracker.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.context.propagation.core.supports.strategies.DefaultStrategies;
 import java.util.function.Supplier;
 
 public class DefaultTenantStrategy extends AbstractTenantStrategy {

@@ -1,10 +1,10 @@
 package com.netcracker.cloud.headerstracking.filters.context;
 
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.framework.contexts.businessprocess.BusinessProcessContextObject;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.framework.contexts.businessprocess.BusinessProcessContextObject;
 import org.jetbrains.annotations.NotNull;
 
-import static org.qubership.cloud.framework.contexts.businessprocess.BusinessProcessProvider.CONTEXT_NAME;
+import static com.netcracker.cloud.framework.contexts.businessprocess.BusinessProcessProvider.CONTEXT_NAME;
 
 public class BusinessProcessIdContext {
 

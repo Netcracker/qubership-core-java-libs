@@ -14,7 +14,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
-import static org.qubership.cloud.context.propagation.core.ContextManager.LOOKUP_CONTEXT_PROVIDERS_PATH;
+import static com.netcracker.cloud.context.propagation.core.ContextManager.LOOKUP_CONTEXT_PROVIDERS_PATH;
 
 
 class ContextProviderLoader {
@@ -82,7 +82,7 @@ class ContextProviderLoader {
     }
 
     private static String[] getPrefixPath() {
-        String prefixPath = System.getProperty(LOOKUP_CONTEXT_PROVIDERS_PATH, "org.qubership.cloud,com");
+        String prefixPath = System.getProperty(LOOKUP_CONTEXT_PROVIDERS_PATH, "com.netcracker.cloud,com");
         log.debug("Prefix path: {} will be used to find all context providers under this path", prefixPath);
         return prefixPath.split(",");
     }

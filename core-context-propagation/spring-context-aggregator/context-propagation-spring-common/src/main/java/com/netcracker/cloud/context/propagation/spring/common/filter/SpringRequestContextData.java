@@ -1,6 +1,6 @@
 package com.netcracker.cloud.context.propagation.spring.common.filter;
 
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;

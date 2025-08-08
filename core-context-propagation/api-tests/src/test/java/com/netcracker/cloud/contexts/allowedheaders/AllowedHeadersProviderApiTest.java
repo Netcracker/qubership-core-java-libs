@@ -1,15 +1,15 @@
 package com.netcracker.cloud.contexts.allowedheaders;
 
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.contexts.IncomingContextDataFactory;
-import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersContextObject;
-import org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider;
+import com.netcracker.cloud.contexts.IncomingContextDataFactory;
+import com.netcracker.cloud.framework.contexts.allowedheaders.AllowedHeadersContextObject;
+import com.netcracker.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider;
 
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.qubership.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider.HEADERS_PROPERTY;
+import static com.netcracker.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider.HEADERS_PROPERTY;
 
 class AllowedHeadersProviderApiTest {
 

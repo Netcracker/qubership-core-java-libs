@@ -4,20 +4,20 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.qubership.cloud.context.propagation.core.ContextManager;
-import org.qubership.cloud.context.propagation.core.RequestContextPropagation;
-import org.qubership.cloud.context.propagation.core.contextdata.IncomingContextData;
-import org.qubership.cloud.framework.contexts.data.ContextDataRequest;
-import org.qubership.cloud.framework.contexts.data.SimpleIncomingContextData;
-import org.qubership.cloud.framework.contexts.helper.AbstractContextTestWithProperties;
-import org.qubership.cloud.headerstracking.filters.context.ApiVersionContext;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.framework.contexts.data.ContextDataRequest;
+import com.netcracker.cloud.framework.contexts.data.SimpleIncomingContextData;
+import com.netcracker.cloud.framework.contexts.helper.AbstractContextTestWithProperties;
+import com.netcracker.cloud.headerstracking.filters.context.ApiVersionContext;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.qubership.cloud.framework.contexts.apiversion.ApiVersionContextObject.SERIALIZED_API_VERSION;
-import static org.qubership.cloud.framework.contexts.data.ContextDataRequest.CUSTOM_HEADER;
+import static com.netcracker.cloud.framework.contexts.apiversion.ApiVersionContextObject.SERIALIZED_API_VERSION;
+import static com.netcracker.cloud.framework.contexts.data.ContextDataRequest.CUSTOM_HEADER;
 
 class ApiVersionContextObjectPropagationTest extends AbstractContextTestWithProperties {
     private static final String API_VERSION_CONTEXT_NAME = "Api-Version-Context";
