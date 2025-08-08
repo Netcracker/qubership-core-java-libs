@@ -1,16 +1,16 @@
 package com.netcracker.maas.declarative.kafka.client.impl.client.consumer.executor;
 
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
-import org.qubership.cloud.maas.bluegreen.kafka.BGKafkaConsumer;
-import org.qubership.cloud.maas.bluegreen.kafka.CommitMarker;
-import org.qubership.cloud.maas.bluegreen.kafka.Record;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaConsumerErrorHandler;
-import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaIllegalStateException;
-import org.qubership.maas.declarative.kafka.client.api.filter.ConsumerRecordFilter;
-import org.qubership.maas.declarative.kafka.client.api.filter.RecordFilter;
-import org.qubership.maas.declarative.kafka.client.impl.client.consumer.filter.Chain;
-import org.qubership.maas.declarative.kafka.client.impl.client.consumer.filter.impl.FilterExecutor;
-import org.qubership.maas.declarative.kafka.client.impl.client.creator.KafkaClientCreationService;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.maas.bluegreen.kafka.BGKafkaConsumer;
+import com.netcracker.cloud.maas.bluegreen.kafka.CommitMarker;
+import com.netcracker.cloud.maas.bluegreen.kafka.Record;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaConsumerErrorHandler;
+import com.netcracker.maas.declarative.kafka.client.api.exception.MaasKafkaIllegalStateException;
+import com.netcracker.maas.declarative.kafka.client.api.filter.ConsumerRecordFilter;
+import com.netcracker.maas.declarative.kafka.client.api.filter.RecordFilter;
+import com.netcracker.maas.declarative.kafka.client.impl.client.consumer.filter.Chain;
+import com.netcracker.maas.declarative.kafka.client.impl.client.consumer.filter.impl.FilterExecutor;
+import com.netcracker.maas.declarative.kafka.client.impl.client.creator.KafkaClientCreationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import static org.qubership.maas.declarative.kafka.client.impl.Utils.safe;
+import static com.netcracker.maas.declarative.kafka.client.impl.Utils.safe;
 
 public class MaasConsumingExecutor implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(MaasConsumingExecutor.class);

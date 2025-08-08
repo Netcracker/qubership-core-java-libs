@@ -1,9 +1,9 @@
 package com.netcracker.maas.declarative.kafka.client.impl.client.state.manager;
 
-import org.qubership.maas.declarative.kafka.client.api.*;
-import org.qubership.maas.declarative.kafka.client.impl.client.MaasKafkaInternalScheduledSystemExecServiceKeeper;
-import org.qubership.maas.declarative.kafka.client.impl.client.notification.api.MaasKafkaClientStateChangeNotificationService;
-import org.qubership.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants;
+import com.netcracker.maas.declarative.kafka.client.api.*;
+import com.netcracker.maas.declarative.kafka.client.impl.client.MaasKafkaInternalScheduledSystemExecServiceKeeper;
+import com.netcracker.maas.declarative.kafka.client.impl.client.notification.api.MaasKafkaClientStateChangeNotificationService;
+import com.netcracker.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

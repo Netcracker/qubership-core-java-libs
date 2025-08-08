@@ -1,8 +1,8 @@
 package com.netcracker.maas.declarative.kafka.client.api;
 
-import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
-import org.qubership.maas.declarative.kafka.client.api.model.MaasProducerRecord;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition;
+import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
+import com.netcracker.maas.declarative.kafka.client.api.model.MaasProducerRecord;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.RecordMetadata;
 

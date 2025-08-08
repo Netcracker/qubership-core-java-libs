@@ -1,6 +1,6 @@
 package com.netcracker.maas.declarative.kafka.client.api.model.definition;
 
-import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaConsumerDefinitionBuildException;
+import com.netcracker.maas.declarative.kafka.client.api.exception.MaasKafkaConsumerDefinitionBuildException;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 

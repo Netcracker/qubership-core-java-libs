@@ -1,6 +1,6 @@
 package com.netcracker.maas.declarative.kafka.client.impl.local.dev.config.impl;
 
-import org.qubership.maas.declarative.kafka.client.impl.local.dev.config.api.MaasKafkaLocalDevConfigProviderService;
+import com.netcracker.maas.declarative.kafka.client.impl.local.dev.config.api.MaasKafkaLocalDevConfigProviderService;
 
 import java.util.Map;
 

@@ -1,9 +1,9 @@
 package com.netcracker.maas.declarative.kafka.client.api.model;
 
-import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaConsumerCreationRequestBuildException;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasTopicDefinition;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.ManagedBy;
+import com.netcracker.maas.declarative.kafka.client.api.exception.MaasKafkaConsumerCreationRequestBuildException;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasTopicDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.ManagedBy;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -79,7 +79,7 @@ public class MaasKafkaConsumerCreationRequestBuildExceptionTest {
                     .build();
         });
 
-        Assertions.assertTrue(ex.getMessage().startsWith("There is no key deserializer for consumer org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition"));
+        Assertions.assertTrue(ex.getMessage().startsWith("There is no key deserializer for consumer com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition"));
     }
 
     @Test
@@ -107,6 +107,6 @@ public class MaasKafkaConsumerCreationRequestBuildExceptionTest {
                     .build();
         });
 
-        Assertions.assertTrue(ex.getMessage().startsWith("There is no value deserializer for consumer org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition"));
+        Assertions.assertTrue(ex.getMessage().startsWith("There is no value deserializer for consumer com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition"));
     }
 }

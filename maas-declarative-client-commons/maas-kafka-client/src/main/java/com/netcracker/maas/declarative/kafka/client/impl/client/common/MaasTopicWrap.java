@@ -1,6 +1,6 @@
 package com.netcracker.maas.declarative.kafka.client.impl.client.common;
 
-import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
+import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Objects;

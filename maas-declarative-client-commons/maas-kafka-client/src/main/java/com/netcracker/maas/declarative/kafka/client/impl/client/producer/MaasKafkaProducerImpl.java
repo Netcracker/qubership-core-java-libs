@@ -1,25 +1,25 @@
 package com.netcracker.maas.declarative.kafka.client.impl.client.producer;
 
-import org.qubership.cloud.framework.contexts.tenant.context.TenantContext;
-import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaClientState;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaProducer;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaTopicService;
-import org.qubership.maas.declarative.kafka.client.api.context.propagation.ContextPropagationService;
-import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaException;
-import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaNoResourceException;
-import org.qubership.maas.declarative.kafka.client.api.model.MaasKafkaProducerCreationRequest;
-import org.qubership.maas.declarative.kafka.client.api.model.MaasProducerRecord;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaCommonClientDefinition;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition;
-import org.qubership.maas.declarative.kafka.client.impl.Utils;
-import org.qubership.maas.declarative.kafka.client.impl.client.common.MaasKafkaCommonClient;
-import org.qubership.maas.declarative.kafka.client.impl.client.common.MaasTopicWrap;
-import org.qubership.maas.declarative.kafka.client.impl.client.creator.KafkaClientCreationService;
-import org.qubership.maas.declarative.kafka.client.impl.client.notification.api.MaasKafkaClientStateChangeNotificationService;
-import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;
-import org.qubership.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
-import org.qubership.maas.declarative.kafka.client.impl.tracing.TracingService;
+import com.netcracker.cloud.framework.contexts.tenant.context.TenantContext;
+import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaClientState;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaProducer;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaTopicService;
+import com.netcracker.maas.declarative.kafka.client.api.context.propagation.ContextPropagationService;
+import com.netcracker.maas.declarative.kafka.client.api.exception.MaasKafkaException;
+import com.netcracker.maas.declarative.kafka.client.api.exception.MaasKafkaNoResourceException;
+import com.netcracker.maas.declarative.kafka.client.api.model.MaasKafkaProducerCreationRequest;
+import com.netcracker.maas.declarative.kafka.client.api.model.MaasProducerRecord;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaCommonClientDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition;
+import com.netcracker.maas.declarative.kafka.client.impl.Utils;
+import com.netcracker.maas.declarative.kafka.client.impl.client.common.MaasKafkaCommonClient;
+import com.netcracker.maas.declarative.kafka.client.impl.client.common.MaasTopicWrap;
+import com.netcracker.maas.declarative.kafka.client.impl.client.creator.KafkaClientCreationService;
+import com.netcracker.maas.declarative.kafka.client.impl.client.notification.api.MaasKafkaClientStateChangeNotificationService;
+import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;
+import com.netcracker.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
+import com.netcracker.maas.declarative.kafka.client.impl.tracing.TracingService;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -38,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
-import static org.qubership.maas.declarative.kafka.client.impl.Utils.safe;
+import static com.netcracker.maas.declarative.kafka.client.impl.Utils.safe;
 
 public class MaasKafkaProducerImpl extends MaasKafkaCommonClient implements MaasKafkaProducer {
     private static final Logger LOG = LoggerFactory.getLogger(MaasKafkaProducerImpl.class);

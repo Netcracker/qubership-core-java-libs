@@ -1,8 +1,8 @@
 package com.netcracker.maas.declarative.kafka.client.impl.client.consumer.filter.impl;
 
-import org.qubership.cloud.maas.bluegreen.kafka.Record;
-import org.qubership.maas.declarative.kafka.client.api.filter.ConsumerRecordFilter;
-import org.qubership.maas.declarative.kafka.client.impl.client.consumer.filter.Chain;
+import com.netcracker.cloud.maas.bluegreen.kafka.Record;
+import com.netcracker.maas.declarative.kafka.client.api.filter.ConsumerRecordFilter;
+import com.netcracker.maas.declarative.kafka.client.impl.client.consumer.filter.Chain;
 
 public class NoopFilter implements ConsumerRecordFilter {
 

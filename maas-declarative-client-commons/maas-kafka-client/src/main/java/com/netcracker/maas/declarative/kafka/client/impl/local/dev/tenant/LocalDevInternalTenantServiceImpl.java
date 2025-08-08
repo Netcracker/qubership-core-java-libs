@@ -1,6 +1,6 @@
 package com.netcracker.maas.declarative.kafka.client.impl.local.dev.tenant;
 
-import org.qubership.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
+import com.netcracker.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
 
 import java.util.List;
 import java.util.function.Consumer;

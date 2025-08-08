@@ -1,7 +1,7 @@
 package com.netcracker.maas.declarative.kafka.client.api;
 
-import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
+import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
 import org.apache.kafka.clients.consumer.Consumer;
 
 /**

@@ -1,9 +1,9 @@
 package com.netcracker.maas.declarative.kafka.client.impl.topic.provider.impl;
 
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaTopicService;
-import org.qubership.maas.declarative.kafka.client.impl.topic.LocalDevMaasDirectKafkaTopicServiceImpl;
-import org.qubership.maas.declarative.kafka.client.impl.local.dev.config.api.MaasKafkaLocalDevConfigProviderService;
-import org.qubership.maas.declarative.kafka.client.impl.topic.provider.api.MaasKafkaTopicServiceProvider;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaTopicService;
+import com.netcracker.maas.declarative.kafka.client.impl.topic.LocalDevMaasDirectKafkaTopicServiceImpl;
+import com.netcracker.maas.declarative.kafka.client.impl.local.dev.config.api.MaasKafkaLocalDevConfigProviderService;
+import com.netcracker.maas.declarative.kafka.client.impl.topic.provider.api.MaasKafkaTopicServiceProvider;
 
 // for development
 public class LocalDevMaasDirectKafkaTopicServiceProviderImpl implements MaasKafkaTopicServiceProvider {

@@ -1,20 +1,20 @@
 package com.netcracker.maas.declarative.kafka.client.impl.client.common;
 
-import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaClient;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaClientState;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaClientStateChangeListener;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaTopicService;
-import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaException;
-import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaIllegalStateException;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.ManagedBy;
-import org.qubership.maas.declarative.kafka.client.impl.client.MaasKafkaInternalScheduledSystemExecServiceKeeper;
-import org.qubership.maas.declarative.kafka.client.impl.client.notification.api.MaasKafkaClientStateChangeNotificationService;
-import org.qubership.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants;
-import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;
-import org.qubership.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaCommonClientDefinition;
-import org.qubership.maas.declarative.kafka.client.impl.tracing.TracingService;
+import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaClient;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaClientState;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaClientStateChangeListener;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaTopicService;
+import com.netcracker.maas.declarative.kafka.client.api.exception.MaasKafkaException;
+import com.netcracker.maas.declarative.kafka.client.api.exception.MaasKafkaIllegalStateException;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.ManagedBy;
+import com.netcracker.maas.declarative.kafka.client.impl.client.MaasKafkaInternalScheduledSystemExecServiceKeeper;
+import com.netcracker.maas.declarative.kafka.client.impl.client.notification.api.MaasKafkaClientStateChangeNotificationService;
+import com.netcracker.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants;
+import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;
+import com.netcracker.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaCommonClientDefinition;
+import com.netcracker.maas.declarative.kafka.client.impl.tracing.TracingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

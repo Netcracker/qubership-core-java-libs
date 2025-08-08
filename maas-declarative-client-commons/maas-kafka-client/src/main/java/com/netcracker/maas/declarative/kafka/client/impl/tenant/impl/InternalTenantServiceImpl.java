@@ -1,8 +1,8 @@
 package com.netcracker.maas.declarative.kafka.client.impl.tenant.impl;
 
-import org.qubership.cloud.tenantmanager.client.Tenant;
-import org.qubership.cloud.tenantmanager.client.TenantManagerConnector;
-import org.qubership.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
+import com.netcracker.cloud.tenantmanager.client.Tenant;
+import com.netcracker.cloud.tenantmanager.client.TenantManagerConnector;
+import com.netcracker.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
 
 import java.util.List;
 import java.util.function.Consumer;

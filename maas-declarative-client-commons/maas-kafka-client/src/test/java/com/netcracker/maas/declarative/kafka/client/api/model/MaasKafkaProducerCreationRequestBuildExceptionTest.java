@@ -1,9 +1,9 @@
 package com.netcracker.maas.declarative.kafka.client.api.model;
 
-import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaProducerCreationRequestBuildException;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasTopicDefinition;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.ManagedBy;
+import com.netcracker.maas.declarative.kafka.client.api.exception.MaasKafkaProducerCreationRequestBuildException;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasTopicDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.ManagedBy;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,7 @@ public class MaasKafkaProducerCreationRequestBuildExceptionTest {
                     .build();
         });
 
-        Assertions.assertTrue(ex.getMessage().startsWith("There is no key serializer for producer org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition"));
+        Assertions.assertTrue(ex.getMessage().startsWith("There is no key serializer for producer com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition"));
     }
 
     @Test
@@ -73,6 +73,6 @@ public class MaasKafkaProducerCreationRequestBuildExceptionTest {
         });
 
         System.out.println(ex.getMessage());
-        Assertions.assertTrue(ex.getMessage().startsWith("There is no value serializer for producer org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition"));
+        Assertions.assertTrue(ex.getMessage().startsWith("There is no value serializer for producer com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition"));
     }
 }

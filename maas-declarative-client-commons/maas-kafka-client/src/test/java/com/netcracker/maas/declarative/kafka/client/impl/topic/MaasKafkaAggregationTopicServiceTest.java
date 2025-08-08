@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaTopicService;
-import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaException;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaCommonClientDefinition;
-import org.qubership.maas.declarative.kafka.client.impl.topic.provider.api.MaasKafkaTopicServiceProvider;
+import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaTopicService;
+import com.netcracker.maas.declarative.kafka.client.api.exception.MaasKafkaException;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaCommonClientDefinition;
+import com.netcracker.maas.declarative.kafka.client.impl.topic.provider.api.MaasKafkaTopicServiceProvider;
 
 import java.util.Arrays;
 import java.util.Collections;

@@ -1,7 +1,7 @@
 package com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.provider.api;
 
 
-import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;
+import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;
 
 // TODO will be used to provide any type of providers
 public interface InternalMaasCredExtractorProvider {

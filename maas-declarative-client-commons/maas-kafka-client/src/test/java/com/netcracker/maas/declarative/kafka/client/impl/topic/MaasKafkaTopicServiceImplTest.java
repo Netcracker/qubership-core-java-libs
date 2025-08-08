@@ -1,13 +1,13 @@
 package com.netcracker.maas.declarative.kafka.client.impl.topic;
 
-import org.qubership.cloud.maas.client.api.Classifier;
-import org.qubership.cloud.maas.client.api.kafka.KafkaMaaSClient;
-import org.qubership.cloud.maas.client.api.kafka.TopicCreateOptions;
-import org.qubership.cloud.maas.client.api.kafka.protocolextractors.OnTopicExists;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaCommonClientDefinition;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasTopicDefinition;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.ManagedBy;
+import com.netcracker.cloud.maas.client.api.Classifier;
+import com.netcracker.cloud.maas.client.api.kafka.KafkaMaaSClient;
+import com.netcracker.cloud.maas.client.api.kafka.TopicCreateOptions;
+import com.netcracker.cloud.maas.client.api.kafka.protocolextractors.OnTopicExists;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaCommonClientDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasTopicDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.ManagedBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

@@ -1,9 +1,9 @@
 package com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.impl;
 
-import org.qubership.cloud.maas.client.impl.dto.kafka.v1.TopicInfo;
-import org.qubership.cloud.maas.client.impl.dto.kafka.v1.TopicUserCredentialsImpl;
-import org.qubership.cloud.maas.client.impl.kafka.TopicAddressImpl;
-import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.provider.impl.DefaultInternalMaasTopicCredentialsExtractorProviderImpl;
+import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicInfo;
+import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicUserCredentialsImpl;
+import com.netcracker.cloud.maas.client.impl.kafka.TopicAddressImpl;
+import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.provider.impl.DefaultInternalMaasTopicCredentialsExtractorProviderImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

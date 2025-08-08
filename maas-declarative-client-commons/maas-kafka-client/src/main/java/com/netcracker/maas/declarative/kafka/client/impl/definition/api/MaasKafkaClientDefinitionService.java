@@ -1,8 +1,8 @@
 package com.netcracker.maas.declarative.kafka.client.impl.definition.api;
 
-import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaMandatoryPropertyAbsentException;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.exception.MaasKafkaMandatoryPropertyAbsentException;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition;
 
 /**
  * Used to extract client definitions from configuration properties

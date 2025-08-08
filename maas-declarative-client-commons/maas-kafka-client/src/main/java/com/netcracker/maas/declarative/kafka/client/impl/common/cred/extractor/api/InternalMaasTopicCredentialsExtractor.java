@@ -1,6 +1,6 @@
 package com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.api;
 
-import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
+import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
 
 import java.util.Map;
 

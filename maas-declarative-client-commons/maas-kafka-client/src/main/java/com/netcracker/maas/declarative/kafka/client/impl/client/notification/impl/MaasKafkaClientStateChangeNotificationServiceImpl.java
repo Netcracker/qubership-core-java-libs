@@ -1,6 +1,6 @@
 package com.netcracker.maas.declarative.kafka.client.impl.client.notification.impl;
 
-import org.qubership.maas.declarative.kafka.client.impl.client.notification.api.MaasKafkaClientStateChangeNotificationService;
+import com.netcracker.maas.declarative.kafka.client.impl.client.notification.api.MaasKafkaClientStateChangeNotificationService;
 
 import java.util.ArrayList;
 import java.util.List;

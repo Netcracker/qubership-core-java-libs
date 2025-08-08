@@ -1,8 +1,8 @@
 package com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.provider.impl;
 
-import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;
-import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.impl.LocalDevInternalTopicCredentialsExtractorImpl;
-import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.provider.api.InternalMaasCredExtractorProvider;
+import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;
+import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.impl.LocalDevInternalTopicCredentialsExtractorImpl;
+import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.provider.api.InternalMaasCredExtractorProvider;
 
 // Lcoaldev only
 public class LocalDevInternalTopicCredentialsExtractorProviderImpl implements InternalMaasCredExtractorProvider {

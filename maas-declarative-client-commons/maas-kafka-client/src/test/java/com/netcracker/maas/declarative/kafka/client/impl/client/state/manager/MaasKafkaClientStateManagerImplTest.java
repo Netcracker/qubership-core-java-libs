@@ -1,8 +1,8 @@
 package com.netcracker.maas.declarative.kafka.client.impl.client.state.manager;
 
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaClient;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaClientState;
-import org.qubership.maas.declarative.kafka.client.impl.client.notification.api.MaasKafkaClientStateChangeNotificationService;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaClient;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaClientState;
+import com.netcracker.maas.declarative.kafka.client.impl.client.notification.api.MaasKafkaClientStateChangeNotificationService;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

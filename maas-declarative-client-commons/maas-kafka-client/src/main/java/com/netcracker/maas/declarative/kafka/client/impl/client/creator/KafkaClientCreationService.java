@@ -1,8 +1,8 @@
 package com.netcracker.maas.declarative.kafka.client.impl.client.creator;
 
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
-import org.qubership.cloud.maas.bluegreen.kafka.BGKafkaConsumer;
-import org.qubership.maas.declarative.kafka.client.impl.common.bg.KafkaConsumerConfiguration;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.maas.bluegreen.kafka.BGKafkaConsumer;
+import com.netcracker.maas.declarative.kafka.client.impl.common.bg.KafkaConsumerConfiguration;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.common.serialization.Deserializer;

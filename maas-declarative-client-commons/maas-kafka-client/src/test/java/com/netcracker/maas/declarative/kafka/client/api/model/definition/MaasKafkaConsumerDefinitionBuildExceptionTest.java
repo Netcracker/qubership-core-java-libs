@@ -1,6 +1,6 @@
 package com.netcracker.maas.declarative.kafka.client.api.model.definition;
 
-import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaConsumerDefinitionBuildException;
+import com.netcracker.maas.declarative.kafka.client.api.exception.MaasKafkaConsumerDefinitionBuildException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -1,11 +1,11 @@
 package com.netcracker.maas.declarative.kafka.client.impl.definition.impl;
 
-import org.qubership.cloud.maas.bluegreen.kafka.ConsumerConsistencyMode;
-import org.qubership.cloud.maas.bluegreen.kafka.OffsetSetupStrategy;
-import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaMandatoryPropertyAbsentException;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.*;
-import org.qubership.maas.declarative.kafka.client.impl.definition.api.MaasKafkaClientConfigPlatformService;
-import org.qubership.maas.declarative.kafka.client.impl.definition.api.MaasKafkaClientDefinitionService;
+import com.netcracker.cloud.maas.bluegreen.kafka.ConsumerConsistencyMode;
+import com.netcracker.cloud.maas.bluegreen.kafka.OffsetSetupStrategy;
+import com.netcracker.maas.declarative.kafka.client.api.exception.MaasKafkaMandatoryPropertyAbsentException;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.*;
+import com.netcracker.maas.declarative.kafka.client.impl.definition.api.MaasKafkaClientConfigPlatformService;
+import com.netcracker.maas.declarative.kafka.client.impl.definition.api.MaasKafkaClientDefinitionService;
 
 import java.time.Duration;
 import java.util.Map;
@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.qubership.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants.*;
+import static com.netcracker.maas.declarative.kafka.client.impl.common.constant.MaasKafkaCommonConstants.*;
 
 public class MaasKafkaClientDefinitionServiceImpl implements MaasKafkaClientDefinitionService {
 

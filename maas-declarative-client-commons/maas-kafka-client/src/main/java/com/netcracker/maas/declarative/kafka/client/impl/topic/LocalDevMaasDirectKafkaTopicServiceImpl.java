@@ -1,12 +1,12 @@
 package com.netcracker.maas.declarative.kafka.client.impl.topic;
 
-import org.qubership.cloud.maas.client.api.Classifier;
-import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
-import org.qubership.cloud.maas.client.api.kafka.TopicUserCredentials;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaTopicService;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaCommonClientDefinition;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasTopicDefinition;
-import org.qubership.maas.declarative.kafka.client.impl.local.dev.config.api.MaasKafkaLocalDevConfigProviderService;
+import com.netcracker.cloud.maas.client.api.Classifier;
+import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
+import com.netcracker.cloud.maas.client.api.kafka.TopicUserCredentials;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaTopicService;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaCommonClientDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasTopicDefinition;
+import com.netcracker.maas.declarative.kafka.client.impl.local.dev.config.api.MaasKafkaLocalDevConfigProviderService;
 import lombok.Value;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -14,7 +14,7 @@ import org.apache.kafka.common.KafkaFuture;
 
 import java.util.*;
 
-import static org.qubership.cloud.maas.client.api.Classifier.NAMESPACE;
+import static com.netcracker.cloud.maas.client.api.Classifier.NAMESPACE;
 
 
 // for development

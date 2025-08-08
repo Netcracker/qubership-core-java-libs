@@ -1,7 +1,7 @@
 package com.netcracker.maas.declarative.kafka.client.api.model.definition;
 
-import org.qubership.cloud.maas.bluegreen.kafka.ConsumerConsistencyMode;
-import org.qubership.cloud.maas.bluegreen.kafka.OffsetSetupStrategy;
+import com.netcracker.cloud.maas.bluegreen.kafka.ConsumerConsistencyMode;
+import com.netcracker.cloud.maas.bluegreen.kafka.OffsetSetupStrategy;
 
 import java.util.function.Supplier;
 

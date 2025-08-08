@@ -1,7 +1,7 @@
 package com.netcracker.maas.declarative.kafka.client.api.model;
 
-import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaProducerCreationRequestBuildException;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.exception.MaasKafkaProducerCreationRequestBuildException;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.Serializer;
 

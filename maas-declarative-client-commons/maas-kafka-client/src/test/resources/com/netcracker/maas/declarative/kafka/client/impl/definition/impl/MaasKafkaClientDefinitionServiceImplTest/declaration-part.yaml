@@ -115,7 +115,7 @@ maas:
               key:
                 deserializer: org.apache.kafka.common.serialization.StringDeserializer
               value:
-                deserializer: org.qubership.maas.qm.core.cleaning.deserializer.ConfirmationMessageDeserializer
+                deserializer: com.netcracker.maas.qm.core.cleaning.deserializer.ConfirmationMessageDeserializer
               auto:
                 offset:
                   reset: latest
@@ -141,7 +141,7 @@ maas:
               key:
                 deserializer: org.apache.kafka.common.serialization.StringDeserializer
               value:
-                deserializer: org.qubership.maas.qm.core.cleaning.deserializer.NotificationMessageDeserializer
+                deserializer: com.netcracker.maas.qm.core.cleaning.deserializer.NotificationMessageDeserializer
               auto:
                 offset:
                   reset: latest

@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.qubership.cloud.maas.client</groupId>
+    <groupId>com.netcracker.cloud.maas.client</groupId>
     <artifactId>maas-declarative-kafka-client-parent</artifactId>
     <version>5.1.2-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -28,7 +28,7 @@
 
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <kafka-clients.version>3.8.1</kafka-clients.version>
-        <kafka-blue-green-consumer.version>11.1.1</kafka-blue-green-consumer.version>
+        <kafka-blue-green-consumer.version>11.1.2-SNAPSHOT</kafka-blue-green-consumer.version>
 
         <mockito.version>5.14.2</mockito.version>
         <security-common-authentication.version>5.1.33</security-common-authentication.version>
@@ -55,7 +55,7 @@
                 <version>${kafka-clients.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud.maas.client</groupId>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>kafka-blue-green-consumer</artifactId>
                 <version>${kafka-blue-green-consumer.version}</version>
             </dependency>

@@ -1,7 +1,7 @@
 package com.netcracker.maas.declarative.kafka.client.api.model.definition;
 
 
-import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaProducerDefinitionBuildException;
+import com.netcracker.maas.declarative.kafka.client.api.exception.MaasKafkaProducerDefinitionBuildException;
 
 import java.util.Map;
 

@@ -1,8 +1,8 @@
 package com.netcracker.maas.declarative.kafka.client.impl.client.consumer.executor;
 
-import org.qubership.cloud.maas.bluegreen.kafka.CommitMarker;
-import org.qubership.cloud.maas.bluegreen.kafka.Record;
-import org.qubership.cloud.maas.bluegreen.kafka.RecordsBatch;
+import com.netcracker.cloud.maas.bluegreen.kafka.CommitMarker;
+import com.netcracker.cloud.maas.bluegreen.kafka.Record;
+import com.netcracker.cloud.maas.bluegreen.kafka.RecordsBatch;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.util.Collections;

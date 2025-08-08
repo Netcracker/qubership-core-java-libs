@@ -1,11 +1,11 @@
 package com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
-import org.qubership.cloud.maas.client.impl.dto.kafka.v1.TopicInfo;
-import org.qubership.cloud.maas.client.impl.kafka.TopicAddressImpl;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaTopicService;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaCommonClientDefinition;
+import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
+import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicInfo;
+import com.netcracker.cloud.maas.client.impl.kafka.TopicAddressImpl;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaTopicService;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaCommonClientDefinition;
 
 import java.io.IOException;
 

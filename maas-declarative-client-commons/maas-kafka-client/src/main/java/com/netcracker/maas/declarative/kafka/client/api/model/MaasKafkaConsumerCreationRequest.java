@@ -1,8 +1,8 @@
 package com.netcracker.maas.declarative.kafka.client.api.model;
 
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaConsumerErrorHandler;
-import org.qubership.maas.declarative.kafka.client.api.exception.MaasKafkaConsumerCreationRequestBuildException;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaConsumerErrorHandler;
+import com.netcracker.maas.declarative.kafka.client.api.exception.MaasKafkaConsumerCreationRequestBuildException;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
 import lombok.Getter;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.Deserializer;

@@ -1,27 +1,27 @@
 package com.netcracker.maas.declarative.kafka.client.impl.client.consumer;
 
-import org.qubership.cloud.framework.contexts.tenant.context.TenantContext;
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
-import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaClientState;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaConsumer;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaConsumerErrorHandler;
-import org.qubership.maas.declarative.kafka.client.api.MaasKafkaTopicService;
-import org.qubership.maas.declarative.kafka.client.api.filter.ConsumerRecordFilter;
-import org.qubership.maas.declarative.kafka.client.api.model.MaasKafkaConsumerCreationRequest;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaBlueGreenDefinition;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
-import org.qubership.maas.declarative.kafka.client.impl.client.common.MaasKafkaCommonClient;
-import org.qubership.maas.declarative.kafka.client.impl.client.common.MaasTopicWrap;
-import org.qubership.maas.declarative.kafka.client.impl.client.consumer.errorhandling.impl.DefaultConsumerHandlerImpl;
-import org.qubership.maas.declarative.kafka.client.impl.client.consumer.executor.ConsumerExecContext;
-import org.qubership.maas.declarative.kafka.client.impl.client.consumer.executor.MaasConsumingExecutor;
-import org.qubership.maas.declarative.kafka.client.impl.client.creator.KafkaClientCreationService;
-import org.qubership.maas.declarative.kafka.client.impl.client.notification.api.MaasKafkaClientStateChangeNotificationService;
-import org.qubership.maas.declarative.kafka.client.impl.common.bg.KafkaConsumerConfiguration;
-import org.qubership.maas.declarative.kafka.client.impl.common.constant.MaasKafkaConsumerConstants;
-import org.qubership.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;
-import org.qubership.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
+import com.netcracker.cloud.framework.contexts.tenant.context.TenantContext;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaClientState;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaConsumer;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaConsumerErrorHandler;
+import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaTopicService;
+import com.netcracker.maas.declarative.kafka.client.api.filter.ConsumerRecordFilter;
+import com.netcracker.maas.declarative.kafka.client.api.model.MaasKafkaConsumerCreationRequest;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaBlueGreenDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
+import com.netcracker.maas.declarative.kafka.client.impl.client.common.MaasKafkaCommonClient;
+import com.netcracker.maas.declarative.kafka.client.impl.client.common.MaasTopicWrap;
+import com.netcracker.maas.declarative.kafka.client.impl.client.consumer.errorhandling.impl.DefaultConsumerHandlerImpl;
+import com.netcracker.maas.declarative.kafka.client.impl.client.consumer.executor.ConsumerExecContext;
+import com.netcracker.maas.declarative.kafka.client.impl.client.consumer.executor.MaasConsumingExecutor;
+import com.netcracker.maas.declarative.kafka.client.impl.client.creator.KafkaClientCreationService;
+import com.netcracker.maas.declarative.kafka.client.impl.client.notification.api.MaasKafkaClientStateChangeNotificationService;
+import com.netcracker.maas.declarative.kafka.client.impl.common.bg.KafkaConsumerConfiguration;
+import com.netcracker.maas.declarative.kafka.client.impl.common.constant.MaasKafkaConsumerConstants;
+import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;
+import com.netcracker.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 
-import static org.qubership.maas.declarative.kafka.client.impl.Utils.safe;
+import static com.netcracker.maas.declarative.kafka.client.impl.Utils.safe;
 import static org.apache.kafka.clients.CommonClientConfigs.GROUP_ID_CONFIG;
 
 public class MaasKafkaConsumerImpl extends MaasKafkaCommonClient implements MaasKafkaConsumer {

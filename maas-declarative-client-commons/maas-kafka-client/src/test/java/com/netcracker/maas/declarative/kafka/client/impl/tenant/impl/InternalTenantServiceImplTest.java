@@ -6,8 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.qubership.cloud.tenantmanager.client.Tenant;
-import org.qubership.cloud.tenantmanager.client.TenantManagerConnector;
+import com.netcracker.cloud.tenantmanager.client.Tenant;
+import com.netcracker.cloud.tenantmanager.client.TenantManagerConnector;
 
 import java.util.Arrays;
 import java.util.Collections;

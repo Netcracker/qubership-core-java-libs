@@ -1,10 +1,10 @@
 package com.netcracker.maas.declarative.kafka.client.api;
 
 
-import org.qubership.maas.declarative.kafka.client.api.model.MaasKafkaConsumerCreationRequest;
-import org.qubership.maas.declarative.kafka.client.api.model.MaasKafkaProducerCreationRequest;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
-import org.qubership.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.model.MaasKafkaConsumerCreationRequest;
+import com.netcracker.maas.declarative.kafka.client.api.model.MaasKafkaProducerCreationRequest;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaProducerDefinition;
 
 /**
  * Used to get client definition from config and create kafka clients

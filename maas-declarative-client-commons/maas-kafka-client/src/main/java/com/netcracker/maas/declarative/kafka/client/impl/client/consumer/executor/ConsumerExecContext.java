@@ -1,8 +1,8 @@
 package com.netcracker.maas.declarative.kafka.client.impl.client.consumer.executor;
 
-import org.qubership.cloud.maas.client.api.kafka.TopicAddress;
-import org.qubership.maas.declarative.kafka.client.impl.client.consumer.DeserializerHolder;
-import org.qubership.maas.declarative.kafka.client.impl.common.bg.KafkaConsumerConfiguration;
+import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
+import com.netcracker.maas.declarative.kafka.client.impl.client.consumer.DeserializerHolder;
+import com.netcracker.maas.declarative.kafka.client.impl.common.bg.KafkaConsumerConfiguration;
 
 import java.time.Duration;
 import java.util.List;
