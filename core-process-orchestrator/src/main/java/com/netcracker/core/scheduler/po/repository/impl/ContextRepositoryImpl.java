@@ -3,10 +3,10 @@ package com.netcracker.core.scheduler.po.repository.impl;
 import com.github.kagkarlsson.jdbc.ResultSetMapper;
 import com.github.kagkarlsson.scheduler.serializer.JavaSerializer;
 import com.github.kagkarlsson.scheduler.serializer.Serializer;
-import org.qubership.core.scheduler.po.DataContext;
-import org.qubership.core.scheduler.po.repository.ContextRepository;
-import org.qubership.core.scheduler.po.repository.VersionMismatchException;
-import org.qubership.core.scheduler.po.repository.mapper.ContextResultMapper;
+import com.netcracker.core.scheduler.po.DataContext;
+import com.netcracker.core.scheduler.po.repository.ContextRepository;
+import com.netcracker.core.scheduler.po.repository.VersionMismatchException;
+import com.netcracker.core.scheduler.po.repository.mapper.ContextResultMapper;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;

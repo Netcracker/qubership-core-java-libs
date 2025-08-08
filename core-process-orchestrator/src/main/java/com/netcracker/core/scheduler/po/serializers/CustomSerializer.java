@@ -2,7 +2,7 @@ package com.netcracker.core.scheduler.po.serializers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.kagkarlsson.scheduler.exceptions.SerializationException;
-import org.qubership.core.scheduler.po.model.pojo.ProcessInstanceImpl;
+import com.netcracker.core.scheduler.po.model.pojo.ProcessInstanceImpl;
 import org.apache.commons.io.input.ClassLoaderObjectInputStream;
 
 

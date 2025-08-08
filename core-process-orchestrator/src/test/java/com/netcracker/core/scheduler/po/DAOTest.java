@@ -1,14 +1,14 @@
 package com.netcracker.core.scheduler.po;
 
-import org.qubership.core.scheduler.helpers.SchedulerUtils;
-import org.qubership.core.scheduler.po.model.pojo.ProcessInstanceImpl;
-import org.qubership.core.scheduler.po.model.pojo.TaskInstanceImpl;
-import org.qubership.core.scheduler.po.repository.ProcessInstanceRepository;
-import org.qubership.core.scheduler.po.repository.TaskInstanceRepository;
-import org.qubership.core.scheduler.po.repository.impl.ProcessInstanceRepositoryImpl;
-import org.qubership.core.scheduler.po.repository.impl.TaskInstanceRepositoryImpl;
-import org.qubership.core.scheduler.po.samples.tasks.DummyTask2;
-import org.qubership.core.scheduler.po.task.TaskState;
+import com.netcracker.core.scheduler.helpers.SchedulerUtils;
+import com.netcracker.core.scheduler.po.model.pojo.ProcessInstanceImpl;
+import com.netcracker.core.scheduler.po.model.pojo.TaskInstanceImpl;
+import com.netcracker.core.scheduler.po.repository.ProcessInstanceRepository;
+import com.netcracker.core.scheduler.po.repository.TaskInstanceRepository;
+import com.netcracker.core.scheduler.po.repository.impl.ProcessInstanceRepositoryImpl;
+import com.netcracker.core.scheduler.po.repository.impl.TaskInstanceRepositoryImpl;
+import com.netcracker.core.scheduler.po.samples.tasks.DummyTask2;
+import com.netcracker.core.scheduler.po.task.TaskState;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;

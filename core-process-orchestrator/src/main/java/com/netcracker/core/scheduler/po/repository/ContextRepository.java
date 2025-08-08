@@ -1,6 +1,6 @@
 package com.netcracker.core.scheduler.po.repository;
 
-import org.qubership.core.scheduler.po.DataContext;
+import com.netcracker.core.scheduler.po.DataContext;
 
 public interface ContextRepository {
 

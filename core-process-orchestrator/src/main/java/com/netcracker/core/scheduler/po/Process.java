@@ -4,12 +4,12 @@ import com.github.kagkarlsson.scheduler.task.CompletionHandler;
 import com.github.kagkarlsson.scheduler.task.DeadExecutionHandler;
 import com.github.kagkarlsson.scheduler.task.ExecutionContext;
 import com.github.kagkarlsson.scheduler.task.helper.CustomTask;
-import org.qubership.core.scheduler.po.context.ProcessContext;
-import org.qubership.core.scheduler.po.context.TaskExecutionContext;
-import org.qubership.core.scheduler.po.model.pojo.ProcessInstanceImpl;
-import org.qubership.core.scheduler.po.model.pojo.TaskInstanceImpl;
-import org.qubership.core.scheduler.po.task.TaskState;
-import org.qubership.core.scheduler.po.task.templates.AbstractProcessTask;
+import com.netcracker.core.scheduler.po.context.ProcessContext;
+import com.netcracker.core.scheduler.po.context.TaskExecutionContext;
+import com.netcracker.core.scheduler.po.model.pojo.ProcessInstanceImpl;
+import com.netcracker.core.scheduler.po.model.pojo.TaskInstanceImpl;
+import com.netcracker.core.scheduler.po.task.TaskState;
+import com.netcracker.core.scheduler.po.task.templates.AbstractProcessTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

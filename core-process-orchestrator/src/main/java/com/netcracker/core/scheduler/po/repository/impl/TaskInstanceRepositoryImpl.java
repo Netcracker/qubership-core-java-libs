@@ -1,12 +1,12 @@
 package com.netcracker.core.scheduler.po.repository.impl;
 
 import com.github.kagkarlsson.jdbc.ResultSetMapper;
-import org.qubership.core.scheduler.po.model.pojo.TaskInstanceImpl;
-import org.qubership.core.scheduler.po.repository.TaskInstanceRepository;
-import org.qubership.core.scheduler.po.repository.VersionMismatchException;
-import org.qubership.core.scheduler.po.repository.mapper.TaskInstanceResultMapper;
-import org.qubership.core.scheduler.po.serializers.CustomSerializer;
-import org.qubership.core.scheduler.po.serializers.ExtendedSerializer;
+import com.netcracker.core.scheduler.po.model.pojo.TaskInstanceImpl;
+import com.netcracker.core.scheduler.po.repository.TaskInstanceRepository;
+import com.netcracker.core.scheduler.po.repository.VersionMismatchException;
+import com.netcracker.core.scheduler.po.repository.mapper.TaskInstanceResultMapper;
+import com.netcracker.core.scheduler.po.serializers.CustomSerializer;
+import com.netcracker.core.scheduler.po.serializers.ExtendedSerializer;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;

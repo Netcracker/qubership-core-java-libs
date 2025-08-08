@@ -1,6 +1,6 @@
 package com.netcracker.core.scheduler.po.samples.tasks;
 
-import org.qubership.core.scheduler.po.ProcessDefinition;
+import com.netcracker.core.scheduler.po.ProcessDefinition;
 
 public class DataTestPO extends ProcessDefinition {
     public DataTestPO() {

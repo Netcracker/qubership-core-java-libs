@@ -2,9 +2,9 @@ package com.netcracker.core.scheduler.po.samples.tasks;
 
 import com.github.kagkarlsson.scheduler.task.ExecutionContext;
 import com.github.kagkarlsson.scheduler.task.TaskInstance;
-import org.qubership.core.scheduler.po.DataContext;
-import org.qubership.core.scheduler.po.context.TaskExecutionContext;
-import org.qubership.core.scheduler.po.task.templates.AbstractProcessTask;
+import com.netcracker.core.scheduler.po.DataContext;
+import com.netcracker.core.scheduler.po.context.TaskExecutionContext;
+import com.netcracker.core.scheduler.po.task.templates.AbstractProcessTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

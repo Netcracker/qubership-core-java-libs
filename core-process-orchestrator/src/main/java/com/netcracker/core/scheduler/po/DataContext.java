@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.qubership.core.scheduler.po.repository.ContextRepository;
-import org.qubership.core.scheduler.po.serializers.DataContextDeserializer;
-import org.qubership.core.scheduler.po.serializers.DataContextSerializer;
+import com.netcracker.core.scheduler.po.repository.ContextRepository;
+import com.netcracker.core.scheduler.po.serializers.DataContextDeserializer;
+import com.netcracker.core.scheduler.po.serializers.DataContextSerializer;
 import lombok.Getter;
 import lombok.Setter;
 

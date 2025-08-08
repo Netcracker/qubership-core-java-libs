@@ -2,7 +2,7 @@ package com.netcracker.core.scheduler.po.repository.mapper;
 
 import com.github.kagkarlsson.jdbc.ResultSetMapper;
 import com.github.kagkarlsson.scheduler.serializer.Serializer;
-import org.qubership.core.scheduler.po.DataContext;
+import com.netcracker.core.scheduler.po.DataContext;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

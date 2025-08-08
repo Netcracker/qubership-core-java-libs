@@ -2,7 +2,7 @@ package com.netcracker.core.scheduler.po.task;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.qubership.core.scheduler.po.task.templates.AbstractProcessTask;
+import com.netcracker.core.scheduler.po.task.templates.AbstractProcessTask;
 import lombok.Getter;
 
 import java.io.Serializable;

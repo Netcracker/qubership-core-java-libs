@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.qubership.core.scheduler.po.model.pojo.ProcessInstanceImpl;
+import com.netcracker.core.scheduler.po.model.pojo.ProcessInstanceImpl;
 import lombok.SneakyThrows;
 
 public class JsonPOSerializer implements ExtendedSerializer {

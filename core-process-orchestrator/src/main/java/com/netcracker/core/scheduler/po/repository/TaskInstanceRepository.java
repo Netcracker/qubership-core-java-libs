@@ -1,6 +1,6 @@
 package com.netcracker.core.scheduler.po.repository;
 
-import org.qubership.core.scheduler.po.model.pojo.TaskInstanceImpl;
+import com.netcracker.core.scheduler.po.model.pojo.TaskInstanceImpl;
 
 import java.util.List;
 

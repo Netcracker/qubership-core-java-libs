@@ -4,12 +4,12 @@ import com.github.kagkarlsson.scheduler.task.CompletionHandler;
 import com.github.kagkarlsson.scheduler.task.ExecutionContext;
 import com.github.kagkarlsson.scheduler.task.FailureHandler;
 import com.github.kagkarlsson.scheduler.task.TaskInstance;
-import org.qubership.core.scheduler.po.AsyncTimeoutException;
-import org.qubership.core.scheduler.po.DataContext;
-import org.qubership.core.scheduler.po.context.TaskExecutionContext;
-import org.qubership.core.scheduler.po.model.pojo.ProcessInstanceImpl;
-import org.qubership.core.scheduler.po.model.pojo.TaskInstanceImpl;
-import org.qubership.core.scheduler.po.task.TaskState;
+import com.netcracker.core.scheduler.po.AsyncTimeoutException;
+import com.netcracker.core.scheduler.po.DataContext;
+import com.netcracker.core.scheduler.po.context.TaskExecutionContext;
+import com.netcracker.core.scheduler.po.model.pojo.ProcessInstanceImpl;
+import com.netcracker.core.scheduler.po.model.pojo.TaskInstanceImpl;
+import com.netcracker.core.scheduler.po.task.TaskState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

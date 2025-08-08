@@ -3,9 +3,9 @@ package com.netcracker.core.scheduler.po.samples;
 import com.github.kagkarlsson.scheduler.task.ExecutionComplete;
 import com.github.kagkarlsson.scheduler.task.ExecutionOperations;
 import com.github.kagkarlsson.scheduler.task.FailureHandler;
-import org.qubership.core.scheduler.po.DataContext;
-import org.qubership.core.scheduler.po.context.TaskExecutionContext;
-import org.qubership.core.scheduler.po.model.pojo.ProcessInstanceImpl;
+import com.netcracker.core.scheduler.po.DataContext;
+import com.netcracker.core.scheduler.po.context.TaskExecutionContext;
+import com.netcracker.core.scheduler.po.model.pojo.ProcessInstanceImpl;
 
 public class TestFailureHandler implements FailureHandler<TaskExecutionContext> {
     @Override

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.qubership.core.scheduler.po.DataContext;
-import org.qubership.core.scheduler.po.model.pojo.ProcessInstanceImpl;
+import com.netcracker.core.scheduler.po.DataContext;
+import com.netcracker.core.scheduler.po.model.pojo.ProcessInstanceImpl;
 import lombok.SneakyThrows;
 
 import java.util.Iterator;

@@ -1,9 +1,9 @@
 package com.netcracker.core.scheduler.po.model.pojo;
 
-import org.qubership.core.scheduler.po.DataContext;
-import org.qubership.core.scheduler.po.ProcessOrchestrator;
-import org.qubership.core.scheduler.po.task.NamedTask;
-import org.qubership.core.scheduler.po.task.TaskState;
+import com.netcracker.core.scheduler.po.DataContext;
+import com.netcracker.core.scheduler.po.ProcessOrchestrator;
+import com.netcracker.core.scheduler.po.task.NamedTask;
+import com.netcracker.core.scheduler.po.task.TaskState;
 import lombok.Getter;
 
 import java.util.Date;

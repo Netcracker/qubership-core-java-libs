@@ -1,10 +1,10 @@
 package com.netcracker.core.scheduler.po.repository.impl;
 
 import com.github.kagkarlsson.jdbc.ResultSetMapper;
-import org.qubership.core.scheduler.po.model.pojo.ProcessInstanceImpl;
-import org.qubership.core.scheduler.po.repository.ProcessInstanceRepository;
-import org.qubership.core.scheduler.po.repository.VersionMismatchException;
-import org.qubership.core.scheduler.po.repository.mapper.ProcessInstanceResultMapper;
+import com.netcracker.core.scheduler.po.model.pojo.ProcessInstanceImpl;
+import com.netcracker.core.scheduler.po.repository.ProcessInstanceRepository;
+import com.netcracker.core.scheduler.po.repository.VersionMismatchException;
+import com.netcracker.core.scheduler.po.repository.mapper.ProcessInstanceResultMapper;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;

@@ -3,20 +3,20 @@ package com.netcracker.core.scheduler.po;
 import com.github.kagkarlsson.scheduler.ScheduledExecution;
 import com.github.kagkarlsson.scheduler.Scheduler;
 import com.github.kagkarlsson.scheduler.task.Task;
-import org.qubership.core.scheduler.helpers.TaskExecutorService;
-import org.qubership.core.scheduler.po.context.ProcessContext;
-import org.qubership.core.scheduler.po.model.pojo.ProcessInstanceImpl;
-import org.qubership.core.scheduler.po.model.pojo.TaskInstanceImpl;
-import org.qubership.core.scheduler.po.repository.ContextRepository;
-import org.qubership.core.scheduler.po.repository.ProcessInstanceRepository;
-import org.qubership.core.scheduler.po.repository.TaskInstanceRepository;
-import org.qubership.core.scheduler.po.repository.impl.ContextRepositoryImpl;
-import org.qubership.core.scheduler.po.repository.impl.ProcessInstanceRepositoryImpl;
-import org.qubership.core.scheduler.po.repository.impl.TaskInstanceRepositoryImpl;
-import org.qubership.core.scheduler.po.serializers.ExtendedSerializer;
-import org.qubership.core.scheduler.po.serializers.JsonPOSerializer;
-import org.qubership.core.scheduler.po.task.TaskState;
-import org.qubership.core.scheduler.po.task.templates.AbstractProcessTask;
+import com.netcracker.core.scheduler.helpers.TaskExecutorService;
+import com.netcracker.core.scheduler.po.context.ProcessContext;
+import com.netcracker.core.scheduler.po.model.pojo.ProcessInstanceImpl;
+import com.netcracker.core.scheduler.po.model.pojo.TaskInstanceImpl;
+import com.netcracker.core.scheduler.po.repository.ContextRepository;
+import com.netcracker.core.scheduler.po.repository.ProcessInstanceRepository;
+import com.netcracker.core.scheduler.po.repository.TaskInstanceRepository;
+import com.netcracker.core.scheduler.po.repository.impl.ContextRepositoryImpl;
+import com.netcracker.core.scheduler.po.repository.impl.ProcessInstanceRepositoryImpl;
+import com.netcracker.core.scheduler.po.repository.impl.TaskInstanceRepositoryImpl;
+import com.netcracker.core.scheduler.po.serializers.ExtendedSerializer;
+import com.netcracker.core.scheduler.po.serializers.JsonPOSerializer;
+import com.netcracker.core.scheduler.po.task.TaskState;
+import com.netcracker.core.scheduler.po.task.templates.AbstractProcessTask;
 import lombok.SneakyThrows;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -111,7 +111,7 @@ public class ProcessOrchestrator {
 
     public static List<Task<?>> getTasks() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         List<Task<?>> knownTasks = new ArrayList<>();
-        Reflections reflections = new Reflections("org.qubership");
+        Reflections reflections = new Reflections("com.netcracker");
 
         Set<Class<? extends AbstractProcessTask>> subTypes = reflections.getSubTypesOf(AbstractProcessTask.class);
 

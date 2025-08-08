@@ -1,8 +1,8 @@
 package com.netcracker.core.scheduler.po.repository.mapper;
 
 import com.github.kagkarlsson.jdbc.ResultSetMapper;
-import org.qubership.core.scheduler.po.model.pojo.ProcessInstanceImpl;
-import org.qubership.core.scheduler.po.task.TaskState;
+import com.netcracker.core.scheduler.po.model.pojo.ProcessInstanceImpl;
+import com.netcracker.core.scheduler.po.task.TaskState;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

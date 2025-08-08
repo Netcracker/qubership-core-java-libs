@@ -1,8 +1,8 @@
 package com.netcracker.core.scheduler.po.samples.tasks;
 
-import org.qubership.core.scheduler.po.DataContext;
-import org.qubership.core.scheduler.po.context.TaskExecutionContext;
-import org.qubership.core.scheduler.po.task.templates.AsyncTaskWithPolling;
+import com.netcracker.core.scheduler.po.DataContext;
+import com.netcracker.core.scheduler.po.context.TaskExecutionContext;
+import com.netcracker.core.scheduler.po.task.templates.AsyncTaskWithPolling;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

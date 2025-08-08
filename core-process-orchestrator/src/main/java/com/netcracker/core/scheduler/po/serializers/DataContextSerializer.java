@@ -3,7 +3,7 @@ package com.netcracker.core.scheduler.po.serializers;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import org.qubership.core.scheduler.po.DataContext;
+import com.netcracker.core.scheduler.po.DataContext;
 
 import java.io.IOException;
 import java.util.Map;

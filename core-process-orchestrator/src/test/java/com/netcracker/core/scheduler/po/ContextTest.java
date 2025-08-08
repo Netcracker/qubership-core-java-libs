@@ -1,15 +1,15 @@
 package com.netcracker.core.scheduler.po;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.qubership.core.scheduler.helpers.MyTestObject;
-import org.qubership.core.scheduler.helpers.SchedulerUtils;
-import org.qubership.core.scheduler.po.repository.ContextRepository;
-import org.qubership.core.scheduler.po.repository.VersionMismatchException;
-import org.qubership.core.scheduler.po.repository.impl.ContextRepositoryImpl;
-import org.qubership.core.scheduler.po.serializers.CustomSerializer;
-import org.qubership.core.scheduler.po.serializers.ExtendedSerializer;
-import org.qubership.core.scheduler.po.serializers.JsonPOSerializer;
-import org.qubership.core.scheduler.po.task.NamedTask;
+import com.netcracker.core.scheduler.helpers.MyTestObject;
+import com.netcracker.core.scheduler.helpers.SchedulerUtils;
+import com.netcracker.core.scheduler.po.repository.ContextRepository;
+import com.netcracker.core.scheduler.po.repository.VersionMismatchException;
+import com.netcracker.core.scheduler.po.repository.impl.ContextRepositoryImpl;
+import com.netcracker.core.scheduler.po.serializers.CustomSerializer;
+import com.netcracker.core.scheduler.po.serializers.ExtendedSerializer;
+import com.netcracker.core.scheduler.po.serializers.JsonPOSerializer;
+import com.netcracker.core.scheduler.po.task.NamedTask;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;

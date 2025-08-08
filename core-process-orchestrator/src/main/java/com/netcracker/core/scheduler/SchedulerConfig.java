@@ -2,9 +2,9 @@ package com.netcracker.core.scheduler;
 
 import com.github.kagkarlsson.scheduler.Scheduler;
 import com.github.kagkarlsson.scheduler.task.Task;
-import org.qubership.core.scheduler.helpers.SchedulerUtils;
-import org.qubership.core.scheduler.po.Process;
-import org.qubership.core.scheduler.po.ProcessOrchestrator;
+import com.netcracker.core.scheduler.helpers.SchedulerUtils;
+import com.netcracker.core.scheduler.po.Process;
+import com.netcracker.core.scheduler.po.ProcessOrchestrator;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;

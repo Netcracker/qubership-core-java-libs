@@ -1,7 +1,7 @@
 package com.netcracker.core.scheduler.po.samples;
 
-import org.qubership.core.scheduler.po.ProcessDefinition;
-import org.qubership.core.scheduler.po.samples.tasks.FailedDummyTask;
+import com.netcracker.core.scheduler.po.ProcessDefinition;
+import com.netcracker.core.scheduler.po.samples.tasks.FailedDummyTask;
 
 public class FailedDymmyProcess extends ProcessDefinition {
     public FailedDymmyProcess() {

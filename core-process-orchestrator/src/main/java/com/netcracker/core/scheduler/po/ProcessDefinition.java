@@ -1,10 +1,10 @@
 package com.netcracker.core.scheduler.po;
 
-import org.qubership.core.scheduler.po.model.pojo.ProcessInstanceImpl;
-import org.qubership.core.scheduler.po.model.pojo.TaskInstanceImpl;
-import org.qubership.core.scheduler.po.repository.TaskInstanceRepository;
-import org.qubership.core.scheduler.po.task.NamedTask;
-import org.qubership.core.scheduler.po.task.templates.AbstractProcessTask;
+import com.netcracker.core.scheduler.po.model.pojo.ProcessInstanceImpl;
+import com.netcracker.core.scheduler.po.model.pojo.TaskInstanceImpl;
+import com.netcracker.core.scheduler.po.repository.TaskInstanceRepository;
+import com.netcracker.core.scheduler.po.task.NamedTask;
+import com.netcracker.core.scheduler.po.task.templates.AbstractProcessTask;
 
 import java.util.*;
 

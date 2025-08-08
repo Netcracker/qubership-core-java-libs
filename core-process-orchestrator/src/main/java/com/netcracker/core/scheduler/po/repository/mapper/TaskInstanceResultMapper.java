@@ -2,10 +2,10 @@ package com.netcracker.core.scheduler.po.repository.mapper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.kagkarlsson.jdbc.ResultSetMapper;
-import org.qubership.core.scheduler.po.model.pojo.TaskInstanceImpl;
-import org.qubership.core.scheduler.po.serializers.ExtendedSerializer;
-import org.qubership.core.scheduler.po.task.NamedTask;
-import org.qubership.core.scheduler.po.task.TaskState;
+import com.netcracker.core.scheduler.po.model.pojo.TaskInstanceImpl;
+import com.netcracker.core.scheduler.po.serializers.ExtendedSerializer;
+import com.netcracker.core.scheduler.po.task.NamedTask;
+import com.netcracker.core.scheduler.po.task.TaskState;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

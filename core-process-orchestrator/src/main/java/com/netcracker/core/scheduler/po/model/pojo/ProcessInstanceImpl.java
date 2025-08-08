@@ -1,10 +1,10 @@
 package com.netcracker.core.scheduler.po.model.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
-import org.qubership.core.scheduler.po.DataContext;
-import org.qubership.core.scheduler.po.ProcessOrchestrator;
-import org.qubership.core.scheduler.po.repository.TaskInstanceRepository;
-import org.qubership.core.scheduler.po.task.TaskState;
+import com.netcracker.core.scheduler.po.DataContext;
+import com.netcracker.core.scheduler.po.ProcessOrchestrator;
+import com.netcracker.core.scheduler.po.repository.TaskInstanceRepository;
+import com.netcracker.core.scheduler.po.task.TaskState;
 import lombok.Getter;
 
 import java.util.Date;

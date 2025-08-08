@@ -1,9 +1,9 @@
 package com.netcracker.core.scheduler.po.samples;
 
-import org.qubership.core.scheduler.po.ProcessDefinition;
-import org.qubership.core.scheduler.po.samples.tasks.DummyTask;
-import org.qubership.core.scheduler.po.samples.tasks.DummyTask2;
-import org.qubership.core.scheduler.po.task.NamedTask;
+import com.netcracker.core.scheduler.po.ProcessDefinition;
+import com.netcracker.core.scheduler.po.samples.tasks.DummyTask;
+import com.netcracker.core.scheduler.po.samples.tasks.DummyTask2;
+import com.netcracker.core.scheduler.po.task.NamedTask;
 
 public class DymmyProcess extends ProcessDefinition {
     public DymmyProcess() {

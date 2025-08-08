@@ -2,17 +2,17 @@ package com.netcracker.core.scheduler.po.task.templates;
 
 import com.github.kagkarlsson.scheduler.task.*;
 import com.github.kagkarlsson.scheduler.task.helper.CustomTask;
-import org.qubership.core.scheduler.po.context.TaskExecutionContext;
-import org.qubership.core.scheduler.po.model.pojo.TaskInstanceImpl;
-import org.qubership.core.scheduler.po.task.ProcessTaskFailureHandler;
-import org.qubership.core.scheduler.po.task.TaskState;
+import com.netcracker.core.scheduler.po.context.TaskExecutionContext;
+import com.netcracker.core.scheduler.po.model.pojo.TaskInstanceImpl;
+import com.netcracker.core.scheduler.po.task.ProcessTaskFailureHandler;
+import com.netcracker.core.scheduler.po.task.TaskState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 import java.util.function.Function;
 
-import static org.qubership.core.scheduler.po.task.TaskState.TERMINATED;
+import static com.netcracker.core.scheduler.po.task.TaskState.TERMINATED;
 
 public abstract class AbstractProcessTask extends CustomTask<TaskExecutionContext> {
 
