@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.config;
+package com.netcracker.cloud.dbaas.client.config;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

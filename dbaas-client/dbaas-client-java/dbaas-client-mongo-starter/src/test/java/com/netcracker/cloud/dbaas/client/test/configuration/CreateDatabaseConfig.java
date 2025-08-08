@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.test.configuration;
+package com.netcracker.cloud.dbaas.client.test.configuration;
 
 import org.qubership.cloud.dbaas.client.DbaasClient;
 import org.qubership.cloud.dbaas.client.DbaasClientImpl;

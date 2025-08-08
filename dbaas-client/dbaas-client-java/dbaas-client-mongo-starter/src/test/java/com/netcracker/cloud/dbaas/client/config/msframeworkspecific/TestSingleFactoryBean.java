@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.config.msframeworkspecific;
+package com.netcracker.cloud.dbaas.client.config.msframeworkspecific;
 
 import org.qubership.cloud.dbaas.client.config.EnableDbaasMongo;
 import org.qubership.cloud.dbaas.client.config.msframeworkspecific.testconfig.TestMongoDbConfiguration;

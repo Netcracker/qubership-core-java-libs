@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.metrics;
+package com.netcracker.cloud.dbaas.client.metrics;
 
 import lombok.*;
 

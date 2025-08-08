@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.it.mongodb;
+package com.netcracker.cloud.dbaas.client.it.mongodb;
 
 import org.qubership.cloud.dbaas.client.DbaasClient;
 import org.qubership.cloud.dbaas.client.entity.connection.MongoDBConnection;

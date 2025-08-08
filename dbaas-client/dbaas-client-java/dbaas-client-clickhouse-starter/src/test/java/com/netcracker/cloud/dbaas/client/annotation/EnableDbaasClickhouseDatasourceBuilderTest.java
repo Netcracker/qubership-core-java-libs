@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.annotation;
+package com.netcracker.cloud.dbaas.client.annotation;
 
 import org.qubership.cloud.dbaas.client.config.annotation.EnableDbaasClickhouseDatasourceBuilder;
 import org.qubership.cloud.dbaas.client.management.DbaasClickhouseDatasourceBuilder;

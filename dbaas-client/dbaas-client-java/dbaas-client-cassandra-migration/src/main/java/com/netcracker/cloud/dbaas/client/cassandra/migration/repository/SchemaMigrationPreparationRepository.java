@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.repository;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.repository;
 
 import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;
 import org.qubership.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
@@ -27,7 +27,7 @@ public class SchemaMigrationPreparationRepository extends AbstractCqlRepository 
                 execution_time bigint,
                 success        boolean,
                 extra_info     text,
-                            
+
                 primary key (installed_rank)
             )
             """;

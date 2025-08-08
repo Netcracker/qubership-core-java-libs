@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.opensearch.management;
+package com.netcracker.cloud.dbaas.client.opensearch.management;
 
 import org.qubership.cloud.dbaas.client.exceptions.DbaasException;
 import org.qubership.cloud.dbaas.client.management.PostConnectProcessor;

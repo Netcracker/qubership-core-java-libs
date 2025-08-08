@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.it.mongodb;
+package com.netcracker.cloud.dbaas.client.it.mongodb;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

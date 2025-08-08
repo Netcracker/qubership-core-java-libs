@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.it.cassandra.config;
+package com.netcracker.cloud.dbaas.client.it.cassandra.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.CassandraContainer;

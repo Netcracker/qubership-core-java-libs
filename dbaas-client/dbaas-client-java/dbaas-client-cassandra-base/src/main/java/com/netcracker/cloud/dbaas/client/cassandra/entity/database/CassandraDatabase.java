@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.entity.database;
+package com.netcracker.cloud.dbaas.client.cassandra.entity.database;
 
 import org.qubership.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
 import org.qubership.cloud.dbaas.client.entity.database.AbstractDatabase;

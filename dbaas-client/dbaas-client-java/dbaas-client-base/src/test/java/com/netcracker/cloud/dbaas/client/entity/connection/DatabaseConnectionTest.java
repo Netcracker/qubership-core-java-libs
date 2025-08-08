@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.entity.connection;
+package com.netcracker.cloud.dbaas.client.entity.connection;
 
 import org.junit.jupiter.api.Test;
 

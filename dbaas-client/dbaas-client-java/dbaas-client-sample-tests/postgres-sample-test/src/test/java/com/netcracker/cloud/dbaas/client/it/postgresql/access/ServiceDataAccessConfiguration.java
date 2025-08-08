@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.it.postgresql.access;
+package com.netcracker.cloud.dbaas.client.it.postgresql.access;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

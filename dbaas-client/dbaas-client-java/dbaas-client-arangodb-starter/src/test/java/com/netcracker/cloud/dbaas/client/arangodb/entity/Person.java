@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.arangodb.entity;
+package com.netcracker.cloud.dbaas.client.arangodb.entity;
 
 
 import com.arangodb.springframework.annotation.ArangoId;

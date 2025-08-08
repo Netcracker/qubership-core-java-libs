@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.redis.management;
+package com.netcracker.cloud.dbaas.client.redis.management;
 
 import org.qubership.cloud.dbaas.client.management.DatabaseClientCreator;
 import org.qubership.cloud.dbaas.client.redis.entity.connection.RedisDBConnection;

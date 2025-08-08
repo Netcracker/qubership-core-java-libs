@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.redis.test.configuration;
+package com.netcracker.cloud.dbaas.client.redis.test.configuration;
 
 import jakarta.annotation.PreDestroy;
 

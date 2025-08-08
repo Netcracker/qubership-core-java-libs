@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.service;
+package com.netcracker.cloud.dbaas.client.cassandra.service;
 
 import com.datastax.dse.driver.api.core.config.DseDriverOption;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;

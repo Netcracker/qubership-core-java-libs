@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.util;
+package com.netcracker.cloud.dbaas.client.util;
 
 import org.qubership.cloud.dbaas.client.exceptions.DatabaseNotReadyException;
 

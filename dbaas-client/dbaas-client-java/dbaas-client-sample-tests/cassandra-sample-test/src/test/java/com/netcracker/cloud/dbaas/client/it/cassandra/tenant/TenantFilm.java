@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.it.cassandra.tenant;
+package com.netcracker.cloud.dbaas.client.it.cassandra.tenant;
 
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;

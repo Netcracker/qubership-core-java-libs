@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.service.extension;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.service.extension;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import org.qubership.cloud.dbaas.client.cassandra.migration.model.AlreadyMigratedVersion;

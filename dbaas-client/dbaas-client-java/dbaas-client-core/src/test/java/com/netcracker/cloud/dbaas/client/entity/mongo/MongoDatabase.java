@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.entity.mongo;
+package com.netcracker.cloud.dbaas.client.entity.mongo;
 
 import org.qubership.cloud.dbaas.client.entity.database.AbstractDatabase;
 import lombok.EqualsAndHashCode;

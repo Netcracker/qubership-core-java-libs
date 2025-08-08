@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.management;
+package com.netcracker.cloud.dbaas.client.management;
 
 import org.qubership.cloud.dbaas.client.entity.database.ClickhouseDatasourceCreator;
 import org.qubership.cloud.dbaas.client.entity.connection.ClickhouseConnection;

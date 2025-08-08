@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.config.msframeworkspecific.testconfig;
+package com.netcracker.cloud.dbaas.client.config.msframeworkspecific.testconfig;
 
 public class TestConstants {
     public final static String DB_NAME = "dbName";

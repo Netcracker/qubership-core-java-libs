@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.test;
+package com.netcracker.cloud.dbaas.client.test;
 
 
 import org.springframework.data.annotation.Id;

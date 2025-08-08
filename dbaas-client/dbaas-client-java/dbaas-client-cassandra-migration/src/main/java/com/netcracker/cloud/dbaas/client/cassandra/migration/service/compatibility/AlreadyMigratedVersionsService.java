@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.service.compatibility;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.service.compatibility;
 
 import org.qubership.cloud.dbaas.client.cassandra.migration.model.AlreadyMigratedVersion;
 import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionFromDb;

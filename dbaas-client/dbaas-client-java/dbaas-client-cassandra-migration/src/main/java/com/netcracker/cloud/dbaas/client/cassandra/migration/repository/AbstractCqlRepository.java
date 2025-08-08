@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.repository;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.repository;
 
 import org.qubership.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;
 

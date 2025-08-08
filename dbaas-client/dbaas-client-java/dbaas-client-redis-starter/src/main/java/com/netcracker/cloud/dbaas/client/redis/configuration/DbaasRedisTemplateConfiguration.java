@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.redis.configuration;
+package com.netcracker.cloud.dbaas.client.redis.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

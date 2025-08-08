@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client;
+package com.netcracker.cloud.dbaas.client;
 
 import org.qubership.cloud.dbaas.client.exceptions.DbaasException;
 import org.qubership.cloud.dbaas.client.exceptions.DbaasUnavailableException;

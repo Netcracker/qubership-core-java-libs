@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.ak;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.ak;
 
 import java.time.Duration;
 

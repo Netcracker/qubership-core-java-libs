@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.redis.connection;
+package com.netcracker.cloud.dbaas.client.redis.connection;
 
 import org.qubership.cloud.framework.contexts.tenant.context.TenantContext;
 import org.qubership.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;

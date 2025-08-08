@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.it.mongodb;
+package com.netcracker.cloud.dbaas.client.it.mongodb;
 
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.GenericContainer;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.entity;
+package com.netcracker.cloud.dbaas.client.cassandra.entity;
 
 import lombok.Data;
 

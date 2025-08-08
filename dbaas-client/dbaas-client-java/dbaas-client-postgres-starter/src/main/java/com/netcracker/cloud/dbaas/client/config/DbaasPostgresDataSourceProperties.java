@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.config;
+package com.netcracker.cloud.dbaas.client.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

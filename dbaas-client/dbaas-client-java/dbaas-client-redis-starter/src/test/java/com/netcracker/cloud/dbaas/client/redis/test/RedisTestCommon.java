@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.redis.test;
+package com.netcracker.cloud.dbaas.client.redis.test;
 
 import org.qubership.cloud.dbaas.client.config.MSInfoProvider;
 import org.qubership.cloud.dbaas.client.management.DatabaseConfig;

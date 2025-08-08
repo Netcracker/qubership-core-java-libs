@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client;
+package com.netcracker.cloud.dbaas.client;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,16 +44,16 @@ public class PostgresLightTest {
         OkHttpClient client = mockOkHttpClient();
         DbaaSClientOkHttpImpl dbaasClient = new DbaaSClientOkHttpImpl("http://dbaas-agent:8080", client);
         pool = new DatabasePool(dbaasClient,
-                // pass address, where DbaaS API available for you 
-                // also you need to configure OkHttpClient 
+                // pass address, where DbaaS API available for you
+                // also you need to configure OkHttpClient
                 // providing authorization if necessary
 
                 null,
-                // past here your way of configuring microservice name or skip to 
+                // past here your way of configuring microservice name or skip to
                 // use environment  DatabasePool.MICROSERVICE_NAME_ENV instead
 
                 null,
-                // past here your way of configuring cloud namespace or skip to 
+                // past here your way of configuring cloud namespace or skip to
                 // use environment  DatabasePool.CLOUD_NAMESPACE_ENV instead
 
                 Collections.singletonList(new PostConnectProcessor<PostgresDatabase>() {

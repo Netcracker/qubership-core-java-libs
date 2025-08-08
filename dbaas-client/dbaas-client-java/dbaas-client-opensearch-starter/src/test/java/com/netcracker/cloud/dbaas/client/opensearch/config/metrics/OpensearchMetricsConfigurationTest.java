@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.opensearch.config.metrics;
+package com.netcracker.cloud.dbaas.client.opensearch.config.metrics;
 
 import org.qubership.cloud.dbaas.client.opensearch.config.DbaaSOpensearchConfigurationProperty;
 import org.qubership.cloud.dbaas.client.opensearch.entity.metrics.OpensearchClientRequestsSecondsMetricType;

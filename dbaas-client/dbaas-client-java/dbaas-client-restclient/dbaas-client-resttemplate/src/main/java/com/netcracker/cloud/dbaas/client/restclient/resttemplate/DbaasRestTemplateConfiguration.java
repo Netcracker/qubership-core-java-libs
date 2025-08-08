@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.restclient.resttemplate;
+package com.netcracker.cloud.dbaas.client.restclient.resttemplate;
 
 import org.qubership.cloud.restclient.MicroserviceRestClient;
 import org.qubership.cloud.restclient.resttemplate.MicroserviceRestTemplate;

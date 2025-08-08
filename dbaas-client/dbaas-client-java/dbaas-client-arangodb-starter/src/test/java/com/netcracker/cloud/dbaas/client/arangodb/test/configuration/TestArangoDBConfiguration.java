@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.arangodb.test.configuration;
+package com.netcracker.cloud.dbaas.client.arangodb.test.configuration;
 
 import com.arangodb.serde.ArangoSerde;
 import com.arangodb.springframework.core.convert.ArangoConverter;

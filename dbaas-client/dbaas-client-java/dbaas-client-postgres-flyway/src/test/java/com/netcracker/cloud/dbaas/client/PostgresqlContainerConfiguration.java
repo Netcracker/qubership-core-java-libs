@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client;
+package com.netcracker.cloud.dbaas.client;
 
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.PostgreSQLContainer;

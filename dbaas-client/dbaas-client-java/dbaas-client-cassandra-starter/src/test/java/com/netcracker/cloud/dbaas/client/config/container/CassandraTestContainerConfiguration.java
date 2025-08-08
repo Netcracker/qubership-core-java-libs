@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.config.container;
+package com.netcracker.cloud.dbaas.client.config.container;
 
 import jakarta.annotation.PreDestroy;
 

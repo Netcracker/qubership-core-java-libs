@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client;
+package com.netcracker.cloud.dbaas.client;
 
 import org.qubership.cloud.dbaas.client.entity.GetDatabaseByClassifierRequest;
 import org.qubership.cloud.dbaas.client.entity.PhysicalDatabaseDescription;

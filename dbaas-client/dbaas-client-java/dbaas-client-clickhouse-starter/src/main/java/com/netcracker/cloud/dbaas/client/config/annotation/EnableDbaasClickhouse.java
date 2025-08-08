@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.config.annotation;
+package com.netcracker.cloud.dbaas.client.config.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

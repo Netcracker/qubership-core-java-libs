@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.test.container;
+package com.netcracker.cloud.dbaas.client.test.container;
 
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.utility.TestcontainersConfiguration;

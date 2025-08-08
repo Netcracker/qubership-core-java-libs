@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.service;
+package com.netcracker.cloud.dbaas.client.cassandra.service;
 
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;

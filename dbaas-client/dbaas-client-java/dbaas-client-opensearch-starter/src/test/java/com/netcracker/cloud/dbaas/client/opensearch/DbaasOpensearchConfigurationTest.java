@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.opensearch;
+package com.netcracker.cloud.dbaas.client.opensearch;
 
 import org.qubership.cloud.framework.contexts.tenant.context.TenantContext;
 import org.qubership.cloud.dbaas.client.management.DatabaseConfig;

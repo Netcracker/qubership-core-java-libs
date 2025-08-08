@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.arangodb.classifier;
+package com.netcracker.cloud.dbaas.client.arangodb.classifier;
 
 import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
 import org.qubership.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;

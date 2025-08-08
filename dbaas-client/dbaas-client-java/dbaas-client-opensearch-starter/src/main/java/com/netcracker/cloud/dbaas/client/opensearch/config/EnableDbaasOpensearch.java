@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.opensearch.config;
+package com.netcracker.cloud.dbaas.client.opensearch.config;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

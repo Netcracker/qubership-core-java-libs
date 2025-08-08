@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.config.annotation;
+package com.netcracker.cloud.dbaas.client.config.annotation;
 
 import org.qubership.cloud.dbaas.client.management.DbaasPostgresqlDatasourceBuilder;
 import org.qubership.cloud.restclient.MicroserviceRestClient;

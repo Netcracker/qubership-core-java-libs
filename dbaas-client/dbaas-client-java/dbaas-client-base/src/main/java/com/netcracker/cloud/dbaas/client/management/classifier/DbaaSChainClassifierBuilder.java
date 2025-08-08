@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.management.classifier;
+package com.netcracker.cloud.dbaas.client.management.classifier;
 
 import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;
 
@@ -34,7 +34,7 @@ public abstract class DbaaSChainClassifierBuilder implements DbaaSClassifierBuil
     }
 
     @Override
-    public DbaasDbClassifier build() { // This method should be overriden   
+    public DbaasDbClassifier build() { // This method should be overriden
         if (next == null) {
             return getWrapped().build();
         }

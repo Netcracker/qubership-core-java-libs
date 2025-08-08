@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.entity.test;
+package com.netcracker.cloud.dbaas.client.entity.test;
 
 import org.qubership.cloud.dbaas.client.management.DatabaseDefinitionProcessor;
 

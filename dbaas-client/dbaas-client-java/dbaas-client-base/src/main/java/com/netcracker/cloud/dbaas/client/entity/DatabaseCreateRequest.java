@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.entity;
+package com.netcracker.cloud.dbaas.client.entity;
 
 import org.qubership.cloud.dbaas.client.entity.database.DatabaseSettings;
 import org.qubership.cloud.dbaas.client.management.DatabaseConfig;

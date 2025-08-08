@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.arangodb.management;
+package com.netcracker.cloud.dbaas.client.arangodb.management;
 
 import com.arangodb.ArangoDB;
 import com.arangodb.serde.ArangoSerde;

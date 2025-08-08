@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.auth;
+package com.netcracker.cloud.dbaas.client.cassandra.auth;
 
 import com.datastax.oss.driver.api.core.metadata.EndPoint;
 import org.junit.jupiter.api.BeforeEach;

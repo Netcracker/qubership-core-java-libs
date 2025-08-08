@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.it.postgresql.service;
+package com.netcracker.cloud.dbaas.client.it.postgresql.service;
 
 
 import org.springframework.data.repository.CrudRepository;

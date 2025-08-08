@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.config.container;
+package com.netcracker.cloud.dbaas.client.config.container;
 
 import lombok.extern.slf4j.Slf4j;
 

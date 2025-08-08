@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.management.classifier;
+package com.netcracker.cloud.dbaas.client.management.classifier;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;

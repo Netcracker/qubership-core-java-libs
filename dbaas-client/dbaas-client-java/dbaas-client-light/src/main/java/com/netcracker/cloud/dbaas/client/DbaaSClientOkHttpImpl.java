@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client;
+package com.netcracker.cloud.dbaas.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;

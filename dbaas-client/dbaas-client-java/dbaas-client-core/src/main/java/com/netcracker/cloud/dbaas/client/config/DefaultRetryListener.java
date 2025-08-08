@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.config;
+package com.netcracker.cloud.dbaas.client.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.RetryCallback;

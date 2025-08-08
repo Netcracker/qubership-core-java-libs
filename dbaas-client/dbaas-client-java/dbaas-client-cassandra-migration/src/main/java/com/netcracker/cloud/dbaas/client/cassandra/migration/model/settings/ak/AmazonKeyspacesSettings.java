@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.ak;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.ak;
 
 /**
  * Schema migration Amazon Keyspaces related settings.

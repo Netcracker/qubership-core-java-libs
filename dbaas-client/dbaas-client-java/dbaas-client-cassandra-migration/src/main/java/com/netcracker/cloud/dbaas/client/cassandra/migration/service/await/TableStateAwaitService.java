@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.service.await;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.service.await;
 
 import org.qubership.cloud.dbaas.client.cassandra.migration.model.operation.TableOperation;
 import org.qubership.cloud.dbaas.client.cassandra.migration.model.settings.SchemaMigrationSettings;

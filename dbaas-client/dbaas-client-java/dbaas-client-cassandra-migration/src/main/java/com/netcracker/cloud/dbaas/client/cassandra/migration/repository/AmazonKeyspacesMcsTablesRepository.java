@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.repository;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.repository;
 
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
 import org.qubership.cloud.dbaas.client.cassandra.migration.session.SchemaMigrationSession;

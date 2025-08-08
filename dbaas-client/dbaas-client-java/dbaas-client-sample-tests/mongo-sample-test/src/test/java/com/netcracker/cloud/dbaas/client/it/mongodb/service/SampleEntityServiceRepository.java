@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.it.mongodb.service;
+package com.netcracker.cloud.dbaas.client.it.mongodb.service;
 
 import org.qubership.cloud.dbaas.client.it.mongodb.SampleEntity;
 import org.springframework.stereotype.Repository;

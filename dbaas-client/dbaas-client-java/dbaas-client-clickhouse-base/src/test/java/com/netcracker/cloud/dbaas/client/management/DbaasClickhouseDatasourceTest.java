@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.management;
+package com.netcracker.cloud.dbaas.client.management;
 
 import com.clickhouse.jdbc.ClickHouseConnection;
 import com.clickhouse.jdbc.ClickHouseDataSource;

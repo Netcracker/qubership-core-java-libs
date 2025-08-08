@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client;
+package com.netcracker.cloud.dbaas.client;
 
 class DbaasClientApiConst {
     private DbaasClientApiConst() {

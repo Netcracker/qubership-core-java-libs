@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration;
+package com.netcracker.cloud.dbaas.client.cassandra.migration;
 
 import com.datastax.oss.driver.api.core.DriverException;
 import org.qubership.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;

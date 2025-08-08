@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.exception;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.exception;
 
 public class SchemaMigrationException extends RuntimeException {
 

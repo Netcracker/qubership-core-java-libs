@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.arangodb.test.configuration;
+package com.netcracker.cloud.dbaas.client.arangodb.test.configuration;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.annotation;
+package com.netcracker.cloud.dbaas.client.annotation;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

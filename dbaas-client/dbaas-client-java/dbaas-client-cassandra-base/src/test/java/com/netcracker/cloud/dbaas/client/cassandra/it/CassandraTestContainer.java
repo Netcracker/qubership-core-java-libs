@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.it;
+package com.netcracker.cloud.dbaas.client.cassandra.it;
 
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.it.cassandra.service;
+package com.netcracker.cloud.dbaas.client.it.cassandra.service;
 
 import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.stereotype.Repository;

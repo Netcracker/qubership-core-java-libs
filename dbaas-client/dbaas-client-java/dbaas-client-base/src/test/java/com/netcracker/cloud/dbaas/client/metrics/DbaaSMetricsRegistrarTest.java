@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.metrics;
+package com.netcracker.cloud.dbaas.client.metrics;
 
 import org.qubership.cloud.dbaas.client.entity.test.TestDBType;
 import org.qubership.cloud.dbaas.client.exceptions.MetricsRegistrationException;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.opensearch;
+package com.netcracker.cloud.dbaas.client.opensearch;
 
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;

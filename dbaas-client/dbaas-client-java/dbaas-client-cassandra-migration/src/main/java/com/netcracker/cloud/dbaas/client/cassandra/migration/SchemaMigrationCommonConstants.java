@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration;
+package com.netcracker.cloud.dbaas.client.cassandra.migration;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

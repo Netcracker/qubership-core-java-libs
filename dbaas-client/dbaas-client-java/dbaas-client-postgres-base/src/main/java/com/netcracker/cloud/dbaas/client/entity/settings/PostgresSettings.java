@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.entity.settings;
+package com.netcracker.cloud.dbaas.client.entity.settings;
 
 import org.qubership.cloud.dbaas.client.entity.database.DatabaseSettings;
 import lombok.Data;

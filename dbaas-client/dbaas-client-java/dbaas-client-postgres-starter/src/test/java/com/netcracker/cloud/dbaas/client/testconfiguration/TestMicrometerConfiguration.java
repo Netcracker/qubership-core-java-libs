@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.testconfiguration;
+package com.netcracker.cloud.dbaas.client.testconfiguration;
 
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.redis.configuration;
+package com.netcracker.cloud.dbaas.client.redis.configuration;
 
 import org.qubership.cloud.dbaas.client.entity.DbaasApiProperties;
 import org.qubership.cloud.dbaas.client.management.DatabasePool;

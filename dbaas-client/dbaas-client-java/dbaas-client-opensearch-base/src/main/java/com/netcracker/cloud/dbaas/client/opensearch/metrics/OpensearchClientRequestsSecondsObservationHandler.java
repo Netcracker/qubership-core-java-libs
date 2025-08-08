@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.opensearch.metrics;
+package com.netcracker.cloud.dbaas.client.opensearch.metrics;
 
 import io.micrometer.common.KeyValue;
 import io.micrometer.common.util.StringUtils;

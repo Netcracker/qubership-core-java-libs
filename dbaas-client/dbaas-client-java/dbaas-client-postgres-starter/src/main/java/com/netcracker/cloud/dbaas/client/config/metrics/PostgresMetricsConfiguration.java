@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.config.metrics;
+package com.netcracker.cloud.dbaas.client.config.metrics;
 
 import org.qubership.cloud.dbaas.client.config.DbaasPostgresConfiguration;
 import org.qubership.cloud.dbaas.client.config.MetricsConfiguration;

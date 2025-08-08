@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.management;
+package com.netcracker.cloud.dbaas.client.management;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;

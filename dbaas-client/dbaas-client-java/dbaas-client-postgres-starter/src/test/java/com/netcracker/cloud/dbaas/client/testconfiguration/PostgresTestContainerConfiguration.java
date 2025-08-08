@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.testconfiguration;
+package com.netcracker.cloud.dbaas.client.testconfiguration;
 
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Qualifier;

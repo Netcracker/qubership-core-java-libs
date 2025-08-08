@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.config;
+package com.netcracker.cloud.dbaas.client.config;
 
 import org.qubership.cloud.dbaas.client.entity.database.AbstractDatabase;
 import org.qubership.cloud.dbaas.client.metrics.DbaaSMetricsRegistrar;

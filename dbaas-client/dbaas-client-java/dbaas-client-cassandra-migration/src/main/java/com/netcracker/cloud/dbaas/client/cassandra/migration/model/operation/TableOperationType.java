@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.model.operation;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.model.operation;
 
 public enum TableOperationType {
     /**

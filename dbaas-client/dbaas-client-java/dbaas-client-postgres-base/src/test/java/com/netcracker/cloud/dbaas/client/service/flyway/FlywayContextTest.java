@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.service.flyway;
+package com.netcracker.cloud.dbaas.client.service.flyway;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

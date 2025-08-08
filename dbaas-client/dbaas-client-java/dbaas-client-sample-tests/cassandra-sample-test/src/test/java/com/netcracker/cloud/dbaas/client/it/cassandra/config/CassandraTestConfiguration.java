@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.it.cassandra.config;
+package com.netcracker.cloud.dbaas.client.it.cassandra.config;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;

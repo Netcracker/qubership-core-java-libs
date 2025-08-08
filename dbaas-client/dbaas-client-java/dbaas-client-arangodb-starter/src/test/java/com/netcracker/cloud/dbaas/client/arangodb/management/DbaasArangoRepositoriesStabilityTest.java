@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.arangodb.management;
+package com.netcracker.cloud.dbaas.client.arangodb.management;
 
 import com.arangodb.springframework.annotation.EnableArangoRepositories;
 import org.qubership.cloud.dbaas.client.arangodb.entity.Person;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.it.mongodb;
+package com.netcracker.cloud.dbaas.client.it.mongodb;
 
 import org.qubership.cloud.dbaas.client.it.mongodb.service.SampleEntityServiceRepository;
 import org.qubership.cloud.dbaas.client.it.mongodb.tenant.SampleEntityTenantRepository;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.service;
+package com.netcracker.cloud.dbaas.client.service;
 
 import com.clickhouse.jdbc.internal.ClickHouseJdbcUrlParser;
 import org.qubership.cloud.dbaas.client.entity.connection.ClickhouseConnection;

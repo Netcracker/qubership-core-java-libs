@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.arangodb.test;
+package com.netcracker.cloud.dbaas.client.arangodb.test;
 
 import org.qubership.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
 import org.qubership.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;

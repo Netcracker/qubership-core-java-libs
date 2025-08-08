@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.opensearch.config;
+package com.netcracker.cloud.dbaas.client.opensearch.config;
 
 import org.qubership.cloud.dbaas.client.opensearch.entity.DbaasOpensearchMetricsProperties;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.annotation;
+package com.netcracker.cloud.dbaas.client.annotation;
 
 import com.clickhouse.jdbc.ClickHouseConnection;
 import com.clickhouse.jdbc.ClickHouseDataSource;

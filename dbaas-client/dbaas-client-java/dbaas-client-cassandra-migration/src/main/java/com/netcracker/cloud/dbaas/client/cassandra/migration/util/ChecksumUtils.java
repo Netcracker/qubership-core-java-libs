@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.util;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.util;
 
 import org.qubership.cloud.dbaas.client.cassandra.migration.exception.SchemaMigrationException;
 import org.qubership.cloud.dbaas.client.cassandra.migration.model.SchemaVersionContentChecksum;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.config;
+package com.netcracker.cloud.dbaas.client.config;
 
 import org.qubership.cloud.dbaas.client.DbaasClient;
 import org.qubership.cloud.dbaas.client.DbaasClientImpl;
@@ -47,7 +47,7 @@ public class TestDbaasCoreConfiguration {
                                        @Qualifier("dbaasRestClient") MicroserviceRestClient microserviceRestClient) {
         return new DbaasClientImpl(microserviceRestClient, retryTemplate, "http://ms-name.namespace:8080");
     }
-    
+
     @Bean
     public MSInfoProvider msInfoProvider() {
         return new DefaultMSInfoProvider();

@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.model.operation;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.model.operation;
 
 /**
  * Operation performed with the table by schema version.

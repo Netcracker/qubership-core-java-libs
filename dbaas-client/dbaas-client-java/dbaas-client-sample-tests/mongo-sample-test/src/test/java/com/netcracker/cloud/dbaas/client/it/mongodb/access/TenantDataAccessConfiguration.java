@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.it.mongodb.access;
+package com.netcracker.cloud.dbaas.client.it.mongodb.access;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;

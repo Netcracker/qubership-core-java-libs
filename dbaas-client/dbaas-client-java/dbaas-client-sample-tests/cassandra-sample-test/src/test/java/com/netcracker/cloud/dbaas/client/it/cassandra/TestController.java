@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.it.cassandra;
+package com.netcracker.cloud.dbaas.client.it.cassandra;
 
 import org.qubership.cloud.dbaas.client.it.cassandra.service.ServiceFilm;
 import org.qubership.cloud.dbaas.client.it.cassandra.service.ServiceFilmRepository;

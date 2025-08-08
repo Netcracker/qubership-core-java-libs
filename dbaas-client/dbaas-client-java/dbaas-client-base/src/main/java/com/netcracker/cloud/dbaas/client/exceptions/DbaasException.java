@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.exceptions;
+package com.netcracker.cloud.dbaas.client.exceptions;
 
 public class DbaasException extends RuntimeException {
     public DbaasException() {

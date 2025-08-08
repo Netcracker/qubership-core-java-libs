@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client;
+package com.netcracker.cloud.dbaas.client;
 
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Qualifier;

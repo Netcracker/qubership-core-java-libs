@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.config.msframeworkspecific;
+package com.netcracker.cloud.dbaas.client.config.msframeworkspecific;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;

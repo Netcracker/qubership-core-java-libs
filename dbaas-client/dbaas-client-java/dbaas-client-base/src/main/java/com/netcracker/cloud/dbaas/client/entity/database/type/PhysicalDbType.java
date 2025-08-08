@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.entity.database.type;
+package com.netcracker.cloud.dbaas.client.entity.database.type;
 
 public class PhysicalDbType {
 

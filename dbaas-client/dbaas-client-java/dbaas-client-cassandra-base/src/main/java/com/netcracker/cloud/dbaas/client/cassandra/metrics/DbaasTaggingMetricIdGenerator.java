@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.metrics;
+package com.netcracker.cloud.dbaas.client.cassandra.metrics;
 
 import com.datastax.oss.driver.api.core.config.DriverOption;
 import com.datastax.oss.driver.api.core.context.DriverContext;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.opensearch.restclient.configuration;
+package com.netcracker.cloud.dbaas.client.opensearch.restclient.configuration;
 
 import org.qubership.cloud.dbaas.client.DbaasClient;
 import org.qubership.cloud.dbaas.client.management.DatabaseConfig;

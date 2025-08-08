@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.service.flyway;
+package com.netcracker.cloud.dbaas.client.service.flyway;
 
 public interface FlywayRunner {
     void run(FlywayContext context);

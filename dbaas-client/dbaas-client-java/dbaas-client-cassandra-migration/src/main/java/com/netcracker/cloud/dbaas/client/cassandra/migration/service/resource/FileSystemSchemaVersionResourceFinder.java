@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.service.resource;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.service.resource;
 
 import lombok.extern.slf4j.Slf4j;
 

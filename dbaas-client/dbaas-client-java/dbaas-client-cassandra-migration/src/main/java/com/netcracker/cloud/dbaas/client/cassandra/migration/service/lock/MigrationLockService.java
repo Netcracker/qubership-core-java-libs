@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.service.lock;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.service.lock;
 
 import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import org.qubership.cloud.dbaas.client.cassandra.migration.exception.MigrationLockException;

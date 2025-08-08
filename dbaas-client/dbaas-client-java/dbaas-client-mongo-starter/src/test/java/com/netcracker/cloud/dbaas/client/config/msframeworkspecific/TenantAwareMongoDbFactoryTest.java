@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.config.msframeworkspecific;
+package com.netcracker.cloud.dbaas.client.config.msframeworkspecific;
 
 import com.mongodb.client.MongoClient;
 import org.junit.jupiter.api.Assertions;

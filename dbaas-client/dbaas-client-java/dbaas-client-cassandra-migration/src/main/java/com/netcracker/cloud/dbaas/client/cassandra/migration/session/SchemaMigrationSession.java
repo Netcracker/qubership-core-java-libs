@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.session;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.session;
 
 import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.datastax.oss.driver.api.core.CqlIdentifier;

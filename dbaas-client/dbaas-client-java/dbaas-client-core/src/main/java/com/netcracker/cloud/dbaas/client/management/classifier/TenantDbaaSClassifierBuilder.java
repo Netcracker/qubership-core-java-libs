@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.management.classifier;
+package com.netcracker.cloud.dbaas.client.management.classifier;
 
 import org.qubership.cloud.context.propagation.core.ContextManager;
 import org.qubership.cloud.dbaas.client.management.DbaasDbClassifier;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.management;
+package com.netcracker.cloud.dbaas.client.management;
 
 import org.qubership.cloud.dbaas.client.management.classifier.ServiceDbaaSClassifierBuilder;
 import org.qubership.cloud.dbaas.client.service.flyway.FlywayRunner;

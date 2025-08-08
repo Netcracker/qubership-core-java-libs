@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client;
+package com.netcracker.cloud.dbaas.client;
 
 import org.qubership.cloud.dbaas.client.testconfiguration.PostgresTestContainerConfiguration;
 import org.qubership.cloud.dbaas.client.testconfiguration.TestPostgresWithDatasourceConfig;

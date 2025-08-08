@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.model;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.model;
 
 /**
  * Description of the previous state of schema version

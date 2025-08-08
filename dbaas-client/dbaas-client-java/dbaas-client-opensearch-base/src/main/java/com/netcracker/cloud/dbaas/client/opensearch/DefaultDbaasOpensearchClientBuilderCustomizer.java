@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.opensearch;
+package com.netcracker.cloud.dbaas.client.opensearch;
 
 import jakarta.annotation.Priority;
 

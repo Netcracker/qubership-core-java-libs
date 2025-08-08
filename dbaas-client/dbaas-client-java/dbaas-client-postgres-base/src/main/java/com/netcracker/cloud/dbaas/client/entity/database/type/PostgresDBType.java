@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.entity.database.type;
+package com.netcracker.cloud.dbaas.client.entity.database.type;
 
 import org.qubership.cloud.dbaas.client.entity.connection.PostgresDBConnection;
 import org.qubership.cloud.dbaas.client.entity.database.PostgresDatabase;

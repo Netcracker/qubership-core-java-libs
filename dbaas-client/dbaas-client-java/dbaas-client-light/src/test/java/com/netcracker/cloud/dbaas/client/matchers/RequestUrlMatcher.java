@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.matchers;
+package com.netcracker.cloud.dbaas.client.matchers;
 
 import okhttp3.Request;
 import okhttp3.RequestBody;

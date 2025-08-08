@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.cql;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.cql;
 
 import java.util.ArrayList;
 import java.util.List;

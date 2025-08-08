@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.it.cassandra;
+package com.netcracker.cloud.dbaas.client.it.cassandra;
 
 import org.qubership.cloud.dbaas.client.cassandra.entity.database.type.CassandraDBType;
 import org.qubership.cloud.dbaas.client.config.EnableDbaasCassandra;
@@ -62,7 +62,7 @@ public class CassandraProxyTest {
         DbaaSChainClassifierBuilder classifierBuilder = classifierFactory.newServiceClassifierBuilder();
         classifierBuilder.withProperty("namespace", "test-namespace");
         classifierBuilder.withProperty("microserviceName", "test-service");
-        
+
         // save calls method session.execute() two times in steps:
         // 1. PrepareStatement
         // 2. Execute prepared statement
@@ -72,7 +72,7 @@ public class CassandraProxyTest {
         container.start();
         // save calls session.execute() two times plus one time for session recreate
         Assertions.assertDoesNotThrow(() -> serviceRepository.save(new ServiceFilm(UUID.randomUUID(), "title 2", 2015)));
-        
+
         Mockito.verify(pool, times(1)).removeCachedDatabase(eq(CassandraDBType.INSTANCE),
                 eq(classifierBuilder.build()));
         // getOrCreateDatabase is called for each session.execute()

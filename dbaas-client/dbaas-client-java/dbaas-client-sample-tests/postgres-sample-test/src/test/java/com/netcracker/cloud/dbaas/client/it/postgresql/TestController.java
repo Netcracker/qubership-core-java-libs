@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.it.postgresql;
+package com.netcracker.cloud.dbaas.client.it.postgresql;
 
 import org.qubership.cloud.dbaas.client.it.postgresql.service.Person;
 import org.qubership.cloud.dbaas.client.it.postgresql.service.PersonServiceRepository;

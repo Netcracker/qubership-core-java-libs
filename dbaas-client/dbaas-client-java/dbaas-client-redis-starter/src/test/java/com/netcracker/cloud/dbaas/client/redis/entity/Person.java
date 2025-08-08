@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.redis.entity;
+package com.netcracker.cloud.dbaas.client.redis.entity;
 
 
 import lombok.Data;

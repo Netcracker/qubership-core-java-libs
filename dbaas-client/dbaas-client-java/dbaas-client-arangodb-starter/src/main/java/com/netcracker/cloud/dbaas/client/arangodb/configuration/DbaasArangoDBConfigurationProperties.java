@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.arangodb.configuration;
+package com.netcracker.cloud.dbaas.client.arangodb.configuration;
 
 import com.arangodb.config.ArangoConfigProperties;
 import org.qubership.cloud.dbaas.client.entity.DbaasApiProperties;

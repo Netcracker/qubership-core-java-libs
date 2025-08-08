@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.entity;
+package com.netcracker.cloud.dbaas.client.entity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.qubership.cloud.dbaas.client.management.DatabaseConfig;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.opensearch.metrics;
+package com.netcracker.cloud.dbaas.client.opensearch.metrics;
 
 import org.qubership.cloud.dbaas.client.metrics.DatabaseMetricProperties;
 import org.qubership.cloud.dbaas.client.opensearch.DbaasOpensearchClient;

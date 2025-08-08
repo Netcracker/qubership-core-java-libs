@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.arangodb.util;
+package com.netcracker.cloud.dbaas.client.arangodb.util;
 
 import com.arangodb.ArangoDB;
 import com.arangodb.springframework.config.ArangoConfiguration;

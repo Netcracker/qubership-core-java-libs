@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.opensearch.restclient.configuration;
+package com.netcracker.cloud.dbaas.client.opensearch.restclient.configuration;
 
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.redis.repository;
+package com.netcracker.cloud.dbaas.client.redis.repository;
 
 
 import org.qubership.cloud.dbaas.client.redis.entity.Person;

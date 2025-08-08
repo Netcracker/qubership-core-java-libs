@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.model.settings;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings;
 
 import static org.qubership.cloud.dbaas.client.cassandra.migration.SchemaMigrationCommonConstants.DEFAULT_DEFINITIONS_RESOURCE_PATH;
 

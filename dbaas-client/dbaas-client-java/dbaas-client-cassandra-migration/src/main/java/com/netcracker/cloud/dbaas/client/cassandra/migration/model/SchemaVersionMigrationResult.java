@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.migration.model;
+package com.netcracker.cloud.dbaas.client.cassandra.migration.model;
 
 public record SchemaVersionMigrationResult(
         boolean success,

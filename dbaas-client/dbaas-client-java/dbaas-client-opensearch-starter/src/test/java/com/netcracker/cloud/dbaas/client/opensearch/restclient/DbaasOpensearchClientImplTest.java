@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.opensearch.restclient;
+package com.netcracker.cloud.dbaas.client.opensearch.restclient;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;

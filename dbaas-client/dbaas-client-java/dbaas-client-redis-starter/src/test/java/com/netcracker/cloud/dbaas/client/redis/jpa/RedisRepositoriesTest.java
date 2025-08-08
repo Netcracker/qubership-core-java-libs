@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.redis.jpa;
+package com.netcracker.cloud.dbaas.client.redis.jpa;
 
 import org.qubership.cloud.dbaas.client.redis.configuration.annotation.EnableDbaasRedisRepositories;
 import org.qubership.cloud.dbaas.client.redis.configuration.annotation.EnableServiceDbaasRedis;

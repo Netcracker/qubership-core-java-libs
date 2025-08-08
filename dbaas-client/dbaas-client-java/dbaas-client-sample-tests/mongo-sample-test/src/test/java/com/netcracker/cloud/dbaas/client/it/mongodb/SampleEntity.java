@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.it.mongodb;
+package com.netcracker.cloud.dbaas.client.it.mongodb;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

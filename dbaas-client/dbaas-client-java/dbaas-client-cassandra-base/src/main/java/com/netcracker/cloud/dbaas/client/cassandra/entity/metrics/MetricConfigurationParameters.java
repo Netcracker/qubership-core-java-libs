@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.entity.metrics;
+package com.netcracker.cloud.dbaas.client.cassandra.entity.metrics;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package org.qubership.cloud.dbaas.client.cassandra.it.migration;
+package com.netcracker.cloud.dbaas.client.cassandra.it.migration;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
