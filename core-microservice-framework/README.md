@@ -44,4 +44,3 @@ Please note that you must not take two artifacts into one module because it will
 
 For more information how to use microservice-framework on resttemplate(deprecated way) you can find in this [readme](./microservice-framework-resttemplate/README.md) and on webclient here [readme](./microservice-framework-webclient/README.md).
 
-
