@@ -8,7 +8,7 @@
         <version>3.4.8</version>
     </parent>
 
-    <groupId>org.qubership.cloud</groupId>
+    <groupId>com.netcracker.cloud</groupId>
     <artifactId>qubership-spring-boot-starter-parent</artifactId>
     <version>11.1.2-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -27,31 +27,31 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
-        <microservice.dependencies.version>11.1.1</microservice.dependencies.version>
-        <microservice.framework.version>7.1.1</microservice.framework.version>
+        <microservice.dependencies.version>11.1.2-SNAPSHOT</microservice.dependencies.version>
+        <microservice.framework.version>7.1.2-SNAPSHOT</microservice.framework.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.qubership.cloud</groupId>
+                <groupId>com.netcracker.cloud</groupId>
                 <artifactId>cloud-core-java-bom</artifactId>
                 <version>${microservice.dependencies.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud</groupId>
+                <groupId>com.netcracker.cloud</groupId>
                 <artifactId>microservice-framework-common</artifactId>
                 <version>${microservice.framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud</groupId>
+                <groupId>com.netcracker.cloud</groupId>
                 <artifactId>microservice-framework-resttemplate</artifactId>
                 <version>${microservice.framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud</groupId>
+                <groupId>com.netcracker.cloud</groupId>
                 <artifactId>microservice-framework-webclient</artifactId>
                 <version>${microservice.framework.version}</version>
             </dependency>

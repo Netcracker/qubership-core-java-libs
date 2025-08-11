@@ -14,7 +14,7 @@ Fot using this library you just need to put the following code into your POM fil
 
 ```xml
     <parent>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>qubership-spring-boot-starter-parent</artifactId>
         <version>{VERSION}</version>
     </parent>
@@ -27,7 +27,7 @@ So you should make a decision with which a restclient you service will work and 
 
 ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>microservice-framework-resttemplate</artifactId>
     </dependency>
 ```
@@ -36,7 +36,7 @@ or
 
 ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>microservice-framework-webclient</artifactId>
     </dependency>
 ```
