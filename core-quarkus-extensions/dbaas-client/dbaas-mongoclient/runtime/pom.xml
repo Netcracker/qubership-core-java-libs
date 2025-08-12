@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.qubership.cloud.quarkus</groupId>
+    <groupId>com.netcracker.cloud.quarkus</groupId>
     <artifactId>dbaas-mongo-client-parent</artifactId>
       <version>7.1.2-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
@@ -27,11 +27,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.qubership.cloud.quarkus</groupId>
+      <groupId>com.netcracker.cloud.quarkus</groupId>
       <artifactId>dbaas-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.qubership.cloud</groupId>
+      <groupId>com.netcracker.cloud</groupId>
       <artifactId>dbaas-client-base</artifactId>
     </dependency>
     <dependency>
@@ -39,7 +39,7 @@
       <artifactId>jakarta.validation-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.qubership.cloud</groupId>
+      <groupId>com.netcracker.cloud</groupId>
       <artifactId>dbaas-client-light</artifactId>
       <exclusions>
         <!--1.16.10 version of lombok is used, while in another dependencies - 1.18.10-->

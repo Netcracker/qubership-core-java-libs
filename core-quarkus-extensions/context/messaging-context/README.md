@@ -4,7 +4,7 @@
 Add dependency to your pom.xml:
 ```xml
 <dependency>
-    <groupId>org.qubership.cloud.quarkus</groupId>
+    <groupId>com.netcracker.cloud.quarkus</groupId>
     <artifactId>messaging-context</artifactId>
     <version>{version}</version>
 </dependency>

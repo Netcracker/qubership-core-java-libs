@@ -3,9 +3,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>config-sources</artifactId>
-    <groupId>org.qubership.cloud.quarkus</groupId>
+      <artifactId>config-sources</artifactId>
+      <groupId>com.netcracker.cloud.quarkus</groupId>
       <version>7.1.2-SNAPSHOT</version>
+      <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>consul-client-parent</artifactId>

@@ -5,7 +5,7 @@ Provides Consul client with M2M authorization.
 To include extension to your project add:
 ```xml
 <dependency>
-    <groupId>org.qubership.cloud.quarkus</groupId>
+    <groupId>com.netcracker.cloud.quarkus</groupId>
     <artifactId>consul-client</artifactId>
     <version>your-version</version>
 </dependency>
@@ -21,7 +21,7 @@ ConsulClient innerConsulClient;
 ```
 
 You can use consul client that is available as bean from
-`org.qubership.cloud.consul.config.source.runtime.ConsulClientConfiguration#innerConsulClient` to interact with Consul.
+`com.netcracker.cloud.consul.config.source.runtime.ConsulClientConfiguration#innerConsulClient` to interact with Consul.
 Consul token is available from `TokenStorage` bean.
 
 ## Configure

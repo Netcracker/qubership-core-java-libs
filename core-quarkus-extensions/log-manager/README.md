@@ -15,7 +15,7 @@ First of all in order to use this extension, you should add the maven dependency
 
 ```xml
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>log-manager-deployment</artifactId>
             <version>${version}</version>
         </dependency>

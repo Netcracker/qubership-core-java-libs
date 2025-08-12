@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.qubership.cloud.quarkus</groupId>
+    <groupId>com.netcracker.cloud.quarkus</groupId>
     <version>7.1.2-SNAPSHOT</version>
     <artifactId>cloud-core-quarkus</artifactId>
     <packaging>pom</packaging>
@@ -25,16 +25,16 @@
         <module>build-parent</module>
         <module>stomp-ws-server</module>
         <module>security</module>
+        <module>log-manager</module>
         <module>config-sources</module>
         <module>dbaas-client</module>
         <module>cloud-core-quarkus-bom</module>
         <module>routes-registrator</module>
         <module>maas-client</module>
         <module>rest-api-deprecation-switcher</module>
-        <module>log-manager</module>
         <module>report-aggregate</module>
     </modules>
-    
+
     <dependencyManagement>
         <dependencies>
             <!-- Quarkus Extensions Dependencies are coming from quarkus-bom-deployment (that also imports quarkus-bom) -->

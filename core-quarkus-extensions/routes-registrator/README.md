@@ -8,7 +8,7 @@ For using the library you should do:
 #### 1. Add maven dependency
 ```xml
      <dependency>
-         <groupId>org.qubership.cloud.quarkus</groupId>
+         <groupId>com.netcracker.cloud.quarkus</groupId>
          <artifactId>routes-registrator</artifactId>
          <version>${version}</version>
      </dependency>
@@ -63,10 +63,10 @@ Both annotations `@Route` and `@FacadeRoute` have field `gateways` which can be 
 Routes marked with such annotation will be registered in all the specified gateways.
 This can be useful to configure composite (ingress) gateway routes as in the example below.
 ```java
-package org.qubership.cloud.sample.controller;
+package com.netcracker.cloud.sample.controller;
 
-import org.qubership.cloud.routesregistration.common.annotation.Route;
-import org.qubership.cloud.routesregistration.common.annotation.Gateway;
+import com.netcracker.cloud.routesregistration.common.annotation.Route;
+import com.netcracker.cloud.routesregistration.common.annotation.Gateway;
 //...
 
 @Path("/api/v1")

@@ -4,7 +4,7 @@
 
     <parent>
         <artifactId>build-parent</artifactId>
-        <groupId>org.qubership.cloud.quarkus</groupId>
+        <groupId>com.netcracker.cloud.quarkus</groupId>
         <version>7.1.2-SNAPSHOT</version>
         <relativePath>../../build-parent/pom.xml</relativePath>
     </parent>
@@ -21,7 +21,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>dbaas-datasource-postgresql</artifactId>
             <scope>compile</scope>
         </dependency>

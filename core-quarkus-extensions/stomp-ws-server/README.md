@@ -6,12 +6,12 @@ First of all in order to use this extension, you should add the maven dependency
 
 ```xml
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>stomp-ws-server</artifactId>
             <version>${version}</version>
         </dependency>
 ``` 
-where a version can be found in a artifactory by the link: https://artifactorycn.org.qubership/pd.saas.mvn/org/qubership/cloud/quarkus/stomp-ws-server/
+where a version by the link: https://github.com/Netcracker/qubership-core-quarkus-extensions
 
 Then you have to configure STOMP server. You can set the following application properties:
 ```text

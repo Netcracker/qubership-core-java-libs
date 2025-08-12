@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.qubership.cloud.quarkus</groupId>
+    <groupId>com.netcracker.cloud.quarkus</groupId>
     <artifactId>dbaas-common-parent</artifactId>
       <version>7.1.2-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
@@ -32,12 +32,12 @@
 
     <!--Qubership-->
     <dependency>
-      <groupId>org.qubership.cloud.quarkus</groupId>
+      <groupId>com.netcracker.cloud.quarkus</groupId>
       <artifactId>security-adapters</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.qubership.cloud</groupId>
+      <groupId>com.netcracker.cloud</groupId>
       <artifactId>dbaas-client-light</artifactId>
       <exclusions>
         <!--1.16.10 version of lombok is used, while in another dependencies - 1.18.10-->
@@ -57,15 +57,15 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.qubership.cloud</groupId>
+      <groupId>com.netcracker.cloud</groupId>
       <artifactId>context-propagation-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.qubership.cloud</groupId>
+      <groupId>com.netcracker.cloud</groupId>
       <artifactId>framework-contexts</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.qubership.cloud.security.core.utils</groupId>
+      <groupId>com.netcracker.cloud.security.core.utils</groupId>
       <artifactId>tls-utils</artifactId>
     </dependency>
     <!--Test-->

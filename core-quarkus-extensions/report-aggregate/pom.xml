@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>build-parent</artifactId>
-        <groupId>org.qubership.cloud.quarkus</groupId>
+        <groupId>com.netcracker.cloud.quarkus</groupId>
         <version>7.1.2-SNAPSHOT</version>
         <relativePath>../build-parent/pom.xml</relativePath>
     </parent>
@@ -19,162 +19,162 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>messaging-context</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>messaging-context-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>stomp-ws-server</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>stomp-ws-server-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>security-adapters</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>security-adapters-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>external-config-source-common-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>springcloud-config-source</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>springcloud-config-source-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>consul-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>log-manager</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>consul-config-source</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>consul-client-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>log-manager-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>consul-config-source-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>dbaas-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>dbaas-common-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>dbaas-datasource-postgresql</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>dbaas-datasource-postgresql-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>dbaas-mongo-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>dbaas-mongo-client-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>dbaas-cassandra-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>dbaas-cassandra-client-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>dbaas-opensearch-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>dbaas-opensearch-client-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>dbaas-client-test</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>routes-registrator</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>routes-registrator-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>maas-client-quarkus</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>maas-client-quarkus-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>rest-api-deprecation-switcher-quarkus</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>rest-api-deprecation-switcher-quarkus-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>

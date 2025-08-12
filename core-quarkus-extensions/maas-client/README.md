@@ -8,7 +8,7 @@ MaaS provide quarkus extension based on plain java core maas library: [maas-clie
 To include extension to your project add:
 ```xml
 <dependency>
-    <groupId>org.qubership.cloud.maas.client</groupId>
+    <groupId>com.netcracker.cloud.maas.client</groupId>
     <artifactId>maas-client-quarkus</artifactId>
     <version>4.4.6</version>
 </dependency>

@@ -4,7 +4,7 @@
 
   <parent>
     <artifactId>stomp-ws-server-aggregator</artifactId>
-    <groupId>org.qubership.cloud.quarkus</groupId>
+    <groupId>com.netcracker.cloud.quarkus</groupId>
       <version>7.1.2-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
@@ -30,7 +30,7 @@
       <artifactId>quarkus-vertx-http-deployment</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.qubership.cloud.quarkus</groupId>
+      <groupId>com.netcracker.cloud.quarkus</groupId>
       <artifactId>stomp-ws-server</artifactId>
     </dependency>
     <dependency>

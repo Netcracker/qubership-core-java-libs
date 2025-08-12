@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.qubership.cloud.quarkus</groupId>
+    <groupId>com.netcracker.cloud.quarkus</groupId>
     <artifactId>consul-client-parent</artifactId>
       <version>7.1.2-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
@@ -41,17 +41,17 @@
     </dependency>
     <!-- Qubership -->
     <dependency>
-      <groupId>org.qubership.cloud.quarkus</groupId>
+      <groupId>com.netcracker.cloud.quarkus</groupId>
       <artifactId>security-adapters</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.qubership.cloud</groupId>
+      <groupId>com.netcracker.cloud</groupId>
       <artifactId>consul-config-provider-common</artifactId>
       <version>${rest-libraries.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.qubership.cloud.security.core.utils</groupId>
+      <groupId>com.netcracker.cloud.security.core.utils</groupId>
       <artifactId>tls-utils</artifactId>
     </dependency>
     <!--Test-->

@@ -9,7 +9,7 @@ To include extension to your project add:
 
 ```xml
 <dependency>
-    <groupId>org.qubership.cloud.quarkus</groupId>
+    <groupId>com.netcracker.cloud.quarkus</groupId>
     <artifactId>consul-config-source</artifactId>
     <version>2.1.16</version>
 </dependency>

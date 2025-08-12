@@ -14,7 +14,7 @@ Maven dependency:
 
 ```xml
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>springcloud-config-source</artifactId>
             <version>${version}</version>
         </dependency>
@@ -26,7 +26,7 @@ The config-server address must be specified in the following property:
 
 | Property                                                                      | Description                 | Default value              | Status      |
 |-------------------------------------------------------------------------------|-----------------------------|----------------------------|-------------|
-| org.qubership.cloud.springcloud.config.source.ConfigServerClient/mp-rest/url | URL to access config-server | http://config-server:8080  | since 2.2.0 |
+| com.netcracker.cloud.springcloud.config.source.ConfigServerClient/mp-rest/url | URL to access config-server | http://config-server:8080  | since 2.2.0 |
 
 
 ## Programmatic API

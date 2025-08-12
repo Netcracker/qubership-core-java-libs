@@ -31,7 +31,7 @@ Deprecated REST API is the set of REST endpoints annotated with @java.lang.Depre
 1. Add maven dependency
    ~~~
    <dependency>
-       <groupId>org.qubership.cloud.quarkus</groupId>
+       <groupId>com.netcracker.cloud.quarkus</groupId>
        <artifactId>rest-api-deprecation-switcher-quarkus</artifactId>
    </dependency>
    ~~~

@@ -4,7 +4,7 @@
 
   <parent>
       <artifactId>log-manager-parent</artifactId>
-    <groupId>org.qubership.cloud.quarkus</groupId>
+    <groupId>com.netcracker.cloud.quarkus</groupId>
       <version>7.1.2-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
@@ -13,12 +13,12 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.qubership.cloud.quarkus</groupId>
+      <groupId>com.netcracker.cloud.quarkus</groupId>
       <artifactId>consul-client-deployment</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.qubership.cloud.quarkus</groupId>
+      <groupId>com.netcracker.cloud.quarkus</groupId>
       <artifactId>external-config-source-common-deployment</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -35,7 +35,7 @@
       <artifactId>quarkus-vertx-http-deployment</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.qubership.cloud.quarkus</groupId>
+      <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>log-manager</artifactId>
       <version>${project.version}</version>
     </dependency>

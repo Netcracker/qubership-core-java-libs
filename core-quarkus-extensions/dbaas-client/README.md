@@ -51,7 +51,7 @@ Pay attention, that logical database is created lazily and will be created when 
 In order to start working with this extension you should add to a POM the following dependency:
 ```xml
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>dbaas-datasource-postgresql</artifactId>
             <version>{version}</version>
         </dependency>
@@ -425,7 +425,7 @@ Pay attention, logical database is created lazily and it will be created when yo
 In order to start working with this extension you should add to a POM the following dependency:
 ```xml
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>dbaas-cassandra-client</artifactId>
             <version>{version}</version>
         </dependency>
@@ -595,7 +595,7 @@ If for example your `V1.0__schema_migration.cql` script contains creation of `sa
 
 #### Custom migration implementation
 
-It is possible to override migration implementation by registering your own bean implementing `org.qubership.cloud.dbaas.client.cassandra.migration.MigrationExecutor` interface.
+It is possible to override migration implementation by registering your own bean implementing `com.netcracker.cloud.dbaas.client.cassandra.migration.MigrationExecutor` interface.
 In that case default migration logic provided by the library will be ignored.
 
 ## MongoDB client extension
@@ -606,7 +606,7 @@ Pay attention, logical database is created lazily and it will be created when yo
 In order to start working with this extension you should add to a POM the following dependency:
 ```xml
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>dbaas-mongo-client</artifactId>
             <version>{version}</version>
         </dependency>
@@ -715,12 +715,12 @@ first access the database.
 In order to start working with this extension you should add to a POM the following dependencies:
 ```xml
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>dbaas-common</artifactId>
             <version>{version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>dbaas-opensearch-client</artifactId>
             <version>{version}</version>
         </dependency>
@@ -957,7 +957,7 @@ This is a library that provides utility methods for your tests.
 To set up the library, add the following dependencies to your `pom.xml`:
 ```xml
 <dependency>
-    <groupId>org.qubership.cloud.quarkus</groupId>
+    <groupId>com.netcracker.cloud.quarkus</groupId>
     <artifactId>dbaas-client-test</artifactId>
     <version>${dbaas-client-test.version}</version>
 </dependency>
@@ -967,7 +967,7 @@ To set up the library, add the following dependencies to your `pom.xml`:
 <dependencyManagement>
     <dependencies>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>cloud-core-quarkus-bom-publish</artifactId>
             <version>${cloud.core.quarkus.version}</version>
             <type>pom</type>
@@ -977,7 +977,7 @@ To set up the library, add the following dependencies to your `pom.xml`:
 </dependencyManagement>
 
 <dependency>
-    <groupId>org.qubership.cloud.quarkus</groupId>
+    <groupId>com.netcracker.cloud.quarkus</groupId>
     <artifactId>dbaas-client-test</artifactId>
 </dependency>
 ```

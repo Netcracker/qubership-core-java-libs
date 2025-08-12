@@ -21,3 +21,4 @@
 | stomp-ws-server           | Allows to run a STOMP server over sockJs or over standard websocket protocol | [Readme](stomp-ws-server/README.md)           |
 | maas-client               | Tiny client library to MaaS                                                  | [Readme](maas-client/README.md)               |
 | consul-config-source      | Properties source for Consul                                                 | [Readme](consul-config-source/README.md)      |
+
