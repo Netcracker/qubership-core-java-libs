@@ -1,1 +1,1 @@
-org.qubership.cloud.dbaas.client.config.DbaasCassandraMetricsAutoConfiguration
+com.netcracker.cloud.dbaas.client.config.DbaasCassandraMetricsAutoConfiguration

@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>dbaas-client-java-parent</artifactId>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <version>8.1.2-SNAPSHOT</version>
         <relativePath>../dbaas-client-java-parent/pom.xml</relativePath>
     </parent>
@@ -16,7 +16,7 @@
             <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-base</artifactId>
         </dependency>
         <dependency>
@@ -30,7 +30,7 @@
 
         <!-- Test dependencies -->
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-postgres-base</artifactId>
             <scope>test</scope>
         </dependency>
@@ -46,7 +46,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.security.core.utils</groupId>
+            <groupId>com.netcracker.cloud.security.core.utils</groupId>
             <artifactId>tls-utils</artifactId>
         </dependency>
     </dependencies>

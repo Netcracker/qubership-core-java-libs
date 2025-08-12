@@ -18,7 +18,7 @@ This module can be included as a dependency directly to your microservice.
 1. Add dependencies to your pom.xml: 
     ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-redis-starter</artifactId>
         <version>${dbaas-client-redis-starter.version}</version>
     </dependency>
@@ -27,7 +27,7 @@ This module can be included as a dependency directly to your microservice.
    if you use resstemplate:
    
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-resttemplate</artifactId>
         <version>{version}</version>
     </dependency>
@@ -36,7 +36,7 @@ This module can be included as a dependency directly to your microservice.
    if you use webclient:
    
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-webclient</artifactId>
         <version>{version}</version>
     </dependency>
@@ -91,8 +91,8 @@ Annotation `@EnableServiceDbaasRedis` provides following service-aware beans tha
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import static org.qubership.cloud.dbaas.client.redis.configuration.ServiceDbaasRedisConfiguration.SERVICE_DBAAS_REDIS_CONNECTION_FACTORY;
-import static org.qubership.cloud.dbaas.client.redis.configuration.ServiceDbaasRedisConfiguration.SERVICE_DBAAS_REDIS_TEMPLATE;
+import static com.netcracker.cloud.dbaas.client.redis.configuration.ServiceDbaasRedisConfiguration.SERVICE_DBAAS_REDIS_CONNECTION_FACTORY;
+import static com.netcracker.cloud.dbaas.client.redis.configuration.ServiceDbaasRedisConfiguration.SERVICE_DBAAS_REDIS_TEMPLATE;
 
 @Autowired
 @Qualifier(SERVICE_DBAAS_REDIS_CONNECTION_FACTORY)
@@ -111,8 +111,8 @@ Annotation `@EnableTenantDbaasRedis` provides following tenant-aware beans that 
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import static org.qubership.cloud.dbaas.client.redis.configuration.TenantDbaasRedisConfiguration.TENANT_DBAAS_REDIS_CONNECTION_FACTORY;
-import static org.qubership.cloud.dbaas.client.redis.configuration.TenantDbaasRedisConfiguration.TENANT_DBAAS_REDIS_TEMPLATE;
+import static com.netcracker.cloud.dbaas.client.redis.configuration.TenantDbaasRedisConfiguration.TENANT_DBAAS_REDIS_CONNECTION_FACTORY;
+import static com.netcracker.cloud.dbaas.client.redis.configuration.TenantDbaasRedisConfiguration.TENANT_DBAAS_REDIS_TEMPLATE;
 
 @Autowired
 @Qualifier(TENANT_DBAAS_REDIS_CONNECTION_FACTORY)

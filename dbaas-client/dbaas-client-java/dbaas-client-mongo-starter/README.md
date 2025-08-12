@@ -15,7 +15,7 @@ This module can be included as a dependency directly to your microservice.
   
     ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-mongo-starter</artifactId>
         <version>${dbaas-client-mongo-starter.version}</version>
     </dependency>
@@ -25,7 +25,7 @@ This module can be included as a dependency directly to your microservice.
    if you use resstemplate:
    
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-resttemplate</artifactId>
         <version>{version}</version>
     </dependency>
@@ -34,7 +34,7 @@ This module can be included as a dependency directly to your microservice.
    if you use webclient:
    
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-webclient</artifactId>
         <version>{version}</version>
     </dependency>
@@ -55,7 +55,7 @@ This library initializes service specific `MongoDatabaseFactory` bean with `serv
 You need to inject and perform mongo operations using these beans: 
 
   ```java
-import static org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration.*;
+import static com.netcracker.cloud.dbaas.client.config.DbaasMongoConfiguration.*;
 
   @Autowired
   @Qualifier(SERVICE_MONGO_DB_FACTORY)
@@ -71,7 +71,7 @@ These beans are with a `primary` qualifiers.
 Besides, you can use `spring data mongodb` with a dbaas integration. In order to start using this, you need to put the following annotation:
 
   ```java
-import static org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration.SERVICE_MONGO_TEMPLATE;
+import static com.netcracker.cloud.dbaas.client.config.DbaasMongoConfiguration.SERVICE_MONGO_TEMPLATE;
 
 @EnableMongoRepositories(mongoTemplateRef = SERVICE_MONGO_TEMPLATE)
   ```
@@ -82,7 +82,7 @@ This library initializes tenant specific `MongoDatabaseFactory` bean with `tenan
 You need to inject and perform mongo operations using these beans: 
 
   ```java
-import static org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration.*;
+import static com.netcracker.cloud.dbaas.client.config.DbaasMongoConfiguration.*;
 
   @Autowired
   @Qualifier(TENANT_MONGO_DB_FACTORY)
@@ -96,7 +96,7 @@ import static org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration.*;
 Besides, you can use `spring data mongodb` with a dbaas integration. In order to start using this, you need to put the following annotation:
 
   ```java
-import static org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration.TENANT_MONGO_TEMPLATE;
+import static com.netcracker.cloud.dbaas.client.config.DbaasMongoConfiguration.TENANT_MONGO_TEMPLATE;
 
 @EnableMongoRepositories(mongoTemplateRef = TENANT_MONGO_TEMPLATE)
   ```
@@ -105,7 +105,7 @@ import static org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration.TE
 When using `@EnableDbaasMongo` annotation dbaas-client creates tenant-aware and service-aware `MongoTemplate` and `MongoDbFactory` beans with different qualifiers.   
 You can inject them in your code using these qualifiers:  
 ```java
-import static org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration.*;
+import static com.netcracker.cloud.dbaas.client.config.DbaasMongoConfiguration.*;
 
 @Autowired
 @Qualifier(SERVICE_MONGO_TEMPLATE)
@@ -126,7 +126,7 @@ private MongoDbFactory tenantMongoDbFactory;
 
 Also you can use `spring data mongo` by putting `@EnableMongoRepositories` annotation  and specifying `mongoTemplateRef` parameter. For example:
 ```java
-import static org.qubership.cloud.dbaas.client.config.DbaasMongoConfiguration.*;
+import static com.netcracker.cloud.dbaas.client.config.DbaasMongoConfiguration.*;
 
 @EnableMongoRepositories(mongoTemplateRef = SERVICE_MONGO_TEMPLATE)
 ```

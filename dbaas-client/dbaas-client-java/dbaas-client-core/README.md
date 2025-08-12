@@ -16,7 +16,7 @@ If you still decided to use dbaas-client-core, follow these steps:
 1. Add maven dependency: 
     ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-core</artifactId>
         <version>${dbaas-client-core.version}</version>
     </dependency>
@@ -26,7 +26,7 @@ If you still decided to use dbaas-client-core, follow these steps:
    if you use resstemplate:
    
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-resttemplate</artifactId>
         <version>{version}</version>
     </dependency>
@@ -35,7 +35,7 @@ If you still decided to use dbaas-client-core, follow these steps:
    if you use webclient:
    
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-webclient</artifactId>
         <version>{version}</version>
     </dependency>
@@ -47,7 +47,7 @@ If you still decided to use dbaas-client-core, follow these steps:
     represent the database type you need.  
     
     Find example in dbaas-client-postgres-base implementations of postgreSQL database type: 
-    [PostgresDBType](<github link todo>/dbaas-client/blob/master/dbaas-client-java/dbaas-client-postgres-base/src/main/java/org/qubership/cloud/dbaas/client/entity/database/type/PostgresDBType.java).  
+    [PostgresDBType](<github link todo>/dbaas-client/blob/master/dbaas-client-java/dbaas-client-postgres-base/src/main/java/com/netcracker/cloud/dbaas/client/entity/database/type/PostgresDBType.java).  
 4. Autowire `DatabasePool` and `DbaasClassifierFactory` beans to obtain databases from DBaaS: 
     ```java
     @Autowired

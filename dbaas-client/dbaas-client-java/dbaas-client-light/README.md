@@ -7,7 +7,7 @@ Here are the steps describing how to use dbaas-client-light library:
 1. Add maven dependency: 
     ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-light</artifactId>
         <version>${dbaas-client-light.version}</version>
     </dependency>

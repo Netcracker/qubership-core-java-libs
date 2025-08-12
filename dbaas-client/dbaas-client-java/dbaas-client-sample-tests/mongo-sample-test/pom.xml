@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>dbaas-client-sample-tests</artifactId>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <version>8.1.2-SNAPSHOT</version>
     </parent>
     <artifactId>mongo-sample-test</artifactId>
@@ -10,7 +10,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-core</artifactId>
         </dependency>
         <dependency>
@@ -18,12 +18,12 @@
             <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>microservice-restclient-resttemplate</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-mongo-starter</artifactId>
             <scope>test</scope>
         </dependency>

@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-root</artifactId>
         <version>8.1.2-SNAPSHOT</version>
     </parent>
@@ -18,122 +18,122 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-base</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-postgres-base</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-postgres-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-postgres-flyway</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-mongo-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-opensearch-base</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-opensearch-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>mongo-sample-test</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-cassandra-base</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-cassandra-migration</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-cassandra-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>cassandra-sample-test</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>postgres-sample-test</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-light</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-clickhouse-base</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-clickhouse-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-resttemplate</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-webclient</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-arangodb-base</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-arangodb-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-redis-base</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-redis-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-base-test</artifactId>
             <version>${project.version}</version>
         </dependency>

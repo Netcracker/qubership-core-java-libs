@@ -26,7 +26,7 @@ or [microservice-framework-resttemplate](https://<github link todo>/Core_Repo/li
 1. Add dependencies to your pom.xml: 
     ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-arangodb-starter</artifactId>
         <version>${dbaas-client-arangodb-starter.version}</version>
     </dependency>
@@ -35,7 +35,7 @@ or [microservice-framework-resttemplate](https://<github link todo>/Core_Repo/li
    if you use resstemplate:
    
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-resttemplate</artifactId>
         <version>{version}</version>
     </dependency>
@@ -44,7 +44,7 @@ or [microservice-framework-resttemplate](https://<github link todo>/Core_Repo/li
    if you use webclient:
    
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-webclient</artifactId>
         <version>{version}</version>
     </dependency>
@@ -106,7 +106,7 @@ private ArangoOperations arangoOperations;
 Or use it in Spring Data Repositories:
 ```java
 @EnableServiceDbaasArangoDB
-@EnableArangoRepositories(basePackages = "org.qubership...")
+@EnableArangoRepositories(basePackages = "com.netcracker...")
 ```
 Database that is accessed by this bean can be configured in application properties:
 
@@ -132,14 +132,14 @@ Besides, you can use `spring data arangodb` with a dbaas integration. In order t
 
   ```java
 @EnableTenantDbaasArangoDB
-@EnableArangoRepositories(basePackages = "org.qubership...")
+@EnableArangoRepositories(basePackages = "com.netcracker...")
   ```
 
 Note that service-aware ArangoOperations is primary and will be used by default in repositories unless configured otherwise in `@EnableArangoRepositories` annotation.
 To use tenant-aware ArangoOperations user have to provide their own configuration for `repositoryFactoryBeanClass` and use tenant template there.
   ```java
 @EnableTenantDbaasArangoDB
-@EnableArangoRepositories(basePackages = "org.qubership...", repositoryFactoryBeanClass = CustomTenantFactoryBean.class)
+@EnableArangoRepositories(basePackages = "com.netcracker...", repositoryFactoryBeanClass = CustomTenantFactoryBean.class)
   ```
 
 Database that is accessed by this bean can be configured in application properties:

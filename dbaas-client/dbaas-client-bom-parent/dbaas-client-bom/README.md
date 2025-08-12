@@ -8,7 +8,7 @@ but in case you don't use qubership-springboot-starter-parent, you can use this 
 <dependencyManagement>
     <dependencies>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>dbaas-client-bom</artifactId>
             <version>${dbaas-client-bom.version}</version>
             <type>pom</type>

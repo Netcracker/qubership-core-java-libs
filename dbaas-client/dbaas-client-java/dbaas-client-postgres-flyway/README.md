@@ -8,7 +8,7 @@ This library supports configuring flyway migrations for multiple postgres dataso
 
     ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-postgres-flyway</artifactId>
         <version>last_version</version>
     </dependency>

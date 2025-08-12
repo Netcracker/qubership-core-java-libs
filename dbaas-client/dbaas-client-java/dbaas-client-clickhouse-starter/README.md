@@ -19,7 +19,7 @@ This module can be included as a dependency directly to your microservice.
 1. Add dependencies to your pom.xml:
 ```xml
  <dependency>
-     <groupId>org.qubership.cloud</groupId>
+     <groupId>com.netcracker.cloud</groupId>
      <artifactId>dbaas-client-clickhouse-starter</artifactId>
      <version>${dbaas-client-clickhouse-starter.version}</version>
  </dependency>
@@ -29,7 +29,7 @@ This module can be included as a dependency directly to your microservice.
     if you use resstemplate:
  
   <dependency>
-      <groupId>org.qubership.cloud</groupId>
+      <groupId>com.netcracker.cloud</groupId>
       <artifactId>dbaas-client-resttemplate</artifactId>
       <version>{version}</version>
   </dependency>
@@ -38,7 +38,7 @@ This module can be included as a dependency directly to your microservice.
     if you use webclient:
  
   <dependency>
-      <groupId>org.qubership.cloud</groupId>
+      <groupId>com.netcracker.cloud</groupId>
       <artifactId>dbaas-client-webclient</artifactId>
       <version>{version}</version>
   </dependency>
