@@ -31,14 +31,14 @@ Deprecated REST API is the set of REST endpoints annotated with @java.lang.Depre
 1. Add maven dependency
    ~~~
    <dependency>
-       <groupId>org.qubership.cloud</groupId>
+       <groupId>com.netcracker.cloud</groupId>
        <artifactId>rest-api-deprecation-switcher-spring</artifactId>
    </dependency>
    ~~~
 
 2. At any Spring configuration class add @DisableDeprecatedApi annotation
    ~~~
-   import spring.org.qubership.cloud.disableapi.DisableDeprecatedApi;
+   import spring.com.netcracker.cloud.disableapi.DisableDeprecatedApi;
 
    @SpringBootApplication
    @DisableDeprecatedApi

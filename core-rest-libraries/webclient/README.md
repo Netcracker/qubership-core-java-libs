@@ -12,7 +12,7 @@ Usage
 
 ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>webclient</artifactId>
         <version>{VERSION}</version>
     </dependency>

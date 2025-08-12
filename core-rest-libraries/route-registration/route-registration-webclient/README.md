@@ -15,7 +15,7 @@ The firstly: add Maven dependency to your POM:
 ```xml
     <dependency>
         <artifactId>route-registration-webclient</artifactId>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <version>{VERSION}</version>
     </dependency>
 ```

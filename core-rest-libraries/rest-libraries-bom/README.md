@@ -11,7 +11,7 @@ Add the following artifact to your POM:
  <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.qubership.cloud</groupId>
+                <groupId>com.netcracker.cloud</groupId>
                 <artifactId>rest-libraries-bom</artifactId>
                 <version>{VERSION}</version>
                 <scope>import</scope>
@@ -25,11 +25,11 @@ After it you can add any library from `dependencyManagement` from [POM](./pom.xm
 
 ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>config-server-loader-resttemplate</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>route-registration-resttemplate</artifactId>
     </dependency>
 ```

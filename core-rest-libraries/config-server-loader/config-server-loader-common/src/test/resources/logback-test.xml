@@ -5,7 +5,7 @@
             <pattern>%d %-5p %thread %c{1} - %m%n</pattern>
         </encoder>
     </appender>
-    <logger name="org.qubership.cloud" level="DEBUG"/>
+    <logger name="com.netcracker.cloud" level="DEBUG"/>
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>

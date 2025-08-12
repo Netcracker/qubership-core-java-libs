@@ -1,5 +1,5 @@
 org.springframework.boot.context.config.ConfigDataLocationResolver=\
-org.qubership.cloud.configserver.common.sample.configuration.TestConfigServerConfigDataLocationResolver
+com.netcracker.cloud.configserver.common.sample.configuration.TestConfigServerConfigDataLocationResolver
 
 org.springframework.context.ApplicationListener=\
-org.qubership.cloud.configserver.common.configuration.BootstrapStateEventListeners.ApplicationStartingEventListener
+com.netcracker.cloud.configserver.common.configuration.BootstrapStateEventListeners.ApplicationStartingEventListener

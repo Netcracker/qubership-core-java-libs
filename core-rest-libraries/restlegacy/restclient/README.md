@@ -11,7 +11,7 @@ Maven dependency:
 ```xml
     <dependency>
         <artifactId>restclient</artifactId>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <version>{VERSION}</version>
     </dependency>
 ```

@@ -3,7 +3,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>rest-libraries</artifactId>
         <version>6.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -14,8 +14,8 @@
 
     <properties>
 
-        <microservice.restclient.version>6.1.1</microservice.restclient.version>
-        <qubership.context.framework>7.1.3</qubership.context.framework>
+        <microservice.restclient.version>6.1.2-SNAPSHOT</microservice.restclient.version>
+        <qubership.context.framework>7.1.4-SNAPSHOT</qubership.context.framework>
 
         <!--Spring's libraries -->
         <spring.boot.version>3.4.7</spring.boot.version>
@@ -41,37 +41,37 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.qubership.cloud</groupId>
+                <groupId>com.netcracker.cloud</groupId>
                 <artifactId>microservice-restclient-api</artifactId>
                 <version>${microservice.restclient.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud</groupId>
+                <groupId>com.netcracker.cloud</groupId>
                 <artifactId>microservice-restclient-webclient</artifactId>
                 <version>${microservice.restclient.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud</groupId>
+                <groupId>com.netcracker.cloud</groupId>
                 <artifactId>microservice-restclient-resttemplate</artifactId>
                 <version>${microservice.restclient.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud</groupId>
+                <groupId>com.netcracker.cloud</groupId>
                 <artifactId>framework-contexts</artifactId>
                 <version>${qubership.context.framework}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud</groupId>
+                <groupId>com.netcracker.cloud</groupId>
                 <artifactId>context-propagation-spring-common</artifactId>
                 <version>${qubership.context.framework}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud</groupId>
+                <groupId>com.netcracker.cloud</groupId>
                 <artifactId>context-propagation-spring-resttemplate</artifactId>
                 <version>${qubership.context.framework}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud</groupId>
+                <groupId>com.netcracker.cloud</groupId>
                 <artifactId>context-propagation-spring-webclient</artifactId>
                 <version>${qubership.context.framework}</version>
             </dependency>

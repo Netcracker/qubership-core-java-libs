@@ -30,7 +30,7 @@ in the ```spring-boot-autoconfigure``` module. Subsequently, you can enable Rest
 ```xml
     <dependency>
         <artifactId>resttemplate</artifactId>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <version>{VERSION}</version>
     </dependency>
 ```

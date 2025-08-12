@@ -1,2 +1,2 @@
 org.springframework.boot.context.config.ConfigDataLocationResolver=\
-org.qubership.cloud.consul.provider.spring.resttemplate.config.ConsulM2MConfigDataLocationResolverRestTemplate
+com.netcracker.cloud.consul.provider.spring.resttemplate.config.ConsulM2MConfigDataLocationResolverRestTemplate

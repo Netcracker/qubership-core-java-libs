@@ -1,3 +1,3 @@
 # Bootstrap Configuration
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-configuration.org.qubership.cloud.restlegacy.resttemplate.MicroserviceRestTemplateFactoryConfiguration
+configuration.com.netcracker.cloud.restlegacy.resttemplate.MicroserviceRestTemplateFactoryConfiguration

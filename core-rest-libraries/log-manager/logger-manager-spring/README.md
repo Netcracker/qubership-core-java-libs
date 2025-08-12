@@ -9,7 +9,7 @@ Usage
 
 ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>logger-manager-spring</artifactId>
         <version>{VERSION}</version>
     </dependency>

@@ -43,8 +43,8 @@ For example:
 
 _Method level_
 ```java
-import route.gateway.org.qubership.cloud.routesregistration.common.RouteType;
-import org.qubership.cloud.routesregistration.common.spring.gateway.route.annotation.Route;
+import route.gateway.com.netcracker.cloud.routesregistration.common.RouteType;
+import com.netcracker.cloud.routesregistration.common.spring.gateway.route.annotation.Route;
 ...
  
 @RestController
@@ -95,8 +95,8 @@ Public gateway:
 _class level_
 
 ```java
-import route.gateway.org.qubership.cloud.routesregistration.common.RouteType;
-import org.qubership.cloud.routesregistration.common.spring.gateway.route.annotation.Route;
+import route.gateway.com.netcracker.cloud.routesregistration.common.RouteType;
+import com.netcracker.cloud.routesregistration.common.spring.gateway.route.annotation.Route;
 ...
  
 @RestController
@@ -133,7 +133,7 @@ For example:
 
 _Method level_
 ```java
-import annotation.org.qubership.cloud.routesregistration.common.Route;
+import annotation.com.netcracker.cloud.routesregistration.common.Route;
 ...
  
 @RestController
@@ -159,7 +159,7 @@ Facade gateway:
 _class level_
 
 ```java
-import annotation.org.qubership.cloud.routesregistration.common.Route;
+import annotation.com.netcracker.cloud.routesregistration.common.Route;
 ...
  
 @RestController
@@ -184,8 +184,8 @@ specify your desired path.
 For example:
 
 ```java
-import org.qubership.cloud.microservicecore.gateway.route.RouteType;
-import org.qubership.cloud.microservicecore.gateway.route.annotation.Route;
+import com.netcracker.cloud.microservicecore.gateway.route.RouteType;
+import com.netcracker.cloud.microservicecore.gateway.route.annotation.Route;
 ...
  
 @RestController
@@ -227,10 +227,10 @@ Annotation `@Route` have field `gateways` which can be used to specify an array 
 Routes marked with such annotation will be registered in all the specified gateways. 
 This can be useful to configure composite (ingress) gateway routes as in the example below. 
 ```java
-package org.qubership.cloud.sample.controller;
+package com.netcracker.cloud.sample.controller;
 
-import annotation.org.qubership.cloud.routesregistration.common.Route;
-import annotation.route.gateway.spring.org.qubership.cloud.routesregistration.common.GatewayRequestMapping;
+import annotation.com.netcracker.cloud.routesregistration.common.Route;
+import annotation.route.gateway.spring.com.netcracker.cloud.routesregistration.common.GatewayRequestMapping;
 //...
 
 @Slf4j
@@ -289,10 +289,10 @@ this mapping will apply the hosts specified in "mesh.gateway.virtualHosts" to ev
 
 Also annotation `@Route` have field `hosts` which can be used to specify an array of hosts names.
 ```java
-package org.qubership.cloud.sample.controller;
+package com.netcracker.cloud.sample.controller;
 
-import annotation.org.qubership.cloud.routesregistration.common.Route;
-import annotation.route.gateway.spring.org.qubership.cloud.routesregistration.common.GatewayRequestMapping;
+import annotation.com.netcracker.cloud.routesregistration.common.Route;
+import annotation.route.gateway.spring.com.netcracker.cloud.routesregistration.common.GatewayRequestMapping;
 //...
 
 @Slf4j
