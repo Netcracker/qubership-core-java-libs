@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.qubership.cloud.quarkus</groupId>
+        <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>cloud-core-context-propagation-build-parent</artifactId>
         <version>6.1.2-SNAPSHOT</version>
         <relativePath>../build-parent/pom.xml</relativePath>
@@ -19,27 +19,27 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>context-propagation-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>context-propagation</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>framework-contexts</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>framework-contexts-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>context-propagation-reactive-test</artifactId>
             <version>${project.version}</version>
         </dependency>

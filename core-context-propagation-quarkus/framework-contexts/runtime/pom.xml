@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>framework-contexts-parent</artifactId>
-        <groupId>org.qubership.cloud.quarkus</groupId>
+        <groupId>com.netcracker.cloud.quarkus</groupId>
         <version>6.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -13,7 +13,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>context-propagation-core</artifactId>
             <exclusions>
                 <exclusion>
@@ -39,7 +39,7 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>framework-contexts</artifactId>
             <exclusions>
                 <exclusion>

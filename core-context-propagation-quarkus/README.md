@@ -61,7 +61,7 @@ Framework provides contexts for propagating the following data:
 1) Add the framework-contexts dependency:
     ```xml
     <dependency>
-        <groupId>org.qubership.cloud.quarkus</groupId>
+        <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>framework-contexts</artifactId>
         <version>${context.propagation.version}</version>
     </dependency>
@@ -190,7 +190,7 @@ BusinessProcessIdContext.set(someID);
 # How to write own context
 
 There is an example of new context creation
-in [here](./context-propagation-core/src/test/java/org/qubership/cloud/context/propagation/core/providers/xversion)
+in [here](./context-propagation-core/src/test/java/com/netcracker/cloud/context/propagation/core/providers/xversion)
 
 **At first,** implement your ContextObject class. ContextObject is a place where you can parse and store data from
 IncomingContextData. IncomingContextData is an object where is located request context data.
@@ -362,7 +362,7 @@ All that you need is to add the below dependency.
 
 ```xml
 <dependency>
-    <groupId>org.qubership.cloud</groupId>
+    <groupId>com.netcracker.cloud</groupId>
     <artifactId>context-propagation-quarkus</artifactId>
     <version>${context.propagation.version}</version>
 </dependency>
@@ -377,7 +377,7 @@ And write own or use our `Quarkus framework contexts`.
 
 ```xml
 <dependency>
-    <groupId>org.qubership.cloud</groupId>
+    <groupId>com.netcracker.cloud</groupId>
     <artifactId>framework-contexts-quarkus</artifactId>
     <version>${context.propagation.version}</version>
 </dependency>

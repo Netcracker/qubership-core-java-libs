@@ -1,0 +1,22 @@
+package com.netcracker.cloud.framework.quarkus.contexts.xrequestid;
+
+import com.netcracker.cloud.context.propagation.core.RegisterProvider;
+import com.netcracker.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.framework.contexts.xrequestid.XRequestIdContextObject;
+import com.netcracker.cloud.framework.contexts.xrequestid.XRequestIdContextProvider;
+
+@RegisterProvider
+public class QuarkusXRequestIdContextProvider extends XRequestIdContextProvider {
+    private final Strategy<XRequestIdContextObject> xRequestIdContextStrategy = new QuarkusXRequestStrategyImpl(() -> provide(null));
+
+    @Override
+    public Strategy<XRequestIdContextObject> strategy() {
+        return xRequestIdContextStrategy;
+    }
+
+    @Override
+    public int providerOrder() {
+        return -100;
+    }
+
+}
