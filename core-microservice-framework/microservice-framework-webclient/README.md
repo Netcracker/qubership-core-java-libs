@@ -12,7 +12,7 @@ Usage
 First of all put `microservice-framework-resttemplate` dependency in you POM file:
 ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>microservice-framework-webclient</artifactId>
         <version>{VERSION}</version>
     </dependency>

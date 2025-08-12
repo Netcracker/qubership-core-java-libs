@@ -7,10 +7,10 @@
         </encoder>
     </appender>
 
-    <logger name="org.qubership.cloud" level="INFO"/>
+    <logger name="com.netcracker.cloud" level="INFO"/>
 
     <!-- Hide secure properties -->
-    <logger name="org.qubership.cloud.microserviceframework.application.MicroserviceApplicationEnvironment" level="INFO" />
+    <logger name="com.netcracker.cloud.microserviceframework.application.MicroserviceApplicationEnvironment" level="INFO" />
 
     <root level="${log.level:-INFO}">
         <appender-ref ref="STDOUT"/>
