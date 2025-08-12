@@ -62,7 +62,7 @@ Framework provides contexts for propagating the following data:
 ```xml
 
 <dependency>
-    <groupId>org.qubership.cloud</groupId>
+    <groupId>com.netcracker.cloud</groupId>
     <artifactId>framework-contexts</artifactId>
     <version>${context.propagation.version}</version>
 </dependency>
@@ -477,7 +477,7 @@ suitable for terminated microservice(which accept a request but does not send)
 ```xml
 
 <dependency>
-    <groupId>org.qubership.cloud</groupId>
+    <groupId>com.netcracker.cloud</groupId>
     <artifactId>context-propagation-spring-common</artifactId>
     <version>${context.propagation.version}</version>
 </dependency>
@@ -532,7 +532,7 @@ to your configuration class(Already contain @EnableSpringContextProvider annotat
 ```xml
 
 <dependency>
-    <groupId>org.qubership.cloud</groupId>
+    <groupId>com.netcracker.cloud</groupId>
     <artifactId>context-propagation-spring-resttemplate</artifactId>
     <version>${context.propagation.version}</version>
 </dependency>
@@ -586,7 +586,7 @@ your configuration class(Already contain @EnableSpringContextProvider annotation
 ```xml
 
 <dependency>
-    <groupId>org.qubership.cloud</groupId>
+    <groupId>com.netcracker.cloud</groupId>
     <artifactId>context-propagation-spring-webclient</artifactId>
     <version>${context.propagation.version}</version>
 </dependency>
@@ -601,7 +601,7 @@ performed by deserializing header values from incoming message into contexts.
 - Add dependency
 ```xml
   <dependency>
-     <groupId>org.qubership.cloud</groupId>
+     <groupId>com.netcracker.cloud</groupId>
      <artifactId>context-propagation-spring-kafka</artifactId>
      <version>${context-propagation.kafka.version}</version>
   </dependency>
@@ -620,7 +620,7 @@ Alias header `version` just ignored during deserialization.
 - Add dependency
 ```xml
   <dependency>
-     <groupId>org.qubership.cloud</groupId>
+     <groupId>com.netcracker.cloud</groupId>
      <artifactId>context-propagation-spring-rabbit</artifactId>
      <version>${context-propagation.kafka.version}</version>
   </dependency>
@@ -709,7 +709,7 @@ Add the following artifact to your POM:
  <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.qubership.cloud</groupId>
+                <groupId>com.netcracker.cloud</groupId>
                 <artifactId>context-propagation-bom</artifactId>
                 <version>{VERSION}</version>
                 <scope>import</scope>
@@ -723,11 +723,11 @@ After it, you can add any library from `dependencyManagement` from [POM](./conte
 
 ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>context-propagation-spring-common</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>context-propagation-spring-resttemplate</artifactId>
     </dependency>
 ```

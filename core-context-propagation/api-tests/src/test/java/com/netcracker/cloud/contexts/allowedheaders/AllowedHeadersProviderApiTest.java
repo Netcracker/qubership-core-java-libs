@@ -1,0 +1,49 @@
+package com.netcracker.cloud.contexts.allowedheaders;
+
+import org.junit.jupiter.api.Test;
+import com.netcracker.cloud.contexts.IncomingContextDataFactory;
+import com.netcracker.cloud.framework.contexts.allowedheaders.AllowedHeadersContextObject;
+import com.netcracker.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider;
+
+import java.util.HashMap;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static com.netcracker.cloud.framework.contexts.allowedheaders.AllowedHeadersProvider.HEADERS_PROPERTY;
+
+class AllowedHeadersProviderApiTest {
+
+    @Test
+    void testAllowedHeadersContextName() {
+        assertEquals("allowed_header", AllowedHeadersProvider.ALLOWED_HEADER);
+        assertEquals("allowed_header", new AllowedHeadersProvider().contextName());
+    }
+
+    @Test
+    void testAllowedHeadersDefaultConstructor() {
+        AllowedHeadersProvider allowedHeadersProvider = new AllowedHeadersProvider();
+        assertNotNull(allowedHeadersProvider);
+    }
+
+    @Test
+    void testProvideAllowedHeadersContextObject() {
+        System.setProperty(HEADERS_PROPERTY, "my-header");
+        AllowedHeadersProvider allowedHeadersProvider = new AllowedHeadersProvider();
+        AllowedHeadersContextObject allowedHeadersContextObject = allowedHeadersProvider.provide(IncomingContextDataFactory.getAllowedHeadersIncomingContextData());
+
+        HashMap<String, Object> expected = new HashMap<>();
+        expected.put("my-header", "my-value");
+        assertEquals(expected, allowedHeadersContextObject.getHeaders());
+
+        System.clearProperty(HEADERS_PROPERTY);
+    }
+
+    @Test
+    void testProvideAllowedHeadersContextObjectWithoutHeaders() {
+        AllowedHeadersProvider allowedHeadersProvider = new AllowedHeadersProvider();
+        AllowedHeadersContextObject allowedHeadersContextObject = allowedHeadersProvider.provide(IncomingContextDataFactory.getAllowedHeadersIncomingContextData());
+
+        assertEquals(new HashMap<>(), allowedHeadersContextObject.getHeaders());
+    }
+
+}
