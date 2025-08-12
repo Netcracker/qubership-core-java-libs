@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.qubership.cloud.maas.declarative</groupId>
+    <groupId>com.netcracker.cloud.maas.declarative</groupId>
     <artifactId>maas-declarative-kafka-client-spring-bom</artifactId>
     <version>6.1.2-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -32,20 +32,20 @@
 
         <testcontainers.version>1.20.6</testcontainers.version>
 
-        <maas-declarative-kafka-client.version>5.1.1</maas-declarative-kafka-client.version>
-        <maas-client-spring.version>8.1.1</maas-client-spring.version>
+        <maas-declarative-kafka-client.version>5.1.2-SNAPSHOT</maas-declarative-kafka-client.version>
+        <maas-client-spring.version>8.1.2-SNAPSHOT</maas-client-spring.version>
         <opentelemetry-kafka-clients.version>2.5.0-alpha</opentelemetry-kafka-clients.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.qubership.cloud.maas.client</groupId>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>maas-declarative-kafka-client</artifactId>
                 <version>${maas-declarative-kafka-client.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud.maas.client</groupId>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>maas-client-spring</artifactId>
                 <version>${maas-client-spring.version}</version>
             </dependency>

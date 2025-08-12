@@ -16,7 +16,7 @@ This module adds ability to work with Kafka via declarative approach or directly
 ```xml
 
 <dependency>
-    <groupId>org.qubership.cloud.maas.declarative</groupId>
+    <groupId>com.netcracker.cloud.maas.declarative</groupId>
     <artifactId>maas-declarative-kafka-client-spring</artifactId>
 </dependency>
 ```
@@ -564,7 +564,7 @@ This bean provided automatically by dependency:
 ```xml
 
 <dependency>
-    <groupId>org.qubership.cloud</groupId>
+    <groupId>com.netcracker.cloud</groupId>
     <artifactId>blue-green-state-monitor-spring</artifactId>
 </dependency>
 ```
