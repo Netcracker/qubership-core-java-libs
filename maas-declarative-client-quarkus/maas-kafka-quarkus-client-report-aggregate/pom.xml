@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.qubership.cloud.maas.declarative</groupId>
+        <groupId>com.netcracker.cloud.maas.declarative</groupId>
         <artifactId>maas-declarative-kafka-client-quarkus-bom</artifactId>
         <version>6.1.2-SNAPSHOT</version>
     </parent>
@@ -18,12 +18,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.qubership.cloud.maas.declarative</groupId>
+            <groupId>com.netcracker.cloud.maas.declarative</groupId>
             <artifactId>maas-declarative-kafka-client-quarkus</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.maas.declarative</groupId>
+            <groupId>com.netcracker.cloud.maas.declarative</groupId>
             <artifactId>maas-declarative-kafka-client-quarkus-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>

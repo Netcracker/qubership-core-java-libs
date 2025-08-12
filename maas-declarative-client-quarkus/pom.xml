@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.qubership.cloud.maas.declarative</groupId>
+    <groupId>com.netcracker.cloud.maas.declarative</groupId>
     <artifactId>maas-declarative-kafka-client-quarkus-bom</artifactId>
     <version>6.1.2-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -35,9 +35,9 @@
         <testcontainers.version>1.18.3</testcontainers.version>
         <assertj-core.version>3.26.3</assertj-core.version>
 
-        <maas-declarative-kafka-client.version>5.1.1</maas-declarative-kafka-client.version>
-        <maas-client-quarkus-kafka.version>8.1.1</maas-client-quarkus-kafka.version>
-        <blue-green-state-monitor-quarkus.version>1.1.1</blue-green-state-monitor-quarkus.version>
+        <maas-declarative-kafka-client.version>5.1.2-SNAPSHOT</maas-declarative-kafka-client.version>
+        <maas-client-quarkus-kafka.version>8.1.2-SNAPSHOT</maas-client-quarkus-kafka.version>
+        <blue-green-state-monitor-quarkus.version>1.1.2-SNAPSHOT</blue-green-state-monitor-quarkus.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../maas-kafka-quarkus-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
@@ -61,24 +61,24 @@
 
             <!--internal platform dependencies-->
             <dependency>
-                <groupId>org.qubership.cloud.maas.client</groupId>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>maas-declarative-kafka-client</artifactId>
                 <version>${maas-declarative-kafka-client.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud.quarkus</groupId>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>maas-client-quarkus-kafka-deployment</artifactId>
                 <version>${maas-client-quarkus-kafka.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.qubership.cloud.quarkus</groupId>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>maas-client-quarkus-kafka</artifactId>
                 <version>${maas-client-quarkus-kafka.version}</version>
             </dependency>
 
             <!--external platform dependencies-->
             <dependency>
-                <groupId>org.qubership.cloud.quarkus</groupId>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>blue-green-state-monitor-quarkus</artifactId>
                 <version>${blue-green-state-monitor-quarkus.version}</version>
             </dependency>
