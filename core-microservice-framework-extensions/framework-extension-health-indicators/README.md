@@ -17,7 +17,7 @@ First of all you should add the Maven dependency:
 
 ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>framework-extension-health-indicators</artifactId>
         <version>{VERSION}</version>
     </dependency>

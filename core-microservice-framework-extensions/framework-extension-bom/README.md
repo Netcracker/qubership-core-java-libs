@@ -11,7 +11,7 @@ Add the following artifact to your POM:
  <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.qubership.cloud</groupId>
+                <groupId>com.netcracker.cloud</groupId>
                 <artifactId>framework-extension-bom</artifactId>
                 <version>{VERSION}</version>
                 <scope>import</scope>
@@ -26,11 +26,11 @@ For example:
 
 ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>framework-extension-health-indicators</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>framework-extension-springdoc-swagger</artifactId>
     </dependency>
 ```

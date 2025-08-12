@@ -13,7 +13,7 @@ Add the Maven dependency:
 
 ```xml
     <dependency>
-        <groupId>org.qubership.cloud</groupId>
+        <groupId>com.netcracker.cloud</groupId>
         <artifactId>framework-extension-springdoc-swagger</artifactId>
         <version>{VERSION}</version>
     </dependency>
@@ -25,7 +25,7 @@ Create your spring swagger configuration file and put the `@EnableSwaggerAuth` a
 For example:
 
 ```java
-import annotation.org.qubership.cloud.frameworkextensions.swagger.config.EnableSwaggerAuth;
+import annotation.com.netcracker.cloud.frameworkextensions.swagger.config.EnableSwaggerAuth;
 ...
 
 @Configuration
@@ -38,9 +38,9 @@ public class SwaggerConfiguration {
 All your endpoints will be secured with 3 security schemas:
  
 ```java
-org.qubership.cloud.frameworkextensions.swagger.config.M2M_SECURITY_DEF
-org.qubership.cloud.frameworkextensions.swagger.config.CLOUD_ADMIN_SECURITY_DEF
-org.qubership.cloud.frameworkextensions.swagger.config.API_KEY_SECURITY_DEF
+com.netcracker.cloud.frameworkextensions.swagger.config.M2M_SECURITY_DEF
+com.netcracker.cloud.frameworkextensions.swagger.config.CLOUD_ADMIN_SECURITY_DEF
+com.netcracker.cloud.frameworkextensions.swagger.config.API_KEY_SECURITY_DEF
 
 ```
 
