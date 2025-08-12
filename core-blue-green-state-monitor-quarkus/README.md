@@ -30,8 +30,8 @@ cloud.microservice.namespace=${NAMESAPCE:}
 ~~~
 
 ~~~ java 
-import org.qubership.cloud.bluegreen.api.model.BlueGreenState;
-import org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.bluegreen.api.model.BlueGreenState;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
 import jakarta.inject.Inject;
 import jakarta.enterprise.context.ApplicationScoped;
 import lombok.extern.slf4j.Slf4j;
@@ -85,7 +85,7 @@ cloud.microservice.name=${SERVICE_NAME:}
 ~~~
 
 ~~~ java 
-import org.qubership.cloud.bluegreen.api.service.MicroserviceMutexService;
+import com.netcracker.cloud.bluegreen.api.service.MicroserviceMutexService;
 import lombok.extern.slf4j.Slf4j;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
