@@ -47,8 +47,8 @@ For more information about variables see: [Parameters Provided by Deployer to Ap
 To add missed variables to your pod runtime environment, you need to edit your deployment chart files.  
 
 ## Start
-First of all we need to create instance of [MaaSAPIClient](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/org/qubership/cloud/maas/client/api/MaaSAPIClient.java). 
-Default implementation for this interface is [MaaSAPIClientImpl](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/org/qubership/cloud/maas/client/impl/MaaSAPIClientImpl.java).
+First of all we need to create instance of [MaaSAPIClient](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/com/netcracker/cloud/maas/client/api/MaaSAPIClient.java). 
+Default implementation for this interface is [MaaSAPIClientImpl](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/com/netcracker/cloud/maas/client/impl/MaaSAPIClientImpl.java).
 MaaSAPIClientImpl requires single parameter to instantiate - M2M auth token supplier. This token will be used to:
 * interact with maas-agent microservice
 * subscribe to tenant-manager tenant activation/deactivation events (tenant-topics feature)
@@ -61,7 +61,7 @@ MaaSClient client = new MaaSAPIClientImpl(() -> M2MManager.getInstance().getToke
    
 
 ## Kafka client usage example
-All MaaS operations for Kafka is collected in [KafkaMaaSClient](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/org/qubership/cloud/maas/client/api/kafka/KafkaMaaSClient.java). To obtain *new* instance of MaaS Kafka client just call: 
+All MaaS operations for Kafka is collected in [KafkaMaaSClient](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/com/netcracker/cloud/maas/client/api/kafka/KafkaMaaSClient.java). To obtain *new* instance of MaaS Kafka client just call: 
 ```java
 KafkaMaaSClient kafkaClient = client.getKafkaClient();
 ```
@@ -120,7 +120,7 @@ Full example for consumer can be found [here](https://git.qubership.org/PROD.Pla
 It is crucial to save and restore context during message processing. Moreover, its is manadatory requirements to correctly filtering messages in 
 Blue/Green deployment. To serialize current execution context into message headers just call utility method:
 ```java
-import org.qubership.cloud.maas.client.context.kafka.KafkaContextPropagation;
+import com.netcracker.cloud.maas.client.context.kafka.KafkaContextPropagation;
 
 var record = new ProducerRecord<...>(
         topicName,
@@ -130,10 +130,10 @@ var record = new ProducerRecord<...>(
         KafkaContextPropagation.propagateContext() // dump context to message headers
    );
 ```
-Context propagation methods is in class [KafkaContextPropagation](kafka-context-propagation/src/main/java/org/qubership/cloud/maas/client/context/kafka/KafkaContextPropagation.java) located in module:
+Context propagation methods is in class [KafkaContextPropagation](kafka-context-propagation/src/main/java/com/netcracker/cloud/maas/client/context/kafka/KafkaContextPropagation.java) located in module:
 ```xml
 <dependency>
-    <groupId>org.qubership.cloud.maas.client</groupId>
+    <groupId>com.netcracker.cloud.maas.client</groupId>
     <artifactId>kafka-context-propagation</artifactId>
 </dependency>
 
@@ -146,7 +146,7 @@ KafkaContextPropagation.restoreContext(message.headers());
 ```
 
 ## RabbitMQ client usage example
-All MaaS operations for RabbitMQ is collected in [RabbitMaaSClient](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/org/qubership/cloud/maas/client/api/rabbit/RabbitMaaSClient.java). 
+All MaaS operations for RabbitMQ is collected in [RabbitMaaSClient](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/com/netcracker/cloud/maas/client/api/rabbit/RabbitMaaSClient.java). 
 To obtain *new* instance of MaaS RabbitMQ client just call:
 ```java
 RabbitMaaSClient rabbitClient = client.getRabbitClient();
@@ -173,7 +173,7 @@ restore version value to microservice execution context on message receiver side
 MaaS Client offers utility class to simplify these tasks. Include dependency to:
 ```xml
 <dependency>
-    <groupId>org.qubership.cloud.maas.client</groupId>
+    <groupId>com.netcracker.cloud.maas.client</groupId>
     <artifactId>rabbit-context-propagation</artifactId>
     <version>{version}</version>
 </dependency>

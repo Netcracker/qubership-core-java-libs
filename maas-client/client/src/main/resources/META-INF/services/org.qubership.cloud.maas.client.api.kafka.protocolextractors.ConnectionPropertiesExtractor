@@ -1,6 +1,0 @@
-org.qubership.cloud.maas.client.impl.kafka.protocolextractors.PlaintextPropertiesExtractor
-org.qubership.cloud.maas.client.impl.kafka.protocolextractors.ScramPropertiesExtractor
-org.qubership.cloud.maas.client.impl.kafka.protocolextractors.ScramPlaintextPropertiesExtractor
-org.qubership.cloud.maas.client.impl.kafka.protocolextractors.SaslSslPropertiesExtractor
-org.qubership.cloud.maas.client.impl.kafka.protocolextractors.SslPropertiesExtractor
-

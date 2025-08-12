@@ -1,0 +1,6 @@
+com.netcracker.cloud.maas.client.impl.kafka.protocolextractors.PlaintextPropertiesExtractor
+com.netcracker.cloud.maas.client.impl.kafka.protocolextractors.ScramPropertiesExtractor
+com.netcracker.cloud.maas.client.impl.kafka.protocolextractors.ScramPlaintextPropertiesExtractor
+com.netcracker.cloud.maas.client.impl.kafka.protocolextractors.SaslSslPropertiesExtractor
+com.netcracker.cloud.maas.client.impl.kafka.protocolextractors.SslPropertiesExtractor
+

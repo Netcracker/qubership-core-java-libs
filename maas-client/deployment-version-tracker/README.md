@@ -100,7 +100,7 @@ BGFinalizeActive -> BGFinalizeActive : Update Active
 ```
 
 ## Migration to Blue Green 2
-TrackingVersionFilterImpl implementation for Blue Green 2 depends on org.qubership.cloud.bluegreen.api.service.BlueGreenStatePublisher from blue-green-state-monitor-java.  
+TrackingVersionFilterImpl implementation for Blue Green 2 depends on com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher from blue-green-state-monitor-java.  
 Refer to blue-green-state-monitor-java's documentation regarding how to set up BlueGreenStatePublisher.
 
 Usage:
