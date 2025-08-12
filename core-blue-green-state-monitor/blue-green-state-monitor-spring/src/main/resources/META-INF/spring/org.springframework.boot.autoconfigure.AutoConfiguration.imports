@@ -1,5 +1,5 @@
-org.qubership.cloud.bluegreen.spring.config.InMemoryConfig
-org.qubership.cloud.bluegreen.spring.config.BlueGreenStatePublisherConfiguration
-org.qubership.cloud.bluegreen.spring.config.BlueGreenMicroserviceMutexConfiguration
-org.qubership.cloud.bluegreen.spring.config.BlueGreenGlobalMutexConfiguration
-org.qubership.cloud.bluegreen.spring.config.BGStateConfiguration
+com.netcracker.cloud.bluegreen.spring.config.InMemoryConfig
+com.netcracker.cloud.bluegreen.spring.config.BlueGreenStatePublisherConfiguration
+com.netcracker.cloud.bluegreen.spring.config.BlueGreenMicroserviceMutexConfiguration
+com.netcracker.cloud.bluegreen.spring.config.BlueGreenGlobalMutexConfiguration
+com.netcracker.cloud.bluegreen.spring.config.BGStateConfiguration

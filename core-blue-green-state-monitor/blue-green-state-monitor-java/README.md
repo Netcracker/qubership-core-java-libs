@@ -16,8 +16,8 @@ This library provides ability to listen for BlueGreen state changes in Consul an
 
 ### Subscribe/Unsubscribe usage example:
 ~~~ java 
-import model.api.org.qubership.cloud.bluegreen.BlueGreenState;
-import service.impl.org.qubership.cloud.bluegreen.ConsulBlueGreenStatePublisher;
+import model.api.com.netcracker.cloud.bluegreen.BlueGreenState;
+import service.impl.com.netcracker.cloud.bluegreen.ConsulBlueGreenStatePublisher;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -41,8 +41,8 @@ class BGStatePublisherDemo {
 
 ### Get current state usage example:
 ~~~ java 
-import model.api.org.qubership.cloud.bluegreen.BlueGreenState;
-import service.impl.org.qubership.cloud.bluegreen.ConsulBlueGreenStatePublisher;
+import model.api.com.netcracker.cloud.bluegreen.BlueGreenState;
+import service.impl.com.netcracker.cloud.bluegreen.ConsulBlueGreenStatePublisher;
 
 import java.util.function.Supplier;
 
@@ -58,8 +58,8 @@ class BGStateGetDemo {
 ## MicroserviceMutexService usage example:
 Deprecated. Mutexes were not approved by the committee.
 ~~~ java 
-import service.api.org.qubership.cloud.bluegreen.MicroserviceMutexService;
-import service.impl.org.qubership.cloud.bluegreen.ConsulMicroserviceMutexService;
+import service.api.com.netcracker.cloud.bluegreen.MicroserviceMutexService;
+import service.impl.com.netcracker.cloud.bluegreen.ConsulMicroserviceMutexService;
 import lombok.extern.slf4j.Slf4j;
 import java.time.Duration;
 

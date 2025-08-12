@@ -22,14 +22,14 @@ There are 2 implementations which provide TokenStorage bean required for BlueGre
 1. consul-config-provider-spring-webclient
 ~~~ xml
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>consul-config-provider-spring-webclient</artifactId>
         </dependency> 
 ~~~
 2. consul-config-provider-spring-resttemplate
 ~~~ xml
         <dependency>
-            <groupId>org.qubership.cloud</groupId>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>consul-config-provider-spring-resttemplate</artifactId>
         </dependency>
 ~~~
@@ -51,8 +51,8 @@ SERVICE_NAME
 
 ### Usage with enabled AutoConfiguration example:
 ~~~ java 
-import model.api.org.qubership.cloud.bluegreen.BlueGreenState;
-import service.api.org.qubership.cloud.bluegreen.BlueGreenStatePublisher;
+import model.api.com.netcracker.cloud.bluegreen.BlueGreenState;
+import service.api.com.netcracker.cloud.bluegreen.BlueGreenStatePublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -85,9 +85,9 @@ public class BGStatePublisherSpringDemo {
 
 ### Usage with disabled AutoConfiguration example:
 ~~~ java 
-import model.api.org.qubership.cloud.bluegreen.BlueGreenState;
-import service.api.org.qubership.cloud.bluegreen.BlueGreenStatePublisher;
-import org.qubership.cloud.bluegreen.EnableBlueGreenStatePublisher;
+import model.api.com.netcracker.cloud.bluegreen.BlueGreenState;
+import service.api.com.netcracker.cloud.bluegreen.BlueGreenStatePublisher;
+import com.netcracker.cloud.bluegreen.EnableBlueGreenStatePublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -144,7 +144,7 @@ POD_NAME
 ~~~
 ### Usage with enabled AutoConfiguration example
 ~~~ java 
-import service.api.org.qubership.cloud.bluegreen.MicroserviceMutexService;
+import service.api.com.netcracker.cloud.bluegreen.MicroserviceMutexService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -173,8 +173,8 @@ public class MicroserviceMutexServiceDemo {
 
 ### Usage with disabled AutoConfiguration example:
 ~~~ java 
-import service.api.org.qubership.cloud.bluegreen.MicroserviceMutexService;
-import org.qubership.cloud.bluegreen.BlueGreenMicroserviceMutexConfiguration;
+import service.api.com.netcracker.cloud.bluegreen.MicroserviceMutexService;
+import com.netcracker.cloud.bluegreen.BlueGreenMicroserviceMutexConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

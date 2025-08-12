@@ -1,6 +1,6 @@
 <configuration>
 
-    <conversionRule conversionWord="bg_state" converterClass="org.qubership.cloud.bluegreen.spring.log.BGStateConverter"/>
+    <conversionRule conversionWord="bg_state" converterClass="com.netcracker.cloud.bluegreen.spring.log.BGStateConverter"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -8,7 +8,7 @@
         </encoder>
     </appender>
 
-    <logger name="org.qubership" level="DEBUG"/>
+    <logger name="com.netcracker" level="DEBUG"/>
     <logger name="org.testcontainers" level="INFO"/>
     <logger name="org.apache.zookeeper" level="WARN"/>
     <logger name="org.apache.kafka" level="WARN"/>
