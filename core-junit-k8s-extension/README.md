@@ -40,7 +40,7 @@
 You can use qubership extension for integration tests in your services. For this you need to put dependency in your pom.xml:
 ``` xml
         <dependency>
-            <groupId>org.qubership.cloud.junit.cloudcore</groupId>
+            <groupId>com.netcracker.cloud.junit.cloudcore</groupId>
             <artifactId>cloud-core-extension</artifactId>
             <version>{library version}</version>
         </dependency>
@@ -152,7 +152,7 @@ For example:
     }
 ```
 
-#### More examples how to inject tests util services can be found [here](cloud-core-extension/src/test/java/org/qubership/cloud/junit/cloudcore/extension/callbacks/classes/TestClass.java)
+#### More examples how to inject tests util services can be found [here](cloud-core-extension/src/test/java/com/netcracker/cloud/junit/cloudcore/extension/callbacks/classes/TestClass.java)
 
 #### Pod Scale > 1
 By default, port-forward is linked to any of pods found by service selector.
