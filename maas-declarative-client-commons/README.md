@@ -16,7 +16,8 @@ supports local development mode.
 
 ```xml
     <dependency>
-        <groupId>org.qubership.cloud.maas.client</groupId>
+        <groupId>com.netcracker.cloud.maas.client</groupId>
         <artifactId>maas-declarative-kafka-client</artifactId>
     </dependency>
 ```
+
