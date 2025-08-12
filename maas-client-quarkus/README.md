@@ -14,7 +14,7 @@ To include extension to your project add:
 <project>
     <dependencyManagement>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>maas-client-quarkus-bom</artifactId>
             <version>x.x.x</version>
             <type>pom</type>
@@ -24,11 +24,11 @@ To include extension to your project add:
 
     <dependencies>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>maas-client-quarkus-kafka</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.qubership.cloud.quarkus</groupId>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
             <artifactId>maas-client-quarkus-rabbit</artifactId>
         </dependency>
     </dependencies>
