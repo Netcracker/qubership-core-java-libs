@@ -5,10 +5,11 @@ on:
 
 jobs:
     mvn:
-        uses: netcracker/qubership-workflow-hub/.github/workflows/maven-publish.yml@main
+        uses: netcracker/qubership-workflow-hub/.github/workflows/maven-publish.yml@v1.0.1
         with:
             maven-command: "--batch-mode deploy -Dgpg.skip=true"
             server-id: github
             java-version: 17
+            ref: ${{ github.head_ref }}
         secrets:
             maven-token: ${{ secrets.GITHUB_TOKEN }}
