@@ -170,10 +170,10 @@ The most common use case is to include the Blue-Green state in your application 
 
 ```properties
 # Include Blue-Green state in console logs
-quarkus.log.console.format=[%d{yyyy-MM-dd'T'HH:mm:ss.SSS}][%-5p] [bg_state:%#{BG_STATE:-}] %s%e%n
+quarkus.log.console.format=[%d{yyyy-MM-dd'T'HH:mm:ss.SSS}][%-5p] [bg_state:%#{BG_STATE:\-}] %s%e%n
 
 # Include Blue-Green state in file logs
-quarkus.log.file.format=[%d{yyyy-MM-dd'T'HH:mm:ss.SSS}][%-5p] [bg_state:%#{BG_STATE:-}] %s%e%n
+quarkus.log.file.format=[%d{yyyy-MM-dd'T'HH:mm:ss.SSS}][%-5p] [bg_state:%#{BG_STATE:\-}] %s%e%n
 ```
 
 ### Example Log Output
