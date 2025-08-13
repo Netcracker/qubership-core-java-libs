@@ -47,7 +47,7 @@ The logging feature is included in the Spring module:
 
 ```xml
 <dependency>
-    <groupId>org.qubership.cloud</groupId>
+    <groupId>com.netcracker.cloud</groupId>
     <artifactId>blue-green-state-monitor-spring</artifactId>
     <version>1.2.0</version> <!-- or higher -->
 </dependency>
@@ -60,7 +60,7 @@ Add the custom converter to your `logback.xml` or `logback-spring.xml`:
 <configuration>
     <!-- Register the Blue-Green state converter -->
     <conversionRule conversionWord="bg_state" 
-                    converterClass="org.qubership.cloud.bluegreen.spring.log.BGStateConverter"/>
+                    converterClass="com.netcracker.cloud.bluegreen.spring.log.BGStateConverter"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
