@@ -109,8 +109,8 @@ class BGKafkaConsumerUnitTest {
             CountDownLatch waitUntilSecondStateSet = new CountDownLatch(1);
 
             Mockito.doAnswer(i -> {
-                waitUntilFirstBgStateRead.countDown();
                 Object result = i.callRealMethod();
+                waitUntilFirstBgStateRead.countDown();
                 // wait until second state was set
                 waitUntilSecondStateSet.await();
                 return result;
