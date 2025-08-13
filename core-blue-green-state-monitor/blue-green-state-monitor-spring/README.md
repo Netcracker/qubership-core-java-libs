@@ -59,8 +59,8 @@ SERVICE_NAME
 
 ### Usage with enabled AutoConfiguration example:
 ~~~ java 
-import model.api.com.netcracker.cloud.bluegreen.BlueGreenState;
-import service.api.com.netcracker.cloud.bluegreen.BlueGreenStatePublisher;
+import com.netcracker.cloud.bluegreen.api.model.BlueGreenState;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -93,9 +93,9 @@ public class BGStatePublisherSpringDemo {
 
 ### Usage with disabled AutoConfiguration example:
 ~~~ java 
-import model.api.com.netcracker.cloud.bluegreen.BlueGreenState;
-import service.api.com.netcracker.cloud.bluegreen.BlueGreenStatePublisher;
-import com.netcracker.cloud.bluegreen.EnableBlueGreenStatePublisher;
+import com.netcracker.cloud.bluegreen.api.model.BlueGreenState;
+import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
+import com.netcracker.cloud.bluegreen.spring.config.EnableBlueGreenStatePublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -152,7 +152,7 @@ POD_NAME
 ~~~
 ### Usage with enabled AutoConfiguration example
 ~~~ java 
-import service.api.com.netcracker.cloud.bluegreen.MicroserviceMutexService;
+import com.netcracker.cloud.bluegreen.api.service.MicroserviceMutexService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -181,8 +181,8 @@ public class MicroserviceMutexServiceDemo {
 
 ### Usage with disabled AutoConfiguration example:
 ~~~ java 
-import service.api.com.netcracker.cloud.bluegreen.MicroserviceMutexService;
-import com.netcracker.cloud.bluegreen.BlueGreenMicroserviceMutexConfiguration;
+import com.netcracker.cloud.bluegreen.api.service.MicroserviceMutexService;
+import com.netcracker.cloud.bluegreen.spring.config.BlueGreenMicroserviceMutexConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
