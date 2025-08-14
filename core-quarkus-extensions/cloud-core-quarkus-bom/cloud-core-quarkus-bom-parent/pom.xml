@@ -12,6 +12,6 @@
     <packaging>pom</packaging>
 
     <properties>
-        <nc.context-quarkus.version>6.1.2-SNAPSHOT</nc.context-quarkus.version>
+        <nc.context-quarkus.version>6.1.2</nc.context-quarkus.version>
     </properties>
 </project>
