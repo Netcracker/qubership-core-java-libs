@@ -5,11 +5,11 @@
     <parent>
         <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>cloud-core-context-propagation-bom-aggregator</artifactId>
-        <version>6.1.2-SNAPSHOT</version>
+        <version>6.1.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>cloud-core-context-propagation-bom-internal</artifactId>
-    <version>6.1.2-SNAPSHOT</version>
+    <version>6.1.2</version>
 
     <name>Cloud-Core Context Propagation BOM - Internal</name>
 
