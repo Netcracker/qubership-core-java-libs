@@ -5,7 +5,7 @@
   <parent>
     <artifactId>build-parent</artifactId>
     <groupId>com.netcracker.cloud.quarkus</groupId>
-    <version>7.1.2-SNAPSHOT</version>
+    <version>7.1.2</version>
     <relativePath>../build-parent/pom.xml</relativePath>
   </parent>
 
