@@ -27,8 +27,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
-        <microservice.dependencies.version>11.1.2-SNAPSHOT</microservice.dependencies.version>
-        <microservice.framework.version>7.1.2-SNAPSHOT</microservice.framework.version>
+        <microservice.dependencies.version>11.1.3</microservice.dependencies.version>
+        <microservice.framework.version>7.1.2</microservice.framework.version>
     </properties>
 
     <dependencyManagement>
