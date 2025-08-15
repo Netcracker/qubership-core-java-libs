@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud.quarkus</groupId>
     <artifactId>maas-client-quarkus-bom</artifactId>
-    <version>8.1.2-SNAPSHOT</version>
+    <version>8.1.2</version>
 
     <packaging>pom</packaging>
 
