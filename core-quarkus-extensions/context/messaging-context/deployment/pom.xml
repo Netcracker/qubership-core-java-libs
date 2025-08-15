@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>messaging-context-parent</artifactId>
-        <version>7.1.3-SNAPSHOT</version>
+        <version>7.1.3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
