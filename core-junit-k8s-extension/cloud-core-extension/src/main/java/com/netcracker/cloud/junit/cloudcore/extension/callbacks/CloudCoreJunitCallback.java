@@ -10,8 +10,8 @@ import com.netcracker.cloud.junit.cloudcore.extension.provider.LocalHostAddressG
 import com.netcracker.cloud.junit.cloudcore.extension.provider.PortForwardConfig;
 import com.netcracker.cloud.junit.cloudcore.extension.service.Endpoint;
 import com.netcracker.cloud.junit.cloudcore.extension.service.NetSocketAddress;
-import com.netcracker.cloud.junit.cloudcore.extension.service.PortForwardParams;
 import com.netcracker.cloud.junit.cloudcore.extension.service.PortForwardService;
+import com.netcracker.cloud.junit.cloudcore.extension.service.ServicePortForwardParams;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.AfterAllCallback;
@@ -107,7 +107,7 @@ public class CloudCoreJunitCallback implements BeforeAllCallback, AfterAllCallba
         PortForwardService portForwardService = resourceFactory.getPortForwardService(new PortForwardConfig(cloud, namespace));
         String serviceName = resolveValue(testInstance, field, PortForward.class, PortForward::serviceName);
         int port = resolveIntValue(testInstance, field, PortForward.class, PortForward::port);
-        return portForwardService.portForward(new PortForwardParams(serviceName, port));
+        return portForwardService.portForward(ServicePortForwardParams.builder(serviceName, port).build());
     }
 
     private void processFieldAfterAll(CloudCoreResourceFactory resourceFactory, Object testInstance, Field field) throws Exception {

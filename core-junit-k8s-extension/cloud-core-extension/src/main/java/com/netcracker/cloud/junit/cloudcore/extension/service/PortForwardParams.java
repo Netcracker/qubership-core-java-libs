@@ -5,9 +5,10 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Objects;
 
+@Deprecated // use ServicePortForwardParams
 @Getter
 @RequiredArgsConstructor
-public class PortForwardParams {
+public class PortForwardParams implements BasePortForwardParams{
     private final String serviceName;
     private final int port;
     private String namespace;
@@ -16,5 +17,10 @@ public class PortForwardParams {
         Objects.requireNonNull(namespace);
         this.namespace = namespace;
         return this;
+    }
+
+    @Override
+    public String getName() {
+        return serviceName;
     }
 }

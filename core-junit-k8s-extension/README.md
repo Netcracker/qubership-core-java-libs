@@ -142,13 +142,13 @@ For example:
     @Test
     public void createPortForwardTest1() {
         // if service is located in same namespace you may call the next method
-        testUrl = portForwardService.portForward(new PortForwardParams("my-service, 8080));
+        testUrl = portForwardService.portForward(ServicePortForwardParams.builder("my-service, 8080).build());
     }
  
     @Test
     public void createPortForwardTest2() {
         // if service is located in another namespace you should specify it
-        testUrl = portForwardService.portForward(new PortForwardParams("my-service, 8080).withNamespace("my-namespace");
+        testUrl = portForwardService.portForward(ServicePortForwardParams.builder("my-service, 8080).namespace("my-namespace").build());
     }
 ```
 
@@ -158,8 +158,28 @@ For example:
 By default, port-forward is linked to any of pods found by service selector.
 In case when port-forward to particular pod is required - use
 ``` java
-String podName = ""; // find name of required pod
-kubernetesClient.pods().withName(podName).portForward(...);
+    @Cloud
+    private PortForwardService portForwardService;
+    
+    private URL pod1_url;
+    private URL pod2_url;
+    
+    @AfterEach
+    public void cleanup() {
+        if (pod1_url != null) {
+            portForwardService.closePortForward(pod1_url);
+        }
+        if (pod2_url != null) {
+            portForwardService.closePortForward(pod2_url);
+        }
+    }
+
+    @Test
+    public void createPortForwardPod1() {        
+        pod1_url = portForwardService.portForward(PodPortForwardParams.builder("pod-1-name, 8080).build()).toHttpUrl();
+        pod2_url = portForwardService.portForward(PodPortForwardParams.builder("pod-2-name, 8080).build()).toHttpUrl();
+    }
+
 ```
 
 #### Migration from 6.x.x version to 7.x.x
@@ -232,7 +252,7 @@ after migration - 7.x.x config:
  
     @BeforeAll
     public static void init() throws Exception {
-        URL url = URI.create(String.format("http://%s", portForwardService.portForward(new PortForwardParams("service", 8181)).getEndpoint())).toURL();
+        URL url = portForwardService.portForward(ServicePortForwardParams.builder("service", 8181).build()).toHttpUrl();
     }
 
     // #5

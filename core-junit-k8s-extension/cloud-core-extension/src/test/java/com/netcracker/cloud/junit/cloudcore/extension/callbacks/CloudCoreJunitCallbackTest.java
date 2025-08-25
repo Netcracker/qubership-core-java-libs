@@ -5,9 +5,9 @@ import com.netcracker.cloud.junit.cloudcore.extension.callbacks.classes.TestClas
 import com.netcracker.cloud.junit.cloudcore.extension.provider.CloudCoreResourceFactory;
 import com.netcracker.cloud.junit.cloudcore.extension.provider.CloudCoreResourceFactoryProvider;
 import com.netcracker.cloud.junit.cloudcore.extension.provider.PortForwardConfig;
+import com.netcracker.cloud.junit.cloudcore.extension.service.BasePortForwardParams;
 import com.netcracker.cloud.junit.cloudcore.extension.service.Endpoint;
 import com.netcracker.cloud.junit.cloudcore.extension.service.NetSocketAddress;
-import com.netcracker.cloud.junit.cloudcore.extension.service.PortForwardParams;
 import com.netcracker.cloud.junit.cloudcore.extension.service.PortForwardService;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.junit.jupiter.api.Assertions;
@@ -156,8 +156,8 @@ public class CloudCoreJunitCallbackTest {
             Mockito.when(resourceFactory.getPortForwardService(hostnamePortForwardConfig)).thenReturn(portForwardService);
             Mockito.when(resourceFactory.getKubernetesClient(testCloud, testNamespace)).thenReturn(kubernetesClient);
             Mockito.when(portForwardService.portForward(Mockito.any())).thenAnswer(i -> {
-                PortForwardParams params = i.getArgument(0);
-                return new NetSocketAddress(params.getServiceName(), params.getPort());
+                BasePortForwardParams params = i.getArgument(0);
+                return new NetSocketAddress(params.getName(), params.getPort());
             });
 
             new CloudCoreJunitCallback().beforeAll(extensionContext);

@@ -30,13 +30,13 @@ public class PortForwardService {
         this.cache = cache;
     }
 
-    public synchronized NetSocketAddress portForward(PortForwardParams params) {
+    public synchronized NetSocketAddress portForward(BasePortForwardParams params) {
         String namespace = Optional.ofNullable(params.getNamespace()).orElseGet(kubernetesClient::getNamespace);
         String cloud = kubernetesClient.getMasterUrl().getHost();
-        String serviceName = params.getServiceName();
+        String name = params.getName();
         int targetPort = params.getPort();
         // i.e. my-svc.my-namespace.svc.cluster-domain.example
-        String host = String.format("%s.%s.svc.%s", serviceName, namespace, cloud);
+        String host = String.format("%s.%s.svc.%s", name, namespace, cloud);
         Endpoint endpoint = new Endpoint(host, targetPort);
         LocalPortForward portForward = cache.get(endpoint);
         if (portForward != null) {
@@ -46,8 +46,13 @@ public class PortForwardService {
             do {
                 inetAddress = LocalHostAddressGenerator.getOrNext(host);
                 try {
-                    portForward = kubernetesClient.services().inNamespace(namespace).withName(serviceName)
-                            .portForward(targetPort, inetAddress, targetPort);
+                    if (params instanceof PodPortForwardParams) {
+                        portForward = kubernetesClient.pods().inNamespace(namespace).withName(name)
+                                .portForward(targetPort, inetAddress, targetPort);
+                    } else {
+                        portForward = kubernetesClient.services().inNamespace(namespace).withName(name)
+                                .portForward(targetPort, inetAddress, targetPort);
+                    }
                 } catch (Exception e) {
                     if (!(e.getCause() instanceof BindException)) {
                         throw e;
