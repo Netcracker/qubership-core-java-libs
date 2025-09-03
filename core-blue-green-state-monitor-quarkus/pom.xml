@@ -26,7 +26,7 @@
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../aggregator-for-jacoco/target/jacoco-ut/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
         <surefire-plugin.version>3.5.3</surefire-plugin.version>
-        <jandex-maven-plugin.version>3.2.6</jandex-maven-plugin.version>
+        <jandex-maven-plugin.version>3.2.7</jandex-maven-plugin.version>
     </properties>
 
     <dependencyManagement>
