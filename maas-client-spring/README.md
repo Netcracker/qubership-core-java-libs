@@ -14,4 +14,4 @@ This module provides beans that needed for all spring applications that requires
 ## Module `maas-client-rabbit-spring`
 
 This module rely on `maas-client-spring` module and add features for RabbitMQ maas support.
-For detailed manual, refer to [maas client rabbit spring docs](./maas-client-rabbit-spring/README.md)
+For detailed manual, refer to [maas client rabbit spring docs](./maas-client-spring-rabbit/README.md)
