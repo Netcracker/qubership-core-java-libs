@@ -487,7 +487,7 @@ public class SomeClass {
 | maas.kafka.acceptable-tenants        | String  | false     |                        | List tenants for using in multitenant environment (dev only) |
 | maas.kafka.consumer-thread-pool-size | Integer | false     | 2                      | The number of threads in pool for kafka consumers            |
 | maas.kafka.consumer-pool-duration    | Integer | false     | 4000                   | Common consumer pool timeout in milliseconds                 |
-| maas.agent.url                       | String  | false     | http://maas-agent:8080 | Contains maas agent url                                      |
+| maas.agent.url                       | String  | false     | `http://maas-agent:8080` | Contains maas agent url                                      |
 | quarkus.jaeger.propagation           | String  | false     | b3                     | Context propagation type                                     |
 | maas.tenant-manager.url              | String  | false     | tenant-manager:8080    | Contains Tenant Manager url                                  |
 
