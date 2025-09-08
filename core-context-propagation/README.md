@@ -223,7 +223,7 @@ Set:
 # How to write own context
 
 There is an example of new context creation
-in [here](./context-propagation-core/src/test/java/com/qubership/cloud/context/propagation/core/providers/xversion)
+in [here](./context-propagation-core/src/test/java/com/netcracker/cloud/context/propagation/core/providers/xversion)
 
 **At first,** implement your ContextObject class. ContextObject is a place where you can parse and store data from
 IncomingContextData. IncomingContextData is an object where is located request context data.
