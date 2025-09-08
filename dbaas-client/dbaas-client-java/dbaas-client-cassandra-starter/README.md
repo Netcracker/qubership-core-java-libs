@@ -303,8 +303,7 @@ dbaas.cassandra.lb-slow-replica-avoidance=false
 3. Working in this mode, the library requires having a truststore with certificate. \
 The platform deployer provides the bulk uploading of certificates to truststores. \
 Use deployer's property **CERTIFICATES_SECRET** to inject desired certificate into microservice. \
-How add new certificate correctly in the deployer see the page [Bulk certificates uploading to truststores](`https://qubership.org/pages/viewpage.action?spaceKey=CLOUDCORE&title=Bulk+certificates+uploading+to+truststores#Bulkcertificatesuploadingtotruststores-JenkinsSecret`). \
-Deployer creates a secret with certificate. Make sure the certificate is mount into your microservice (see [JVM Certificates in Base Image](<github link todo>/centos_base_image#jvm-certificates)).
+Make sure the certificate is mount into your microservice (see [JVM Certificates in Base Image](https://<github link todo>/centos_base_image#jvm-certificates)).
 
 4. On bootstrapping microservice there is generated truststore with default location and password. \
 To change path to truststore and password use application properties:
@@ -315,8 +314,7 @@ dbaas.cassandra.truststorePassword=password
 
 References: \
 [Using a Cassandra Java client driver to access Amazon Keyspaces programmatically - Amazon Keyspaces (for Apache Cassandra)](https://docs.aws.amazon.com/keyspaces/latest/devguide/using_java_driver.html) \
-[Bulk certificates uploading to truststores](`https://qubership.org/pages/viewpage.action?spaceKey=CLOUDCORE&title=Bulk+certificates+uploading+to+truststores#Bulkcertificatesuploadingtotruststores-JenkinsSecret`) \
-[JVM Certificates in Base Image](<github link todo>/centos_base_image#jvm-certificates) \
+[JVM Certificates in Base Image](https://<github link todo>/centos_base_image#jvm-certificates) \
 [DataStax Java Driver - SSL](https://docs.datastax.com/en/developer/java-driver/4.13/manual/core/ssl/)
 
 ### SSL/TLS support
