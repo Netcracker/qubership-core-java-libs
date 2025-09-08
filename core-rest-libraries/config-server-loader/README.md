@@ -22,7 +22,7 @@ _Please, note that working on **resttemplate** is a legacy approach and we stron
 If property `spring.config.import` is included, you must add value `configserver:` or `optional:configserver:<config-server-url>`
 to it or application won't start (you'll get exception with message).
 
-Example for `<config-server-url>` is configserver:http://config-server:8080.
+Example for `<config-server-url>` is configserver:`http://config-server:8080`.
 
 If configloader can't connect to configserver, module will make several retries. User can configure number of retries and 
 their prolongation with properties.
