@@ -41,7 +41,7 @@ If you still decided to use dbaas-client-core, follow these steps:
     </dependency>
     ```
     Where `${dbaas-client-core.version}` is the latest release version
-    Omit tag `version` if you use [qubership-springboot-starter-parent](<github link todo>/springboot-starter) or [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md). 
+    Omit tag `version` if you use [qubership-springboot-starter-parent](https://github.com/Netcracker/qubership-core-springboot-starter) or [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md). 
 2. Add `@EnableDbaasDefault` annotation to one of your application configuration classes. 
 3. Implement interfaces and abstract classes `DatabaseType`, `AbstractDatabase` and `DatabaseConnection` so they 
     represent the database type you need.  

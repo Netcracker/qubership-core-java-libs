@@ -47,7 +47,7 @@ This module can be included as a dependency directly to your microservice.
         
 Where `${dbaas-client-postgres-starter.version}` is the desired library version. 
 
-**Important!** Omit tag `version` if you are using [qubership-spring-boot-starter-parent](<github link todo>/springboot-starter), 
+**Important!** Omit tag `version` if you are using [qubership-spring-boot-starter-parent](https://github.com/Netcracker/qubership-core-springboot-starter), 
 in such case version of `dbaas-client-postgres-starter` will be resolved automatically.  
 
 2. Configure necessary postgres DataSource options according to [Dbaas Client Configuration - Postgres DataSource Options](https://qubership.org/display/CLOUDCORE/Dbaas+Client+Configuration).  
@@ -193,7 +193,7 @@ To start using TLS feature user has to enable it on the physical database (adapt
 
 #### Physical database switching
 
-> These parameters are given as an example. For reliable information, check adapter's documentation: https://<github link todo>/HA_repo/postgres-operator/-/blob/master/docs/installation.md#tls
+> These parameters are given as an example. For reliable information, check adapter's documentation: https://github.com/Netcracker/pgskipper-operator/blob/main/docs/public/installation.md#tls
 
 To enable TLS support in physical database redeploy postgresql with mandatory parameters
 ```yaml
@@ -308,4 +308,4 @@ dbaas.postgres.metrics.enabled=false
 Sample microservice using DBaaS Client starter for postgres can be found  [here](../dbaas-client-sample-tests/postgres-sample-test). 
 
 ## Logical database provider
-dbaas-client-postgress-strater supports work with DB created by client side(not from dbaas-aggregator). You can read more info [here](https://<github link todo>/Core_Repo/dbaas-client/-/blob/master/dbaas-client-java/dbaas-client-core/README.md#55).
+dbaas-client-postgress-strater supports work with DB created by client side(not from dbaas-aggregator). You can read more info [here](https://github.com/Netcracker/qubership-dbaas-client/blob/main/dbaas-client-java/dbaas-client-core/README.md#logical-database-provider-feature).

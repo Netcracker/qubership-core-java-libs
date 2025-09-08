@@ -25,7 +25,7 @@ This library supports configuring flyway migrations for multiple postgres dataso
 
 `logicalDbName_value` here is an additional field in classifier which is used in order to distinguish between databases. 
 We recommend to add "logicalDbName" for versioned databases. More instructions how to add such field may be found in 
-[Datasource for versioned database classifier](./dbaas-client-java/dbaas-client-postgres-starter/README.md#datasource-for-versioned-database-classifier)
+[Datasource for versioned database classifier](/dbaas-client-java/dbaas-client-postgres-starter/README.md#datasource-for-versioned-database-classifier)
 
 
 ## Configuration

@@ -17,8 +17,8 @@ This module can be included as a dependency directly to your microservice.
   * [SSL/TLS support](#ssltls-support)
 
 ## Requirements
-* Your microservice must use one of the following microservice-framework starters: [microservice-framework-webclient](https://<github link todo>/Core_Repo/libs/microservice-framework/-/blob/master/microservice-framework-webclient/README.md)
-or [microservice-framework-resttemplate](https://<github link todo>/Core_Repo/libs/microservice-framework/-/blob/master/microservice-framework-resttemplate/README.md).
+* Your microservice must use one of the following microservice-framework starters: [microservice-framework-webclient](https://github.com/Netcracker/qubership-core-microservice-framework/blob/main/microservice-framework-webclient/README.md)
+or [microservice-framework-resttemplate](https://github.com/Netcracker/qubership-core-microservice-framework/blob/main/microservice-framework-resttemplate/README.md).
 
 
 ## How to use
@@ -51,7 +51,7 @@ or [microservice-framework-resttemplate](https://<github link todo>/Core_Repo/li
     ```
     Where `${dbaas-client-arangodb-starter.version}` is the desired library version. We recommend to use latest release. 
 
-    **Important!** Omit tag `version` if you are using [qubership-spring-boot-starter-parent](https://<github link todo>/Core_Repo/libs/springboot-starter), 
+    **Important!** Omit tag `version` if you are using [qubership-spring-boot-starter-parent](https://github.com/Netcracker/qubership-core-springboot-starter), 
     in such case version of `dbaas-client-arangodb-starter` will be resolved automatically. 
 2. Choose one of the annotations: `@EnableServiceDbaasArangoDB` or `@EnableTenantDbaasArangoDB`. 
     
@@ -59,7 +59,7 @@ or [microservice-framework-resttemplate](https://<github link todo>/Core_Repo/li
     
     Add chosen annotation to your main `Application` class or any Spring configuration class. 
 3. Add `@EnableArangoRepositories` annotation in case you need to use Spring Data Repositories. 
-4. Configure necessary ArangoDB driver options according to [Dbaas Client Configuration - ArangoDB Driver Configuration](https://<github link todo>/Dbaas+Client+Configuration):
+4. Configure necessary ArangoDB driver options according to [Dbaas Client Configuration - ArangoDB Driver Configuration](`https://qubership.org/display/CLOUDCORE/Dbaas+Client+Configuration`):
 
 ArangoDB Driver created by default configuration in dbaas-client can be configured with options from https://www.arangodb.com/docs/stable/drivers/java-reference-setup.html using next syntax:
 

@@ -65,7 +65,7 @@ Since 5.0.0 version `dbaas-client-opensearch-renovated-starter` has been renamed
     ```
    Where `${dbaas-client-opensearch-starter.version}` is the desired library version. 
    
-   **Important!** Omit tag `version` if you are using [qubership-spring-boot-starter-parent](<github link todo>/springboot-starter) 
+   **Important!** Omit tag `version` if you are using [qubership-spring-boot-starter-parent](https://github.com/Netcracker/qubership-core-springboot-starter) 
        or [cloud-core-java-bom](<github link todo>/libs/microservice-dependencies/-/tree/master/), 
    in such case version of `dbaas-client-opensearch-starter` will be resolved automatically. 
 2. Add one of the following annotations to your main `Application` class or any Spring configuration class:   
@@ -221,7 +221,7 @@ To start using TLS feature user has to enable it on the physical database (adapt
 
 #### Physical database switching
 
-> These parameters are given as an example. For reliable information, check adapter's documentation: https://<github link todo>/ElasticStack_repo/opensearch-service/-/blob/master/documentation/installation-guide/encrypted-access/README.md
+> These parameters are given as an example. For reliable information, check adapter's documentation: https://github.com/Netcracker/qubership-opensearch/blob/main/docs/public/tls.md
 
 To enable TLS support in physical database redeploy opensearch with mandatory parameters
 ```yaml

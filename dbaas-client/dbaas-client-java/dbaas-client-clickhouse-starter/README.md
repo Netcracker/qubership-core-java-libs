@@ -46,7 +46,7 @@ This module can be included as a dependency directly to your microservice.
 
 Where `${dbaas-client-clickhouse-starter.version}` is the desired library version. We recommend using the latest release.
 
-**Important!** Omit tag `version` if you are using [qubership-spring-boot-starter-parent](https://<github link todo>/Cloud_Catalog_repo/springboot-starter),
+**Important!** Omit tag `version` if you are using [qubership-spring-boot-starter-parent](https://github.com/Netcracker/qubership-core-springboot-starter),
 in such case version of `dbaas-client-clickhouse-starter` will be resolved automatically.
 
 3. Add one of the following annotations to your main `Application` class or any Spring configuration class:
@@ -225,4 +225,4 @@ These methods allow you to configure and customize the behavior of the datasourc
 
 
 ## Logical database provider
-dbaas-client-clickhouse-starter supports work with DB created by client side(not from dbaas-aggregator). You can read more info [here](https://<github link todo>/Core_Repo/dbaas-client/-/blob/master/dbaas-client-java/dbaas-client-core/README.md#55).
+dbaas-client-clickhouse-starter supports work with DB created by client side(not from dbaas-aggregator). You can read more info [here]https://github.com/Netcracker/qubership-dbaas-client/blob/main/dbaas-client-java/dbaas-client-core/README.md#logical-database-provider-feature).
