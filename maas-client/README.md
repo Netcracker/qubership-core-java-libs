@@ -42,8 +42,6 @@ Please ensure, that your pod runtime environment variables contains:
 * `NAMESPACE` - namespace name in which microservice is deployed  
 * `CLOUD_SERVICE_NAME` - name of microservice 
 
-For more information about variables see: [Parameters Provided by Deployer to Application](https://qubership.org/display/CLOUDDEVOPS/Parameters+Provided+by+Deployer+to+Application)
-
 To add missed variables to your pod runtime environment, you need to edit your deployment chart files.  
 
 ## Start
@@ -102,7 +100,6 @@ ProducerRecord<Integer, String> record = new ProducerRecord<>(
 // example how to create KafkaProducer look at the previous code example
 kafkaProducer.send(record);
 ```
-Full producer example can be found [here](https://git.qubership.org/PROD.Platform.Cloud_Core/maas-demo-order-prep/-/blob/main/service/src/main/java/com/qubership/core/demo/maas/service/OrderService.java)
 
 Consumer for tenant-topics is much complex, because of runtime nature of tenants. Tenant may be created and activated of deactivated in runtime. 
 And consumer in microservice have to dynamically subscribe/unsubscribe to topics created to new tenants.
@@ -114,7 +111,6 @@ kafkaClient.watchTenantTopics("orders", topics -> {
             // perform subscribe/unsubscribe to given topics 
         });
 ```
-Full example for consumer can be found [here](https://git.qubership.org/PROD.Platform.Cloud_Core/maas-demo-order-proc/-/blob/main/service/src/main/java/com/qubership/core/demo/maas/service/OrderProcService.java)
 
 ### Context propagation
 It is crucial to save and restore context during message processing. Moreover, its is manadatory requirements to correctly filtering messages in 
@@ -188,8 +184,6 @@ props = RabbitContextPropagation.propagateContext(props);
 
 channel.basicPublish("my-exchange", routingKey,  props, data);
 ```
-As a good usage example bill-processor microservice from Demo MaaS application: 
-[ProcessorResource](https://git.qubership.org/PROD.Platform.Cloud_Core/maas-group/maas-demo-bill-processor/-/blob/main/service/src/main/java/com/qubership/core/demo/maas/ProcessorResource.java#L44)
 
 To restore context from message to consumer thread: 
 ```java
@@ -200,9 +194,7 @@ DeliverCallback deliverCallback = (consumerTag, delivery) -> {
         ...
 }
 ```
-Example of consumer from demo microservices: 
-[PaymentProcessor](https://git.qubership.org/PROD.Platform.Cloud_Core/maas-group/maas-demo-payment-gateway/-/blob/main/service/src/main/java/com/qubership/core/demo/maas/PaymentProcessor.java#L48)
 
 ## Migration
-Details [here](docs/migration)
+Details [here](/docs/migration)
 

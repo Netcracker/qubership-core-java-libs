@@ -1,7 +1,7 @@
 # Migration from 8.x.x to 9.x.x versions
 
 The main reason of changing major version of library was migration from Blue/Green version1 to new 
-concept of Blue/Green version2. More about Blue/Green version2: https://qubership.org/display/CLOUDCORE/BlueGreen+2.0+design+space     
+concept of Blue/Green version2. More about Blue/Green version2: `https://qubership.org/display/CLOUDCORE/BlueGreen+2.0+design+space`
 
 <!-- TOC -->
 * [Migration from 8.x.x to 9.x.x versions](#migration-from-8xx-to-9xx-versions)
