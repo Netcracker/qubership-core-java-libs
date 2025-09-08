@@ -50,7 +50,7 @@ Where `${dbaas-client-postgres-starter.version}` is the desired library version.
 **Important!** Omit tag `version` if you are using [qubership-spring-boot-starter-parent](https://github.com/Netcracker/qubership-core-springboot-starter), 
 in such case version of `dbaas-client-postgres-starter` will be resolved automatically.  
 
-2. Configure necessary postgres DataSource options according to [Dbaas Client Configuration - Postgres DataSource Options](https://qubership.org/display/CLOUDCORE/Dbaas+Client+Configuration).  
+2. Configure necessary postgres DataSource options according to [Dbaas Client Configuration - Postgres DataSource Options](/docs/dbaas-client-configuration.md).  
 
 3. Add one of the following annotations to your main `Application` class or any Spring configuration class:   
     * `@EnableServiceDbaasPostgresql` - for working with only a service database   

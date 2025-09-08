@@ -56,7 +56,7 @@ This module can be included as a dependency directly to your microservice.
             ...
         }
     ``` 
-3. Configure necessary cassandra driver options according to [Dbaas Client Configuration - Cassandra Driver Configuration](`https://qubership.org/display/CLOUDCORE/Dbaas+Client+Configuration`).  
+3. Configure necessary cassandra driver options according to [Dbaas Client Configuration - Cassandra Driver Configuration](/docs/dbaas-client-configuration.md)).  
 4. Put one of the following annotations over one of your configuration file: 
     * `@EnableServiceDbaasCassandra` - for working with only service database
     * `@EnableTenantDbaasCassandra`  - for working with only tenant database

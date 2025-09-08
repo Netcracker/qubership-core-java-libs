@@ -13,7 +13,7 @@ Right now it includes:
  - for Java: 
    - dbaas-client-core : Java (Spring powered) wrapper of DbaaS HTTP API 
      - it would require a few Spring dependencies in runtime, but you can use it without Spring Context (though it's not properly tested)
-     - it could be configured using system/applycation.yml/config-server properties (see `https://qubership.org/display/CLOUDCORE/Dbaas+Client+Configuration`)
+     - it could be configured using system/applycation.yml/config-server properties (see /docs/dbaas-client-configuration.md)
    - for Spring Boot:
      - dbaas-client-mongo-starter : module you can include in dependencies to connect to Mongo database using DbaaS
          - by default classifies databases based on default classifier ( https://<github link todo>/DbaaS+Database+Classifier#DbaaSDatabaseClassifier-Mongo )
@@ -53,14 +53,14 @@ By default client should send http requests to `http://dbaas-agent:8080` , but l
 
 You can also support config-server ( https://cloud.spring.io/spring-cloud-config/ ) 
 usually available in cloud on address `http://config-server:8080` ( more info in https://github.com/Netcracker/qubership-core-config-server/blob/main/README.md )
-and read configurations from properties described in `https://qubership.org/display/CLOUDCORE/Dbaas+Client+Configuration` . 
+and read configurations from properties described in /docs/dbaas-client-configuration.md . 
 Note that even while config-server designed to be included in Spring Boot, it has HTTP API: 
 https://<github link todo>/Saas+Cloud%3A+Config+Server+API 
 
 For example default address mentioned earlier ( `http://dbaas-agent:8080` ) is expected to be configured using property "dbaas.api.address".
 
 Even if you not going to support config-server, still try to support at least system properties or environment variable with same naming 
-and add information about configuration available in README.md in your subfolder (we would update `https://qubership.org/display/CLOUDCORE/Dbaas+Client+Configuration` after review).
+and add information about configuration available in README.md in your subfolder (we would update /docs/dbaas-client-configuration.md after review).
 
 If you are going to make it much simpler for users of client library to start working with DbaaS, you may also 
 want to support default DbaaS Classifier described in https://<github link todo>/DbaaS+Database+Classifier.

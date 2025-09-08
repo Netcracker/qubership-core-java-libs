@@ -59,7 +59,7 @@ or [microservice-framework-resttemplate](https://github.com/Netcracker/qubership
     
     Add chosen annotation to your main `Application` class or any Spring configuration class. 
 3. Add `@EnableArangoRepositories` annotation in case you need to use Spring Data Repositories. 
-4. Configure necessary ArangoDB driver options according to [Dbaas Client Configuration - ArangoDB Driver Configuration](`https://qubership.org/display/CLOUDCORE/Dbaas+Client+Configuration`):
+4. Configure necessary ArangoDB driver options according to [Dbaas Client Configuration - ArangoDB Driver Configuration](/docs/dbaas-client-configuration.md):
 
 ArangoDB Driver created by default configuration in dbaas-client can be configured with options from https://www.arangodb.com/docs/stable/drivers/java-reference-setup.html using next syntax:
 

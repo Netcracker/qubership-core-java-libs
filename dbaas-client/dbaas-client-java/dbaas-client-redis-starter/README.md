@@ -51,7 +51,7 @@ This module can be included as a dependency directly to your microservice.
     * `@EnableDbaasRedis`        - for working with both service and tenant databases 
 
 3. Add `@EnableDbaasRedisRepositories` annotation in case you need to use Spring Data Repositories - it will provide 
-4. Configure necessary Redis connection according to the [Dbaas Client Configuration - Redis Connection Configuration](https://qubership.org/display/CLOUDCORE/Dbaas+Client+Configuration):
+4. Configure necessary Redis connection according to the [Dbaas Client Configuration - Redis Connection Configuration](/docs/dbaas-client-configuration.md):
 
 Following properties can be used to configure Redis Connection:
 
