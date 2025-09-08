@@ -292,7 +292,7 @@ Sample microservice using DBaaS Client starter for cassandra can be found [here]
 
 ## Amazon Keyspaces
 In case usage of Casandra database managed by AWS, it is required:
-1. Register in DBAAS the Casandra as an external database. (see [Registration external logical databases](`https://qubership.org/display/CLOUDCORE/Registration+external+logical+databases`))
+1. Register in DBAAS the Casandra as an external database. (see [Registration external logical databases](/docs/external-databases.md))
 2. Amazon Keyspaces [requires](https://docs.aws.amazon.com/keyspaces/latest/devguide/using_java_driver.html#java_tutorial.driverconfiguration) the use of Transport Layer Security (TLS). \
    To enable TLS use application properties
 ```
