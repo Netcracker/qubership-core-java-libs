@@ -18,10 +18,10 @@
         <qubership.context.framework>7.1.5</qubership.context.framework>
 
         <!--Spring's libraries -->
-        <spring.boot.version>3.4.9</spring.boot.version>
-        <spring.cloud.version>4.2.3</spring.cloud.version>
+        <spring.boot.version>3.5.5</spring.boot.version>
+        <spring.cloud.version>4.3.0</spring.cloud.version>
         <spring.version>6.2.10</spring.version>
-        <spring.security>6.4.9</spring.security>
+        <spring.security>6.5.3</spring.security>
 
         <!--Test libraries -->
         <mockito.version>5.14.2</mockito.version>
@@ -204,7 +204,7 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-consul-config</artifactId>
-                <version>4.2.2</version>
+                <version>4.3.0</version>
             </dependency>
 
             <!--MISC-->
