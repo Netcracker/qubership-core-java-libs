@@ -5,7 +5,7 @@
     <parent>
         <artifactId>cloud-core-parent</artifactId>
         <groupId>com.netcracker.cloud.junit.cloudcore</groupId>
-        <version>8.0.0-SNAPSHOT</version>
+        <version>8.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>cloud-core-extension</artifactId>
@@ -90,7 +90,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.36</version>
+                            <version>1.18.38</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
