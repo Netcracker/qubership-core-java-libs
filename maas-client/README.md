@@ -159,8 +159,6 @@ If you want to just get vhost (without its creation in case it doesn't exist):
 VHost vhost = client.getVirtualHost(new Classifier("commands"));
 ```
 
-Example of usage: [connection factory](https://git.qubership.org/PROD.Platform.Cloud_Core/maas-group/maas-demo-bill-processor/-/blob/main/service/src/main/java/com/qubership/core/demo/maas/Producers.java#L23)
-
 ### Context propagation 
 In Blue/Green deployments you need to save and restore context information about original request version. Because version exchange 
 created for `versionedEntities` rely on `version` message header, you need to save http `X-Version` header value to message headers. Also, you need to 
