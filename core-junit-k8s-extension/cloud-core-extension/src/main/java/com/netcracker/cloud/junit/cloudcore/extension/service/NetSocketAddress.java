@@ -25,7 +25,7 @@ public class NetSocketAddress extends InetSocketAddress {
 
     public URL toUrl(String protocol) {
         try {
-            return URI.create(String.format("%s://%s", protocol, getEndpoint())).toURL();
+            return URI.create(String.format("%s://%s/", protocol, getEndpoint())).toURL();
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException(String.format("Failed to build URL from protocol: '%s' and endpoint: '%s'", protocol, getEndpoint()), e);
         }
