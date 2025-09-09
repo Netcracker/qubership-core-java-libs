@@ -24,7 +24,7 @@
         <spring.security>6.5.3</spring.security>
 
         <!--Test libraries -->
-        <mockito.version>5.14.2</mockito.version>
+        <mockito.version>5.17.0</mockito.version>
 
         <org.powermock.version>2.0.9</org.powermock.version>
 
