@@ -21,8 +21,8 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <java.version>17</java.version>
-        <spring.data.mongodb.version>4.4.9</spring.data.mongodb.version>
-        <spring.boot.version>3.4.9</spring.boot.version>
+        <spring.data.mongodb.version>4.5.3</spring.data.mongodb.version>
+        <spring.boot.version>3.5.5</spring.boot.version>
         <lombok.version>1.18.38</lombok.version>
         <mongo.test.server.version>1.46.0</mongo.test.server.version>
         <jacoco.plugin.version>0.8.13</jacoco.plugin.version>
