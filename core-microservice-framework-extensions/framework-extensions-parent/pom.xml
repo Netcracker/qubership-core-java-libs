@@ -31,7 +31,7 @@
         <powermock.version>2.0.9</powermock.version>
         <fasterxml.jackson.version>2.18.4</fasterxml.jackson.version>
         <springdoc.version>1.6.15</springdoc.version>
-        <junit.jupiter.version>5.11.4</junit.jupiter.version>
+        <junit.jupiter.version>5.12.2</junit.jupiter.version>
         <junit.pioneer.version>2.2.0</junit.pioneer.version>
         <maven.surefire.plugin.version>3.5.3</maven.surefire.plugin.version>
         <sonar.coverage.jacoco.xmlReportPaths>
