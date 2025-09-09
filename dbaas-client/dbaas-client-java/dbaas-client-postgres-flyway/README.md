@@ -25,7 +25,7 @@ This library supports configuring flyway migrations for multiple postgres dataso
 
 `logicalDbName_value` here is an additional field in classifier which is used in order to distinguish between databases. 
 We recommend to add "logicalDbName" for versioned databases. More instructions how to add such field may be found in 
-[Datasource for versioned database classifier](./dbaas-client-java/dbaas-client-postgres-starter/README.md#datasource-for-versioned-database-classifier)
+[Datasource for versioned database classifier](/dbaas-client-java/dbaas-client-postgres-starter/README.md#datasource-for-versioned-database-classifier)
 
 
 ## Configuration
@@ -34,8 +34,8 @@ We recommend to add "logicalDbName" for versioned databases. More instructions h
 |--------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------|
 | dbaas.postgres.datasource.flyway.locations                   | Path to migration scripts for static (non-versioned, shared) database                                                                                                                                                                     | classpath:db/migration/postgresql/static           |
 | dbaas.postgres.datasources.{logicalDbName}.flyway.locations. | Path to migration scripts for versioned database                                                                                                                                                                                          | classpath:db/migration/postgresql/{logicalDbName}. |
-| dbaas.postgres.datasource.flyway.*                           | All [classic flyway properties](https://documentation.red-gate.com/fd/parameters-184127474.html) for default datasource should be passed with such prefix, eg. dbaas.postgres.datasource.flyway.baselineOnMigrate=true                    | -                                                  |
-| dbaas.postgres.datasources.{logicalDbName}.flyway.*          | All [classic flyway properties](https://documentation.red-gate.com/fd/parameters-184127474.html) for versioned datasource should be passed with such prefix, eg. dbaas.postgres.datasources.{logicalDbName}.flyway.baselineOnMigrate=true | -                                                  |
+| dbaas.postgres.datasource.flyway.*                           | All [classic flyway properties](https://documentation.red-gate.com/) for default datasource should be passed with such prefix, eg. dbaas.postgres.datasource.flyway.baselineOnMigrate=true                    | -                                                  |
+| dbaas.postgres.datasources.{logicalDbName}.flyway.*          | All [classic flyway properties](https://documentation.red-gate.com/) for versioned datasource should be passed with such prefix, eg. dbaas.postgres.datasources.{logicalDbName}.flyway.baselineOnMigrate=true | -                                                  |
 
 In case of property with multiple values pass them comma separated (see example with 'ignoreMigrationPatterns' below).
 

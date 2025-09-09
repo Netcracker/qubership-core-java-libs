@@ -14,7 +14,7 @@ Here are the steps describing how to use dbaas-client-postgres-base library:
     </dependency>
     ```
     Where `${dbaas-client-postgres-base.version}` is the latest release version
-    Omit tag `version` if you use [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md). if you use [qubership-springboot-starter-parent](https://<github link todo>/DEMO.Platform.Saas_Cloud_Catalog/springboot-starter) or [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md).
+    Omit tag `version` if you use [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md). if you use [qubership-springboot-starter-parent](hhttps://github.com/Netcracker/qubership-core-springboot-starter) or [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md).
 2. Add [PostgreSQL JDBC driver](https://jdbc.postgresql.org/) to your application dependencies
 3. Initialize `DbaasClient` and `DatabasePool` to work with DBaaS REST API. The easiest way is to use [dbaas-client-light](../dbaas-client-light/README.md)
     module which provides `DbaasClient` implementation based on OkHttp3 library. 

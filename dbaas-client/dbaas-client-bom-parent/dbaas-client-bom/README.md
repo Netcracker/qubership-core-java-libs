@@ -2,7 +2,7 @@
 
 DBaaS client BOM contains different dbaas client libraries which can be useful for clients. 
 
-Usually you will obtain necessary dbaas-client libraries by using [qubership-springboot-starter-parent](<github link todo>/springboot-starter), 
+Usually you will obtain necessary dbaas-client libraries by using [qubership-springboot-starter-parent](https://github.com/Netcracker/qubership-core-springboot-starter), 
 but in case you don't use qubership-springboot-starter-parent, you can use this BOM to avoid version conflicts:
 ```xml
 <dependencyManagement>

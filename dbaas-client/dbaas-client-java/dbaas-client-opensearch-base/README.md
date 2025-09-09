@@ -23,9 +23,8 @@ Here are the steps describing how to use dbaas-client-opensearch-base library:
         <version>${dbaas-client-opensearch-base.version}</version>
     </dependency>
     ```
-    Where `${dbaas-client-opensearch-base.version}` is the latest release version that can be found on page
-2. [Release Version 3.X](https://qubership.org/display/SAAS/Releases+Version+3.X)
-    Omit tag `version` if you use [qubership-springboot-starter-parent](<github link todo>/springboot-starter) or [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md). if you use [qubership-springboot-starter-parent](<github link todo>/springboot-starter) or [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md).
+    Where `${dbaas-client-opensearch-base.version}` is the latest release version that can be found on page [Release Version 3.X](https://github.com/Netcracker/qubership-dbaas-client/releases)
+    Omit tag `version` if you use [qubership-springboot-starter-parent](https://github.com/Netcracker/qubership-core-springboot-starter) or [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md). if you use [qubership-springboot-starter-parent](https://github.com/Netcracker/qubership-core-springboot-starter) or [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md).
 3.  Initialize `DbaasClient` and `DatabasePool` to work with DBaaS REST API. The easiest way is to use [dbaas-client-light](../dbaas-client-light/README.md)
     module which provides `DbaasClient` implementation based on OkHttp3 library. 
     

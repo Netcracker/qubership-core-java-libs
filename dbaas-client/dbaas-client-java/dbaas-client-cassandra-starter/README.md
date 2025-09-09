@@ -44,7 +44,7 @@ This module can be included as a dependency directly to your microservice.
     ```
     Where `${dbaas-client-cassandra-starter.version}` is the desired library version. 
     
-    **Important!** Omit tag `version` if you are using [qubership-spring-boot-starter-parent](<github link todo>/springboot-starter) or [cloud-core-java-bom](<github link todo>/libs/microservice-dependencies/-/tree/master/) 
+    **Important!** Omit tag `version` if you are using [qubership-spring-boot-starter-parent](https://github.com/Netcracker/qubership-core-springboot-starter) or [cloud-core-java-bom](<github link todo>/libs/microservice-dependencies/-/tree/master/) 
     in such case version of `dbaas-client-cassandra-starter` will be resolved automatically.
 2. In case autoconfiguration is enabled in your application then add into exclusion class `CassandraAutoConfiguration`: 
     ```java
@@ -56,7 +56,7 @@ This module can be included as a dependency directly to your microservice.
             ...
         }
     ``` 
-3. Configure necessary cassandra driver options according to [Dbaas Client Configuration - Cassandra Driver Configuration](https://qubership.org/display/CLOUDCORE/Dbaas+Client+Configuration).  
+3. Configure necessary cassandra driver options according to [Dbaas Client Configuration - Cassandra Driver Configuration](/docs/dbaas-client-configuration.md)).  
 4. Put one of the following annotations over one of your configuration file: 
     * `@EnableServiceDbaasCassandra` - for working with only service database
     * `@EnableTenantDbaasCassandra`  - for working with only tenant database
@@ -292,7 +292,7 @@ Sample microservice using DBaaS Client starter for cassandra can be found [here]
 
 ## Amazon Keyspaces
 In case usage of Casandra database managed by AWS, it is required:
-1. Register in DBAAS the Casandra as an external database. (see [Registration external logical databases](https://qubership.org/display/CLOUDCORE/Registration+external+logical+databases))
+1. Register in DBAAS the Casandra as an external database. (see [Registration external logical databases](/docs/external-databases.md))
 2. Amazon Keyspaces [requires](https://docs.aws.amazon.com/keyspaces/latest/devguide/using_java_driver.html#java_tutorial.driverconfiguration) the use of Transport Layer Security (TLS). \
    To enable TLS use application properties
 ```
@@ -303,8 +303,7 @@ dbaas.cassandra.lb-slow-replica-avoidance=false
 3. Working in this mode, the library requires having a truststore with certificate. \
 The platform deployer provides the bulk uploading of certificates to truststores. \
 Use deployer's property **CERTIFICATES_SECRET** to inject desired certificate into microservice. \
-How add new certificate correctly in the deployer see the page [Bulk certificates uploading to truststores](https://qubership.org/pages/viewpage.action?spaceKey=CLOUDCORE&title=Bulk+certificates+uploading+to+truststores#Bulkcertificatesuploadingtotruststores-JenkinsSecret). \
-Deployer creates a secret with certificate. Make sure the certificate is mount into your microservice (see [JVM Certificates in Base Image](<github link todo>/centos_base_image#jvm-certificates)).
+Make sure the certificate is mount into your microservice (see [JVM Certificates in Base Image](https://<github link todo>/centos_base_image#jvm-certificates)).
 
 4. On bootstrapping microservice there is generated truststore with default location and password. \
 To change path to truststore and password use application properties:
@@ -315,8 +314,7 @@ dbaas.cassandra.truststorePassword=password
 
 References: \
 [Using a Cassandra Java client driver to access Amazon Keyspaces programmatically - Amazon Keyspaces (for Apache Cassandra)](https://docs.aws.amazon.com/keyspaces/latest/devguide/using_java_driver.html) \
-[Bulk certificates uploading to truststores](https://qubership.org/pages/viewpage.action?spaceKey=CLOUDCORE&title=Bulk+certificates+uploading+to+truststores#Bulkcertificatesuploadingtotruststores-JenkinsSecret) \
-[JVM Certificates in Base Image](<github link todo>/centos_base_image#jvm-certificates) \
+[JVM Certificates in Base Image](https://<github link todo>/centos_base_image#jvm-certificates) \
 [DataStax Java Driver - SSL](https://docs.datastax.com/en/developer/java-driver/4.13/manual/core/ssl/)
 
 ### SSL/TLS support

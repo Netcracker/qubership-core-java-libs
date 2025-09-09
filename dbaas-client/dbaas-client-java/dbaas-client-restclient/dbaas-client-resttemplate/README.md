@@ -36,7 +36,7 @@ In case you need to use this library explicitly, then follow the steps:
     ```
     Where `${dbaas-client-resttemplate.version}` is the latest release version
     
-    Omit tag `version` if you use [qubership-springboot-starter-parent](<github link todo>/springboot-starter) or [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md). if you use [qubership-springboot-starter-parent](<github link todo>/springboot-starter) or [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md).
+    Omit tag `version` if you use [qubership-springboot-starter-parent](https://github.com/Netcracker/qubership-core-springboot-starter) or [dbaas-client-bom](../../../dbaas-client-bom-parent/dbaas-client-bom/README.md). if you use [qubership-springboot-starter-parent](https://github.com/Netcracker/qubership-core-springboot-starter) or [dbaas-client-bom](../../../dbaas-client-bom-parent/dbaas-client-bom/README.md).
 2. Enable Spring component-scan for package `com.netcracker.cloud.dbaas.client.restclient` to locate `dbaasRestClient` bean automatically 
     or import `DbaasRestTemplateConfiguration` and `DbaasBasicAuthRestTemplateConfiguration` classes in your configuration. 
 3. Decide whether you will use M2M or basic authorization for requesting DBaaS REST API. 

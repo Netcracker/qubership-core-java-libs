@@ -7,11 +7,11 @@ for usage with Spring Framework 5 or higher.
 - [Usage](#usage)
 
 ## Prerequisites
-1. If you are using [microservice-framework-webclient](https://<github link todo>/Cloud_Catalog_repo/microservice-framework/tree/master/microservice-framework-webclient) 
+1. If you are using [microservice-framework-webclient](https://github.com/Netcracker/qubership-core-microservice-framework/blob/main/microservice-framework-webclient) 
     this dependency will be loaded transitively from `microservice-framework` and used by `dbaas-client` higher level modules, 
      so **you don't need to do anything**. 
 
-2. If you are using [microservice-framework-resttemplate](https://<github link todo>/Cloud_Catalog_repo/microservice-framework/tree/master/microservice-framework-resttemplate) 
+2. If you are using [microservice-framework-resttemplate](https://github.com/Netcracker/qubership-core-microservice-framework/blob/main/microservice-framework-resttemplate) 
     (or for some other reason your application still uses 
     [RestTemplate](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/client/RestTemplate.html) 
     instead of [WebClient](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/reactive/function/client/WebClient.html)), 
@@ -32,7 +32,7 @@ In case you need to use this library explicitly, then follow the steps:
     ```
     Where `${dbaas-client-webclient.version}` is the latest release version
     
-    Omit tag `version` if you use [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md). if you use [qubership-springboot-starter-parent](https://<github link todo>/DEMO.Platform.Saas_Cloud_Catalog/springboot-starter) or [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md).
+    Omit tag `version` if you use [dbaas-client-bom](../../../dbaas-client-bom-parent/dbaas-client-bom/README.md). if you use [qubership-springboot-starter-parent](hhttps://github.com/Netcracker/qubership-core-springboot-starter) or [dbaas-client-bom](../../../dbaas-client-bom-parent/dbaas-client-bom/README.md).
 2. Enable Spring component-scan for package `com.netcracker.cloud.dbaas.client.restclient` to locate `dbaasRestClient` bean automatically 
     or import `DbaasWebClientConfiguration` class in your configuration. 
 
@@ -43,5 +43,5 @@ To access this bean yourself you can autowire it:
 @Qualifier("dbaasRestClient")
 private MicroserviceRestClient dbaasRestClient;
 ```
-This bean can be passed to [DbaasClientImpl](https://<github link todo>/Core_Repo/dbaas-client/blob/master/dbaas-client-java/dbaas-client-core/src/main/java/com/netcracker/cloud/dbaas/client/DbaasClientImpl.java) 
+This bean can be passed to [DbaasClientImpl](https://github.com/Netcracker/qubership-dbaas-client/blob/main/dbaas-client-java/dbaas-client-core/src/main/java/com/netcracker/cloud/dbaas/client/DbaasClientImpl.java) 
 constructor and used as REST client for DBaaS API. 

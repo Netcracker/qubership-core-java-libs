@@ -13,7 +13,7 @@ Here are the steps describing how to use dbaas-client-light library:
     </dependency>
     ```
     Where `${dbaas-client-light.version}` is the latest release version
-    Omit tag `version` if you use [qubership-springboot-starter-parent](<github link todo>/springboot-starter) or [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md). if you use [qubership-springboot-starter-parent](<github link todo>/springboot-starter) or [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md). 
+    Omit tag `version` if you use [qubership-springboot-starter-parent](https://github.com/Netcracker/qubership-core-springboot-starter) or [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md). if you use [qubership-springboot-starter-parent](https://github.com/Netcracker/qubership-core-springboot-starter) or [dbaas-client-bom](../../dbaas-client-bom-parent/dbaas-client-bom/README.md). 
 2. Implement all the necessary classes to make dbaas-client work with the database type you need. 
     For PostgreSQL database type there is an implementation with usage example in it's README.md: 
     [dbaas-client-postgres-base](../dbaas-client-postgres-base/README.md). You can use it as a sample. 
