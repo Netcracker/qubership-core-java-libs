@@ -6,6 +6,7 @@ import com.netcracker.cloud.core.quarkus.dbaas.datasource.service.DbaaSPostgresD
 import com.netcracker.cloud.core.quarkus.dbaas.datasource.testcontainers.configuration.PostgresqlContainerResource;
 import com.netcracker.cloud.dbaas.client.entity.database.PostgresDatabase;
 import com.netcracker.cloud.dbaas.client.management.DbaasDbClassifier;
+import io.quarkus.datasource.common.runtime.DataSourceUtil;
 import io.quarkus.flyway.runtime.FlywayRuntimeConfig;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -54,7 +55,7 @@ class DbaaSPostgresDbCreationFlywayCleanTest {
     void testFlywayCleanConfiguration() {
         assertTrue(coreFlywayConfig.globalFlywayConfig.cleanAndMigrateAtStart);
         assertFalse(coreFlywayConfig.globalFlywayConfig.cleanDisabled);
-        assertFalse(flywayRuntimeConfig.defaultDataSource.cleanDisabled);
+        assertFalse(flywayRuntimeConfig.datasources().get(DataSourceUtil.DEFAULT_DATASOURCE_NAME).cleanDisabled());
         assertTrue(defaultFlywayConfiguration.isCleanDisabled());
         Map<String, FlywayConfig> logicalDbFlywayConfigMap = coreFlywayConfig.datasources;
         assertEquals(1, logicalDbFlywayConfigMap.size());

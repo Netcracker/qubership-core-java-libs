@@ -6,7 +6,6 @@ import io.quarkus.agroal.runtime.*;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.InstanceHandle;
 import io.quarkus.datasource.common.runtime.DatabaseKind;
-import io.quarkus.datasource.runtime.DataSourceSupport;
 import io.quarkus.datasource.runtime.DataSourcesBuildTimeConfig;
 import io.quarkus.datasource.runtime.DataSourcesRuntimeConfig;
 import io.quarkus.narayana.jta.runtime.TransactionManagerConfiguration;
@@ -16,7 +15,6 @@ import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Named;
 import jakarta.transaction.TransactionManager;
 import jakarta.transaction.TransactionSynchronizationRegistry;
-
 import org.jboss.tm.XAResourceRecoveryRegistry;
 
 import java.lang.annotation.Annotation;
@@ -38,13 +36,12 @@ public class CoreQuarkusDataSourceProducer extends DataSources {
                                          TransactionManager transactionManager,
                                          XAResourceRecoveryRegistry xaResourceRecoveryRegistry,
                                          TransactionSynchronizationRegistry transactionSynchronizationRegistry,
-                                         DataSourceSupport dataSourceSupport,
                                          AgroalDataSourceSupport agroalDataSourceSupport,
                                          Instance<io.agroal.api.AgroalPoolInterceptor> agroalPoolInterceptors,
                                          Instance<AgroalOpenTelemetryWrapper> agroalOpenTelemetryWrapper,
                                          @Named("dbaasDataSourceAggregator") AgroalDataSource dbaasDataSourceAggregator) {
 
-        super(dataSourcesBuildTimeConfig, dataSourcesRuntimeConfig, dataSourcesJdbcBuildTimeConfig, dataSourcesJdbcRuntimeConfig, transactionRuntimeConfig, transactionManager, xaResourceRecoveryRegistry, transactionSynchronizationRegistry, dataSourceSupport, agroalDataSourceSupport, agroalPoolInterceptors, agroalOpenTelemetryWrapper);
+        super(dataSourcesBuildTimeConfig, dataSourcesRuntimeConfig, dataSourcesJdbcBuildTimeConfig, dataSourcesJdbcRuntimeConfig, transactionRuntimeConfig, transactionManager, xaResourceRecoveryRegistry, transactionSynchronizationRegistry, agroalDataSourceSupport, agroalPoolInterceptors, agroalOpenTelemetryWrapper);
         this.agroalDataSourceSupport = agroalDataSourceSupport;
         this.dbaasDataSourceAggregator = dbaasDataSourceAggregator;
     }

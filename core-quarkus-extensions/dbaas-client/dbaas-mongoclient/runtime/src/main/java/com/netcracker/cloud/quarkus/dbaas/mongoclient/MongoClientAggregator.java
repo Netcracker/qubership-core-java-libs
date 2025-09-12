@@ -1,12 +1,10 @@
 package com.netcracker.cloud.quarkus.dbaas.mongoclient;
 
-import com.mongodb.ClientSessionOptions;
-import com.mongodb.client.ChangeStreamIterable;
-import com.mongodb.client.ClientSession;
-import com.mongodb.client.ListDatabasesIterable;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.MongoIterable;
+import com.mongodb.*;
+import com.mongodb.client.*;
+import com.mongodb.client.model.bulk.ClientBulkWriteOptions;
+import com.mongodb.client.model.bulk.ClientBulkWriteResult;
+import com.mongodb.client.model.bulk.ClientNamespacedWriteModel;
 import com.mongodb.connection.ClusterDescription;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -15,10 +13,12 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Priority(1)
 @Alternative
@@ -42,6 +42,56 @@ public class MongoClientAggregator implements MongoClient {
 
     public boolean isServiceDb() {
         return !dbaasDsMainType.equalsIgnoreCase("tenant");
+    }
+
+    @Override
+    public CodecRegistry getCodecRegistry() {
+        return isServiceDb() ? serviceMongoClient.getCodecRegistry() : tenantMongoClient.getCodecRegistry();
+    }
+
+    @Override
+    public ReadPreference getReadPreference() {
+        return isServiceDb() ? serviceMongoClient.getReadPreference() : tenantMongoClient.getReadPreference();
+    }
+
+    @Override
+    public WriteConcern getWriteConcern() {
+        return isServiceDb() ? serviceMongoClient.getWriteConcern() : tenantMongoClient.getWriteConcern();
+    }
+
+    @Override
+    public ReadConcern getReadConcern() {
+        return isServiceDb() ? serviceMongoClient.getReadConcern() : tenantMongoClient.getReadConcern();
+    }
+
+    @Override
+    public Long getTimeout(TimeUnit timeUnit) {
+        return isServiceDb() ? serviceMongoClient.getTimeout(timeUnit) : tenantMongoClient.getTimeout(timeUnit);
+    }
+
+    @Override
+    public MongoCluster withCodecRegistry(CodecRegistry codecRegistry) {
+        return isServiceDb() ? serviceMongoClient.withCodecRegistry(codecRegistry) : tenantMongoClient.withCodecRegistry(codecRegistry);
+    }
+
+    @Override
+    public MongoCluster withReadPreference(ReadPreference readPreference) {
+        return isServiceDb() ? serviceMongoClient.withReadPreference(readPreference) : tenantMongoClient.withReadPreference(readPreference);
+    }
+
+    @Override
+    public MongoCluster withWriteConcern(WriteConcern writeConcern) {
+        return isServiceDb() ? serviceMongoClient.withWriteConcern(writeConcern) : tenantMongoClient.withWriteConcern(writeConcern);
+    }
+
+    @Override
+    public MongoCluster withReadConcern(ReadConcern readConcern) {
+        return isServiceDb() ? serviceMongoClient.withReadConcern(readConcern) : tenantMongoClient.withReadConcern(readConcern);
+    }
+
+    @Override
+    public MongoCluster withTimeout(long l, TimeUnit timeUnit) {
+        return isServiceDb() ? serviceMongoClient.withTimeout(l, timeUnit) : tenantMongoClient.withTimeout(l, timeUnit);
     }
 
     @Override
@@ -145,6 +195,26 @@ public class MongoClientAggregator implements MongoClient {
     public <TResult> ChangeStreamIterable<TResult> watch(ClientSession clientSession, List<? extends Bson> list, Class<TResult> aClass) {
         return isServiceDb() ? serviceMongoClient.watch(clientSession, list, aClass)
                 : tenantMongoClient.watch(clientSession, list, aClass);
+    }
+
+    @Override
+    public ClientBulkWriteResult bulkWrite(List<? extends ClientNamespacedWriteModel> list) throws ClientBulkWriteException {
+        return isServiceDb() ? serviceMongoClient.bulkWrite(list) : tenantMongoClient.bulkWrite(list);
+    }
+
+    @Override
+    public ClientBulkWriteResult bulkWrite(List<? extends ClientNamespacedWriteModel> list, ClientBulkWriteOptions clientBulkWriteOptions) throws ClientBulkWriteException {
+        return isServiceDb() ? serviceMongoClient.bulkWrite(list, clientBulkWriteOptions) : tenantMongoClient.bulkWrite(list, clientBulkWriteOptions);
+    }
+
+    @Override
+    public ClientBulkWriteResult bulkWrite(ClientSession clientSession, List<? extends ClientNamespacedWriteModel> list) throws ClientBulkWriteException {
+        return isServiceDb() ? serviceMongoClient.bulkWrite(clientSession, list) : tenantMongoClient.bulkWrite(clientSession, list);
+    }
+
+    @Override
+    public ClientBulkWriteResult bulkWrite(ClientSession clientSession, List<? extends ClientNamespacedWriteModel> list, ClientBulkWriteOptions clientBulkWriteOptions) throws ClientBulkWriteException {
+        return isServiceDb() ? serviceMongoClient.bulkWrite(clientSession, list, clientBulkWriteOptions) : tenantMongoClient.bulkWrite(clientSession, list, clientBulkWriteOptions);
     }
 
     @Override

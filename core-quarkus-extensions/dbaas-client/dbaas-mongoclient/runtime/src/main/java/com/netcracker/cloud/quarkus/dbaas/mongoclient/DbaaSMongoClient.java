@@ -1,20 +1,21 @@
 package com.netcracker.cloud.quarkus.dbaas.mongoclient;
 
-import com.mongodb.ClientSessionOptions;
-import com.mongodb.client.ChangeStreamIterable;
-import com.mongodb.client.ClientSession;
-import com.mongodb.client.ListDatabasesIterable;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoIterable;
+import com.mongodb.*;
+import com.mongodb.client.*;
+import com.mongodb.client.model.bulk.ClientBulkWriteOptions;
+import com.mongodb.client.model.bulk.ClientBulkWriteResult;
+import com.mongodb.client.model.bulk.ClientNamespacedWriteModel;
 import com.mongodb.connection.ClusterDescription;
 import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSClassifierBuilder;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.entity.connection.MongoDBConnection;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.entity.database.MongoDatabase;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.service.MongoClientCreation;
 import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class DbaaSMongoClient implements MongoClient {
 
@@ -134,7 +135,76 @@ public class DbaaSMongoClient implements MongoClient {
     }
 
     @Override
+    public ClientBulkWriteResult bulkWrite(List<? extends ClientNamespacedWriteModel> list) throws ClientBulkWriteException {
+        return getMongoClient().bulkWrite(list);
+    }
+
+    @Override
+    public ClientBulkWriteResult bulkWrite(List<? extends ClientNamespacedWriteModel> list, ClientBulkWriteOptions clientBulkWriteOptions) throws ClientBulkWriteException {
+        return getMongoClient().bulkWrite(list, clientBulkWriteOptions);
+    }
+
+    @Override
+    public ClientBulkWriteResult bulkWrite(ClientSession clientSession, List<? extends ClientNamespacedWriteModel> list) throws ClientBulkWriteException {
+        return getMongoClient().bulkWrite(clientSession, list);
+    }
+
+    @Override
+    public ClientBulkWriteResult bulkWrite(ClientSession clientSession, List<? extends ClientNamespacedWriteModel> list, ClientBulkWriteOptions clientBulkWriteOptions) throws ClientBulkWriteException {
+        return getMongoClient().bulkWrite(clientSession, list, clientBulkWriteOptions);
+    }
+
+    @Override
     public ClusterDescription getClusterDescription() {
         return getMongoClient().getClusterDescription();
+    }
+
+    @Override
+    public CodecRegistry getCodecRegistry() {
+        return getMongoClient().getCodecRegistry();
+    }
+
+    @Override
+    public ReadPreference getReadPreference() {
+        return getMongoClient().getReadPreference();
+    }
+
+    @Override
+    public WriteConcern getWriteConcern() {
+        return getMongoClient().getWriteConcern();
+    }
+    @Override
+    public ReadConcern getReadConcern() {
+        return getMongoClient().getReadConcern();
+    }
+
+    @Override
+    public Long getTimeout(TimeUnit timeUnit) {
+        return getMongoClient().getTimeout(timeUnit);
+    }
+
+    @Override
+    public MongoCluster withCodecRegistry(CodecRegistry codecRegistry) {
+        return getMongoClient().withCodecRegistry(codecRegistry);
+    }
+
+    @Override
+    public MongoCluster withReadPreference(ReadPreference readPreference) {
+        return getMongoClient().withReadPreference(readPreference);
+    }
+
+    @Override
+    public MongoCluster withWriteConcern(WriteConcern writeConcern) {
+        return getMongoClient().withWriteConcern(writeConcern);
+    }
+
+    @Override
+    public MongoCluster withReadConcern(ReadConcern readConcern) {
+        return getMongoClient().withReadConcern(readConcern);
+    }
+
+    @Override
+    public MongoCluster withTimeout(long timeout, TimeUnit timeUnit) {
+        return getMongoClient().withTimeout(timeout, timeUnit);
     }
 }

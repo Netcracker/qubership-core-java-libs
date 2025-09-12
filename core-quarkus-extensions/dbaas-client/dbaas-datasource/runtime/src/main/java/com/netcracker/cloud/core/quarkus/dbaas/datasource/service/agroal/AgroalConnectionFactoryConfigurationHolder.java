@@ -30,6 +30,7 @@ class AgroalConnectionFactoryConfigurationHolder implements AgroalConnectionFact
     Collection<Object> recoveryCredentials = new ArrayList<>();
     Collection<Object> credentials = new ArrayList<>();
     Duration loginTimeout = Duration.ZERO;
+    boolean readOnly = false;
 
     // Here is a list of changed default values
     Class<?> connectionProviderClass = org.postgresql.Driver.class;
@@ -38,6 +39,11 @@ class AgroalConnectionFactoryConfigurationHolder implements AgroalConnectionFact
     @Override
     public boolean autoCommit() {
         return autoCommit;
+    }
+
+    @Override
+    public boolean readOnly() {
+        return readOnly;
     }
 
     @Override
