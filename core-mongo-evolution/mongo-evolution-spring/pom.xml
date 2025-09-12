@@ -24,7 +24,7 @@
         <spring.data.mongodb.version>4.5.3</spring.data.mongodb.version>
         <spring.boot.version>3.5.5</spring.boot.version>
         <lombok.version>1.18.38</lombok.version>
-        <mongo.test.server.version>1.46.0</mongo.test.server.version>
+        <mongo.test.server.version>1.47.0</mongo.test.server.version>
         <jacoco.plugin.version>0.8.13</jacoco.plugin.version>
         <mockito.version>5.14.2</mockito.version>
         <sonar.coverage.jacoco.xmlReportPaths>
