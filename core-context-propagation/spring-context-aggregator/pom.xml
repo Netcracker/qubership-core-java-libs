@@ -4,6 +4,7 @@
         <artifactId>context-propagation</artifactId>
         <groupId>com.netcracker.cloud</groupId>
         <version>7.1.6-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
