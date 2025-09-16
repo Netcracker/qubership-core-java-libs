@@ -18,14 +18,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <surefire-plugin.version>3.3.0</surefire-plugin.version>
+        <surefire-plugin.version>3.5.4</surefire-plugin.version>
         <!--Qubership -->
         <nc.quarkus.security.version>${project.version}</nc.quarkus.security.version>
         <!-- These properties are needed in order for them to be resolvable by the generated
         projects -->
         <!-- Quarkus uses jboss-parent and it comes with 3.8.0-jboss-2, we don't want that in the
         templates -->
-        <compiler-plugin.version>3.13.0</compiler-plugin.version>
+        <compiler-plugin.version>3.14.0</compiler-plugin.version>
         <maven.repo.local>${user.home}/.m2/repository</maven.repo.local>
 
         <!-- These properties are needed in order for them to be resolvable by the documentation -->
@@ -38,9 +38,9 @@
          -->
         <supported-maven-versions>[3.6.2,)</supported-maven-versions>
 
-        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
+        <maven-enforcer-plugin.version>3.6.1</maven-enforcer-plugin.version>
         <jacoco.plugin.version>0.8.7</jacoco.plugin.version>
-        <jandex-maven-plugin.version>3.2.7</jandex-maven-plugin.version>
+        <jandex-maven-plugin.version>3.3.2</jandex-maven-plugin.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../report-aggregate/target/site/jacoco-aggregate/jacoco.xml
@@ -244,7 +244,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.12</version>
+                <version>0.8.13</version>
                 <executions>
                     <execution>
                         <goals>
@@ -257,7 +257,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.3.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
