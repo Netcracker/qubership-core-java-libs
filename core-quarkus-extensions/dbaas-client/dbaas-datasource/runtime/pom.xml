@@ -11,9 +11,9 @@
   <artifactId>dbaas-datasource-postgresql</artifactId>
 
   <properties>
-    <mockito.version>5.14.2</mockito.version>
-    <testcontainers.version>1.20.6</testcontainers.version>
-    <junit.version>5.11.4</junit.version>
+    <mockito.version>5.17.0</mockito.version>
+    <testcontainers.version>1.21.3</testcontainers.version>
+    <junit.version>5.12.2</junit.version>
     <sonar.exclusions>**/DebugDatasourceListener*, **/DataSourceAggregator*</sonar.exclusions>
   </properties>
 
@@ -179,7 +179,7 @@
     <dependency>
       <groupId>com.github.docker-java</groupId>
       <artifactId>docker-java-api</artifactId>
-      <version>3.4.0</version>
+      <version>3.4.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -194,7 +194,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>33.2.1-jre</version>
+      <version>33.4.0-jre</version>
     </dependency>
   </dependencies>
   <build>
