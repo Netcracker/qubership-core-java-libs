@@ -34,7 +34,7 @@
 
         <maas-declarative-kafka-client.version>5.1.3</maas-declarative-kafka-client.version>
         <maas-client-spring.version>8.1.3</maas-client-spring.version>
-        <opentelemetry-kafka-clients.version>2.5.0-alpha</opentelemetry-kafka-clients.version>
+        <opentelemetry-kafka-clients.version>2.10.0</opentelemetry-kafka-clients.version>
     </properties>
 
     <dependencyManagement>
@@ -160,7 +160,7 @@ because spring-boot-based microservices are maven-inherited from spring-boot-par
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-surefire-plugin</artifactId>
-                            <version>3.5.3</version>
+                            <version>3.5.4</version>
                             <configuration>
                                 <environmentVariables>
                                     <TESTCONTAINERS_RYUK_CONTAINER_IMAGE>
@@ -191,7 +191,7 @@ because spring-boot-based microservices are maven-inherited from spring-boot-par
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-surefire-plugin</artifactId>
-                            <version>3.5.3</version>
+                            <version>3.5.4</version>
                             <configuration>
                                 <environmentVariables>
                                     <DOCKER_HOST>${env.TEST_DOCKER_URL}</DOCKER_HOST>
