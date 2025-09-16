@@ -8,11 +8,9 @@ import com.netcracker.cloud.framework.contexts.helper.ContextPropagationTestUtil
 
 public abstract class AbstractContextTest {
     public static final String CUSTOM_HEADER = "Custom-header-1";
-    private String originalHeadersProperty;
 
     @BeforeEach
     void setup() {
-        originalHeadersProperty = System.getProperty("headers.allowed");
         System.setProperty("headers.allowed", CUSTOM_HEADER);
         ContextPropagationTestUtils.reinitializeRegistry();
         RequestContextPropagation.initRequestContext(new ContextDataRequest());
@@ -20,11 +18,6 @@ public abstract class AbstractContextTest {
 
     @AfterEach
     void cleanup() {
-        if (originalHeadersProperty != null) {
-            System.setProperty("headers.allowed", originalHeadersProperty);
-        } else {
-            System.clearProperty("headers.allowed");
-        }
-        ContextPropagationTestUtils.reinitializeRegistry();
+        System.clearProperty("headers.allowed");
     }
 }
