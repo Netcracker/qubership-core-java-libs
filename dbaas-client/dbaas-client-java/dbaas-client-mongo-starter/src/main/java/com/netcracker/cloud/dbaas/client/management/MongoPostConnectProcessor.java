@@ -4,7 +4,7 @@ import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.internal.MongoClientImpl;
+import com.mongodb.client.MongoClients;
 import com.netcracker.cloud.dbaas.client.entity.connection.MongoDBConnection;
 import com.netcracker.cloud.dbaas.client.entity.database.MongoDatabase;
 import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
@@ -69,7 +69,7 @@ public class MongoPostConnectProcessor implements PostConnectProcessor<MongoData
                 )
                 .build();
 
-        MongoClient mongoClient = new MongoClientImpl(mongoClientSettings, null);
+        MongoClient mongoClient = MongoClients.create(mongoClientSettings);
 
         log.debug("Created mongo client: {}", mongoClient);
         connectionProperties.setClient(mongoClient);

@@ -6,7 +6,6 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.internal.MongoClientImpl;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -88,7 +87,7 @@ public class MongoClientTest {
                         .maxConnectionLifeTime(1, TimeUnit.MINUTES)
                         .maxConnectionIdleTime(1, TimeUnit.MINUTES))
                 .build();
-        MongoClient client = new MongoClientImpl(options, null);
+        MongoClient client = MongoClients.create(options);
 
         List<GetDBThread> arr = new ArrayList<>(ARRAY_SIZE);
         for (int i = 0; i < ARRAY_SIZE; i++) {
