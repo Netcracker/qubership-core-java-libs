@@ -26,7 +26,7 @@
         <lombok.version>1.18.38</lombok.version>
         <mongo.test.server.version>1.47.0</mongo.test.server.version>
         <jacoco.plugin.version>0.8.13</jacoco.plugin.version>
-        <mockito.version>5.14.2</mockito.version>
+        <mockito.version>5.17.0</mockito.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../mongo-evolution-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.11.4</version>
+            <version>5.12.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -113,7 +113,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <version>3.14.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -135,7 +135,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.5.4</version>
                 <configuration>
                     <argLine>
                         --add-opens java.base/java.lang=ALL-UNNAMED
