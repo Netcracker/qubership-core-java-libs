@@ -12,6 +12,6 @@
     <packaging>pom</packaging>
 
     <properties>
-        <nc.context-quarkus.version>6.1.3</nc.context-quarkus.version>
+        <nc.context-quarkus.version>6.2.0</nc.context-quarkus.version>
     </properties>
 </project>
