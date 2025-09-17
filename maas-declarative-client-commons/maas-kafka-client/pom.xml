@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.netcracker.cloud.maas.client</groupId>
         <artifactId>maas-declarative-kafka-client-parent</artifactId>
-        <version>5.2.0</version>
+        <version>5.2.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
