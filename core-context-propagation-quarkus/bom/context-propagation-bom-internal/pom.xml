@@ -22,7 +22,7 @@
 
         <!-- need to be updated together-->
         <okhttp.version>4.12.0</okhttp.version>
-        <okio.version>3.9.1</okio.version>
+        <okio.version>3.16.0</okio.version>
 
         <slf4j.log4j12.version>2.0.17</slf4j.log4j12.version>
     </properties>
