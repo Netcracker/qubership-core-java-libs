@@ -27,7 +27,7 @@
         <dependency>
             <groupId>com.netcracker.cloud.maas.client</groupId>
             <artifactId>rabbit-blue-green</artifactId>
-            <version>11.1.3</version><!--This version was coming from a property 'cloud-core.maas-client.version' — please replace the property value manually-->
+            <version>11.2.0</version><!--This version was coming from a property 'cloud-core.maas-client.version' — please replace the property value manually-->
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
