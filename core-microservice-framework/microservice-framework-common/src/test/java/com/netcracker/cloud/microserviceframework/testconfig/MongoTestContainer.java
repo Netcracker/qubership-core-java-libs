@@ -9,7 +9,7 @@ import static com.netcracker.cloud.microserviceframework.testconfig.TestConstant
 
 @Slf4j
 public class MongoTestContainer extends GenericContainer<MongoTestContainer> {
-    private static final String IMAGE_VERSION = "mongo:4.0.10";
+    private static final String IMAGE_VERSION = "mongo:4.4.28";
     private static final int MONGO_PORT = 27017;
 
     private static MongoTestContainer container;

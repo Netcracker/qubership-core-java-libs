@@ -5,7 +5,7 @@ import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.internal.MongoClientImpl;
+import com.mongodb.client.MongoClients;
 import com.netcracker.cloud.dbaas.client.entity.connection.MongoDBConnection;
 import com.netcracker.cloud.dbaas.client.entity.database.MongoDatabase;
 import com.netcracker.cloud.dbaas.client.management.PostConnectProcessor;
@@ -127,7 +127,7 @@ public class MongoEvolutionPostProcessor implements PostConnectProcessor<MongoDa
         if (authEnabled) {
             mongoClientSettingsBuilder.credential(getMongoCredential(connectionProperties));
         }
-        return new MongoClientImpl(mongoClientSettingsBuilder.build(), null);
+        return MongoClients.create(mongoClientSettingsBuilder.build());
     }
 
     private MongoCredential getMongoCredential(MongoDBConnection connectionProperties) {
