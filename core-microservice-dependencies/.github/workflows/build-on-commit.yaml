@@ -5,7 +5,7 @@ on:
 
 jobs:
     mvn:
-        uses: netcracker/qubership-workflow-hub/.github/workflows/maven-publish.yml@v1.0.1
+        uses: netcracker/qubership-workflow-hub/.github/workflows/maven-publish.yml@v1.0.6
         with:
             maven-command: "--batch-mode deploy -Dgpg.skip=true"
             server-id: github
