@@ -10,7 +10,7 @@ public class TerminateRunnable implements Callable<Boolean> {
 
     private final Future<?> f;
     private final String taskId;
-    private final static Logger log = LoggerFactory.getLogger(TerminateRunnable.class);
+    private static final Logger log = LoggerFactory.getLogger(TerminateRunnable.class);
 
     public TerminateRunnable(Future<?> f, String taskId) {
         this.f = f;
@@ -26,7 +26,7 @@ public class TerminateRunnable implements Callable<Boolean> {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ignored) {
-
+                    //do nothing
                 }
             }
             log.info("Task {} terminated", taskId);

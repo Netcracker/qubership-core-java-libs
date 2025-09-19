@@ -6,7 +6,7 @@ import javax.sql.DataSource;
 
 public class AbstractRepository {
 
-    protected JdbcRunner jdbcRunner;
+    protected final JdbcRunner jdbcRunner;
     protected final String tableName;
 
     public AbstractRepository(DataSource dataSource, String tableName) {

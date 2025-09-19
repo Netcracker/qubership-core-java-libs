@@ -10,6 +10,7 @@ import com.netcracker.core.scheduler.po.serializers.ExtendedSerializer;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,16 +39,7 @@ public class TaskInstanceRepositoryImpl extends AbstractRepository implements Ta
                     "insert into " +
                             tableName +
                             " (task_id,name,def_id,version, state,type,pi_id,depends_on) values(?,?,?,?,?,?,?,?)"
-                    , (PreparedStatement p) -> {
-                        p.setString(1, taskInstance.getId());
-                        p.setString(2, taskInstance.getName());
-                        p.setString(3, "1");
-                        p.setInt(4, taskInstance.getVersion());
-                        p.setString(5, taskInstance.getState().toString());
-                        p.setString(6, taskInstance.getType());
-                        p.setString(7, taskInstance.getProcessID());
-                        p.setObject(8, serializer.serialize(taskInstance.getDependsOn()));
-                    });
+                    , (PreparedStatement p) -> assignParameters(taskInstance, p));
         } else {
             if (version.equals(taskInstance.getVersion())) {
                 taskInstance.setVersion(version + 1);
@@ -78,16 +70,18 @@ public class TaskInstanceRepositoryImpl extends AbstractRepository implements Ta
     @Override
     public void addTaskInstancesBulk(List<TaskInstanceImpl> taskInstances) {
         String query = "insert into " + tableName + " (task_id,name,def_id,version, state,type,pi_id,depends_on) values(?,?,?,?,?,?,?,?)";
-        jdbcRunner.executeBatch(query, taskInstances, (taskInstance, p) -> {
-            p.setString(1, taskInstance.getId());
-            p.setString(2, taskInstance.getName());
-            p.setString(3, "1");
-            p.setInt(4, taskInstance.getVersion());
-            p.setString(5, taskInstance.getState().toString());
-            p.setString(6, taskInstance.getType());
-            p.setString(7, taskInstance.getProcessID());
-            p.setObject(8, serializer.serialize(taskInstance.getDependsOn()));
-        });
+        jdbcRunner.executeBatch(query, taskInstances, this::assignParameters);
+    }
+
+    private void assignParameters(TaskInstanceImpl taskInstance, PreparedStatement p) throws SQLException {
+        p.setString(1, taskInstance.getId());
+        p.setString(2, taskInstance.getName());
+        p.setString(3, "1");
+        p.setInt(4, taskInstance.getVersion());
+        p.setString(5, taskInstance.getState().toString());
+        p.setString(6, taskInstance.getType());
+        p.setString(7, taskInstance.getProcessID());
+        p.setObject(8, serializer.serialize(taskInstance.getDependsOn()));
     }
 
     @Override

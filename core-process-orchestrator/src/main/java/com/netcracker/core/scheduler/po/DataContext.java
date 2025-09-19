@@ -26,16 +26,13 @@ public class DataContext extends HashMap<String, Object> {
     @Setter
     private transient boolean isDirty;
     private Integer version = 0;
+    @Setter
     @JsonIgnore
     private String id;
 
     @JsonCreator
     public DataContext(@JsonProperty("id") String id) {
         isDirty = false;
-        this.id = id;
-    }
-
-    public void setId(String id) {
         this.id = id;
     }
 
@@ -77,15 +74,5 @@ public class DataContext extends HashMap<String, Object> {
     public void apply(Consumer<DataContext> function) {
         function.accept(this);
         save();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
     }
 }

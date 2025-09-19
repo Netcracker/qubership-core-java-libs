@@ -18,14 +18,14 @@ public class SchedulerConfig {
     public static Scheduler getScheduler(DataSource dataSource) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         List<Task<?>> knownTasks = ProcessOrchestrator.getTasks();
         knownTasks.add(new Process());
-        SchedulerUtils.scheduler = Scheduler
+        SchedulerUtils.setScheduler(Scheduler
                 .create(dataSource, knownTasks)
                 .enableImmediateExecution() // will cause job scheduled to now() to run directly
                 .pollingInterval(Duration.ofSeconds(10))
                 .registerShutdownHook()
-                .build();
-        SchedulerUtils.scheduler.start();
-        return SchedulerUtils.scheduler;
+                .build());
+        SchedulerUtils.getScheduler().start();
+        return SchedulerUtils.getScheduler();
     }
 
 }

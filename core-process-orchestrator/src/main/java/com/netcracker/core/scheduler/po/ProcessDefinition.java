@@ -10,8 +10,8 @@ import java.util.*;
 
 public class ProcessDefinition {
 
-    String id;
-    String name;
+    final String id;
+    final String name;
     private final Map<NamedTask, List<NamedTask>> graph;
 
     public ProcessDefinition(String name) {
@@ -56,6 +56,4 @@ public class ProcessDefinition {
                 }).toList());
         return instance;
     }
-
-
 }

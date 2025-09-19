@@ -17,6 +17,7 @@ import com.netcracker.core.scheduler.po.serializers.ExtendedSerializer;
 import com.netcracker.core.scheduler.po.serializers.JsonPOSerializer;
 import com.netcracker.core.scheduler.po.task.TaskState;
 import com.netcracker.core.scheduler.po.task.templates.AbstractProcessTask;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -38,12 +39,14 @@ import java.util.concurrent.Future;
 public class ProcessOrchestrator {
 
     private static ProcessOrchestrator instance;
-    private TaskExecutorService executorService;
+    private final TaskExecutorService executorService;
 
-    private Scheduler scheduler;
-    private ContextRepository contextRepository;
-    private ProcessInstanceRepository processInstanceRepository;
-    private TaskInstanceRepository taskInstanceRepository;
+    private final Scheduler scheduler;
+    private final ContextRepository contextRepository;
+    @Getter
+    private final ProcessInstanceRepository processInstanceRepository;
+    @Getter
+    private final TaskInstanceRepository taskInstanceRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessOrchestrator.class);
 
@@ -148,7 +151,7 @@ public class ProcessOrchestrator {
                         .stream()
                         .filter(t -> t.endsWith("-syncPartFlag"))
                         .toList();
-                keyToRemove.forEach(k -> context.remove(k));
+                keyToRemove.forEach(context::remove);
                 context.save();
                 taskInstance.setState(TaskState.NOT_STARTED);
                 taskInstance.setStartTime(Calendar.getInstance().getTime());
@@ -183,8 +186,6 @@ public class ProcessOrchestrator {
                 } catch (Exception e) {
                     if (i > 5)
                         logger.error("Error during task removal {}", id, e);
-                } finally {
-
                 }
             }
         }
@@ -205,9 +206,7 @@ public class ProcessOrchestrator {
             ).forEach(t -> {
                 try {
                     t.get();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                } catch (ExecutionException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     throw new RuntimeException(e);
                 }
             });
@@ -216,19 +215,10 @@ public class ProcessOrchestrator {
             processInstance.save();
         } catch (Exception e) {
             logger.error("Error while terminating task", e);
-        } finally {
         }
     }
 
     public ProcessInstanceImpl getProcessInstance(String id) {
         return processInstanceRepository.getProcess(id);
-    }
-
-    public ProcessInstanceRepository getProcessInstanceRepository() {
-        return processInstanceRepository;
-    }
-
-    public TaskInstanceRepository getTaskInstanceRepository() {
-        return taskInstanceRepository;
     }
 }

@@ -36,13 +36,13 @@ class SchedulerTest {
     ProcessOrchestrator orchestrator;
 
     @BeforeEach
-    public void setup() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    void setup() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         dataSource = SchedulerUtils.initDatabase();
         orchestrator = new ProcessOrchestrator(dataSource);
     }
 
     @AfterEach
-    public void teardown() {
+    void teardown() {
         ((HikariDataSource) dataSource).close();
         orchestrator.stop();
     }

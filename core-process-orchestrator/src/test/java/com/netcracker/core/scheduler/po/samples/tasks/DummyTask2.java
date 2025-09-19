@@ -12,6 +12,6 @@ public class DummyTask2 extends AbstractProcessTask {
 
     @Override
     public void executeInternal(TaskInstance<TaskExecutionContext> taskInstance, ExecutionContext executionContext) {
+        //do nothing
     }
-
 }

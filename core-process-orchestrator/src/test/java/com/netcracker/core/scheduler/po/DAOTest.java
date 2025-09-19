@@ -24,12 +24,12 @@ class DAOTest {
     DataSource dataSource;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         dataSource = SchedulerUtils.initDatabase();
     }
 
     @AfterEach
-    public void teardown() {
+    void teardown() {
         ((HikariDataSource) dataSource).close();
     }
 

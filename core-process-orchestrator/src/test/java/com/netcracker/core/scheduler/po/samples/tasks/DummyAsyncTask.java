@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class DummyAsyncTask extends AsyncTaskWithPolling {
 
-    private final static Logger logger = LoggerFactory.getLogger(DummyAsyncTask.class);
+    private static final Logger logger = LoggerFactory.getLogger(DummyAsyncTask.class);
     protected int count = 3;
 
     public DummyAsyncTask() {
@@ -31,7 +31,7 @@ public class DummyAsyncTask extends AsyncTaskWithPolling {
     @Override
     public boolean executePolling(TaskExecutionContext instance) {
         DataContext dataContext = instance.getTaskInstance().getContext();
-        int counter = (Integer) dataContext.computeIfAbsent("CF", t -> Integer.parseInt("0"));
+        int counter = (Integer) dataContext.computeIfAbsent("CF", t -> 0);
         logger.info("Pool {} times", counter);
         if (counter > count) return true;
         counter = counter + 1;

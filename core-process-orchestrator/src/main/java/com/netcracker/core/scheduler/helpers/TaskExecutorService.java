@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 public class TaskExecutorService implements ExecutorService {
-    private final static Logger log = LoggerFactory.getLogger(TaskExecutorService.class);
+    private static final Logger log = LoggerFactory.getLogger(TaskExecutorService.class);
     MethodHandle getExecutor;
     MethodHandle getExecution;
 
@@ -108,7 +108,7 @@ public class TaskExecutorService implements ExecutorService {
                 Future<?> f = tasks.remove(fk2);
                 if (f != null) f.cancel(true);
             });
-            Long timeout = taskInstance == null ? 0L : taskInstance.getTimeout();
+            long timeout = taskInstance == null ? 0L : taskInstance.getTimeout();
             final Future<Boolean> future = delegate.submit(wrapper);
             tasks.put(fk, future);
             if (timeout != 0L) {

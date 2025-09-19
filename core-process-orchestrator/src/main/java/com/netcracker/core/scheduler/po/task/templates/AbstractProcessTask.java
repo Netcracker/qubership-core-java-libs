@@ -1,6 +1,7 @@
 package com.netcracker.core.scheduler.po.task.templates;
 
 import com.github.kagkarlsson.scheduler.task.*;
+import com.github.kagkarlsson.scheduler.task.DeadExecutionHandler.ReviveDeadExecution;
 import com.github.kagkarlsson.scheduler.task.helper.CustomTask;
 import com.netcracker.core.scheduler.po.context.TaskExecutionContext;
 import com.netcracker.core.scheduler.po.model.pojo.TaskInstanceImpl;
@@ -29,7 +30,7 @@ public abstract class AbstractProcessTask extends CustomTask<TaskExecutionContex
                 null,
                 Function.identity(),
                 new ProcessTaskFailureHandler(),
-                new DeadExecutionHandler.ReviveDeadExecution<>());
+                new ReviveDeadExecution<>());
     }
 
     protected AbstractProcessTask(String name, FailureHandler<TaskExecutionContext> failureHandler) {
@@ -39,7 +40,7 @@ public abstract class AbstractProcessTask extends CustomTask<TaskExecutionContex
                 null,
                 Function.identity(),
                 new ProcessTaskFailureHandler(failureHandler),
-                new DeadExecutionHandler.ReviveDeadExecution<>());
+                new ReviveDeadExecution<>());
     }
 
     public abstract void executeInternal(TaskInstance<TaskExecutionContext> taskInstance, ExecutionContext executionContext);

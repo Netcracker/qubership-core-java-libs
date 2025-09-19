@@ -28,12 +28,12 @@ class ContextTest {
     DataSource dataSource;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         dataSource = SchedulerUtils.initDatabase();
     }
 
     @AfterEach
-    public void teardown() {
+    void teardown() {
         ((HikariDataSource) dataSource).close();
     }
 
@@ -93,12 +93,12 @@ class ContextTest {
         context = serializer.deserialize(DataContext.class, s);
         List<NamedTask> tasks = new ArrayList<>();
         tasks.add(new NamedTask("x", "y"));
-        tasks = serializer.deserialize(new TypeReference<List<NamedTask>>() {
+        tasks = serializer.deserialize(new TypeReference<>() {
         }, serializer.serialize(tasks));
         tasks.forEach(t -> System.out.println(t.getTaskName()));
 
         serializer = new CustomSerializer();
-        tasks = serializer.deserialize(new TypeReference<List<NamedTask>>() {
+        tasks = serializer.deserialize(new TypeReference<>() {
         }, serializer.serialize(tasks));
         tasks.forEach(t -> System.out.println(t.getTaskName()));
         Assertions.assertNotNull(context);

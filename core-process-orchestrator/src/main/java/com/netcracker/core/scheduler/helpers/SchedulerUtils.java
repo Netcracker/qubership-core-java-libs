@@ -3,6 +3,8 @@ package com.netcracker.core.scheduler.helpers;
 import com.github.kagkarlsson.scheduler.Scheduler;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -13,8 +15,11 @@ import java.sql.Statement;
 import java.util.function.Consumer;
 
 public class SchedulerUtils {
-    public static Scheduler scheduler;
+    @Getter
+    @Setter
+    private static Scheduler scheduler;
 
+    private SchedulerUtils() {}
 
     public static DataSource initDatabase() {
         return initDatabase("jdbc:h2:mem:schedule_testing");

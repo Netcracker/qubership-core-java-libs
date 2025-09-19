@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ProcessTaskFailureHandler implements FailureHandler<TaskExecutionContext> {
     private static final Logger logger = LoggerFactory.getLogger(ProcessTaskFailureHandler.class);
-    protected FailureHandler<TaskExecutionContext> delegate;
+    protected final FailureHandler<TaskExecutionContext> delegate;
 
     public ProcessTaskFailureHandler() {
         delegate = null;
@@ -37,7 +37,7 @@ public class ProcessTaskFailureHandler implements FailureHandler<TaskExecutionCo
                 ex = ex.getCause();
             }
         }
-        if (list.stream().noneMatch(t -> t instanceof InterruptedException) && !Thread.currentThread().isInterrupted()) {
+        if (list.stream().noneMatch(InterruptedException.class::isInstance) && !Thread.currentThread().isInterrupted()) {
             TaskInstanceImpl task = ((TaskExecutionContext) executionComplete.getExecution().taskInstance.getData()).getTaskInstance();
             if (delegate != null) delegate.onFailure(executionComplete, executionOperations);
             task.setState(TaskState.FAILED);
@@ -51,6 +51,4 @@ public class ProcessTaskFailureHandler implements FailureHandler<TaskExecutionCo
             executionOperations.remove();
         }
     }
-
-
 }
