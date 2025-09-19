@@ -35,6 +35,13 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>2025.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>cloud-core-java-bom</artifactId>
                 <version>${microservice.dependencies.version}</version>
