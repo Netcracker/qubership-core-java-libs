@@ -5,7 +5,6 @@ import com.netcracker.cloud.core.error.runtime.ErrorCodeException;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RemoteMultiCauseException extends RemoteCodeException {
 
@@ -16,14 +15,14 @@ public class RemoteMultiCauseException extends RemoteCodeException {
     }
 
     public List<ErrorCodeException> getCauseExceptions() {
-        return Arrays.stream(getSuppressed()).filter(e -> e instanceof ErrorCodeException)
+        return Arrays.stream(getSuppressed()).filter(ErrorCodeException.class::isInstance)
                 .map(e -> (ErrorCodeException) e)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<String> getCauseErrorIds() {
         return getCauseExceptions().stream()
                 .map(ErrorCodeException::getId)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

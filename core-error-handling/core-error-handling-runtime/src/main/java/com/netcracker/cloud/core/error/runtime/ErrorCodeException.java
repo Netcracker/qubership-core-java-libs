@@ -18,14 +18,12 @@ import java.util.UUID;
  * 2) status - http status code, if any<br>
  * 3) source - information of the source of this error, if any
  */
+@Getter
 public class ErrorCodeException extends RuntimeException {
-    @Getter
     @Setter
     @NonNull
     private String id = UUID.randomUUID().toString();
-    @Getter
     private final ErrorCode errorCode;
-    @Getter
     private final String detail;
 
     /**

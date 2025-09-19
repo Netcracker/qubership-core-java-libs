@@ -13,11 +13,11 @@ import org.slf4j.Marker;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("LoggingSimilarMessage")
 class LoggerWrapperTest {
 
     @Mock
@@ -227,11 +227,11 @@ class LoggerWrapperTest {
             loggerWrapper.trace(mockMarker, message, new Object[]{arg, arg2});
             loggerWrapper.trace(mockMarker, message, throwable);
 
-            verify(mockLogger).trace(eq(mockMarker), eq(message));
-            verify(mockLogger).trace(eq(mockMarker), eq(message), eq(arg));
-            verify(mockLogger).trace(eq(mockMarker), eq(message), eq(arg), eq(arg2));
-            verify(mockLogger).trace(eq(mockMarker), eq(message), eq(new Object[]{arg, arg2}));
-            verify(mockLogger).trace(eq(mockMarker), eq(message), eq(throwable));
+            verify(mockLogger).trace(mockMarker, message);
+            verify(mockLogger).trace(mockMarker, message, arg);
+            verify(mockLogger).trace(mockMarker, message, arg, arg2);
+            verify(mockLogger).trace(mockMarker, message, new Object[]{arg, arg2});
+            verify(mockLogger).trace(mockMarker, message, throwable);
         }
 
         @Test
@@ -244,11 +244,11 @@ class LoggerWrapperTest {
             loggerWrapper.debug(mockMarker, message, new Object[]{arg, arg2});
             loggerWrapper.debug(mockMarker, message, throwable);
 
-            verify(mockLogger).debug(eq(mockMarker), eq(message));
-            verify(mockLogger).debug(eq(mockMarker), eq(message), eq(arg));
-            verify(mockLogger).debug(eq(mockMarker), eq(message), eq(arg), eq(arg2));
-            verify(mockLogger).debug(eq(mockMarker), eq(message), eq(new Object[]{arg, arg2}));
-            verify(mockLogger).debug(eq(mockMarker), eq(message), eq(throwable));
+            verify(mockLogger).debug(mockMarker, message);
+            verify(mockLogger).debug(mockMarker, message, arg);
+            verify(mockLogger).debug(mockMarker, message, arg, arg2);
+            verify(mockLogger).debug(mockMarker, message, new Object[]{arg, arg2});
+            verify(mockLogger).debug(mockMarker, message, throwable);
         }
 
         @Test
@@ -261,11 +261,11 @@ class LoggerWrapperTest {
             loggerWrapper.info(mockMarker, message, new Object[]{arg, arg2});
             loggerWrapper.info(mockMarker, message, throwable);
 
-            verify(mockLogger).info(eq(mockMarker), eq(message));
-            verify(mockLogger).info(eq(mockMarker), eq(message), eq(arg));
-            verify(mockLogger).info(eq(mockMarker), eq(message), eq(arg), eq(arg2));
-            verify(mockLogger).info(eq(mockMarker), eq(message), eq(new Object[]{arg, arg2}));
-            verify(mockLogger).info(eq(mockMarker), eq(message), eq(throwable));
+            verify(mockLogger).info(mockMarker, message);
+            verify(mockLogger).info(mockMarker, message, arg);
+            verify(mockLogger).info(mockMarker, message, arg, arg2);
+            verify(mockLogger).info(mockMarker, message, new Object[]{arg, arg2});
+            verify(mockLogger).info(mockMarker, message, throwable);
         }
 
         @Test
@@ -278,11 +278,11 @@ class LoggerWrapperTest {
             loggerWrapper.warn(mockMarker, message, new Object[]{arg, arg2});
             loggerWrapper.warn(mockMarker, message, throwable);
 
-            verify(mockLogger).warn(eq(mockMarker), eq(message));
-            verify(mockLogger).warn(eq(mockMarker), eq(message), eq(arg));
-            verify(mockLogger).warn(eq(mockMarker), eq(message), eq(arg), eq(arg2));
-            verify(mockLogger).warn(eq(mockMarker), eq(message), eq(new Object[]{arg, arg2}));
-            verify(mockLogger).warn(eq(mockMarker), eq(message), eq(throwable));
+            verify(mockLogger).warn(mockMarker, message);
+            verify(mockLogger).warn(mockMarker, message, arg);
+            verify(mockLogger).warn(mockMarker, message, arg, arg2);
+            verify(mockLogger).warn(mockMarker, message, new Object[]{arg, arg2});
+            verify(mockLogger).warn(mockMarker, message, throwable);
         }
 
         @Test
@@ -295,11 +295,11 @@ class LoggerWrapperTest {
             loggerWrapper.error(mockMarker, message, new Object[]{arg, arg2});
             loggerWrapper.error(mockMarker, message, throwable);
 
-            verify(mockLogger).error(eq(mockMarker), eq(message));
-            verify(mockLogger).error(eq(mockMarker), eq(message), eq(arg));
-            verify(mockLogger).error(eq(mockMarker), eq(message), eq(arg), eq(arg2));
-            verify(mockLogger).error(eq(mockMarker), eq(message), eq(new Object[]{arg, arg2}));
-            verify(mockLogger).error(eq(mockMarker), eq(message), eq(throwable));
+            verify(mockLogger).error(mockMarker, message);
+            verify(mockLogger).error(mockMarker, message, arg);
+            verify(mockLogger).error(mockMarker, message, arg, arg2);
+            verify(mockLogger).error(mockMarker, message, new Object[]{arg, arg2});
+            verify(mockLogger).error(mockMarker, message, throwable);
         }
     }
 
@@ -314,6 +314,6 @@ class LoggerWrapperTest {
         String expectedPrefix = String.format(LoggerWrapper.ERROR_CODE_LOG_PREFIX_TEMPLATE,
                 errorCodeException.getErrorCode().getCode(),
                 errorCodeException.getId());
-        verify(mockLogger).error(eq(expectedPrefix + message), eq(errorCodeException));
+        verify(mockLogger).error(expectedPrefix + message, errorCodeException);
     }
 }

@@ -96,7 +96,7 @@ TmfErrorResponse response2 = TmfErrorResponse.builder(multiCauseException)
         }})
         .errors(multiCauseException.getCauseExceptions().stream()
                 .map(cause -> TmfError.builder(cause).build())
-                .collect(Collectors.toList()))
+                .toList())
         .build();
 ```
 * Convert TmfErrorResponse to RemoteCodeException

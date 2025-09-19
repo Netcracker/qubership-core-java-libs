@@ -3,7 +3,6 @@ package com.netcracker.cloud.core.error.runtime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Exception class with support for multiple independent causes.<br>
@@ -24,8 +23,8 @@ public class MultiCauseException extends ErrorCodeException {
     }
 
     public List<ErrorCodeException> getCauseExceptions() {
-        return Arrays.stream(getSuppressed()).filter(e -> e instanceof ErrorCodeException)
+        return Arrays.stream(getSuppressed()).filter(ErrorCodeException.class::isInstance)
                 .map(e -> (ErrorCodeException) e)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
