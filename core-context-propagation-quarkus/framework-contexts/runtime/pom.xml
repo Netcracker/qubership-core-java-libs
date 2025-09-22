@@ -4,7 +4,7 @@
     <parent>
         <artifactId>framework-contexts-parent</artifactId>
         <groupId>com.netcracker.cloud.quarkus</groupId>
-        <version>6.2.1</version>
+        <version>6.2.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
