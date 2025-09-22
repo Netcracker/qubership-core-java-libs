@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>dbaas-opensearch-parent</artifactId>
-        <version>7.2.1-SNAPSHOT</version>
+        <version>7.2.1</version>
     </parent>
     <artifactId>dbaas-opensearch-client-deployment</artifactId>
 
