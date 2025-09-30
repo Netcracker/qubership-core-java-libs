@@ -13,7 +13,7 @@ import java.util.Objects;
 
 public class TaskInstanceImpl {
 
-    private boolean dirty;
+    private boolean isDirty;
     private DataContext context = null;
     private final String startTimeField;
     private final String endTimeField;
@@ -42,7 +42,7 @@ public class TaskInstanceImpl {
         this.type = type;
         this.state = TaskState.NOT_STARTED;
         this.processID = processID;
-        dirty = false;
+        isDirty = false;
         startTimeField = String.format("startDate-%s", id);
         endTimeField = String.format("endDate-%s", id);
     }
@@ -50,30 +50,30 @@ public class TaskInstanceImpl {
 
     public void setName(String name) {
         this.name = name;
-        dirty = true;
+        isDirty = true;
     }
 
     @SuppressWarnings("unused")
     public void setType(String type) {
         this.type = type;
-        dirty = true;
+        isDirty = true;
     }
 
     public void setState(TaskState state) {
         if (this.state == state) return;
 
         this.state = state;
-        dirty = true;
+        isDirty = true;
     }
 
     public void setVersion(int version) {
         this.version = version;
-        dirty = false;
+        isDirty = false;
     }
 
     public void setDependsOn(List<NamedTask> dependsOn) {
         this.dependsOn = dependsOn;
-        dirty = true;
+        isDirty = true;
     }
 
     @Override
@@ -90,7 +90,7 @@ public class TaskInstanceImpl {
     }
 
     public void save() {
-        if (dirty)
+        if (isDirty)
             ProcessOrchestrator.getInstance().getTaskInstanceRepository().putTaskInstance(this);
     }
 

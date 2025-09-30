@@ -13,7 +13,7 @@ import java.util.Objects;
 
 @JsonIgnoreType
 public class ProcessInstanceImpl {
-    private boolean dirty = false;
+    private boolean isDirty = false;
 
     @Getter
     private final String name;
@@ -53,17 +53,17 @@ public class ProcessInstanceImpl {
 
     public void setStartTime(Date startTime) {
         this.startTime = startTime;
-        dirty = true;
+        isDirty = true;
     }
 
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
-        dirty = true;
+        isDirty = true;
     }
 
     public void setState(TaskState state) {
         this.state = state;
-        dirty = true;
+        isDirty = true;
     }
 
     public List<TaskInstanceImpl> getTasks() {
@@ -88,7 +88,7 @@ public class ProcessInstanceImpl {
     }
 
     public void save() {
-        if (dirty)
+        if (isDirty)
             ProcessOrchestrator.getInstance().getProcessInstanceRepository().putProcessInstance(this);
     }
 
@@ -98,7 +98,7 @@ public class ProcessInstanceImpl {
     }
     public void setVersion(Integer version) {
         this.version = version;
-        dirty = false;
+        isDirty = false;
     }
 
     public DataContext getContext() {
