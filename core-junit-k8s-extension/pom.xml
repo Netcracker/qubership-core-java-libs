@@ -3,7 +3,7 @@
     <packaging>pom</packaging>
     <groupId>com.netcracker.cloud.junit.cloudcore</groupId>
     <artifactId>cloud-core-parent</artifactId>
-    <version>8.2.0</version>
+    <version>8.2.1-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -31,7 +31,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-junit-k8s-extension.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-core-junit-k8s-extension</url>
-        <tag>8.2.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <dependencyManagement>
