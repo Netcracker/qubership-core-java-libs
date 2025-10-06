@@ -1,0 +1,2 @@
+com.netcracker.cloud.junit.cloudcore.extension.provider.KubernetesClientProvider
+com.netcracker.cloud.junit.cloudcore.extension.provider.PortForwardProvider

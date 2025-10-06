@@ -75,7 +75,7 @@ public class KubernetesClientFactoryTest {
             Mockito.when(config.getAuthProvider()).thenReturn(authProviderConfig);
             Mockito.when(authProviderConfig.getName()).thenReturn("oidc");
             Mockito.when(authProviderConfig.getConfig()).thenReturn(Map.of("refresh-token", "test"));
-            KubernetesClientFactory kubernetesClientFactory = new KubernetesClientFactory(config);
+            DefaultKubernetesClientFactory kubernetesClientFactory = new DefaultKubernetesClientFactory(config);
             KubernetesClient kubernetesClient = kubernetesClientFactory.getKubernetesClient(cloud, namespace);
             Assertions.assertNotNull(kubernetesClient);
             Mockito.verify(httpClientBuilder).connectTimeout(15, TimeUnit.SECONDS);
