@@ -2,6 +2,7 @@ package com.netcracker.cloud.junit.cloudcore.extension.provider;
 
 import com.netcracker.cloud.junit.cloudcore.extension.annotations.Cloud;
 import com.netcracker.cloud.junit.cloudcore.extension.annotations.PortForward;
+import com.netcracker.cloud.junit.cloudcore.extension.client.KubernetesClientFactory;
 import com.netcracker.cloud.junit.cloudcore.extension.service.Endpoint;
 import com.netcracker.cloud.junit.cloudcore.extension.service.NetSocketAddress;
 import com.netcracker.cloud.junit.cloudcore.extension.service.PortForwardService;
@@ -20,6 +21,8 @@ public class PortForwardProvider implements FieldInstanceProvider {
     public Object createInstance(Object testInstance, Field field) throws Exception {
         PortForwardServiceManager resourceFactory = ServiceLoader.load(PortForwardServiceManager.class).findFirst()
                 .orElseThrow(() -> new IllegalStateException("No CloudCoreResourceFactory implementation found"));
+        KubernetesClientFactory kubernetesClientFactory = ServiceLoader.load(KubernetesClientFactory.class).findFirst()
+                .orElseThrow(() -> new IllegalStateException("No KubernetesClientFactory implementation found"));
 
         Class<?> type = field.getType();
 
@@ -29,8 +32,8 @@ public class PortForwardProvider implements FieldInstanceProvider {
             if (cloudAnn == null)
                 throw new IllegalArgumentException(String.format("@Cloud annotation is required on field: '%s' in class '%s'",
                         field.getName(), testInstance.getClass().getName()));
-            String cloud = resolveValue(testInstance, field, Cloud.class, Cloud::cloud);
-            String namespace = resolveValue(testInstance, field, Cloud.class, Cloud::namespace);
+            String cloud = resolveValue(testInstance, field, Cloud.class, Cloud::cloud, kubernetesClientFactory.getCurrentContext());
+            String namespace = resolveValue(testInstance, field, Cloud.class, Cloud::namespace, kubernetesClientFactory.getNamespace());
             portForwardService = resourceFactory.getPortForwardService(new PortForwardConfig(cloud, namespace));
             return portForwardService;
         } else {
@@ -38,8 +41,8 @@ public class PortForwardProvider implements FieldInstanceProvider {
             if (portForwardAnn == null)
                 throw new IllegalArgumentException(String.format("@PortForward annotation is required on field: '%s' in class '%s'",
                         field.getName(), testInstance.getClass().getName()));
-            String cloud = resolveValue(testInstance, field, PortForward.class, pf -> pf.cloud().cloud());
-            String namespace = resolveValue(testInstance, field, PortForward.class, pf -> pf.cloud().namespace());
+            String cloud = resolveValue(testInstance, field, PortForward.class, pf -> pf.cloud().cloud(), kubernetesClientFactory.getCurrentContext());
+            String namespace = resolveValue(testInstance, field, PortForward.class, pf -> pf.cloud().namespace(), kubernetesClientFactory.getNamespace());
             portForwardService = resourceFactory.getPortForwardService(new PortForwardConfig(cloud, namespace));
             String serviceName = resolveValue(testInstance, field, PortForward.class, PortForward::serviceName);
             int port = resolveIntValue(testInstance, field, PortForward.class, PortForward::port);

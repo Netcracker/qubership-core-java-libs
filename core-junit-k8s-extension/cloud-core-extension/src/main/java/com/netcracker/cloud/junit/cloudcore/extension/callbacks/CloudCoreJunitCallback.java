@@ -97,7 +97,7 @@ public class CloudCoreJunitCallback implements BeforeAllCallback, AfterAllCallba
 
 
     public static <T extends Annotation> String resolveValue(Object testInstance, Field field, Class<T> annClass,
-                                                             Function<T, Value> valueExtractor) throws IllegalArgumentException {
+                                                             Function<T, Value> valueExtractor, String... defaultValue) throws IllegalArgumentException {
         return Optional.ofNullable(field.getAnnotation(annClass)).map(ann -> {
             Value v = valueExtractor.apply(ann);
             if (!v.value().isBlank()) {
@@ -105,6 +105,9 @@ public class CloudCoreJunitCallback implements BeforeAllCallback, AfterAllCallba
             } else if (!v.prop().isBlank()) {
                 String resolved = System.getProperty(v.prop());
                 if (resolved == null) {
+                    if (defaultValue.length > 0 && defaultValue[0] != null) {
+                        return defaultValue[0];
+                    }
                     throw new IllegalArgumentException(String.format("@%s annotation's at field '%s' in class '%s' is invalid - prop: '%s' not found",
                             annClass.getSimpleName(), field.getName(), testInstance.getClass().getName(), v.prop()));
                 }

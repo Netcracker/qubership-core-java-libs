@@ -15,8 +15,8 @@ public class KubernetesClientProvider implements FieldInstanceProvider {
     public KubernetesClient createInstance(Object testInstance, Field field) {
         KubernetesClientFactory kubernetesClientFactory = ServiceLoader.load(KubernetesClientFactory.class).findFirst()
                 .orElseThrow(() -> new IllegalStateException("No KubernetesClientFactory implementation found"));
-        String cloud = resolveValue(testInstance, field, Cloud.class, Cloud::cloud);
-        String namespace = resolveValue(testInstance, field, Cloud.class, Cloud::namespace);
+        String cloud = resolveValue(testInstance, field, Cloud.class, Cloud::cloud, kubernetesClientFactory.getCurrentContext());
+        String namespace = resolveValue(testInstance, field, Cloud.class, Cloud::namespace, kubernetesClientFactory.getNamespace());
         return kubernetesClientFactory.getKubernetesClient(cloud, namespace);
     }
 

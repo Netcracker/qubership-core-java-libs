@@ -16,8 +16,8 @@ public class ServicePortForwardParams implements BasePortForwardParams {
         this.port = port;
     }
 
-    public static ServicePortForwardParamsBuilder builder(String podName, int port) {
-        return new ServicePortForwardParamsBuilder().serviceName(podName).port(port);
+    public static ServicePortForwardParamsBuilder builder(String serviceName, int port) {
+        return new ServicePortForwardParamsBuilder().serviceName(serviceName).port(port);
     }
 
     @Override

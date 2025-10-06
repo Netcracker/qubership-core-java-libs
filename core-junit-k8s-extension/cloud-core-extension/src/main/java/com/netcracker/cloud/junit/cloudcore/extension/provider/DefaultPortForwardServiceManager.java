@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class DefaultPortForwardServiceManager implements PortForwardServiceManager {
 
-    protected Map<PortForwardConfig, PortForwardService> portForwardServiceMap = new ConcurrentHashMap<>();
+    protected static Map<PortForwardConfig, PortForwardService> portForwardServiceMap = new ConcurrentHashMap<>();
 
     @Override
     public PortForwardService getPortForwardService(PortForwardConfig config) {

@@ -27,7 +27,7 @@ public class DefaultKubernetesClientFactory implements AutoCloseable, Kubernetes
         this.config = config;
     }
 
-    private final ConcurrentHashMap<CloudAndNamespace, KubernetesClient> clientsMap = new ConcurrentHashMap<>();
+    private final static ConcurrentHashMap<CloudAndNamespace, KubernetesClient> clientsMap = new ConcurrentHashMap<>();
 
     public Collection<String> getKubernetesContexts() {
         return config.getContexts().stream().map(NamedContext::getName).toList();
@@ -61,6 +61,16 @@ public class DefaultKubernetesClientFactory implements AutoCloseable, Kubernetes
                     .withHttpClientBuilderConsumer(builder -> builder.connectTimeout(15, TimeUnit.SECONDS))
                     .build();
         });
+    }
+
+    @Override
+    public String getCurrentContext() {
+        return config.getCurrentContext().getName();
+    }
+
+    @Override
+    public String getNamespace() {
+        return config.getNamespace();
     }
 
     @Override
