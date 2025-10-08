@@ -10,7 +10,7 @@ public class NoopFilter implements ConsumerRecordFilter {
 
     @Override
     public void doFilter(Record<?, ?> rec, Chain<Record<?, ?>> next) {
-        // NOOP
+        next.doFilter(rec);
     }
 
     @Override
