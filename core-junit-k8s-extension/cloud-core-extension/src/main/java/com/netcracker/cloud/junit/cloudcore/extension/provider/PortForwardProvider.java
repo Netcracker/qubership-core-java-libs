@@ -68,9 +68,11 @@ public class PortForwardProvider implements FieldInstanceProvider {
         if (portForwardAnn != null) {
             PortForwardServiceManager resourceFactory = ServiceLoader.load(PortForwardServiceManager.class).findFirst()
                     .orElseThrow(() -> new IllegalStateException("No CloudCoreResourceFactory implementation found"));
+            KubernetesClientFactory kubernetesClientFactory = ServiceLoader.load(KubernetesClientFactory.class).findFirst()
+                    .orElseThrow(() -> new IllegalStateException("No KubernetesClientFactory implementation found"));
 
-            String cloud = resolveValue(testInstance, field, PortForward.class, pf -> pf.cloud().cloud());
-            String namespace = resolveValue(testInstance, field, PortForward.class, pf -> pf.cloud().namespace());
+            String cloud = resolveValue(testInstance, field, PortForward.class, pf -> pf.cloud().cloud(), kubernetesClientFactory.getCurrentContext());
+            String namespace = resolveValue(testInstance, field, PortForward.class, pf -> pf.cloud().namespace(), kubernetesClientFactory.getNamespace());
             PortForwardConfig config = new PortForwardConfig(cloud, namespace);
             PortForwardService portForwardService = resourceFactory.getPortForwardService(config);
             processUrlCleanupInternal(portForwardService, testInstance, field);
@@ -86,7 +88,8 @@ public class PortForwardProvider implements FieldInstanceProvider {
             if (url != null) portForwardService.closePortForward(new Endpoint(url.getHost(), url.getPort()));
         } else if (NetSocketAddress.class.isAssignableFrom(field.getType())) {
             NetSocketAddress address = getValueFromField(field, testInstance, NetSocketAddress.class);
-            if (address != null)  portForwardService.closePortForward(new Endpoint(address.getHostString(), address.getPort()));
+            if (address != null)
+                portForwardService.closePortForward(new Endpoint(address.getHostString(), address.getPort()));
         }
     }
 
