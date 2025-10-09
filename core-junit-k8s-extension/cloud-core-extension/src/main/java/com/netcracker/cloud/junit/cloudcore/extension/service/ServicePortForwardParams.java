@@ -24,4 +24,10 @@ public class ServicePortForwardParams implements BasePortForwardParams {
     public String getName() {
         return serviceName;
     }
+
+    @Override
+    public String host() {
+        return String.format("%s.%s", serviceName, namespace);
+    }
+
 }

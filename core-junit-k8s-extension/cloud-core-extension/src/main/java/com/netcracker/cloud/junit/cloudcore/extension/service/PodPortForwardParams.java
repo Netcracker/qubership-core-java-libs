@@ -24,4 +24,9 @@ public class PodPortForwardParams implements BasePortForwardParams {
     public String getName() {
         return podName;
     }
+
+    @Override
+    public String host() {
+        return String.format("%s.%s", podName, namespace);
+    }
 }

@@ -112,7 +112,7 @@ To achieve this you should:
 1) Autowire via @PortForwardClient PortForwardService
 2) Call method portForward(...)
 3) Close portforward after the test. (see @AfterEach cleanup() method). If you doesn't close portforward connection in will be done automatically in the after @AfterAll phase
-If the service is located in same namespace as is specified in NAMESPACE variable or in property env.cloud-namespace then you may pass only service name otherwise you should pass namespace too. 
+If the service is located in the same namespace as is specified in NAMESPACE variable or in property env.cloud-namespace then you may pass only service name otherwise you should pass namespace too. 
 For example:
 ``` java
     @Cloud
@@ -138,13 +138,20 @@ For example:
         // if service is located in another namespace you should specify it
         testUrl = portForwardService.portForward(ServicePortForwardParams.builder("my-service, 8080).namespace("my-namespace").build());
     }
+
+    @Test
+    public void createPortForwardFromGivenUri() {
+        // if url was provided by some in-cloud service then you can create port-forward from it
+        URI givenUri = new URI("http://service:8080"); 
+        testUrl = portForwardService.portForward(new UrlPortForwardParams(givenUri)).toUrl(givenUri.getScheme());
+    }
 ```
 
 #### More examples how to inject tests util services can be found [here](cloud-core-extension/src/test/java/com/netcracker/cloud/junit/cloudcore/extension/callbacks/classes/TestClass.java)
 
 #### Pod Scale > 1
-By default, port-forward is linked to any of pods found by service selector.
-In case when port-forward to particular pod is required - use
+By default, port-forward is linked to any of the pods found by the service selector.
+In case when port-forward to the particular pod is required - use
 ``` java
     @Cloud
     private PortForwardService portForwardService;

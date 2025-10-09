@@ -7,4 +7,6 @@ public interface BasePortForwardParams {
     int getPort();
 
     String getNamespace();
+
+    String host();
 }

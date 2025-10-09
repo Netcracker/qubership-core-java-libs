@@ -40,7 +40,7 @@ public class PortForwardService {
         String name = params.getName();
         int targetPort = params.getPort();
         // i.e. my-svc.my-namespace.svc.cluster-domain.example
-        String host = fqdn ? String.format("%s.%s.svc.%s", name, namespace, cloud) : String.format("%s.%s", name, namespace);
+        String host = fqdn ? String.format("%s.svc.%s", params.host(), cloud) : params.host();
         Endpoint endpoint = new Endpoint(host, targetPort);
         LocalPortForward portForward = cache.get(endpoint);
         if (portForward != null) {
@@ -53,9 +53,11 @@ public class PortForwardService {
                     if (params instanceof PodPortForwardParams) {
                         portForward = kubernetesClient.pods().inNamespace(namespace).withName(name)
                                 .portForward(targetPort, inetAddress, targetPort);
-                    } else {
+                    } else if (params instanceof ServicePortForwardParams || params instanceof UrlPortForwardParams) {
                         portForward = kubernetesClient.services().inNamespace(namespace).withName(name)
                                 .portForward(targetPort, inetAddress, targetPort);
+                    } else {
+                        throw new IllegalArgumentException("Unsupported port forward params type: " + params.getClass().getName());
                     }
                 } catch (Exception e) {
                     if (!(e.getCause() instanceof BindException)) {
