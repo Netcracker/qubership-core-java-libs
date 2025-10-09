@@ -85,22 +85,6 @@ To include tests to smoke bundle add annotation @SmokeTest on class or method. T
 class Test
 ```
 
-#### How to perform login and get access token
-In different situations you may need to know access token of cloud administrator or service to send request. In order to get it you should perform the following steps:
-##### 1) Inject TokenService
-##### 2) Perform login as cloud admin or as microservice. 
-You can be authorized as cloud admin and as microservice in ITHelper at the time:
-
-``` java
-@PortForward(serviceName = @Value(value = "internal-gateway-service"))
-static TokenService tokenService;
-
-void test() {
-    String adminToken = tokenService.loginAsCloudAdmin();
-    String m2mToken = tokenService.loginAsM2M("my-service");
-}
-```
-
 #### How to perform port forward
 ##### To get URL with https protocol of the port-forward connection to the service named 'service' at port 9090 located in current namespace and current cloud:
 ``` java
@@ -118,6 +102,12 @@ void test() {
                  cloud = @Cloud(cloud = @Value(prop = "clouds.cloud_2.name"), namespace = @Value(prop = "clouds.cloud_2.namespaces.origin")))
     NetSocketAddress postgresAddressCloud2;
 ```
+
+##### Port-forward URLs format
+By default, when there is single cloud specified among System properties (via property clouds.<cloud>.name) then port-forward service constructs host in format:
+<service-name>.<namespace>
+But if there is property portforward.fqdn.hosts.enabled=true or there are more than one cloud property then port-forward service will construct hosts in format:
+<service-name>.<namespace>.svc.<cloud> where cloud - host name of kubernetes master URL of particular cloud
 
 ##### To get PortForwardService instance to create port-forwards in runtime:
 To achieve this you should:

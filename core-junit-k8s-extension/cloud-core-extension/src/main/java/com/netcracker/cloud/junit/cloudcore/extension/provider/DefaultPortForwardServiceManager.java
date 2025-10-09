@@ -8,12 +8,17 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class DefaultPortForwardServiceManager implements PortForwardServiceManager {
 
     protected static Map<PortForwardConfig, PortForwardService> portForwardServiceMap = new ConcurrentHashMap<>();
+    public static String PORTFORWARD_FQDN_ENABLED_PROP = "portforward.fqdn.hosts.enabled";
 
     @Override
     public PortForwardService getPortForwardService(PortForwardConfig config) {
@@ -21,12 +26,21 @@ public class DefaultPortForwardServiceManager implements PortForwardServiceManag
             KubernetesClientFactory kubernetesClientFactory = ServiceLoader.load(KubernetesClientFactory.class).findFirst()
                     .orElseThrow(() -> new IllegalStateException("No KubernetesClientFactory implementation found"));
             KubernetesClient kubernetesClient = kubernetesClientFactory.getKubernetesClient(c.getCloud(), c.getNamespace());
-            return new PortForwardService(kubernetesClient);
+            boolean fqdnFromProp = Boolean.parseBoolean(System.getProperty(PORTFORWARD_FQDN_ENABLED_PROP, "false"));
+            Pattern cloudPropPattern = Pattern.compile("^clouds\\.(?<name>[^.]+)\\.name$");
+            Set<String> clouds = System.getProperties().keySet().stream()
+                    .map(o -> cloudPropPattern.matcher(o.toString()))
+                    .filter(Matcher::matches)
+                    .map(m -> m.group("name"))
+                    .collect(Collectors.toSet());
+            boolean fqdn = fqdnFromProp || clouds.size() > 1;
+            return new PortForwardService(kubernetesClient, fqdn);
         });
     }
 
     @Override
     public void close() {
         portForwardServiceMap.values().stream().filter(Objects::nonNull).forEach(PortForwardService::closePortForwards);
+        portForwardServiceMap.clear();
     }
 }

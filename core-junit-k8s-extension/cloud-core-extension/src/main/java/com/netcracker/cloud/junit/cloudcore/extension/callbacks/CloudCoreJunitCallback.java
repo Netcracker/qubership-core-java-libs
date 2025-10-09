@@ -74,7 +74,8 @@ public class CloudCoreJunitCallback implements BeforeAllCallback, AfterAllCallba
             Object instance = fieldInstanceProviderOpt.get().createInstance(testInstance, field);
             setValueToField(field, testInstance, instance);
         } catch (Exception e) {
-            throw new IllegalStateException(String.format("Failed to create/set instance for field '%s' of type: '%s'", field.getName(), field.getType().getName()), e);
+            throw new IllegalStateException(String.format("Failed to create/set instance for field '%s' of type: '%s' in '%s'",
+                    field.getName(), field.getType().getName(), testInstance.getClass().getName()), e);
         }
     }
 

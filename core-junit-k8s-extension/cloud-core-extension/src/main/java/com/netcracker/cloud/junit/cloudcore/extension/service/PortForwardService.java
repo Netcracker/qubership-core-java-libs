@@ -3,6 +3,7 @@ package com.netcracker.cloud.junit.cloudcore.extension.service;
 import com.netcracker.cloud.junit.cloudcore.extension.provider.LocalHostAddressGenerator;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.LocalPortForward;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -20,14 +21,17 @@ public class PortForwardService {
 
     private final Map<Endpoint, LocalPortForward> cache;
     protected final KubernetesClient kubernetesClient;
+    @Getter
+    protected boolean fqdn;
 
-    public PortForwardService(KubernetesClient kubernetesClient) {
-        this(kubernetesClient, new ConcurrentHashMap<>());
+    public PortForwardService(KubernetesClient kubernetesClient, boolean fqdn) {
+        this(kubernetesClient, new ConcurrentHashMap<>(), fqdn);
     }
 
-    public PortForwardService(KubernetesClient kubernetesClient, Map<Endpoint, LocalPortForward> cache) {
+    public PortForwardService(KubernetesClient kubernetesClient, Map<Endpoint, LocalPortForward> cache, boolean fqdn) {
         this.kubernetesClient = kubernetesClient;
         this.cache = cache;
+        this.fqdn = fqdn;
     }
 
     public synchronized NetSocketAddress portForward(BasePortForwardParams params) {
@@ -36,7 +40,7 @@ public class PortForwardService {
         String name = params.getName();
         int targetPort = params.getPort();
         // i.e. my-svc.my-namespace.svc.cluster-domain.example
-        String host = String.format("%s.%s.svc.%s", name, namespace, cloud);
+        String host = fqdn ? String.format("%s.%s.svc.%s", name, namespace, cloud) : String.format("%s.%s", name, namespace);
         Endpoint endpoint = new Endpoint(host, targetPort);
         LocalPortForward portForward = cache.get(endpoint);
         if (portForward != null) {

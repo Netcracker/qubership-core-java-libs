@@ -34,7 +34,7 @@ public class PortForwardServiceTest {
     private static final String NAMESPACE = "test-namespace";
 
     @Test
-    void testPortForward() throws Exception {
+    void testPortForwardFQDN() throws Exception {
         String host = "test-service.test-namespace.svc.test.cloud.com";
         try (MockedStatic<LocalHostAddressGenerator> localHostAddressGeneratorMockedStatic =
                      Mockito.mockStatic(LocalHostAddressGenerator.class)) {
@@ -66,7 +66,71 @@ public class PortForwardServiceTest {
             });
 
             Map<Endpoint, LocalPortForward> cache = new HashMap<>();
-            PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache);
+            PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache, true);
+
+            NetSocketAddress netSocketAddress1_attempt1 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
+            assertNotNull(netSocketAddress1_attempt1);
+
+            NetSocketAddress netSocketAddress1_attempt2 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
+            assertNotNull(netSocketAddress1_attempt2);
+            assertEquals(netSocketAddress1_attempt1, netSocketAddress1_attempt2);
+
+            NetSocketAddress netSocketAddress2 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8181).build());
+            assertNotNull(netSocketAddress2);
+            assertNotEquals(netSocketAddress1_attempt1, netSocketAddress2);
+
+            portForwardService.closePortForward(new Endpoint(host, 8080));
+            assertEquals(1, cache.size());
+            verify(localPortForward8080).close();
+            verify(localPortForward8181, times(0)).close();
+
+            ArgumentCaptor<Supplier<Boolean>> supplierArgumentCaptor = ArgumentCaptor.forClass(Supplier.class);
+            localHostAddressGeneratorMockedStatic.verify(() -> LocalHostAddressGenerator.cleanup(Mockito.eq(host), supplierArgumentCaptor.capture()));
+
+            assertEquals(false, supplierArgumentCaptor.getValue().get());
+
+            portForwardService.closePortForwards();
+            assertEquals(0, cache.size());
+            verify(localPortForward8181).close();
+
+            assertEquals(true, supplierArgumentCaptor.getValue().get());
+        }
+    }
+
+    @Test
+    void testPortForward() throws Exception {
+        String host = "test-service.test-namespace";
+        try (MockedStatic<LocalHostAddressGenerator> localHostAddressGeneratorMockedStatic =
+                     Mockito.mockStatic(LocalHostAddressGenerator.class)) {
+
+            KubernetesClient kubernetesClient = mock(KubernetesClient.class);
+            when(kubernetesClient.getNamespace()).thenReturn(NAMESPACE);
+            when(kubernetesClient.getMasterUrl()).thenReturn(URI.create("http://test.cloud.com").toURL());
+
+            InetAddress inetAddress = mock(InetAddress.class);
+            when(inetAddress.isReachable(Mockito.anyInt())).thenReturn(true);
+            localHostAddressGeneratorMockedStatic.when(() -> LocalHostAddressGenerator.getOrNext(Mockito.eq(host))).thenReturn(inetAddress);
+
+            MixedOperation<Service, ServiceList, ServiceResource<Service>> testMixedOperation = mock(ServiceTestMixedOperation.class);
+            when(kubernetesClient.services()).thenReturn(testMixedOperation);
+            NonNamespaceOperation<Service, ServiceList, ServiceResource<Service>> testNonNamespaceOperation = mock(ServiceTestNonNamespaceOperation.class);
+            when(testMixedOperation.inNamespace(any())).thenReturn(testNonNamespaceOperation);
+            ServiceResource<Service> testServiceResource = mock(ServiceTestServiceResource.class);
+            when(testNonNamespaceOperation.withName(SERVICE_NAME)).thenReturn(testServiceResource);
+            LocalPortForward localPortForward8080 = mock(LocalPortForward.class);
+            LocalPortForward localPortForward8181 = mock(LocalPortForward.class);
+            when(testServiceResource.portForward(Mockito.anyInt(), Mockito.any(InetAddress.class), Mockito.anyInt())).then(i -> {
+                int localPort = i.getArgument(2);
+                LocalPortForward localPortForward;
+                if (localPort == 8080) localPortForward = localPortForward8080;
+                else localPortForward = localPortForward8181;
+                when(localPortForward.getLocalAddress()).thenReturn(i.getArgument(1));
+                when(localPortForward.getLocalPort()).thenReturn(localPort);
+                return localPortForward;
+            });
+
+            Map<Endpoint, LocalPortForward> cache = new HashMap<>();
+            PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache, false);
 
             NetSocketAddress netSocketAddress1_attempt1 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
             assertNotNull(netSocketAddress1_attempt1);
@@ -99,8 +163,8 @@ public class PortForwardServiceTest {
 
     @Test
     void testPortForwardWithPodName() throws Exception {
-        String host_pod1 = "pod-1.test-namespace.svc.test.cloud.com";
-        String host_pod2 = "pod-2.test-namespace.svc.test.cloud.com";
+        String host_pod1 = "pod-1.test-namespace";
+        String host_pod2 = "pod-2.test-namespace";
         try (MockedStatic<LocalHostAddressGenerator> localHostAddressGeneratorMockedStatic =
                      Mockito.mockStatic(LocalHostAddressGenerator.class)) {
 
@@ -136,7 +200,7 @@ public class PortForwardServiceTest {
             });
 
             Map<Endpoint, LocalPortForward> cache = new HashMap<>();
-            PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache);
+            PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache, false);
 
             NetSocketAddress netSocketAddress1_attempt1 = portForwardService.portForward(PodPortForwardParams.builder(SERVICE_NAME, 8080).podName("pod-1").build());
             assertNotNull(netSocketAddress1_attempt1);
@@ -169,7 +233,7 @@ public class PortForwardServiceTest {
 
     @Test
     void testPortForwardAlreadyBoundIp() throws Exception {
-        String host = "test-service.test-namespace.svc.test.cloud.com";
+        String host = "test-service.test-namespace";
         try (MockedStatic<LocalHostAddressGenerator> localHostAddressGeneratorMockedStatic =
                      Mockito.mockStatic(LocalHostAddressGenerator.class)) {
 
@@ -200,7 +264,7 @@ public class PortForwardServiceTest {
             });
 
             Map<Endpoint, LocalPortForward> cache = new HashMap<>();
-            PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache);
+            PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache, false);
 
             NetSocketAddress netSocketAddress1_attempt1 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
             assertNotNull(netSocketAddress1_attempt1);

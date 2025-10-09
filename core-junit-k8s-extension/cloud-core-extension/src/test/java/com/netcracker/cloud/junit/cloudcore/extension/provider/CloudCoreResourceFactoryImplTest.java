@@ -14,7 +14,9 @@ import org.mockito.Mockito;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static com.netcracker.cloud.junit.cloudcore.extension.provider.DefaultPortForwardServiceManager.PORTFORWARD_FQDN_ENABLED_PROP;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CloudCoreResourceFactoryImplTest {
 
@@ -57,14 +59,69 @@ class CloudCoreResourceFactoryImplTest {
     }
 
     @Test
-    void testGetFactory_shouldReturnHostNamePortForward() {
-        DefaultKubernetesClientFactory kubernetesClientFactory = Mockito.mock(DefaultKubernetesClientFactory.class);
-        KubernetesClient kubernetesClient = Mockito.mock(KubernetesClient.class);
-        Mockito.when(kubernetesClientFactory.getKubernetesClient(Mockito.any(), Mockito.any())).thenReturn(kubernetesClient);
-        DefaultPortForwardServiceManager factory = new DefaultPortForwardServiceManager();
-        TestKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
-        PortForwardConfig portForwardConfig = new PortForwardConfig("test-cloud", "test-namespace");
-        Class<?> portForwardServiceClass = factory.getPortForwardService(portForwardConfig).getClass();
-        assertEquals(PortForwardService.class, portForwardServiceClass);
+    void testCreatePortForwardNoFQDN() {
+        try (DefaultPortForwardServiceManager factory = new DefaultPortForwardServiceManager()) {
+            System.setProperty("clouds.test-cloud1.name", "test-cloud-1");
+            System.setProperty("clouds.test-cloud1.namespaces.test-namespace", "test-namespace");
+
+            DefaultKubernetesClientFactory kubernetesClientFactory = Mockito.mock(DefaultKubernetesClientFactory.class);
+            KubernetesClient kubernetesClient = Mockito.mock(KubernetesClient.class);
+            Mockito.when(kubernetesClientFactory.getKubernetesClient(Mockito.any(), Mockito.any())).thenReturn(kubernetesClient);
+            TestKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
+            PortForwardConfig portForwardConfig = new PortForwardConfig("test-cloud-1", "test-namespace");
+            PortForwardService portForwardService = factory.getPortForwardService(portForwardConfig);
+            assertFalse(portForwardService.isFqdn());
+        } finally {
+            System.clearProperty("clouds.test-cloud1.name");
+            System.clearProperty("clouds.test-cloud1.namespaces.test-namespace");
+        }
     }
+
+    @Test
+    void testCreatePortForwardOverrideFQDN() {
+        try (DefaultPortForwardServiceManager factory = new DefaultPortForwardServiceManager()) {
+            System.setProperty("clouds.test-cloud1.name", "test-cloud-1");
+            System.setProperty("clouds.test-cloud1.namespaces.test-namespace", "test-namespace");
+            System.setProperty(PORTFORWARD_FQDN_ENABLED_PROP, "true");
+
+            DefaultKubernetesClientFactory kubernetesClientFactory = Mockito.mock(DefaultKubernetesClientFactory.class);
+            KubernetesClient kubernetesClient = Mockito.mock(KubernetesClient.class);
+            Mockito.when(kubernetesClientFactory.getKubernetesClient(Mockito.any(), Mockito.any())).thenReturn(kubernetesClient);
+            TestKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
+            PortForwardConfig portForwardConfig = new PortForwardConfig("test-cloud-1", "test-namespace");
+            PortForwardService portForwardService = factory.getPortForwardService(portForwardConfig);
+            assertTrue(portForwardService.isFqdn());
+        } finally {
+            System.clearProperty("clouds.test-cloud1.name");
+            System.clearProperty("clouds.test-cloud1.namespaces.test-namespace");
+            System.clearProperty("portforward.fqdn.hosts.enabled");
+        }
+    }
+
+    @Test
+    void testCreatePortForwardFQDN() {
+        try (DefaultPortForwardServiceManager factory = new DefaultPortForwardServiceManager()) {
+            System.setProperty("clouds.test-cloud1.name", "test-cloud-1");
+            System.setProperty("clouds.test-cloud2.name", "test-cloud-2");
+            System.setProperty("clouds.test-cloud1.namespaces.test-namespace", "test-namespace");
+            System.setProperty("clouds.test-cloud2.namespaces.test-namespace", "test-namespace");
+
+            DefaultKubernetesClientFactory kubernetesClientFactory = Mockito.mock(DefaultKubernetesClientFactory.class);
+            KubernetesClient kubernetesClient = Mockito.mock(KubernetesClient.class);
+            Mockito.when(kubernetesClientFactory.getKubernetesClient(Mockito.any(), Mockito.any())).thenReturn(kubernetesClient);
+            TestKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
+            PortForwardConfig portForwardConfig1 = new PortForwardConfig("test-cloud-1", "test-namespace");
+            PortForwardService portForwardService1 = factory.getPortForwardService(portForwardConfig1);
+            PortForwardConfig portForwardConfig2 = new PortForwardConfig("test-cloud-2", "test-namespace");
+            PortForwardService portForwardService2 = factory.getPortForwardService(portForwardConfig2);
+            assertTrue(portForwardService1.isFqdn());
+            assertTrue(portForwardService2.isFqdn());
+        } finally {
+            System.clearProperty("clouds.test-cloud1.name");
+            System.clearProperty("clouds.test-cloud2.name");
+            System.clearProperty("clouds.test-cloud1.namespaces.test-namespace");
+            System.clearProperty("clouds.test-cloud2.namespaces.test-namespace");
+        }
+    }
+
 }
