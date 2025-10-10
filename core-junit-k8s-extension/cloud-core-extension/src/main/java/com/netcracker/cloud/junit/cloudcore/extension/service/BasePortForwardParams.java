@@ -1,6 +1,6 @@
 package com.netcracker.cloud.junit.cloudcore.extension.service;
 
-public interface BasePortForwardParams {
+public interface BasePortForwardParams<T> {
 
     String getName();
 
@@ -8,5 +8,7 @@ public interface BasePortForwardParams {
 
     String getNamespace();
 
-    String host();
+    String host(String namespace);
+
+    T supply(NetSocketAddress netSocketAddress);
 }

@@ -75,7 +75,7 @@ public class CloudCoreJunitCallbackTest {
             Mockito.when(extensionContext.getRequiredTestInstance()).thenReturn(testInstance);
             TestPortForwardServiceManager.setFunction(c -> portForwardService);
             TestKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
-            Mockito.when(portForwardService.portForward(Mockito.any())).thenReturn(new NetSocketAddress("test-host", 8181));
+            Mockito.when(portForwardService.portForward(Mockito.any())).thenReturn(URI.create("ftp://test-host:8181/").toURL());
 
             new CloudCoreJunitCallback().beforeAll(extensionContext);
 
@@ -99,7 +99,7 @@ public class CloudCoreJunitCallbackTest {
             Mockito.when(extensionContext.getRequiredTestInstance()).thenReturn(testInstance);
             TestPortForwardServiceManager.setFunction(c -> portForwardService);
             TestKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
-            Mockito.when(portForwardService.portForward(Mockito.any())).thenReturn(new NetSocketAddress("test-host", 8181));
+            Mockito.when(portForwardService.portForward(Mockito.any())).thenReturn(URI.create("https://test-host:8181/").toURL());
 
             new CloudCoreJunitCallback().beforeAll(extensionContext);
 

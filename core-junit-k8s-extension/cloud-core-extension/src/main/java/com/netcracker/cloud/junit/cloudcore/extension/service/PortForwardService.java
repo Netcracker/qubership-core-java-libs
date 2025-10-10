@@ -34,13 +34,13 @@ public class PortForwardService {
         this.fqdn = fqdn;
     }
 
-    public synchronized NetSocketAddress portForward(BasePortForwardParams params) {
+    public synchronized <T> T portForward(BasePortForwardParams<T> params) {
         String namespace = Optional.ofNullable(params.getNamespace()).orElseGet(kubernetesClient::getNamespace);
         String cloud = kubernetesClient.getMasterUrl().getHost();
         String name = params.getName();
         int targetPort = params.getPort();
         // i.e. my-svc.my-namespace.svc.cluster-domain.example
-        String host = fqdn ? String.format("%s.svc.%s", params.host(), cloud) : params.host();
+        String host = fqdn ? String.format("%s.svc.%s", params.host(namespace), cloud) : params.host(namespace);
         Endpoint endpoint = new Endpoint(host, targetPort);
         LocalPortForward portForward = cache.get(endpoint);
         if (portForward != null) {
@@ -72,7 +72,7 @@ public class PortForwardService {
                 log.warn("Port forward ping for endpoint {}:{} failed", host, targetPort);
             }
         }
-        return new NetSocketAddress(host, portForward.getLocalPort());
+        return params.supply(new NetSocketAddress(host, portForward.getLocalPort()));
     }
 
     public void closePortForwards() {

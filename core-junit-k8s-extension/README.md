@@ -130,20 +130,20 @@ For example:
     @Test
     public void createPortForwardTest1() {
         // if service is located in same namespace you may call the next method
-        testUrl = portForwardService.portForward(ServicePortForwardParams.builder("my-service, 8080).build());
+        testUrl = portForwardService.portForward(ServicePortForwardParams.builderAsUrl("my-service, 8080).build());
     }
  
     @Test
     public void createPortForwardTest2() {
         // if service is located in another namespace you should specify it
-        testUrl = portForwardService.portForward(ServicePortForwardParams.builder("my-service, 8080).namespace("my-namespace").build());
+        testUrl = portForwardService.portForward(ServicePortForwardParams.builderAsUrl("my-service, 8080).namespace("my-namespace").build());
     }
 
     @Test
     public void createPortForwardFromGivenUri() {
         // if url was provided by some in-cloud service then you can create port-forward from it
-        URI givenUri = new URI("http://service:8080"); 
-        testUrl = portForwardService.portForward(new UrlPortForwardParams(givenUri)).toUrl(givenUri.getScheme());
+        String givenUri = "http://service:8080"; 
+        testUrl = portForwardService.portForward(UrlPortForwardParams.builderAsUrl(givenUri));
     }
 ```
 

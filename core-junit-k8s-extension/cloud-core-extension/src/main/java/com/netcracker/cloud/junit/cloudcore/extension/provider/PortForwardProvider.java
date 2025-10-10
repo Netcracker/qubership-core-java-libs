@@ -46,13 +46,12 @@ public class PortForwardProvider implements FieldInstanceProvider {
             portForwardService = resourceFactory.getPortForwardService(new PortForwardConfig(cloud, namespace));
             String serviceName = resolveValue(testInstance, field, PortForward.class, PortForward::serviceName);
             int port = resolveIntValue(testInstance, field, PortForward.class, PortForward::port);
-            NetSocketAddress address = portForwardService.portForward(ServicePortForwardParams.builder(serviceName, port).build());
 
             if (NetSocketAddress.class.isAssignableFrom(type)) {
-                return address;
+                return portForwardService.portForward(ServicePortForwardParams.builder(serviceName, port).build());
             } else {
                 var protocol = resolveValue(testInstance, field, PortForward.class, PortForward::protocol);
-                URL url = address.toUrl(protocol);
+                URL url = portForwardService.portForward(ServicePortForwardParams.builderAsUrl(serviceName, port, protocol).build());
                 if (URI.class.isAssignableFrom(type)) {
                     return url.toURI();
                 } else {
