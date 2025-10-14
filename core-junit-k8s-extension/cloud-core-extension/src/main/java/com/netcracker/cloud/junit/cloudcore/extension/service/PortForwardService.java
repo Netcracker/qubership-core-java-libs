@@ -87,6 +87,7 @@ public class PortForwardService {
                 closePortForward(portForward);
                 LocalHostAddressGenerator.cleanup(endpoint.host(), () ->
                         this.cache.keySet().stream().noneMatch(end -> Objects.equals(end.host(), endpoint.host())));
+                log.info("Closed port forward for endpoint: {}", endpoint);
             }
         } catch (Exception e) {
             log.warn("Error while closing portForwarder, e: {} - {}", e.getClass().getSimpleName(), e.getMessage() != null ? e.getMessage() : "");

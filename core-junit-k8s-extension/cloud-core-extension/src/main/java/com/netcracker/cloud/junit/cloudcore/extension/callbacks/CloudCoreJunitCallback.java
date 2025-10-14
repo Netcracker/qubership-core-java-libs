@@ -41,10 +41,11 @@ public class CloudCoreJunitCallback implements BeforeAllCallback, AfterAllCallba
             clazz = clazz.getSuperclass();
         }
         if (enclosingClass == null) {
+            log.info("Closing all port-forwards in AfterAllCallback. Test class: {}", testInstance.getClass().getName());
             // as the last step for non-inner test classes, close the rest port-forwards which might be created manually
-            PortForwardServiceManager cloudCoreResourceFactory = ServiceLoader.load(PortForwardServiceManager.class).findFirst()
-                    .orElseThrow(() -> new IllegalStateException("No CloudCoreResourceFactory implementation found"));
-            cloudCoreResourceFactory.close();
+            PortForwardServiceManager portForwardServiceManager = ServiceLoader.load(PortForwardServiceManager.class).findFirst()
+                    .orElseThrow(() -> new IllegalStateException("No PortForwardServiceManager implementation found"));
+            portForwardServiceManager.close();
         }
     }
 
