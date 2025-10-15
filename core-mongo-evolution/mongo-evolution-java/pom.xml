@@ -24,8 +24,8 @@
         <annotations.version>24.1.0</annotations.version>
         <reflections.version>0.10.2</reflections.version>
         <mongodb.version>5.5.1</mongodb.version>
-        <jacoco.plugin.version>0.8.13</jacoco.plugin.version>
-        <lombok.version>1.18.38</lombok.version>
+        <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
+        <lombok.version>1.18.40</lombok.version>
         <mockito.version>5.17.0</mockito.version>
         <mongo.test.server.version>1.47.0</mongo.test.server.version>
         <sonar.coverage.jacoco.xmlReportPaths>
@@ -103,7 +103,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.14.0</version>
+                <version>3.14.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>

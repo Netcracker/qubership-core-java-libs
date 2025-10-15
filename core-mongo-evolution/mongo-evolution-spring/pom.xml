@@ -21,11 +21,11 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <java.version>17</java.version>
-        <spring.data.mongodb.version>4.5.3</spring.data.mongodb.version>
-        <spring.boot.version>3.5.5</spring.boot.version>
-        <lombok.version>1.18.38</lombok.version>
+        <spring.data.mongodb.version>4.5.4</spring.data.mongodb.version>
+        <spring.boot.version>3.5.6</spring.boot.version>
+        <lombok.version>1.18.40</lombok.version>
         <mongo.test.server.version>1.47.0</mongo.test.server.version>
-        <jacoco.plugin.version>0.8.13</jacoco.plugin.version>
+        <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
         <mockito.version>5.17.0</mockito.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../mongo-evolution-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
@@ -113,7 +113,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.14.0</version>
+                <version>3.14.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
