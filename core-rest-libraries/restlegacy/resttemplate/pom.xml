@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-oauth2-client</artifactId>
-            <version>6.5.3</version>
+            <version>6.5.5</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -81,7 +81,7 @@
                 <configuration>
                     <parameters>true</parameters>
                 </configuration>
-                <version>3.14.0</version>
+                <version>3.14.1</version>
             </plugin>
         </plugins>
     </build>
