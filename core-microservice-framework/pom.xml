@@ -20,9 +20,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
-        <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
-        <maven.pmd.plugin.version>3.27.0</maven.pmd.plugin.version>
-        <jacoco.plugin.version>0.8.13</jacoco.plugin.version>
+        <maven.compiler.plugin.version>3.14.1</maven.compiler.plugin.version>
+        <maven.pmd.plugin.version>3.28.0</maven.pmd.plugin.version>
+        <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
     </properties>
 
     <modules>
