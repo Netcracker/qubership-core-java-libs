@@ -19,7 +19,7 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <jacoco.plugin.version>0.8.13</jacoco.plugin.version>
+        <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
         <jandex.version>3.3.2</jandex.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../context-propagation-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
@@ -63,7 +63,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.14.0</version>
+                <version>3.14.1</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -10,7 +10,7 @@
 
     <artifactId>context-propagation-spring-kafka</artifactId>
     <properties>
-        <spring.kafka.version>3.3.9</spring.kafka.version>
+        <spring.kafka.version>3.3.10</spring.kafka.version>
     </properties>
 
     <dependencyManagement>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>3.5.5</version>
+            <version>3.5.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>
