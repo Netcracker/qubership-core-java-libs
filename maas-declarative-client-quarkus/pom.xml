@@ -25,8 +25,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
-        <flatten-maven-plugin.version>1.7.2</flatten-maven-plugin.version>
-        <compiler-plugin.version>3.14.0</compiler-plugin.version>
+        <flatten-maven-plugin.version>1.7.3</flatten-maven-plugin.version>
+        <compiler-plugin.version>3.14.1</compiler-plugin.version>
         <source-plugin.version>3.3.1</source-plugin.version>
 
         <jandex.version>3.3.2</jandex.version>
@@ -261,7 +261,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.13</version>
+                <version>0.8.14</version>
                 <executions>
                     <execution>
                         <goals>
