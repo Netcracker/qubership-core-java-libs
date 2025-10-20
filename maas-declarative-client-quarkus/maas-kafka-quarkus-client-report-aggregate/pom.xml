@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.netcracker.cloud.maas.declarative</groupId>
         <artifactId>maas-declarative-kafka-client-quarkus-bom</artifactId>
-        <version>6.3.0</version>
+        <version>6.3.1-SNAPSHOT</version>
     </parent>
 	<packaging>pom</packaging>
 
