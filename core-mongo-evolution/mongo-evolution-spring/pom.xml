@@ -21,9 +21,9 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <java.version>17</java.version>
-        <spring.data.mongodb.version>4.5.4</spring.data.mongodb.version>
-        <spring.boot.version>3.5.6</spring.boot.version>
-        <lombok.version>1.18.40</lombok.version>
+        <spring.data.mongodb.version>4.5.5</spring.data.mongodb.version>
+        <spring.boot.version>3.5.7</spring.boot.version>
+        <lombok.version>1.18.42</lombok.version>
         <mongo.test.server.version>1.47.0</mongo.test.server.version>
         <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
         <mockito.version>5.17.0</mockito.version>
@@ -84,7 +84,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.18</version>
+            <version>1.5.20</version>
             <scope>test</scope>
         </dependency>
         <dependency>
