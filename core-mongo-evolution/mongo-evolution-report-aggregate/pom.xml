@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.netcracker.cloud</groupId>
         <artifactId>mongo-evolution-aggregator</artifactId>
-        <version>7.2.2-SNAPSHOT</version>
+        <version>7.2.2</version>
     </parent>
 	<packaging>pom</packaging>
 
