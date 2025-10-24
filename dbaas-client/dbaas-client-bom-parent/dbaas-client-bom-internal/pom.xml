@@ -15,16 +15,16 @@
 
     <properties>
         <powermock.version>2.0.9</powermock.version>
-        <spring.version>6.2.11</spring.version>
-        <spring.boot.version>3.5.6</spring.boot.version>
-        <postgresql.driver.version>42.7.7</postgresql.driver.version>
-        <spring.data.mongodb.version>4.5.4</spring.data.mongodb.version>
-        <mongodb.version>5.5.1</mongodb.version>
+        <spring.version>6.2.12</spring.version>
+        <spring.boot.version>3.5.7</spring.boot.version>
+        <postgresql.driver.version>42.7.8</postgresql.driver.version>
+        <spring.data.mongodb.version>4.5.5</spring.data.mongodb.version>
+        <mongodb.version>5.5.2</mongodb.version>
         <arangodb.driver.version>7.22.1</arangodb.driver.version>
         <arangodb.spring.data.version>4.6.0</arangodb.spring.data.version>
         <java.driver.core.version>4.17.0</java.driver.core.version>
         <jedis.client.version>5.2.0</jedis.client.version>
-        <spring.data.redis.version>3.5.4</spring.data.redis.version>
+        <spring.data.redis.version>3.5.5</spring.data.redis.version>
         <jackson-bom.version>2.19.2</jackson-bom.version>
         <jakarta-annotation.version>3.0.0</jakarta-annotation.version>
         <flyway.version>10.20.1</flyway.version>
@@ -107,7 +107,7 @@
             <dependency>
                 <groupId>org.apache.httpcomponents.client5</groupId>
                 <artifactId>httpclient5</artifactId>
-                <version>5.5</version>
+                <version>5.5.1</version>
             </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>
@@ -154,7 +154,7 @@
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.5.18</version>
+                <version>1.5.20</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
@@ -164,7 +164,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.40</version>
+                <version>1.18.42</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -215,7 +215,7 @@
             <dependency>
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-core</artifactId>
-                <version>1.15.4</version>
+                <version>1.15.5</version>
             </dependency>
             <dependency>
                 <groupId>com.datastax.oss</groupId>
@@ -303,7 +303,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.27.4</version>
+                <version>3.27.6</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
