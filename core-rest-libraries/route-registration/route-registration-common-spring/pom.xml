@@ -85,7 +85,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webflux</artifactId>
-            <version>6.2.11</version>
+            <version>6.2.12</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -97,7 +97,7 @@
         <dependency>
             <groupId>io.projectreactor.netty</groupId>
             <artifactId>reactor-netty</artifactId>
-            <version>1.2.10</version>
+            <version>1.2.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
