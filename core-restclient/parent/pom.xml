@@ -22,8 +22,8 @@
         <build.plugins.plugin.version>3.3.1</build.plugins.plugin.version>
         <okhttp3.version>4.12.0</okhttp3.version>
         <mockito.version>5.17.0</mockito.version>
-        <spring.version>6.2.11</spring.version>
-        <apache.httpclient.version>5.5</apache.httpclient.version>
+        <spring.version>6.2.12</spring.version>
+        <apache.httpclient.version>5.5.1</apache.httpclient.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../microservice-restclient-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -51,7 +51,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.40</version>
+                            <version>1.18.42</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
