@@ -10,7 +10,7 @@
 
     <artifactId>context-propagation-spring-rabbit</artifactId>
     <properties>
-        <spring.amqp.version>3.2.7</spring.amqp.version>
+        <spring.amqp.version>3.2.8</spring.amqp.version>
         <qpid.version>9.2.1</qpid.version>
     </properties>
     <dependencies>
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.18</version>
+            <version>1.5.20</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -76,7 +76,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test</artifactId>
-            <version>3.5.6</version>
+            <version>3.5.7</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
