@@ -5,7 +5,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>rest-libraries-bom</artifactId>
-    <version>6.2.2</version>
+    <version>6.2.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
