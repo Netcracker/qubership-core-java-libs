@@ -4,6 +4,7 @@ import com.netcracker.cloud.junit.cloudcore.extension.annotations.IntValue;
 import com.netcracker.cloud.junit.cloudcore.extension.annotations.Value;
 import com.netcracker.cloud.junit.cloudcore.extension.provider.FieldInstanceProvider;
 import com.netcracker.cloud.junit.cloudcore.extension.provider.LocalHostAddressGenerator;
+import com.netcracker.cloud.junit.cloudcore.extension.provider.OrderedServiceLoader;
 import com.netcracker.cloud.junit.cloudcore.extension.provider.PortForwardServiceManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.AfterAllCallback;
@@ -43,7 +44,7 @@ public class CloudCoreJunitCallback implements BeforeAllCallback, AfterAllCallba
         if (enclosingClass == null) {
             log.info("Closing all port-forwards in AfterAllCallback. Test class: {}", testInstance.getClass().getName());
             // as the last step for non-inner test classes, close the rest port-forwards which might be created manually
-            PortForwardServiceManager portForwardServiceManager = ServiceLoader.load(PortForwardServiceManager.class).findFirst()
+            PortForwardServiceManager portForwardServiceManager = OrderedServiceLoader.load(PortForwardServiceManager.class)
                     .orElseThrow(() -> new IllegalStateException("No PortForwardServiceManager implementation found"));
             portForwardServiceManager.close();
         }
@@ -62,7 +63,8 @@ public class CloudCoreJunitCallback implements BeforeAllCallback, AfterAllCallba
     }
 
     protected void processFieldBeforeAll(Object testInstance, Field field) throws Exception {
-        Optional<FieldInstanceProvider> fieldInstanceProviderOpt = ServiceLoader.load(FieldInstanceProvider.class).stream()
+        Optional<FieldInstanceProvider> fieldInstanceProviderOpt = ServiceLoader.load(FieldInstanceProvider.class)
+                .stream()
                 .map(ServiceLoader.Provider::get)
                 .filter(p -> p.test(field))
                 .min(Comparator.comparing(FieldInstanceProvider::order));

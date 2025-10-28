@@ -5,7 +5,6 @@ import com.netcracker.cloud.junit.cloudcore.extension.client.KubernetesClientFac
 import io.fabric8.kubernetes.client.KubernetesClient;
 
 import java.lang.reflect.Field;
-import java.util.ServiceLoader;
 
 import static com.netcracker.cloud.junit.cloudcore.extension.callbacks.CloudCoreJunitCallback.resolveValue;
 
@@ -13,7 +12,7 @@ public class KubernetesClientProvider implements FieldInstanceProvider {
 
     @Override
     public KubernetesClient createInstance(Object testInstance, Field field) {
-        KubernetesClientFactory kubernetesClientFactory = ServiceLoader.load(KubernetesClientFactory.class).findFirst()
+        KubernetesClientFactory kubernetesClientFactory = OrderedServiceLoader.load(KubernetesClientFactory.class)
                 .orElseThrow(() -> new IllegalStateException("No KubernetesClientFactory implementation found"));
         String cloud = resolveValue(testInstance, field, Cloud.class, Cloud::cloud, kubernetesClientFactory.getCurrentContext());
         String namespace = resolveValue(testInstance, field, Cloud.class, Cloud::namespace, kubernetesClientFactory.getNamespace());

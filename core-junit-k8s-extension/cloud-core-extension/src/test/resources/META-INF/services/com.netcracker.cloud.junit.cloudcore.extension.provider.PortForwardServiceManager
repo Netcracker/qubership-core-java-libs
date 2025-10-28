@@ -1,1 +1,1 @@
-com.netcracker.cloud.junit.cloudcore.extension.provider.TestPortForwardServiceManager
+com.netcracker.cloud.junit.cloudcore.extension.provider.ManualPortForwardServiceManager

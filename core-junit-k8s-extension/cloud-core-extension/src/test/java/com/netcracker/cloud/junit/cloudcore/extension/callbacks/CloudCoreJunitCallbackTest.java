@@ -2,10 +2,10 @@ package com.netcracker.cloud.junit.cloudcore.extension.callbacks;
 
 import com.netcracker.cloud.junit.cloudcore.extension.callbacks.classes.TestClass;
 import com.netcracker.cloud.junit.cloudcore.extension.callbacks.classes.TestClassLev2;
-import com.netcracker.cloud.junit.cloudcore.extension.client.TestKubernetesClientFactory;
+import com.netcracker.cloud.junit.cloudcore.extension.client.ManualKubernetesClientFactory;
+import com.netcracker.cloud.junit.cloudcore.extension.provider.ManualPortForwardServiceManager;
 import com.netcracker.cloud.junit.cloudcore.extension.provider.PortForwardConfig;
 import com.netcracker.cloud.junit.cloudcore.extension.provider.PortForwardServiceManager;
-import com.netcracker.cloud.junit.cloudcore.extension.provider.TestPortForwardServiceManager;
 import com.netcracker.cloud.junit.cloudcore.extension.service.BasePortForwardParams;
 import com.netcracker.cloud.junit.cloudcore.extension.service.Endpoint;
 import com.netcracker.cloud.junit.cloudcore.extension.service.NetSocketAddress;
@@ -39,8 +39,8 @@ public class CloudCoreJunitCallbackTest {
             Mockito.when(extensionContext.getRequiredTestInstance()).thenReturn(testInstance);
             PortForwardConfig hostnamePortForwardConfig = new PortForwardConfig(testCloud, testNamespace);
             Mockito.when(portForwardServiceManager.getPortForwardService(hostnamePortForwardConfig)).thenReturn(portForwardService);
-            TestPortForwardServiceManager.setFunction(portForwardConfig -> portForwardService);
-            TestKubernetesClientFactory.setFunction(cloudAndNamespace -> {
+            ManualPortForwardServiceManager.setFunction(portForwardConfig -> portForwardService);
+            ManualKubernetesClientFactory.setFunction(cloudAndNamespace -> {
                 if ("test-cloud-1".equals(cloudAndNamespace.getCloud()) && testNamespace.equals(cloudAndNamespace.getNamespace())) {
                     return kubernetesClient_1;
                 } else if ("test-cloud-2".equals(cloudAndNamespace.getCloud()) && testNamespace.equals(cloudAndNamespace.getNamespace())) {
@@ -73,8 +73,8 @@ public class CloudCoreJunitCallbackTest {
             PortForwardService portForwardService = Mockito.mock(PortForwardService.class);
             TestClass.TestUri testInstance = new TestClass.TestUri();
             Mockito.when(extensionContext.getRequiredTestInstance()).thenReturn(testInstance);
-            TestPortForwardServiceManager.setFunction(c -> portForwardService);
-            TestKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
+            ManualPortForwardServiceManager.setFunction(c -> portForwardService);
+            ManualKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
             Mockito.when(portForwardService.portForward(Mockito.any())).thenReturn(URI.create("ftp://test-host:8181/").toURL());
 
             new CloudCoreJunitCallback().beforeAll(extensionContext);
@@ -97,8 +97,8 @@ public class CloudCoreJunitCallbackTest {
             PortForwardService portForwardService = Mockito.mock(PortForwardService.class);
             TestClass.TestUrl testInstance = new TestClass.TestUrl();
             Mockito.when(extensionContext.getRequiredTestInstance()).thenReturn(testInstance);
-            TestPortForwardServiceManager.setFunction(c -> portForwardService);
-            TestKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
+            ManualPortForwardServiceManager.setFunction(c -> portForwardService);
+            ManualKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
             Mockito.when(portForwardService.portForward(Mockito.any())).thenReturn(URI.create("https://test-host:8181/").toURL());
 
             new CloudCoreJunitCallback().beforeAll(extensionContext);
@@ -121,8 +121,8 @@ public class CloudCoreJunitCallbackTest {
             PortForwardService portForwardService = Mockito.mock(PortForwardService.class);
             TestClass.TestPortForwardService testInstance = new TestClass.TestPortForwardService();
             Mockito.when(extensionContext.getRequiredTestInstance()).thenReturn(testInstance);
-            TestPortForwardServiceManager.setFunction(c -> portForwardService);
-            TestKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
+            ManualPortForwardServiceManager.setFunction(c -> portForwardService);
+            ManualKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
             Mockito.when(portForwardService.portForward(Mockito.any())).thenReturn(new NetSocketAddress("test-host", 8181));
 
             new CloudCoreJunitCallback().beforeAll(extensionContext);
@@ -146,8 +146,8 @@ public class CloudCoreJunitCallbackTest {
             PortForwardService portForwardService = Mockito.mock(PortForwardService.class);
             TestClass.TestSocketAddress testInstance = new TestClass.TestSocketAddress();
             Mockito.when(extensionContext.getRequiredTestInstance()).thenReturn(testInstance);
-            TestPortForwardServiceManager.setFunction(c -> portForwardService);
-            TestKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
+            ManualPortForwardServiceManager.setFunction(c -> portForwardService);
+            ManualKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
             Mockito.when(portForwardService.portForward(Mockito.any())).thenAnswer(i -> {
                 BasePortForwardParams params = i.getArgument(0);
                 return new NetSocketAddress(params.getName(), params.getPort());
@@ -175,13 +175,13 @@ public class CloudCoreJunitCallbackTest {
             Object testInstance = new TestClassLev2(url1, url2);
             Mockito.when(extensionContext.getRequiredTestInstance()).thenReturn(testInstance);
             PortForwardService portForwardService = Mockito.mock(PortForwardService.class);
-            TestPortForwardServiceManager.setFunction(c -> portForwardService);
+            ManualPortForwardServiceManager.setFunction(c -> portForwardService);
 
             new CloudCoreJunitCallback().afterAll(extensionContext);
 
             Mockito.verify(portForwardService).closePortForward(Mockito.eq(new Endpoint(url1.getHost(), url1.getPort())));
             Mockito.verify(portForwardService).closePortForward(Mockito.eq(new Endpoint(url2.getHost(), url2.getPort())));
-            Assertions.assertTrue(TestPortForwardServiceManager.isClosed());
+            Assertions.assertTrue(ManualPortForwardServiceManager.isClosed());
         } finally {
             System.clearProperty("clouds.cloud.name");
             System.clearProperty("clouds.cloud.namespaces.namespace");
@@ -199,12 +199,12 @@ public class CloudCoreJunitCallbackTest {
             Object testInstance = new TestClassLev2.TestInnerClass(url);
             Mockito.when(extensionContext.getRequiredTestInstance()).thenReturn(testInstance);
             PortForwardService portForwardService = Mockito.mock(PortForwardService.class);
-            TestPortForwardServiceManager.setFunction(c -> portForwardService);
+            ManualPortForwardServiceManager.setFunction(c -> portForwardService);
 
             new CloudCoreJunitCallback().afterAll(extensionContext);
 
             Mockito.verify(portForwardService).closePortForward(new Endpoint(url.getHost(), url.getPort()));
-            Assertions.assertFalse(TestPortForwardServiceManager.isClosed());
+            Assertions.assertFalse(ManualPortForwardServiceManager.isClosed());
         } finally {
             System.clearProperty("clouds.cloud.name");
             System.clearProperty("clouds.cloud.namespaces.namespace");

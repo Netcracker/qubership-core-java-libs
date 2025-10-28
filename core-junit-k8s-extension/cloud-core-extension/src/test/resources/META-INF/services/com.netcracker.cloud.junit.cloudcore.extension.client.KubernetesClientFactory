@@ -1,1 +1,1 @@
-com.netcracker.cloud.junit.cloudcore.extension.client.TestKubernetesClientFactory
+com.netcracker.cloud.junit.cloudcore.extension.client.ManualKubernetesClientFactory

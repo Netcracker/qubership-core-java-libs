@@ -1,5 +1,6 @@
 package com.netcracker.cloud.junit.cloudcore.extension.client;
 
+import com.netcracker.cloud.junit.cloudcore.extension.annotations.Priority;
 import com.netcracker.cloud.junit.cloudcore.extension.provider.CloudAndNamespace;
 import io.fabric8.kubernetes.api.model.NamedContext;
 import io.fabric8.kubernetes.client.Config;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import static io.fabric8.kubernetes.client.utils.HttpClientUtils.getHttpClientFactory;
 
+@Priority
 public class DefaultKubernetesClientFactory implements AutoCloseable, KubernetesClientFactory {
 
     private final Config config;

@@ -1,7 +1,7 @@
 package com.netcracker.cloud.junit.cloudcore.extension.provider;
 
 import com.netcracker.cloud.junit.cloudcore.extension.client.DefaultKubernetesClientFactory;
-import com.netcracker.cloud.junit.cloudcore.extension.client.TestKubernetesClientFactory;
+import com.netcracker.cloud.junit.cloudcore.extension.client.ManualKubernetesClientFactory;
 import com.netcracker.cloud.junit.cloudcore.extension.service.PortForwardService;
 import io.fabric8.kubernetes.api.model.NamedContext;
 import io.fabric8.kubernetes.client.Config;
@@ -67,7 +67,7 @@ class CloudCoreResourceFactoryImplTest {
             DefaultKubernetesClientFactory kubernetesClientFactory = Mockito.mock(DefaultKubernetesClientFactory.class);
             KubernetesClient kubernetesClient = Mockito.mock(KubernetesClient.class);
             Mockito.when(kubernetesClientFactory.getKubernetesClient(Mockito.any(), Mockito.any())).thenReturn(kubernetesClient);
-            TestKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
+            ManualKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
             PortForwardConfig portForwardConfig = new PortForwardConfig("test-cloud-1", "test-namespace");
             PortForwardService portForwardService = factory.getPortForwardService(portForwardConfig);
             assertFalse(portForwardService.isFqdn());
@@ -87,7 +87,7 @@ class CloudCoreResourceFactoryImplTest {
             DefaultKubernetesClientFactory kubernetesClientFactory = Mockito.mock(DefaultKubernetesClientFactory.class);
             KubernetesClient kubernetesClient = Mockito.mock(KubernetesClient.class);
             Mockito.when(kubernetesClientFactory.getKubernetesClient(Mockito.any(), Mockito.any())).thenReturn(kubernetesClient);
-            TestKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
+            ManualKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
             PortForwardConfig portForwardConfig = new PortForwardConfig("test-cloud-1", "test-namespace");
             PortForwardService portForwardService = factory.getPortForwardService(portForwardConfig);
             assertTrue(portForwardService.isFqdn());
@@ -109,7 +109,7 @@ class CloudCoreResourceFactoryImplTest {
             DefaultKubernetesClientFactory kubernetesClientFactory = Mockito.mock(DefaultKubernetesClientFactory.class);
             KubernetesClient kubernetesClient = Mockito.mock(KubernetesClient.class);
             Mockito.when(kubernetesClientFactory.getKubernetesClient(Mockito.any(), Mockito.any())).thenReturn(kubernetesClient);
-            TestKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
+            ManualKubernetesClientFactory.setFunction(cloudAndNamespace -> kubernetesClient);
             PortForwardConfig portForwardConfig1 = new PortForwardConfig("test-cloud-1", "test-namespace");
             PortForwardService portForwardService1 = factory.getPortForwardService(portForwardConfig1);
             PortForwardConfig portForwardConfig2 = new PortForwardConfig("test-cloud-2", "test-namespace");

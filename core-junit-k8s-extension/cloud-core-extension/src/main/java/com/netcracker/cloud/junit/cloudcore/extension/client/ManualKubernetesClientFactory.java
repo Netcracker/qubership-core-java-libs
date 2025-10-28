@@ -1,12 +1,14 @@
 package com.netcracker.cloud.junit.cloudcore.extension.client;
 
+import com.netcracker.cloud.junit.cloudcore.extension.annotations.Priority;
 import com.netcracker.cloud.junit.cloudcore.extension.provider.CloudAndNamespace;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.Setter;
 
 import java.util.function.Function;
 
-public class TestKubernetesClientFactory implements AutoCloseable, KubernetesClientFactory {
+@Priority(0)
+public class ManualKubernetesClientFactory implements AutoCloseable, KubernetesClientFactory {
 
     @Setter
     private static Function<CloudAndNamespace, KubernetesClient> function;

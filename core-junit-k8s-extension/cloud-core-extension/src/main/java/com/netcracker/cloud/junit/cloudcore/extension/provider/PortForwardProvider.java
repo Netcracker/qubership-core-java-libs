@@ -11,7 +11,6 @@ import com.netcracker.cloud.junit.cloudcore.extension.service.ServicePortForward
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
-import java.util.ServiceLoader;
 
 import static com.netcracker.cloud.junit.cloudcore.extension.callbacks.CloudCoreJunitCallback.resolveIntValue;
 import static com.netcracker.cloud.junit.cloudcore.extension.callbacks.CloudCoreJunitCallback.resolveValue;
@@ -19,9 +18,9 @@ import static com.netcracker.cloud.junit.cloudcore.extension.callbacks.CloudCore
 public class PortForwardProvider implements FieldInstanceProvider {
     @Override
     public Object createInstance(Object testInstance, Field field) throws Exception {
-        PortForwardServiceManager resourceFactory = ServiceLoader.load(PortForwardServiceManager.class).findFirst()
+        PortForwardServiceManager portForwardServiceManager = OrderedServiceLoader.load(PortForwardServiceManager.class)
                 .orElseThrow(() -> new IllegalStateException("No CloudCoreResourceFactory implementation found"));
-        KubernetesClientFactory kubernetesClientFactory = ServiceLoader.load(KubernetesClientFactory.class).findFirst()
+        KubernetesClientFactory kubernetesClientFactory = OrderedServiceLoader.load(KubernetesClientFactory.class)
                 .orElseThrow(() -> new IllegalStateException("No KubernetesClientFactory implementation found"));
 
         Class<?> type = field.getType();
@@ -34,7 +33,7 @@ public class PortForwardProvider implements FieldInstanceProvider {
                         field.getName(), testInstance.getClass().getName()));
             String cloud = resolveValue(testInstance, field, Cloud.class, Cloud::cloud, kubernetesClientFactory.getCurrentContext());
             String namespace = resolveValue(testInstance, field, Cloud.class, Cloud::namespace, kubernetesClientFactory.getNamespace());
-            portForwardService = resourceFactory.getPortForwardService(new PortForwardConfig(cloud, namespace));
+            portForwardService = portForwardServiceManager.getPortForwardService(new PortForwardConfig(cloud, namespace));
             return portForwardService;
         } else {
             PortForward portForwardAnn = field.getAnnotation(PortForward.class);
@@ -43,7 +42,7 @@ public class PortForwardProvider implements FieldInstanceProvider {
                         field.getName(), testInstance.getClass().getName()));
             String cloud = resolveValue(testInstance, field, PortForward.class, pf -> pf.cloud().cloud(), kubernetesClientFactory.getCurrentContext());
             String namespace = resolveValue(testInstance, field, PortForward.class, pf -> pf.cloud().namespace(), kubernetesClientFactory.getNamespace());
-            portForwardService = resourceFactory.getPortForwardService(new PortForwardConfig(cloud, namespace));
+            portForwardService = portForwardServiceManager.getPortForwardService(new PortForwardConfig(cloud, namespace));
             String serviceName = resolveValue(testInstance, field, PortForward.class, PortForward::serviceName);
             int port = resolveIntValue(testInstance, field, PortForward.class, PortForward::port);
 
@@ -65,9 +64,9 @@ public class PortForwardProvider implements FieldInstanceProvider {
     public void destroyInstance(Object testInstance, Field field) throws Exception {
         PortForward portForwardAnn = field.getAnnotation(PortForward.class);
         if (portForwardAnn != null) {
-            PortForwardServiceManager resourceFactory = ServiceLoader.load(PortForwardServiceManager.class).findFirst()
+            PortForwardServiceManager resourceFactory = OrderedServiceLoader.load(PortForwardServiceManager.class)
                     .orElseThrow(() -> new IllegalStateException("No CloudCoreResourceFactory implementation found"));
-            KubernetesClientFactory kubernetesClientFactory = ServiceLoader.load(KubernetesClientFactory.class).findFirst()
+            KubernetesClientFactory kubernetesClientFactory = OrderedServiceLoader.load(KubernetesClientFactory.class)
                     .orElseThrow(() -> new IllegalStateException("No KubernetesClientFactory implementation found"));
 
             String cloud = resolveValue(testInstance, field, PortForward.class, pf -> pf.cloud().cloud(), kubernetesClientFactory.getCurrentContext());

@@ -1,5 +1,6 @@
 package com.netcracker.cloud.junit.cloudcore.extension.provider;
 
+import com.netcracker.cloud.junit.cloudcore.extension.annotations.Priority;
 import com.netcracker.cloud.junit.cloudcore.extension.client.KubernetesClientFactory;
 import com.netcracker.cloud.junit.cloudcore.extension.service.PortForwardService;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -7,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Priority
 public class DefaultPortForwardServiceManager implements PortForwardServiceManager {
 
     protected static Map<PortForwardConfig, PortForwardService> portForwardServiceMap = new ConcurrentHashMap<>();
@@ -23,7 +24,7 @@ public class DefaultPortForwardServiceManager implements PortForwardServiceManag
     @Override
     public PortForwardService getPortForwardService(PortForwardConfig config) {
         return portForwardServiceMap.computeIfAbsent(config, c -> {
-            KubernetesClientFactory kubernetesClientFactory = ServiceLoader.load(KubernetesClientFactory.class).findFirst()
+            KubernetesClientFactory kubernetesClientFactory = OrderedServiceLoader.load(KubernetesClientFactory.class)
                     .orElseThrow(() -> new IllegalStateException("No KubernetesClientFactory implementation found"));
             KubernetesClient kubernetesClient = kubernetesClientFactory.getKubernetesClient(c.getCloud(), c.getNamespace());
             boolean fqdnFromProp = Boolean.parseBoolean(System.getProperty(PORTFORWARD_FQDN_ENABLED_PROP, "false"));
