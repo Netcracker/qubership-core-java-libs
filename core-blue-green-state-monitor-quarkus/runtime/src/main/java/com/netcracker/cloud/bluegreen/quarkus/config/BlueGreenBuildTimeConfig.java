@@ -1,36 +1,57 @@
 package com.netcracker.cloud.bluegreen.quarkus.config;
 
-import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithDefault;
+import io.smallrye.config.WithName;
 
-public class BlueGreenBuildTimeConfig {
+@ConfigMapping(prefix = "blue-green")
+@ConfigRoot(phase = ConfigPhase.BUILD_TIME)
+public interface BlueGreenBuildTimeConfig {
 
-    @ConfigRoot(prefix = "blue-green", name = "global-mutex-service", phase = ConfigPhase.BUILD_TIME)
-    public static class GlobalMutex {
+    /**
+     * Configuration for the Blue Green Global Mutex Service.
+     * Maps properties under `blue-green.global-mutex-service`.
+     */
+    @WithName("global-mutex-service")
+    GlobalMutex globalMutex();
+
+    /**
+     * Configuration for the Blue Green Microservice Mutex Service.
+     * Maps properties under `blue-green.microservice-mutex-service`.
+     */
+    @WithName("microservice-mutex-service")
+    MicroserviceMutex microserviceMutex();
+
+    /**
+     * Configuration for the Blue Green State Publisher.
+     * Maps properties under `blue-green.state-publisher`.
+     */
+    @WithName("state-publisher")
+    StatePublisher statePublisher();
+
+    interface GlobalMutex {
         /**
          * Enables Blue Green Global Mutex Service
          */
-        @ConfigItem(name = "enabled", defaultValue = "true")
-        public boolean enabled;
+        @WithDefault("true")
+        boolean enabled();
     }
 
-    @ConfigRoot(prefix = "blue-green", name = "microservice-mutex-service", phase = ConfigPhase.BUILD_TIME)
-    public static class MicroserviceMutex {
+    interface MicroserviceMutex {
         /**
          * Enables Blue Green Microservice Mutex Service
          */
-        @ConfigItem(name = "enabled", defaultValue = "true")
-        public boolean enabled;
+        @WithDefault("true")
+        boolean enabled();
     }
 
-    @ConfigRoot(prefix = "blue-green", name = "state-publisher", phase = ConfigPhase.BUILD_TIME)
-    public static class StatePublisher {
+    interface StatePublisher {
         /**
          * Enables Blue Green State Publisher
          */
-        @ConfigItem(name = "enabled", defaultValue = "true")
-        public boolean enabled;
+        @WithDefault("true")
+        boolean enabled();
     }
-
 }
