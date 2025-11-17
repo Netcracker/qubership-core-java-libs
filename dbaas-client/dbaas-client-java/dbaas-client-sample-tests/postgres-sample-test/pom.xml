@@ -78,7 +78,7 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-processor</artifactId>
-            <version>7.1.7.Final</version>
+            <version>7.1.8.Final</version>
             <scope>test</scope>
         </dependency>
         <dependency>
