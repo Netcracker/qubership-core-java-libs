@@ -24,7 +24,7 @@
         <spring.security>6.5.6</spring.security>
 
         <!--Test libraries -->
-        <mockito.version>5.17.0</mockito.version>
+        <mockito.version>5.18.0</mockito.version>
 
         <org.powermock.version>2.0.9</org.powermock.version>
 
@@ -33,7 +33,7 @@
         <org.projectlombok.version>1.18.42</org.projectlombok.version>
         <slf4j.version>2.0.17</slf4j.version>
         <jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
-        <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
+        <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
         <hibernate-validator.version>8.0.3.Final</hibernate-validator.version>
         <jsr305.version>3.0.2</jsr305.version>
         <commons.lang3.version>3.18.0</commons.lang3.version>
@@ -180,13 +180,13 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
-                <version>5.12.2</version>
+                <version>5.13.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
-                <version>5.12.2</version>
+                <version>5.13.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
