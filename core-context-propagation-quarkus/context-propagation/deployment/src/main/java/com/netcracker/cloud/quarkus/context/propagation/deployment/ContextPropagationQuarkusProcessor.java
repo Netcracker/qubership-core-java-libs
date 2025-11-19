@@ -15,7 +15,6 @@ import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.resteasy.common.spi.ResteasyJaxrsProviderBuildItem;
 import io.quarkus.resteasy.reactive.spi.*;
 import io.quarkus.vertx.http.deployment.FilterBuildItem;
-import io.quarkus.vertx.http.runtime.security.SecurityHandlerPriorities;
 
 import static com.netcracker.cloud.context.propagation.quarkus.runtime.filter.Priorities.CORE_CONTEXT_PROPAGATION_INCOMING_REQUEST;
 import static com.netcracker.cloud.context.propagation.quarkus.runtime.filter.Priorities.CORE_CONTEXT_PROPAGATION_OUTGOING_RESPONSE;
@@ -69,7 +68,7 @@ public class ContextPropagationQuarkusProcessor {
         filterBuildItemBuildProducer
                 .produce(new FilterBuildItem(
                         recorder.preAuthnContextProviderHandler(),
-                        SecurityHandlerPriorities.AUTHENTICATION + 1));
+                        FilterBuildItem.AUTHENTICATION + 1));
     }
 }
 
