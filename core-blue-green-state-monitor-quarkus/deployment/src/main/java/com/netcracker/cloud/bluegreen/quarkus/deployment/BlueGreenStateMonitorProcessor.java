@@ -18,36 +18,32 @@ public class BlueGreenStateMonitorProcessor {
     }
 
     @BuildStep
-    public AdditionalBeanBuildItem registerAdditionalBeans(InMemoryBlueGreenBuildTimeConfig inMemoryBlueGreenBuildTimeConfig,
-                                                           BlueGreenBuildTimeConfig blueGreenBuildTimeConfig) {
+    public AdditionalBeanBuildItem registerAdditionalBeans(InMemoryBlueGreenBuildTimeConfig.BlueGreenGlobal blueGreenGlobal,
+                                                           InMemoryBlueGreenBuildTimeConfig.Dev devConfig,
+                                                           BlueGreenBuildTimeConfig.GlobalMutex globalMutexConfig,
+                                                           BlueGreenBuildTimeConfig.MicroserviceMutex microserviceMutexConfig,
+                                                           BlueGreenBuildTimeConfig.StatePublisher statePublisherConfig) {
         AdditionalBeanBuildItem.Builder builder = AdditionalBeanBuildItem.builder();
-
-        boolean globalEnabled = inMemoryBlueGreenBuildTimeConfig.global().enabled();
-        boolean devEnabled = inMemoryBlueGreenBuildTimeConfig.dev().enabled();
-
-        boolean globalMutexEnabled = blueGreenBuildTimeConfig.globalMutex().enabled();
-        boolean microserviceMutexEnabled = blueGreenBuildTimeConfig.microserviceMutex().enabled();
-        boolean statePublisherEnabled = blueGreenBuildTimeConfig.statePublisher().enabled();
-
-        if (!globalEnabled || devEnabled) {
+        if (!blueGreenGlobal.enabled || devConfig.enabled) {
             builder.addBeanClass(InMemoryConfiguration.class);
             builder.addBeanClass(BGStateSubscriberConfiguration.class);
             log.info("Enabled InMemoryConfiguration");
         } else {
-            if (statePublisherEnabled) {
+            if (statePublisherConfig.enabled) {
                 builder.addBeanClass(ConsulBlueGreenStatePublisherConfiguration.class);
                 builder.addBeanClass(BGStateSubscriberConfiguration.class);
                 log.info("Enabled ConsulBlueGreenStatePublisherConfiguration");
             }
-            if (globalMutexEnabled) {
+            if (globalMutexConfig.enabled) {
                 builder.addBeanClass(ConsulBlueGreenGlobalMutexConfiguration.class);
                 log.info("Enabled ConsulBlueGreenGlobalMutexConfiguration");
             }
-            if (microserviceMutexEnabled) {
+            if (microserviceMutexConfig.enabled) {
                 builder.addBeanClass(ConsulBlueGreenMicroserviceMutexConfiguration.class);
                 log.info("Enabled ConsulBlueGreenMicroserviceMutexConfiguration");
             }
         }
         return builder.setUnremovable().build();
     }
+
 }

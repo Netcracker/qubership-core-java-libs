@@ -1,41 +1,27 @@
 package com.netcracker.cloud.bluegreen.quarkus.config;
 
+import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
-import io.smallrye.config.ConfigMapping;
-import io.smallrye.config.WithDefault;
-import io.smallrye.config.WithName;
-import io.smallrye.config.WithParentName;
 
-@ConfigMapping(prefix = "blue-green")
-@ConfigRoot(phase = ConfigPhase.BUILD_TIME)
-public interface InMemoryBlueGreenBuildTimeConfig {
+public class InMemoryBlueGreenBuildTimeConfig {
 
-    /**
-     * Global Blue-Green configuration.
-     */
-    @WithParentName
-    BlueGreenGlobal global();
-
-    /**
-     * Dev Blue-Green configuration.
-     */
-    @WithName("state-monitor.dev")
-    Dev dev();
-
-    interface BlueGreenGlobal {
+    @ConfigRoot(prefix = "blue-green", phase = ConfigPhase.BUILD_TIME)
+    public static class BlueGreenGlobal {
         /**
          * Enables Blue Green Global Mutex Service
          */
-        @WithDefault("true")
-        boolean enabled();
+        @ConfigItem(name = "enabled", defaultValue = "true")
+        public boolean enabled;
     }
 
-    interface Dev {
+    @ConfigRoot(prefix = "blue-green", name = "state-monitor.dev", phase = ConfigPhase.BUILD_TIME)
+    public static class Dev {
         /**
          * Enables Blue Green Microservice Mutex Service
          */
-        @WithDefault("false")
-        boolean enabled();
+        @ConfigItem(name = "enabled", defaultValue = "false")
+        public boolean enabled;
     }
+
 }
