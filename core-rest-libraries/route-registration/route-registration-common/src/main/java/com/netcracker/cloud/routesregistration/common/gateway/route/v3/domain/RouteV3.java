@@ -2,9 +2,13 @@ package com.netcracker.cloud.routesregistration.common.gateway.route.v3.domain;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Data
 @Builder
@@ -21,11 +25,12 @@ public class RouteV3 {
     }
 
     private void mergeRules(List<Rule> rulesToMerge) {
-        rulesToMerge.forEach(ruleToMerge -> {
-            if (rules.stream().noneMatch(ruleToMerge::equals)) {
-                rules.add(ruleToMerge);
-            }
-        });
+        if (rulesToMerge == null || rulesToMerge.isEmpty()) {
+            return;
+        }
+
+        List<Rule> currentRules = (rules == null) ? List.of() : rules;
+        this.rules = Stream.concat(currentRules.stream(), rulesToMerge.stream()).distinct().toList();
     }
 
     @Override
@@ -37,7 +42,7 @@ public class RouteV3 {
             return false;
         }
         return rules != null && routeV3.rules != null && rules.size() == routeV3.rules.size()
-                && rules.containsAll(routeV3.rules) && routeV3.rules.containsAll(rules);
+                && new HashSet<>(rules).containsAll(routeV3.rules) && new HashSet<>(routeV3.rules).containsAll(rules);
     }
 
     @Override
@@ -45,3 +50,4 @@ public class RouteV3 {
         return Objects.hash(destination);
     }
 }
+

@@ -7,20 +7,20 @@ import org.springframework.web.client.RestClientException;
 class RestClientExceptionPropagatorV2 implements RestClientExceptionPropagator {
 
     @Override
-    public void propagate(Exception exception, String failedUrl) {
-        propagateIfPossible(exception, RestClientException.class);
-        throw new RestClientException("Exception while communication with service " + failedUrl, exception);
+    public void propagate(Throwable throwable, String failedUrl) {
+        propagateIfPossible(throwable, RestClientException.class);
+        throw new RestClientException("Exception while communication with service " + failedUrl, throwable);
     }
 
     private <X extends Throwable> void propagateIfPossible (Throwable throwable, Class<X> clazz) throws X {
         if (clazz.isInstance(throwable)) {
             throw clazz.cast(throwable);
         }
-        if (throwable instanceof RuntimeException) {
-            throw (RuntimeException) throwable;
+        if (throwable instanceof RuntimeException runtimeException) {
+            throw runtimeException;
         }
-        if (throwable instanceof Error) {
-            throw (Error) throwable;
+        if (throwable instanceof Error error) {
+            throw error;
         }
     }
 }

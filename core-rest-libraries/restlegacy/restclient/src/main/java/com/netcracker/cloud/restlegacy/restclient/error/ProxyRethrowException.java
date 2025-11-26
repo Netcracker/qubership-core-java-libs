@@ -25,7 +25,7 @@ public class ProxyRethrowException extends ProxyErrorException {
      * @deprecated Change to throw RestClientException when {@link ProxyErrorException} will be removed
      */
     @Deprecated
-    public static ProxyErrorException buildProxyException(Exception cause, String url) {
+    public static ProxyErrorException buildProxyException(Throwable cause, String url) {
         ProxyErrorException e = new ProxyErrorException(cause, url);
         final ResponseEntity<ErrorsDescription> responseEntity = e.getResponseEntity();
         if (responseEntity == null || !responseEntity.hasBody()) {

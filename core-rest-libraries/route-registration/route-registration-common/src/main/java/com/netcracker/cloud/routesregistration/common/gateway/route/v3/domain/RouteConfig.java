@@ -2,7 +2,9 @@ package com.netcracker.cloud.routesregistration.common.gateway.route.v3.domain;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -44,7 +46,7 @@ public class RouteConfig {
             return true;
         }
         return routes != null && that.routes != null && routes.size() == that.routes.size()
-                && routes.containsAll(that.routes) && that.routes.containsAll(routes);
+                && new HashSet<>(routes).containsAll(that.routes) && new HashSet<>(that.routes).containsAll(routes);
     }
 
     @Override
@@ -52,3 +54,4 @@ public class RouteConfig {
         return Objects.hash(version);
     }
 }
+

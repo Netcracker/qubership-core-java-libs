@@ -146,8 +146,8 @@ public class RestClient {
     @Deprecated
     private static class ProxyErrorExceptionPropagator implements RestClientExceptionPropagator {
         @Override
-        public void propagate(Exception exception, String failedUrl) {
-            throw ProxyRethrowException.buildProxyException(exception, failedUrl);
+        public void propagate(Throwable throwable, String failedUrl) {
+            throw ProxyRethrowException.buildProxyException(throwable, failedUrl);
         }
     }
 }

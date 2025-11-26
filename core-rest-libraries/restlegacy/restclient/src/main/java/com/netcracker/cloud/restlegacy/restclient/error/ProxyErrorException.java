@@ -41,7 +41,7 @@ public class ProxyErrorException extends RestClientException {
         this.httpStatus = cause.httpStatus;
     }
 
-    public ProxyErrorException(Exception cause, String url) {
+    public ProxyErrorException(Throwable cause, String url) {
         super("Exception while communicating with " + url, cause);
         ErrorsDescription errorsDescription;
         this.httpStatus = HttpStatus.EXPECTATION_FAILED;
