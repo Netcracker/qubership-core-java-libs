@@ -40,7 +40,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.20</version>
+            <version>1.5.21</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -76,7 +76,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test</artifactId>
-            <version>3.5.7</version>
+            <version>3.5.8</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
