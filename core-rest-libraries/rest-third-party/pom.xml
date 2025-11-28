@@ -18,10 +18,10 @@
         <qubership.context.framework>7.2.2</qubership.context.framework>
 
         <!--Spring's libraries -->
-        <spring.boot.version>3.5.7</spring.boot.version>
+        <spring.boot.version>3.5.8</spring.boot.version>
         <spring.cloud.version>4.3.0</spring.cloud.version>
-        <spring.version>6.2.12</spring.version>
-        <spring.security>6.5.6</spring.security>
+        <spring.version>6.2.14</spring.version>
+        <spring.security>6.5.7</spring.security>
 
         <!--Test libraries -->
         <mockito.version>5.18.0</mockito.version>
