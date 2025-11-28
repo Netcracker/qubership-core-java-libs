@@ -20,12 +20,12 @@
         <maven.compiler.plugin.version>3.14.1</maven.compiler.plugin.version>
         <maven.pmd.plugin.version>3.7</maven.pmd.plugin.version>
         <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
-        <spring.boot.version>3.5.7</spring.boot.version>
+        <spring.boot.version>3.5.8</spring.boot.version>
         <mockito.version>5.18.0</mockito.version>
-        <spring.security.version>6.5.6</spring.security.version>
-        <spring.version>6.2.12</spring.version>
+        <spring.security.version>6.5.7</spring.security.version>
+        <spring.version>6.2.14</spring.version>
         <lombok.version>1.18.42</lombok.version>
-        <jackson.version>2.19.2</jackson.version>
+        <jackson.version>2.19.4</jackson.version>
         <microservice.dependencies.version>11.2.2</microservice.dependencies.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../microservice-framework-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
