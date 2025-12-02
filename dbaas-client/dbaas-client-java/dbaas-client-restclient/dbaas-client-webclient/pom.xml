@@ -13,7 +13,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webflux</artifactId>
-            <version>6.2.12</version>
+            <version>6.2.14</version>
         </dependency>
         <dependency>
             <artifactId>webclient</artifactId>
