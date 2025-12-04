@@ -5,7 +5,7 @@
     <parent>
         <artifactId>cloud-core-parent</artifactId>
         <groupId>com.netcracker.cloud.junit.cloudcore</groupId>
-        <version>8.4.4</version>
+        <version>8.4.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>cloud-core-extension</artifactId>
