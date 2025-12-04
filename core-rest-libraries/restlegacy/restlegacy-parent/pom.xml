@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.netcracker.cloud</groupId>
         <artifactId>rest-libraries-parent</artifactId>
-        <version>6.2.3-SNAPSHOT</version>
+        <version>6.2.3</version>
         <relativePath>../../rest-libraries-parent/pom.xml</relativePath>
     </parent>
 
