@@ -1,25 +1,24 @@
 package com.netcracker.cloud.quarkus.dbaas.cassandraclient.config.properties;
 
-import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
-import lombok.Getter;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithName;
+import io.smallrye.config.WithParentName;
 
-
-@Getter
-@ConfigRoot(name = "dbaas.cassandra", phase = ConfigPhase.RUN_TIME)
-public class CassandraProperties {
+@ConfigMapping(prefix = "quarkus.dbaas.cassandra")
+@ConfigRoot(phase = ConfigPhase.RUN_TIME)
+public interface CassandraProperties {
 
     /**
      * Cassandra DB Creation parameters.
      */
-    @ConfigItem(name = "api")
-    DbaaSCassandraDbCreationConfig cassandraDbCreationConfig;
+    @WithName("api")
+    DbaaSCassandraDbCreationConfig cassandraDbCreationConfig();
 
     /**
      * Common properties.
      */
-    @ConfigItem(name = ConfigItem.PARENT)
-    CassandraSessionProperties cassandraSessionProperties;
+    @WithParentName
+    CassandraSessionProperties cassandraSessionProperties();
 }
-

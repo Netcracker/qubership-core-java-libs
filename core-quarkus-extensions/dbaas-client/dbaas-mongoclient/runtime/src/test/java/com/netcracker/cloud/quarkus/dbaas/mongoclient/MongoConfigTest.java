@@ -27,8 +27,8 @@ public class MongoConfigTest {
 
         @Test
         public void testExtensionsContainsPrefixAndRole() {
-            Optional<String> dbPrefix = config.dbaasApiPropertiesConfig.dbPrefix;
-            Optional<String> userRole = config.dbaasApiPropertiesConfig.runtimeUserRole;
+            Optional<String> dbPrefix = config.dbaasApiPropertiesConfig().dbPrefix();
+            Optional<String> userRole = config.dbaasApiPropertiesConfig().runtimeUserRole();
             Assertions.assertNotNull(dbPrefix);
             Assertions.assertEquals("test-prefix", dbPrefix.get());
             Assertions.assertNotNull(userRole);

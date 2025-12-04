@@ -13,7 +13,7 @@ public class DbaasClientProducer {
     @Produces
     @DefaultBean
     public DbaasClient dbaaSClient(DbaasClientConfig dbaasClientConfig) {
-        if (dbaasClientConfig.dbaasUrl.isPresent() && dbaasClientConfig.dbaasUsername.isPresent() && dbaasClientConfig.dbaasPassword.isPresent()) {
+        if (dbaasClientConfig.dbaasUrl().isPresent() && dbaasClientConfig.dbaasUsername().isPresent() && dbaasClientConfig.dbaasPassword().isPresent()) {
             log.debug("Create dbaas client with basic auth");
             return new BasicDbaaSClient(dbaasClientConfig).build();
         }

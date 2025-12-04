@@ -1,24 +1,26 @@
 package com.netcracker.cloud.core.quarkus.dbaas.datasource.config.flyway;
 
-import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithName;
+import io.smallrye.config.WithParentName;
 
 import java.util.Map;
 
-@ConfigRoot(name = "dbaas.flyway", phase = ConfigPhase.RUN_TIME)
-public class CoreFlywayConfig {
+@ConfigMapping(prefix = "quarkus.dbaas.flyway")
+@ConfigRoot(phase = ConfigPhase.RUN_TIME)
+public interface CoreFlywayConfig {
+
     /**
      * flywayConfig
      */
-    @ConfigItem(name = ConfigItem.PARENT)
-    public FlywayConfig globalFlywayConfig;
+    @WithParentName
+    FlywayConfig globalFlywayConfig();
 
     /**
      * datasources
      */
-    @ConfigMapping(prefix = "datasources")
-    public Map<String, FlywayConfig> datasources;
-
+    @WithName("datasources")
+    Map<String, FlywayConfig> datasources();
 }

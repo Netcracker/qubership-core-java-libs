@@ -53,16 +53,16 @@ class DbaaSPostgresDbCreationFlywayCleanTest {
 
     @Test
     void testFlywayCleanConfiguration() {
-        assertTrue(coreFlywayConfig.globalFlywayConfig.cleanAndMigrateAtStart);
-        assertFalse(coreFlywayConfig.globalFlywayConfig.cleanDisabled);
+        assertTrue(coreFlywayConfig.globalFlywayConfig().cleanAndMigrateAtStart());
+        assertFalse(coreFlywayConfig.globalFlywayConfig().cleanDisabled());
         assertFalse(flywayRuntimeConfig.datasources().get(DataSourceUtil.DEFAULT_DATASOURCE_NAME).cleanDisabled());
         assertTrue(defaultFlywayConfiguration.isCleanDisabled());
-        Map<String, FlywayConfig> logicalDbFlywayConfigMap = coreFlywayConfig.datasources;
+        Map<String, FlywayConfig> logicalDbFlywayConfigMap = coreFlywayConfig.datasources();
         assertEquals(1, logicalDbFlywayConfigMap.size());
         assertTrue(logicalDbFlywayConfigMap.containsKey("configs"));
         FlywayConfig config = logicalDbFlywayConfigMap.get("configs");
-        assertTrue(config.location.isPresent());
-        assertEquals(DATASOURCES_LOCATIONS, config.location.get());
+        assertTrue(config.location().isPresent());
+        assertEquals(DATASOURCES_LOCATIONS, config.location().get());
     }
 
     @Test

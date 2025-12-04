@@ -22,10 +22,10 @@ public class MongoClientCreationImplVaultTest extends ContainerMongoDbBaseConfig
 
     @BeforeAll
     public static void createDb() {
-        DbaasMongoDbCreationConfig dbaasMongoDbCreationConfig = new DbaasMongoDbCreationConfig();
+        DbaasMongoDbCreationConfig dbaasMongoDbCreationConfig = mock(DbaasMongoDbCreationConfig.class);
         DbaasApiPropertiesConfig dbaasApiPropertiesConfig = mock(DbaasApiPropertiesConfig.class);
         when(dbaasApiPropertiesConfig.getDbaaseApiProperties()).thenReturn(new DbaasApiProperties());
-        dbaasMongoDbCreationConfig.dbaasApiPropertiesConfig = dbaasApiPropertiesConfig;
+        when(dbaasMongoDbCreationConfig.dbaasApiPropertiesConfig()).thenReturn(dbaasApiPropertiesConfig);
 
         mongoClientCreationImpl = new MongoClientCreationImpl(dbaasMongoDbCreationConfig);
         mongoDBConnection.setUsername(USERNAME);

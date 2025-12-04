@@ -1,29 +1,32 @@
 package com.netcracker.cloud.quarkus.dbaas.opensearch.client.config;
 
 import com.netcracker.cloud.quarkus.dbaas.opensearch.client.config.properties.metrics.OpensearchMetricsProperties;
-import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
-import lombok.Getter;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithDefault;
+import io.smallrye.config.WithName;
 
 import java.util.Optional;
 
-@Getter
-@ConfigRoot(name = "dbaas.opensearch", phase = ConfigPhase.RUN_TIME)
-public class DbaaSOpensearchConfigurationProperty {
+@ConfigMapping(prefix = "quarkus.dbaas.opensearch")
+@ConfigRoot(phase = ConfigPhase.RUN_TIME)
+public interface DbaaSOpensearchConfigurationProperty {
+
     /**
      * Property with opensearch SSL mode for database connection.
      */
-    @ConfigItem(name = "ssl", defaultValue = "AUTO")
-    public SSLMode sslMode;
+    @WithName("ssl")
+    @WithDefault("AUTO")
+    SSLMode sslMode();
 
     /**
      * Properties for Opensearch client metrics.
-    */
-    @ConfigItem(name = "metrics")
-    public OpensearchMetricsProperties metrics;
+     */
+    @WithName("metrics")
+    OpensearchMetricsProperties metrics();
 
-    public enum SSLMode {
+    enum SSLMode {
         AUTO,
         ENABLE,
         DISABLE
@@ -32,12 +35,12 @@ public class DbaaSOpensearchConfigurationProperty {
     /**
      * Property with maxConnTotal value for PoolingAsyncClientConnectionManagerBuilder.
      */
-    @ConfigItem(name = "max-conn-total")
-    public Optional<Integer> maxConnTotal;
+    @WithName("max-conn-total")
+    Optional<Integer> maxConnTotal();
 
     /**
      * Property with maxConnPerRoute value for PoolingAsyncClientConnectionManagerBuilder.
      */
-    @ConfigItem(name = "max-conn-per-route")
-    public Optional<Integer> maxConnPerRoute;
+    @WithName("max-conn-per-route")
+    Optional<Integer> maxConnPerRoute();
 }

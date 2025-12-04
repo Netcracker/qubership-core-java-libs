@@ -9,6 +9,8 @@ import io.quarkus.mongodb.runtime.MongoClientCustomizer;
 import io.quarkus.mongodb.runtime.MongoClientSupport;
 import io.quarkus.mongodb.runtime.MongoClients;
 import io.quarkus.mongodb.runtime.MongodbConfig;
+import io.quarkus.tls.TlsConfigurationRegistry;
+import io.vertx.core.Vertx;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.inject.Alternative;
 import jakarta.enterprise.inject.Any;
@@ -25,11 +27,13 @@ public class CustomNCMongoClients extends MongoClients {
     public CustomNCMongoClients(MongodbConfig mongodbConfig,
                                 MongoClientSupport mongoClientSupport,
                                 Instance<CodecProvider> codecProviders,
+                                TlsConfigurationRegistry tlsConfigurationRegistry,
                                 Instance<PropertyCodecProvider> propertyCodecProviders,
                                 Instance<CommandListener> commandListeners,
                                 Instance<ReactiveContextProvider> reactiveContextProviders,
-                                @Any Instance<MongoClientCustomizer> customizers) {
-        super(mongodbConfig, mongoClientSupport, codecProviders, propertyCodecProviders, commandListeners, reactiveContextProviders, customizers);
+                                @Any Instance<MongoClientCustomizer> customizers,
+                                Vertx vertx) {
+        super(mongodbConfig, mongoClientSupport, codecProviders, tlsConfigurationRegistry, propertyCodecProviders, commandListeners, reactiveContextProviders, customizers, vertx);
     }
 
     @Override

@@ -67,8 +67,8 @@ public class DbaaSCassandraDbCreationConfigTest {
 
     @Test
     public void testExtensionsContainsPrefixAndRole() {
-        Optional<String> dbPrefix = config.getCassandraDbCreationConfig().dbaasApiPropertiesConfig.dbPrefix;
-        Optional<String> userRole = config.getCassandraDbCreationConfig().dbaasApiPropertiesConfig.runtimeUserRole;
+        Optional<String> dbPrefix = config.cassandraDbCreationConfig().dbaasApiPropertiesConfig().dbPrefix();
+        Optional<String> userRole = config.cassandraDbCreationConfig().dbaasApiPropertiesConfig().runtimeUserRole();
         Assertions.assertNotNull(dbPrefix);
         Assertions.assertEquals("test-prefix", dbPrefix.get());
         Assertions.assertNotNull(userRole);
@@ -81,11 +81,11 @@ public class DbaaSCassandraDbCreationConfigTest {
         when(dbaaSCassandraClient.getKeyspace()).thenReturn(Optional.empty());
         when(cqlSessionCreator.createSession(any(CassandraDatabase.class))).thenReturn(dbaaSCassandraClient);
 
-        CassandraDbConfiguration serviceDbConfiguration = config.getCassandraDbCreationConfig().getServiceDbConfiguration();
-        Optional<String> physicalDatabaseIdOptional = serviceDbConfiguration.getPhysicalDatabaseId();
+        CassandraDbConfiguration serviceDbConfiguration = config.cassandraDbCreationConfig().serviceDbConfiguration();
+        Optional<String> physicalDatabaseIdOptional = serviceDbConfiguration.physicalDatabaseId();
         Assertions.assertNotNull(physicalDatabaseIdOptional);
         Assertions.assertEquals(PHYSICAL_DATABASE_ID, physicalDatabaseIdOptional.orElseThrow());
-        Assertions.assertEquals(REPLICATION_VALUE, serviceDbConfiguration.getDatabaseSettings().replication.get());
+        Assertions.assertEquals(REPLICATION_VALUE, serviceDbConfiguration.databaseSettings().replication().get());
 
         var customProvider = (ExactDbPrefixAndRoleTestProfile.CustomConfigCassandraLogicalDbProvider) dbProvider;
 

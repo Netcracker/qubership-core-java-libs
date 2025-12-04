@@ -1,27 +1,19 @@
 package com.netcracker.cloud.quarkus.dbaas.cassandraclient.config.properties.migration;
 
 import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.SchemaAgreementSettings;
-import io.quarkus.runtime.annotations.ConfigGroup;
-import io.quarkus.runtime.annotations.ConfigItem;
-import lombok.Getter;
-import lombok.experimental.Accessors;
 
 import java.util.Optional;
 
-@ConfigGroup
-@Getter
-@Accessors(fluent = true)
-public class SchemaAgreementProperties {
+public interface SchemaAgreementProperties {
 
     /**
      * Retry delay for schema agreement await
      */
-    @ConfigItem
-    Optional<Long> awaitRetryDelay;
+    Optional<Long> awaitRetryDelay();
 
-    public SchemaAgreementSettings toSchemaAgreementSettings() {
+    default SchemaAgreementSettings toSchemaAgreementSettings() {
         SchemaAgreementSettings.SchemaAgreementSettingsBuilder builder = SchemaAgreementSettings.builder();
-        awaitRetryDelay.ifPresent(builder::withAwaitRetryDelay);
+        awaitRetryDelay().ifPresent(builder::withAwaitRetryDelay);
         return builder.build();
     }
 }

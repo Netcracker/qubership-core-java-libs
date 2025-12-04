@@ -10,14 +10,16 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class M2MDbaaSClientTest {
     private M2MDbaaSClient m2MDbaaSClient;
     private static final String DB_AGENT_URL  = "http://dbaas-agent:8080";
     @BeforeEach
     void setUp() {
-        DbaasClientConfig config = new DbaasClientConfig();
-        config.dbaasAgentUrl = Optional.of(DB_AGENT_URL);
+        DbaasClientConfig config = mock(DbaasClientConfig.class);
+        when(config.dbaasAgentUrl()).thenReturn(Optional.of(DB_AGENT_URL));
         m2MDbaaSClient = new M2MDbaaSClient(config);
     }
     @Test

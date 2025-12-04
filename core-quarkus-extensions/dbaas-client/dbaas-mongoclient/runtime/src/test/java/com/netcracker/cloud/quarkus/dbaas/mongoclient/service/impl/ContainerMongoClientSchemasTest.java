@@ -38,11 +38,11 @@ public class ContainerMongoClientSchemasTest extends ContainerMongoDbBaseConfig 
 
     @BeforeEach
     public void createDb() {
-        DbaasMongoDbCreationConfig dbaasMongoDbCreationConfig = new DbaasMongoDbCreationConfig();
+        DbaasMongoDbCreationConfig dbaasMongoDbCreationConfig = mock(DbaasMongoDbCreationConfig.class);
         DbaasApiPropertiesConfig dbaasApiPropertiesConfig = mock(DbaasApiPropertiesConfig.class);
         DbaasApiProperties dbaasApiProperties = new DbaasApiProperties();
         when(dbaasApiPropertiesConfig.getDbaaseApiProperties()).thenReturn(dbaasApiProperties);
-        dbaasMongoDbCreationConfig.dbaasApiPropertiesConfig = dbaasApiPropertiesConfig;
+        when(dbaasMongoDbCreationConfig.dbaasApiPropertiesConfig()).thenReturn(dbaasApiPropertiesConfig);
 
         mongoClientCreationImpl = new MongoClientCreationImpl(dbaasMongoDbCreationConfig);
         MongoDBConnection mongoDBConnection = new MongoDBConnection();

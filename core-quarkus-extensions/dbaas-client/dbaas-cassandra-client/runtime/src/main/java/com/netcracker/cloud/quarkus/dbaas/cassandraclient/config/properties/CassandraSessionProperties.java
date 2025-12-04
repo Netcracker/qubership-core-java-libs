@@ -10,85 +10,81 @@ import com.netcracker.cloud.quarkus.dbaas.cassandraclient.config.properties.metr
 import com.netcracker.cloud.quarkus.dbaas.cassandraclient.config.properties.metrics.NodeProperties;
 import com.netcracker.cloud.quarkus.dbaas.cassandraclient.config.properties.metrics.SessionProperties;
 import com.netcracker.cloud.quarkus.dbaas.cassandraclient.config.properties.migration.MigrationProperties;
-import io.quarkus.runtime.annotations.ConfigGroup;
-import io.quarkus.runtime.annotations.ConfigItem;
-import lombok.Getter;
+import io.smallrye.config.WithName;
 
 import java.util.Optional;
 
-@Getter
-@ConfigGroup
-public class CassandraSessionProperties {
+public interface CassandraSessionProperties {
 
     /**
      * Enabling SSL.
      */
-    @ConfigItem(name = "ssl")
-    Optional<Boolean> ssl;
+    @WithName("ssl")
+    Optional<Boolean> ssl();
 
     /**
      * The Request timeout in ms.
      */
-    @ConfigItem(name = "requestTimeoutMs")
-    Optional<Integer> requestTimeoutMs;
+    @WithName("requestTimeoutMs")
+    Optional<Integer> requestTimeoutMs();
 
     /**
      * The Truststore path.
      */
-    @ConfigItem(name = "truststorePath")
-    Optional<String> truststorePath;
+    @WithName("truststorePath")
+    Optional<String> truststorePath();
 
     /**
      * The Truststore password.
      */
-    @ConfigItem(name = "truststorePassword")
-    Optional<String> truststorePassword;
+    @WithName("truststorePassword")
+    Optional<String> truststorePassword();
 
     /**
      * Whether to require validation that the hostname of the server certificate's common name matches
      * the hostname of the server being connected to.
      */
-    @ConfigItem(name = "ssl-hostname-validation")
-    Optional<Boolean> sslHostnameValidation;
+    @WithName("ssl-hostname-validation")
+    Optional<Boolean> sslHostnameValidation();
 
     /**
      * Whether the slow replica avoidance should be enabled in the default LBP.
      */
-    @ConfigItem(name = "lb-slow-replica-avoidance")
-    Optional<Boolean> lbSlowReplicaAvoidance;
+    @WithName("lb-slow-replica-avoidance")
+    Optional<Boolean> lbSlowReplicaAvoidance();
 
     /**
      * Metrics configuration parameters.
      */
-    @ConfigItem
-    MetricsProperties metrics;
+    MetricsProperties metrics();
 
     /**
      * Migration configuration parameters.
      */
-    @ConfigItem
-    MigrationProperties migration;
+    MigrationProperties migration();
 
-    public DbaasCassandraProperties getDbaasCassandraProperties() {
+    default DbaasCassandraProperties getDbaasCassandraProperties() {
         DbaasCassandraProperties properties = new DbaasCassandraProperties();
-        properties.setSsl(ssl.orElse(false));
-        properties.setRequestTimeoutMs(requestTimeoutMs.orElse(0));
-        properties.setTruststorePath(truststorePath.orElse(null));
-        properties.setTruststorePassword(truststorePassword.orElse(null));
-        properties.setSslHostnameValidation(sslHostnameValidation.orElse(null));
-        properties.setLbSlowReplicaAvoidance(lbSlowReplicaAvoidance.orElse(null));
+        properties.setSsl(ssl().orElse(false));
+        properties.setRequestTimeoutMs(requestTimeoutMs().orElse(0));
+        properties.setTruststorePath(truststorePath().orElse(null));
+        properties.setTruststorePassword(truststorePassword().orElse(null));
+        properties.setSslHostnameValidation(sslHostnameValidation().orElse(null));
+        properties.setLbSlowReplicaAvoidance(lbSlowReplicaAvoidance().orElse(null));
 
-        setMetrics(properties.getMetrics(), metrics);
+        setMetrics(properties.getMetrics(), metrics());
         return properties;
     }
 
-    private void setMetrics(DbaasCassandraMetricsProperties metrics, MetricsProperties metricsProperties) {
+    private static void setMetrics(DbaasCassandraMetricsProperties metrics,
+                                   MetricsProperties metricsProperties) {
         metricsProperties.enabled().ifPresent(metrics::setEnabled);
         setSessionMetrics(metrics.getSession(), metricsProperties.session());
         setNodeMetrics(metrics.getNode(), metricsProperties.node());
     }
 
-    private void setSessionMetrics(SessionMetricsConfiguration sessionMetrics, SessionProperties sessionProperties) {
+    private static void setSessionMetrics(SessionMetricsConfiguration sessionMetrics,
+                                          SessionProperties sessionProperties) {
         sessionProperties.enabled().ifPresent(sessionMetrics::setEnabled);
         setMetricConfiguration(sessionMetrics.getCqlRequests(), sessionProperties.cqlRequests());
         setMetricConfiguration(sessionMetrics.getThrottling().getDelay(), sessionProperties.throttling());
@@ -96,15 +92,16 @@ public class CassandraSessionProperties {
         setMetricConfiguration(sessionMetrics.getGraphRequests(), sessionProperties.graphRequests());
     }
 
-    private void setNodeMetrics(NodeMetricsConfiguration nodeMetrics, NodeProperties nodeProperties) {
+    private static void setNodeMetrics(NodeMetricsConfiguration nodeMetrics,
+                                       NodeProperties nodeProperties) {
         nodeProperties.enabled().ifPresent(nodeMetrics::setEnabled);
         setMetricConfiguration(nodeMetrics.getCqlMessages(), nodeProperties.cqlMessages());
         setMetricConfiguration(nodeMetrics.getGraphMessages(), nodeProperties.graphMessages());
         nodeProperties.expireAfter().ifPresent(nodeMetrics::setExpireAfter);
-
     }
 
-    private void setMetricConfiguration(MetricConfigurationParameters metricConfiguration, MetricParameters metricParameters) {
+    private static void setMetricConfiguration(MetricConfigurationParameters metricConfiguration,
+                                               MetricParameters metricParameters) {
         metricParameters.highestLatency().ifPresent(metricConfiguration::setHighestLatency);
         metricParameters.lowestLatency().ifPresent(metricConfiguration::setLowestLatency);
         metricParameters.significantDigits().ifPresent(metricConfiguration::setSignificantDigits);

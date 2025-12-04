@@ -45,7 +45,7 @@ public class DbaasOpensearchConfiguration {
         return new DbaasOpensearchClientImpl(
                 dbaaSClassifierFactory.newServiceClassifierBuilder(getInitialClassifierMap()),
                 opensearchDbaaSApiClient,
-                opensearchCreationConfig.serviceDbConfiguration.prefixConfig.getDelimiter());
+                opensearchCreationConfig.servicePrefixConfig().delimiter());
     }
 
     @Produces
@@ -57,7 +57,7 @@ public class DbaasOpensearchConfiguration {
         return new DbaasOpensearchClientImpl(
                 dbaaSClassifierFactory.newTenantClassifierBuilder(getInitialClassifierMap()),
                 opensearchDbaaSApiClient,
-                opensearchCreationConfig.singleTeantDbConfig.prefixConfig.getDelimiter());
+                opensearchCreationConfig.singleTenantPrefixConfig().delimiter());
     }
 
     @Produces
@@ -67,7 +67,7 @@ public class DbaasOpensearchConfiguration {
     public MetricsProvider<OpensearchIndex> opensearchMetricsProvider(MeterRegistry meterRegistry,
                                                                       DbaaSOpensearchConfigurationProperty configurationProperty) {
         return new OpensearchMetricsProvider(meterRegistry,
-            configurationProperty.getMetrics().toDbaasOpensearchMetricsProperties()
+            configurationProperty.metrics().toDbaasOpensearchMetricsProperties()
         );
     }
 

@@ -1,103 +1,92 @@
 package com.netcracker.cloud.core.quarkus.dbaas.datasource.config.flyway;
 
-import io.quarkus.runtime.annotations.ConfigGroup;
-import io.quarkus.runtime.annotations.ConfigItem;
+import io.smallrye.config.WithDefault;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-@ConfigGroup
-public class FlywayConfig {
+public interface FlywayConfig {
 
     /**
      * location
      */
-    @ConfigItem
-    public Optional<String> location;
+    Optional<String> location();
 
     /**
      * connectRetries
      */
-    @ConfigItem
-    public OptionalInt connectRetries;
+    OptionalInt connectRetries();
 
     /**
      * schemas
      */
-    @ConfigItem
-    public Optional<List<String>> schemas;
+    Optional<List<String>> schemas();
 
     /**
      * table
      */
-    @ConfigItem
-    public Optional<String> table;
+    Optional<String> table();
 
     /**
      * sqlMigrationPrefix
      */
-    @ConfigItem
-    public Optional<String> sqlMigrationPrefix;
+    Optional<String> sqlMigrationPrefix();
 
     /**
      * repeatableSqlMigrationPrefix
      */
-    @ConfigItem
-    public Optional<String> repeatableSqlMigrationPrefix;
+    Optional<String> repeatableSqlMigrationPrefix();
 
     /**
      * clean and run migration at start time
      */
-    @ConfigItem(defaultValue = "false")
-    public boolean cleanAndMigrateAtStart;
+    @WithDefault("false")
+    boolean cleanAndMigrateAtStart();
 
     /**
      * baselineOnMigrate
      */
-    @ConfigItem(defaultValue = "true")
-    public boolean baselineOnMigrate;
+    @WithDefault("true")
+    boolean baselineOnMigrate();
 
     /**
      * The initial baseline version.
      */
-    @ConfigItem(defaultValue = "1")
-    public String baselineVersion;
+    @WithDefault("1")
+    String baselineVersion();
 
     /**
      * baselineDescription.
      */
-    @ConfigItem
-    public Optional<String> baselineDescription;
+    Optional<String> baselineDescription();
 
     /**
      * validateOnMigrate
      */
-    @ConfigItem(defaultValue = "true")
-    public boolean validateOnMigrate;
+    @WithDefault("true")
+    boolean validateOnMigrate();
 
     /**
      * createSchemas
      */
-    @ConfigItem(defaultValue = "true")
-    public boolean createSchemas;
+    @WithDefault("true")
+    boolean createSchemas();
 
     /**
      * outOfOrder
      */
-    @ConfigItem(defaultValue = "false")
-    public boolean outOfOrder;
+    @WithDefault("false")
+    boolean outOfOrder();
 
     /**
      * ignoreMissingMigrations
      */
-    @ConfigItem
-    public Optional<String[]> ignoreMigrationPatterns;
+    Optional<String[]> ignoreMigrationPatterns();
 
     /**
      * cleanDisabled
      */
-    @ConfigItem(defaultValue = "false")
-    public boolean cleanDisabled;
-
+    @WithDefault("false")
+    boolean cleanDisabled();
 }

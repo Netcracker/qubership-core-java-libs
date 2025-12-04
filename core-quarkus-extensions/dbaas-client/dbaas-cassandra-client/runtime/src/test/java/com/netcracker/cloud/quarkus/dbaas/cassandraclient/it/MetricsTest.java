@@ -53,7 +53,7 @@ public class MetricsTest {
 
     @Test
     void checkMetricProperties() {
-        DbaasCassandraProperties dbaasCassandraProperties = cassandraProperties.getCassandraSessionProperties().getDbaasCassandraProperties();
+        DbaasCassandraProperties dbaasCassandraProperties = cassandraProperties.cassandraSessionProperties().getDbaasCassandraProperties();
         Assertions.assertTrue(dbaasCassandraProperties.getMetrics().getEnabled());
         Assertions.assertEquals(List.of("bytes-sent", "bytes-received", "connected-nodes", "cql-requests"), dbaasCassandraProperties.getMetrics().getSession().getEnabled());
         Assertions.assertEquals(List.of("pool.open-connections", "pool.available-streams", "pool.in-flight"), dbaasCassandraProperties.getMetrics().getNode().getEnabled());

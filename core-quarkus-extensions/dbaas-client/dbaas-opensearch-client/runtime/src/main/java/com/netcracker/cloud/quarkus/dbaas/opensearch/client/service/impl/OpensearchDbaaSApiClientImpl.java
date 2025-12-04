@@ -153,9 +153,9 @@ public class OpensearchDbaaSApiClientImpl implements OpensearchDbaaSApiClient {
         DatabaseConfig.Builder builder = DatabaseConfig.builder();
 
         if (dbConfiguration != null) {
-            builder.physicalDatabaseId(dbConfiguration.physicalDatabaseId.orElse(null));
+            builder.physicalDatabaseId(dbConfiguration.getPhysicalDatabaseId().orElse(null));
         }
-        opensearchCreationConfig.runtimeUserRole.ifPresent(builder::userRole);
+        opensearchCreationConfig.runtimeUserRole().ifPresent(builder::userRole);
 
         builder.databaseSettings(updateDatabaseSettings(null));
         DatabaseConfig databaseConfig = builder.build();
@@ -191,8 +191,8 @@ public class OpensearchDbaaSApiClientImpl implements OpensearchDbaaSApiClient {
             PoolingAsyncClientConnectionManagerBuilder connectionManagerBuilder = PoolingAsyncClientConnectionManagerBuilder
                     .create()
                     .setTlsStrategy(tlsStrategy);
-            configurationProperty.maxConnTotal.ifPresent(connectionManagerBuilder::setMaxConnTotal);
-            configurationProperty.maxConnPerRoute.ifPresent(connectionManagerBuilder::setMaxConnPerRoute);
+            configurationProperty.maxConnTotal().ifPresent(connectionManagerBuilder::setMaxConnTotal);
+            configurationProperty.maxConnPerRoute().ifPresent(connectionManagerBuilder::setMaxConnPerRoute);
 
             registerMetrics(db, httpClientBuilder);
 
@@ -251,14 +251,14 @@ public class OpensearchDbaaSApiClientImpl implements OpensearchDbaaSApiClient {
 
     private String getDatabasePrefix(DatabaseConfig databaseConfig, Map<String, Object> classifier) {
         if (opensearchCreationConfig != null && databaseConfig.getDbNamePrefix() == null) {
-            if (opensearchCreationConfig.singleTeantDbConfig.prefixConfig != null && opensearchCreationConfig.singleTeantDbConfig.prefixConfig.getPrefix().isPresent()
+            if (opensearchCreationConfig.singleTenantPrefixConfig() != null && opensearchCreationConfig.singleTenantPrefixConfig() != null
                     && classifier.get(SCOPE) == TENANT) {
-                return opensearchCreationConfig.singleTeantDbConfig.prefixConfig.getPrefix().get()
+                return opensearchCreationConfig.singleTenantPrefixConfig().prefix().get()
                         .replace("{tenantId}", (String) classifier.get(TENANT_ID));
 
-            } else if (opensearchCreationConfig.serviceDbConfiguration.prefixConfig != null
-                    && opensearchCreationConfig.serviceDbConfiguration.prefixConfig.getPrefix().isPresent()) {
-                return opensearchCreationConfig.serviceDbConfiguration.prefixConfig.getPrefix().get();
+            } else if (opensearchCreationConfig.servicePrefixConfig() != null
+                    && opensearchCreationConfig.servicePrefixConfig().prefix().isPresent()) {
+                return opensearchCreationConfig.servicePrefixConfig().prefix().get();
             }
         }
         return databaseConfig.getDbNamePrefix();

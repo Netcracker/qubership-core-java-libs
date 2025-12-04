@@ -50,37 +50,37 @@ public class DbaasDatasourcePoolConfiguration {
     @DefaultBean
     public AgroalConnectionFactoryConfiguration connectionFactoryConfiguration() {
         return new AgroalConnectionFactoryConfigurationSupplier()
-                .autoCommit(getDatasourceProperties().jdbc.autoCommit)
+                .autoCommit(getDatasourceProperties().jdbc().autoCommit())
                 .get();
     }
 
     public Properties getJdbcProperties(@Nullable String logicalDbName) {
-        addIdleInTransactionSessionTimeoutToJdbcProperties(getDatasourceProperties().globalJdbcProperties);
+        addIdleInTransactionSessionTimeoutToJdbcProperties(getDatasourceProperties().globalJdbcProperties());
 
         Properties datasourceProperties = new Properties();
-        datasourceProperties.putAll(getDatasourceProperties().globalJdbcProperties);
-        if (!StringUtil.isNullOrEmpty(logicalDbName) && getDatasourceProperties().datasources.containsKey(logicalDbName)) {
-            datasourceProperties.putAll(getDatasourceProperties().datasources.get(logicalDbName).jdbcProperties);
+        datasourceProperties.putAll(getDatasourceProperties().globalJdbcProperties());
+        if (!StringUtil.isNullOrEmpty(logicalDbName) && getDatasourceProperties().datasources().containsKey(logicalDbName)) {
+            datasourceProperties.putAll(getDatasourceProperties().datasources().get(logicalDbName).jdbcProperties());
         }
         return datasourceProperties;
     }
 
     public Properties getXaProperties(@Nullable String logicalDbName) {
-        addIdleInTransactionSessionTimeoutToJdbcProperties(getDatasourceProperties().globalXaProperties);
+        addIdleInTransactionSessionTimeoutToJdbcProperties(getDatasourceProperties().globalXaProperties());
 
         Properties properties = new Properties();
-        properties.putAll(getDatasourceProperties().globalXaProperties);
-        if (!StringUtil.isNullOrEmpty(logicalDbName) && getDatasourceProperties().datasources.containsKey(logicalDbName)) {
-            properties.putAll(getDatasourceProperties().datasources.get(logicalDbName).xaProperties);
+        properties.putAll(getDatasourceProperties().globalXaProperties());
+        if (!StringUtil.isNullOrEmpty(logicalDbName) && getDatasourceProperties().datasources().containsKey(logicalDbName)) {
+            properties.putAll(getDatasourceProperties().datasources().get(logicalDbName).xaProperties());
         }
         return properties;
     }
 
     public boolean isXa(@Nullable String logicalDbName) {
-        if (!StringUtil.isNullOrEmpty(logicalDbName) && getDatasourceProperties().datasources.containsKey(logicalDbName)) {
-            return getDatasourceProperties().datasources.get(logicalDbName).xa;
+        if (!StringUtil.isNullOrEmpty(logicalDbName) && getDatasourceProperties().datasources().containsKey(logicalDbName)) {
+            return getDatasourceProperties().datasources().get(logicalDbName).xa();
         }
-        return getDatasourceProperties().xa;
+        return getDatasourceProperties().xa();
     }
 
     protected static class DbConnectionValidator implements AgroalConnectionPoolConfiguration.ConnectionValidator {

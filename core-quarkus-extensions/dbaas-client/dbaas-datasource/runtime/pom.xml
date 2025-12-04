@@ -4,14 +4,14 @@
   <parent>
     <groupId>com.netcracker.cloud.quarkus</groupId>
     <artifactId>dbaas-datasource-postgresql-parent</artifactId>
-      <version>7.3.2-SNAPSHOT</version>
+      <version>8.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>dbaas-datasource-postgresql</artifactId>
 
   <properties>
-    <mockito.version>5.17.0</mockito.version>
+    <mockito.version>5.18.0</mockito.version>
     <testcontainers.version>1.21.3</testcontainers.version>
     <junit.version>5.12.2</junit.version>
     <sonar.exclusions>**/DebugDatasourceListener*, **/DataSourceAggregator*</sonar.exclusions>
@@ -179,7 +179,7 @@
     <dependency>
       <groupId>com.github.docker-java</groupId>
       <artifactId>docker-java-api</artifactId>
-      <version>3.4.1</version>
+      <version>3.4.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -194,7 +194,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>33.4.0-jre</version>
+      <version>33.4.8-jre</version>
     </dependency>
   </dependencies>
   <build>
@@ -233,9 +233,6 @@
               <version>${lombok.version}</version>
             </path>
           </annotationProcessorPaths>
-          <compilerArgs>
-            <arg>-AlegacyConfigRoot=true</arg>
-          </compilerArgs>
         </configuration>
       </plugin>
     </plugins>

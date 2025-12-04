@@ -264,7 +264,7 @@ public class DbaaSPostgresDbCreationServiceImpl implements DbaaSPostgresDbCreati
 
         configurationSupplier.metricsEnabled(true);
         try {
-            return dbaasPoolConfiguration.getDatasourceProperties().debugDatasourceListeners ?
+            return dbaasPoolConfiguration.getDatasourceProperties().debugDatasourceListeners() ?
                     AgroalDataSource.from(configurationSupplier, new DebugDatasourceListener()) :
                     AgroalDataSource.from(configurationSupplier);
         } catch (SQLException ex) {
@@ -279,16 +279,16 @@ public class DbaaSPostgresDbCreationServiceImpl implements DbaaSPostgresDbCreati
         PostgresDbConfiguration dbConfiguration = postgresDbConfiguration.getPostgresDbConfiguration(tenantId);
         DatabaseConfig.Builder builder = DatabaseConfig.builder();
         if (dbConfiguration != null) {
-            builder.physicalDatabaseId(dbConfiguration.physicalDatabaseId.orElse(null));
-            dbConfiguration.databaseSettings.ifPresent(builder::databaseSettings);
+            builder.physicalDatabaseId(dbConfiguration.getPhysicalDatabaseId().orElse(null));
+            dbConfiguration.getDatabaseSettings().ifPresent(builder::databaseSettings);
         }
-        builder.userRole(postgresDbConfiguration.dbaasApiPropertiesConfig.getDbaaseApiProperties().getRuntimeUserRole());
-        builder.dbNamePrefix(postgresDbConfiguration.dbaasApiPropertiesConfig.getDbaaseApiProperties().getDbPrefix());
+        builder.userRole(postgresDbConfiguration.dbaasApiPropertiesConfig().getDbaaseApiProperties().getRuntimeUserRole());
+        builder.dbNamePrefix(postgresDbConfiguration.dbaasApiPropertiesConfig().getDbaaseApiProperties().getDbPrefix());
         return builder.build();
     }
 
     private boolean isStartTimeMigration() {
-        return coreFlywayConfig.globalFlywayConfig.cleanAndMigrateAtStart;
+        return coreFlywayConfig.globalFlywayConfig().cleanAndMigrateAtStart();
     }
 
     private boolean isTenantDb(Map<String, Object> classifier) {

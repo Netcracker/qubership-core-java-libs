@@ -1,28 +1,24 @@
 package com.netcracker.cloud.quarkus.dbaas.cassandraclient.config.properties;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.quarkus.runtime.annotations.ConfigGroup;
-import io.quarkus.runtime.annotations.ConfigItem;
-import lombok.NoArgsConstructor;
 import com.netcracker.cloud.dbaas.client.entity.database.DatabaseSettings;
+import io.smallrye.config.WithName;
 
 import java.util.Optional;
 
-@ConfigGroup
-@NoArgsConstructor
-public class CassandraDatabaseSettings {
+public interface CassandraDatabaseSettings {
     /**
      * Property with replication setting.
      */
-    @ConfigItem(name = "replication")
-    public Optional<String> replication;
+    @WithName("replication")
+    Optional<String> replication();
 
-    public boolean isEmpty() {
-        return replication.isEmpty();
+    default boolean isEmpty() {
+        return replication().isEmpty();
     }
 
-    public CassandraSettingsDTO toDTO() {
-        return new CassandraSettingsDTO(replication.orElse(null));
+    default CassandraSettingsDTO toDTO() {
+        return new CassandraSettingsDTO(replication().orElse(null));
     }
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

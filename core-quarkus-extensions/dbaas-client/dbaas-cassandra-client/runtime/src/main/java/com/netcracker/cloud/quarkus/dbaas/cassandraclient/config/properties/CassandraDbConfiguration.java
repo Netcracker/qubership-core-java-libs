@@ -1,24 +1,20 @@
 package com.netcracker.cloud.quarkus.dbaas.cassandraclient.config.properties;
 
-import io.quarkus.runtime.annotations.ConfigGroup;
-import io.quarkus.runtime.annotations.ConfigItem;
-import lombok.Getter;
+import io.smallrye.config.WithName;
 
 import java.util.Optional;
 
-@Getter
-@ConfigGroup
-public class CassandraDbConfiguration {
+public interface CassandraDbConfiguration {
 
     /**
      * Property with physical database id.
      */
-    @ConfigItem(name = "physical-database-id")
-    Optional<String> physicalDatabaseId;
+    @WithName("physical-database-id")
+    Optional<String> physicalDatabaseId();
 
     /**
      * Property with database settings.
      */
-    @ConfigItem(name = "database-settings")
-    CassandraDatabaseSettings databaseSettings;
+    @WithName("database-settings")
+    CassandraDatabaseSettings databaseSettings();
 }

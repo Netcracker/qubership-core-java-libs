@@ -33,7 +33,7 @@ public class DbCreationConfigTests {
 
         @Test
         public void testPgExtensionsContainsOneElem() {
-            Optional<PostgresSettings> settingsOpt = config.serviceDbConfiguration.databaseSettings;
+            Optional<PostgresSettings> settingsOpt = config.serviceDatabaseSettings();
             Assertions.assertTrue(settingsOpt.isPresent());
 
             PostgresSettings settings = settingsOpt.get();
@@ -54,8 +54,8 @@ public class DbCreationConfigTests {
 
         @Test
         public void testPgExtensionsContainsOneElemForAllTenants() {
-            Optional<PostgresSettings> settingsOpt = config.allTenantsDbConfiguration.databaseSettings;
-            Optional<PostgresSettings> settingsOptFromGet = config.getPostgresDbConfiguration("some-tenant").databaseSettings;
+            Optional<PostgresSettings> settingsOpt = config.allTenantsDatabaseSettings();
+            Optional<PostgresSettings> settingsOptFromGet = config.getPostgresDbConfiguration("some-tenant").getDatabaseSettings();
             Assertions.assertEquals(settingsOpt, settingsOptFromGet);
             Assertions.assertTrue(settingsOpt.isPresent());
 
@@ -77,8 +77,8 @@ public class DbCreationConfigTests {
 
         @Test
         public void testPgExtensionsContainsRoleAndPrefix() {
-            Optional<String> userRole = config.dbaasApiPropertiesConfig.runtimeUserRole;
-            Optional<String> dbPrefix = config.dbaasApiPropertiesConfig.dbPrefix;
+            Optional<String> userRole = config.dbaasApiPropertiesConfig().runtimeUserRole();
+            Optional<String> dbPrefix = config.dbaasApiPropertiesConfig().dbPrefix();
             Assertions.assertTrue(userRole.isPresent());
             Assertions.assertEquals("admin", userRole.get());
             Assertions.assertNotNull(dbPrefix);
@@ -94,7 +94,7 @@ public class DbCreationConfigTests {
 
         @Test
         public void testPgExtensionsContains2Elem() {
-            Optional<PostgresSettings> settingsOpt = config.serviceDbConfiguration.databaseSettings;
+            Optional<PostgresSettings> settingsOpt = config.serviceDatabaseSettings();
             Assertions.assertTrue(settingsOpt.isPresent());
 
             PostgresSettings settings = settingsOpt.get();
@@ -116,7 +116,7 @@ public class DbCreationConfigTests {
 
         @Test
         public void testPostgresSettingsMustBeNull() {
-            Optional<PostgresSettings> settingsOpt = config.serviceDbConfiguration.databaseSettings;
+            Optional<PostgresSettings> settingsOpt = config.serviceDatabaseSettings();
             Assertions.assertFalse(settingsOpt.isPresent());
         }
     }

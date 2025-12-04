@@ -1,76 +1,84 @@
 package com.netcracker.cloud.core.quarkus.dbaas.datasource.config.properties;
 
-import io.quarkus.runtime.annotations.ConfigGroup;
-import io.quarkus.runtime.annotations.ConfigItem;
+import io.smallrye.config.WithDefault;
+import io.smallrye.config.WithName;
 
-@ConfigGroup
-public class JDBCConfig {
+public interface JDBCConfig {
+
     /**
      * poolSize
      */
-    @ConfigItem(name = "max-size", defaultValue = "5")
-    public Integer poolSize;
+    @WithName("max-size")
+    @WithDefault("5")
+    Integer poolSize();
 
     /**
      * minPoolSize
      */
-    @ConfigItem(name = "min-size", defaultValue = "0")
-    public Integer minPoolSize;
+    @WithName("min-size")
+    @WithDefault("0")
+    Integer minPoolSize();
 
     /**
      * initPoolSize
      */
-    @ConfigItem(name = "initial-size", defaultValue = "0")
-    public Integer initPoolSize;
+    @WithName("initial-size")
+    @WithDefault("0")
+    Integer initPoolSize();
 
     /**
      * background-validation-interval
      */
-    @ConfigItem(name = "background-validation-interval.seconds", defaultValue = "120")
-    public double datasourceValidationInterval;
+    @WithName("background-validation-interval.seconds")
+    @WithDefault("120")
+    double datasourceValidationInterval();
 
-    // set IdleValidationTimeout to 500 ms to make Agroal datasource to validate connection before each getConnection() call
-    // to make sure that connection is checked if it's closed
     /**
      * idle-removal-interval
      */
-    @ConfigItem(name = "idle-removal-interval.seconds", defaultValue = "0.5")
-    public double datasourceIdleValidationTimeout;
+    @WithName("idle-removal-interval.seconds")
+    @WithDefault("0.5")
+    double datasourceIdleValidationTimeout();
 
     /**
      * reap-timeout
      */
-    @ConfigItem(name = "idle-reap-interval.seconds", defaultValue = "0.5")
-    public double datasourceReapTimeout;
+    @WithName("idle-reap-interval.seconds")
+    @WithDefault("0.5")
+    double datasourceReapTimeout();
 
     /**
      * acquisition-timeout
      */
-    @ConfigItem(name = "acquisition-timeout.seconds", defaultValue = "30")
-    public double datasourceAcquisitionTimeout;
+    @WithName("acquisition-timeout.seconds")
+    @WithDefault("30")
+    double datasourceAcquisitionTimeout();
 
     /**
      * respond-time-to-drop
      */
-    @ConfigItem(name = "respond-time-to-drop.seconds", defaultValue = "5")
-    public String datasourceRespondTimeToDrop;
+    @WithName("respond-time-to-drop.seconds")
+    @WithDefault("5")
+    String datasourceRespondTimeToDrop();
 
     /**
      * leak-detection-interval
      */
-    @ConfigItem(name = "leak-detection-interval.seconds", defaultValue = "0")
-    public double datasourceLeakDetectionInterval;
+    @WithName("leak-detection-interval.seconds")
+    @WithDefault("0")
+    double datasourceLeakDetectionInterval();
 
     /**
      * autocommit
      */
-    @ConfigItem(name = "autocommit", defaultValue = "true")
-    public Boolean autoCommit;
+    @WithName("autocommit")
+    @WithDefault("true")
+    Boolean autoCommit();
 
     /**
      * flush-on-close
      */
-    @ConfigItem(name = "flush-on-close", defaultValue = "false")
-    public Boolean flushOnClose;
-
+    @WithName("flush-on-close")
+    @WithDefault("false")
+    Boolean flushOnClose();
 }

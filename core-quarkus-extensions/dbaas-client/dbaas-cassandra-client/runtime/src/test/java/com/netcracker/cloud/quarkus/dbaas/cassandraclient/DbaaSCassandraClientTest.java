@@ -152,8 +152,8 @@ class DbaaSCassandraClientTest {
 
         CassandraProperties properties = mock(CassandraProperties.class);
         DbaaSCassandraDbCreationConfig creationConfig = mock(DbaaSCassandraDbCreationConfig.class);
-        when(creationConfig.getDbClassifier()).thenReturn("test");
-        when(properties.getCassandraDbCreationConfig()).thenReturn(creationConfig);
+        when(creationConfig.dbClassifier()).thenReturn("test");
+        when(properties.cassandraDbCreationConfig()).thenReturn(creationConfig);
         Field cassandraProperties = cassandraClientConfiguration.getClass().getDeclaredField("cassandraProperties");
         cassandraProperties.setAccessible(true);
         cassandraProperties.set(cassandraClientConfiguration, properties);

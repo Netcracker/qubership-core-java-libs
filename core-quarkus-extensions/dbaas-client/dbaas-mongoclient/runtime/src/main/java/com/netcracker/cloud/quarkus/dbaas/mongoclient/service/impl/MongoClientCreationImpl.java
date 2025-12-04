@@ -4,7 +4,7 @@ import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.internal.MongoClientImpl;
+import com.mongodb.client.MongoClients;
 import com.netcracker.cloud.dbaas.client.DbaasClient;
 import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
 import com.netcracker.cloud.dbaas.client.management.DbaasDbClassifier;
@@ -46,8 +46,8 @@ public class MongoClientCreationImpl implements MongoClientCreation {
 
     private DatabaseConfig getDbCreateParameters() {
         DatabaseConfig.Builder builder = DatabaseConfig.builder();
-        builder.dbNamePrefix(dbaasMongoDbCreationConfig.dbaasApiPropertiesConfig.getDbaaseApiProperties().getDbPrefix());
-        builder.userRole(dbaasMongoDbCreationConfig.dbaasApiPropertiesConfig.getDbaaseApiProperties().getRuntimeUserRole());
+        builder.dbNamePrefix(dbaasMongoDbCreationConfig.dbaasApiPropertiesConfig().getDbaaseApiProperties().getDbPrefix());
+        builder.userRole(dbaasMongoDbCreationConfig.dbaasApiPropertiesConfig().getDbaaseApiProperties().getRuntimeUserRole());
         return builder.build();
     }
 
@@ -88,7 +88,8 @@ public class MongoClientCreationImpl implements MongoClientCreation {
             );
         }
         MongoClientSettings mongoClientSettings = mongoBuilder.build();
-        MongoClient mongoClient = new MongoClientImpl(mongoClientSettings, null);
+
+        MongoClient mongoClient = MongoClients.create(mongoClientSettings);
 
         log.info("Created mongo client: {}", mongoClient);
         connectionProperties.setClient(mongoClient);

@@ -7,7 +7,6 @@ import com.netcracker.cloud.core.quarkus.dbaas.datasource.config.flyway.FlywayCo
 import com.netcracker.cloud.core.quarkus.dbaas.datasource.config.properties.DatasourceProperties;
 import com.netcracker.cloud.core.quarkus.dbaas.datasource.config.properties.DbaaSPostgresDbCreationConfig;
 import com.netcracker.cloud.core.quarkus.dbaas.datasource.config.properties.JDBCConfig;
-import com.netcracker.cloud.core.quarkus.dbaas.datasource.config.properties.PostgresDbConfiguration;
 import com.netcracker.cloud.core.quarkus.dbaas.datasource.service.MigrationService;
 import com.netcracker.cloud.core.quarkus.dbaas.datasource.service.agroal.AgroalConnectionFactoryConfigurationBuilder;
 import com.netcracker.cloud.core.quarkus.dbaas.datasource.service.agroal.auth.DbaasSecurityProvider;
@@ -45,7 +44,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 
 import java.sql.SQLException;
@@ -93,16 +91,16 @@ public class DbaaSPostgresDbCreationServiceImplTest {
         transactionSynchronizationRegistry = mock(TransactionSynchronizationRegistry.class);
         dbaaSClient = mock(DbaasClient.class);
         migrationService = mock(MigrationService.class);
-        CoreFlywayConfig coreFlywayConfig = new CoreFlywayConfig();
-        FlywayConfig flywayConfig = new FlywayConfig();
-        flywayConfig.cleanAndMigrateAtStart = false;
-        flywayConfig.ignoreMigrationPatterns = Optional.of(new String[]{"*:future", "*:missing"});
-        coreFlywayConfig.globalFlywayConfig = flywayConfig;
+        CoreFlywayConfig coreFlywayConfig = mock(CoreFlywayConfig.class);
+        FlywayConfig flywayConfig = mock(FlywayConfig.class);
+        when(flywayConfig.cleanAndMigrateAtStart()).thenReturn(false);
+        when(flywayConfig.ignoreMigrationPatterns()).thenReturn(Optional.of(new String[]{"*:future", "*:missing"}));
+        when(coreFlywayConfig.globalFlywayConfig()).thenReturn(flywayConfig);
 
         DbaasDatasourcePoolConfiguration poolConfiguration = mock(DbaasDatasourcePoolConfiguration.class);
-        DatasourceProperties properties = new DatasourceProperties();
-        properties.debugDatasourceListeners = false;
-        properties.globalJdbcProperties = new HashMap<>();
+        DatasourceProperties properties = mock(DatasourceProperties.class);
+        when(properties.debugDatasourceListeners()).thenReturn(false);
+        when(properties.globalJdbcProperties()).thenReturn(new HashMap<>());
         when(poolConfiguration.getDatasourceProperties()).thenReturn(properties);
         when(poolConfiguration.getJdbcProperties(any())).thenCallRealMethod();
 
@@ -124,17 +122,25 @@ public class DbaaSPostgresDbCreationServiceImplTest {
 
     @NotNull
     private DbaaSPostgresDbCreationConfig createDefaultDbaaSPostgresDbConfiguration() {
-        DbaaSPostgresDbCreationConfig dbaaSPostgresDbCreationConfig = new DbaaSPostgresDbCreationConfig();
-        PostgresDbConfiguration postgresDbConfiguration = new PostgresDbConfiguration();
-        postgresDbConfiguration.databaseSettings = Optional.empty();
-        postgresDbConfiguration.physicalDatabaseId = Optional.empty();
-        dbaaSPostgresDbCreationConfig.serviceDbConfiguration = postgresDbConfiguration;
-        dbaaSPostgresDbCreationConfig.tenantDbConfiguration = Collections.singletonMap("tenant", postgresDbConfiguration);
+        DbaaSPostgresDbCreationConfig dbaaSPostgresDbCreationConfig = mock(DbaaSPostgresDbCreationConfig.class);
+        DbaaSPostgresDbCreationConfig.TenantConfig tenantConfig = new DbaaSPostgresDbCreationConfig.TenantConfig() {
+            @Override
+            public Optional<PostgresSettings> databaseSettings() {
+                return Optional.empty();
+            }
+            @Override
+            public Optional<String> physicalDatabaseId() {
+                return Optional.empty();
+            }
+        };
+        when(dbaaSPostgresDbCreationConfig.serviceDatabaseSettings()).thenReturn(Optional.empty());
+        when(dbaaSPostgresDbCreationConfig.servicePhysicalDatabaseId()).thenReturn(Optional.empty());
+        when(dbaaSPostgresDbCreationConfig.tenantDbConfiguration()).thenReturn(Collections.singletonMap("tenant", tenantConfig));
         DbaasApiPropertiesConfig dbaasApiPropertiesConfig = mock(DbaasApiPropertiesConfig.class);
         DbaasApiProperties dbaasApiProperties = new DbaasApiProperties();
         dbaasApiProperties.setRuntimeUserRole(null);
         when(dbaasApiPropertiesConfig.getDbaaseApiProperties()).thenReturn(dbaasApiProperties);
-        dbaaSPostgresDbCreationConfig.dbaasApiPropertiesConfig = dbaasApiPropertiesConfig;
+        when(dbaaSPostgresDbCreationConfig.dbaasApiPropertiesConfig()).thenReturn(dbaasApiPropertiesConfig);
         return dbaaSPostgresDbCreationConfig;
     }
 
@@ -167,10 +173,10 @@ public class DbaaSPostgresDbCreationServiceImplTest {
 
     @Test
     public void mustUseDefaultPropertiesWhenCustomParamsEmpty() {
-        DatasourceProperties properties = new DatasourceProperties();
-        properties.enhancedLeakReport = true;
+        DatasourceProperties properties = mock(DatasourceProperties.class);
+        when(properties.enhancedLeakReport()).thenReturn(true);
         JDBCConfig jdbcConfig = getJdbcConfigProps();
-        properties.jdbc = jdbcConfig;
+        when(properties.jdbc()).thenReturn(jdbcConfig);
 
         AgroalConnectionPoolConfigurationFactory agroalConnectionPoolConfigurationFactory = new AgroalConnectionPoolConfigurationFactory(properties, transactionManager, transactionSynchronizationRegistry);
         DatasourceConnectorSettings connectorSettings = new DatasourceConnectorSettings();
@@ -194,12 +200,12 @@ public class DbaaSPostgresDbCreationServiceImplTest {
     }
 
     private JDBCConfig getJdbcConfigProps() {
-        JDBCConfig jdbcConfig = new JDBCConfig();
-        jdbcConfig.flushOnClose = true;
-        jdbcConfig.datasourceRespondTimeToDrop = "10";
-        jdbcConfig.poolSize = 15;
-        jdbcConfig.minPoolSize = 1;
-        jdbcConfig.initPoolSize = 6;
+        JDBCConfig jdbcConfig = mock(JDBCConfig.class);
+        when(jdbcConfig.flushOnClose()).thenReturn(true);
+        when(jdbcConfig.datasourceRespondTimeToDrop()).thenReturn("10");
+        when(jdbcConfig.poolSize()).thenReturn(15);
+        when(jdbcConfig.minPoolSize()).thenReturn(1);
+        when(jdbcConfig.initPoolSize()).thenReturn(6);
         return jdbcConfig;
     }
 
@@ -271,25 +277,27 @@ public class DbaaSPostgresDbCreationServiceImplTest {
 
     private DatasourceProperties createPropertiesData() {
         // Setup specific JDBC properties for a logical DB
-        DatasourceProperties properties = new DatasourceProperties();
-        properties.enhancedLeakReport = true;
-        properties.jdbc = new JDBCConfig();
+        DatasourceProperties properties = mock(DatasourceProperties.class);
+        when(properties.enhancedLeakReport()).thenReturn(true);
+        when(properties.jdbc()).thenReturn(mock(JDBCConfig.class));
         String logicaldbName = "configs";
-        DatasourceProperties.JDBCProperties specificJdbcProperties = new DatasourceProperties.JDBCProperties();
-        JDBCConfig specificJdbcConfig = Mockito.spy(new JDBCConfig());
-        specificJdbcConfig.poolSize = 20;
-        specificJdbcConfig.minPoolSize = 5;
-        specificJdbcConfig.initPoolSize=10;
-        specificJdbcConfig.datasourceIdleValidationTimeout =0.10;
-        specificJdbcConfig.datasourceReapTimeout =0.10;
-        specificJdbcConfig.datasourceAcquisitionTimeout = 0.10;
-        specificJdbcConfig.datasourceLeakDetectionInterval = 1;
-        specificJdbcConfig.datasourceRespondTimeToDrop = "5";
-        specificJdbcConfig.datasourceValidationInterval =7;
-        specificJdbcConfig.flushOnClose = true;
-        specificJdbcConfig.autoCommit = false;
-        specificJdbcProperties.jdbc = specificJdbcConfig;
-        properties.datasources.put(logicaldbName, specificJdbcProperties);
+        DatasourceProperties.JDBCProperties specificJdbcProperties = mock(DatasourceProperties.JDBCProperties.class);
+        JDBCConfig specificJdbcConfig = Mockito.spy(JDBCConfig.class);
+        when(specificJdbcConfig.poolSize()).thenReturn(20);
+        when(specificJdbcConfig.minPoolSize()).thenReturn(5);
+        when(specificJdbcConfig.initPoolSize()).thenReturn(10);
+        when(specificJdbcConfig.datasourceIdleValidationTimeout()).thenReturn(0.10);
+        when(specificJdbcConfig.datasourceReapTimeout()).thenReturn(0.10);
+        when(specificJdbcConfig.datasourceAcquisitionTimeout()).thenReturn(0.10);
+        when(specificJdbcConfig.datasourceLeakDetectionInterval()).thenReturn(1.0);
+        when(specificJdbcConfig.datasourceRespondTimeToDrop()).thenReturn("5");
+        when(specificJdbcConfig.datasourceValidationInterval()).thenReturn(7.0);
+        when(specificJdbcConfig.flushOnClose()).thenReturn(true);
+        when(specificJdbcConfig.autoCommit()).thenReturn(false);
+        when(specificJdbcProperties.jdbc()).thenReturn(specificJdbcConfig);
+        Map<String, DatasourceProperties.JDBCProperties> datasources = new HashMap<>();
+        datasources.put(logicaldbName, specificJdbcProperties);
+        when(properties.datasources()).thenReturn(datasources);
         return properties;
     }
 
@@ -372,15 +380,21 @@ public class DbaaSPostgresDbCreationServiceImplTest {
 
     @Test
     public void testCanCreateServiceDatabaseWithPgExtensions() {
-        PostgresDbConfiguration dbConfiguration = getPostgresDbConfiguration();
-        DbaaSPostgresDbCreationConfig postgresDbConfiguration = new DbaaSPostgresDbCreationConfig();
+        DbaaSPostgresDbCreationConfig postgresDbConfiguration = mock(DbaaSPostgresDbCreationConfig.class);
         DbaasApiPropertiesConfig dbaasApiPropertiesConfig = mock(DbaasApiPropertiesConfig.class);
         DbaasApiProperties dbaasApiProperties = new DbaasApiProperties();
         dbaasApiProperties.setRuntimeUserRole(null);
         when(dbaasApiPropertiesConfig.getDbaaseApiProperties()).thenReturn(dbaasApiProperties);
-        postgresDbConfiguration.dbaasApiPropertiesConfig = dbaasApiPropertiesConfig;
-        postgresDbConfiguration.serviceDbConfiguration = dbConfiguration;
+        when(postgresDbConfiguration.dbaasApiPropertiesConfig()).thenReturn(dbaasApiPropertiesConfig);
+
+        PostgresSettings settings = new PostgresSettings();
+        settings.setPgExtensions(Collections.singletonList("bloom"));
+
+        when(postgresDbConfiguration.servicePhysicalDatabaseId()).thenReturn(Optional.of("123"));
+        when(postgresDbConfiguration.serviceDatabaseSettings()).thenReturn(Optional.of(settings));
         dataSourceCreationServiceImplBuilder.setPostgresDbConfiguration(postgresDbConfiguration);
+
+        when(postgresDbConfiguration.getPostgresDbConfiguration(any())).thenCallRealMethod();
 
         DbaaSPostgresDbCreationServiceImpl dbaaSPostgresDbCreationService = dataSourceCreationServiceImplBuilder.build();
         DbaasDbClassifier classifier = getServiceClassifier();
@@ -389,29 +403,25 @@ public class DbaaSPostgresDbCreationServiceImplTest {
         when(dbaaSClient.getOrCreateDatabase(any(), anyString(), anyMap(), any(DatabaseConfig.class))).thenReturn(postgresDatabaseWithExtensions);
         dbaaSPostgresDbCreationService.getOrCreatePostgresDatabase(classifier);
         verify(dbaaSClient).getOrCreateDatabase(eq(PostgresDBType.INSTANCE), anyString(), eq(classifier.asMap()),
-                argThat((ArgumentMatcher<DatabaseConfig>) parameters -> parameters.getDatabaseSettings().equals(dbConfiguration.databaseSettings.get()) && parameters.getPhysicalDatabaseId().equals("123")));
-    }
-
-    private PostgresDbConfiguration getPostgresDbConfiguration() {
-        PostgresDbConfiguration dbConfiguration = new PostgresDbConfiguration();
-        dbConfiguration.physicalDatabaseId = Optional.of("123");
-        PostgresSettings settings = new PostgresSettings();
-        settings.setPgExtensions(Collections.singletonList("bloom"));
-        dbConfiguration.databaseSettings = Optional.of(settings);
-        return dbConfiguration;
+                argThat(parameters -> parameters.getDatabaseSettings().equals(settings) && parameters.getPhysicalDatabaseId().equals("123")));
     }
 
     @Test
     public void testCanCreateTenantDatabaseWithPgExtensions() {
-        DbaaSPostgresDbCreationConfig tenantDbConfiguration = new DbaaSPostgresDbCreationConfig();
+        DbaaSPostgresDbCreationConfig tenantDbConfiguration = mock(DbaaSPostgresDbCreationConfig.class);
         DbaasApiPropertiesConfig dbaasApiPropertiesConfig = mock(DbaasApiPropertiesConfig.class);
         DbaasApiProperties dbaasApiProperties = new DbaasApiProperties();
         dbaasApiProperties.setRuntimeUserRole(null);
         when(dbaasApiPropertiesConfig.getDbaaseApiProperties()).thenReturn(dbaasApiProperties);
-        tenantDbConfiguration.dbaasApiPropertiesConfig = dbaasApiPropertiesConfig;
-        PostgresDbConfiguration dbConfiguration = getPostgresDbConfiguration();
-        tenantDbConfiguration.allTenantsDbConfiguration = dbConfiguration;
+        when(tenantDbConfiguration.dbaasApiPropertiesConfig()).thenReturn(dbaasApiPropertiesConfig);
+
+        PostgresSettings settings = new PostgresSettings();
+        settings.setPgExtensions(Collections.singletonList("bloom"));
+        when(tenantDbConfiguration.allTenantsPhysicalDatabaseId()).thenReturn(Optional.of("123"));
+        when(tenantDbConfiguration.allTenantsDatabaseSettings()).thenReturn(Optional.of(settings));
         DbaasDbClassifier classifier = getTenantClassifier("test-tenant");
+
+        when(tenantDbConfiguration.getPostgresDbConfiguration(any())).thenCallRealMethod();
 
         PostgresDatabase postgresDatabaseWithExtensions = getPostgresDatabase("test-url", "test-username", "test-password");
         when(dbaaSClient.getOrCreateDatabase(any(), anyString(), anyMap(), any(DatabaseConfig.class))).thenReturn(postgresDatabaseWithExtensions);
@@ -420,7 +430,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
                 .setPostgresDbConfiguration(tenantDbConfiguration).build();
         dbaaSPostgresDbCreationService.getOrCreatePostgresDatabase(classifier);
         verify(dbaaSClient).getOrCreateDatabase(eq(PostgresDBType.INSTANCE), anyString(), eq(classifier.asMap()),
-                argThat((ArgumentMatcher<DatabaseConfig>) parameters -> parameters.getDatabaseSettings().equals(dbConfiguration.databaseSettings.get()) && parameters.getPhysicalDatabaseId().equals("123")));
+                argThat(parameters -> parameters.getDatabaseSettings().equals(settings) && parameters.getPhysicalDatabaseId().equals("123")));
     }
 
     private PostgresDatabase getPostgresDatabase(String url, String username, String password) {

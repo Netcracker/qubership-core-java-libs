@@ -85,17 +85,17 @@ public class CassandraClientCreationImpl implements CassandraClientCreation {
     private DatabaseConfig getDatabaseConfig(Map<String, Object> classifier) {
         log.debug("Create DbParameters for database with classifier {}", classifier);
         String tenantId = (String) classifier.get("tenantId");
-        CassandraDbConfiguration dbConfiguration = cassandraProperties.getCassandraDbCreationConfig().getCassandraDbConfiguration(tenantId);
+        CassandraDbConfiguration dbConfiguration = cassandraProperties.cassandraDbCreationConfig().getCassandraDbConfiguration(tenantId);
         DatabaseConfig.Builder config = DatabaseConfig.builder();
         if (dbConfiguration != null) {
-            config.physicalDatabaseId(dbConfiguration.getPhysicalDatabaseId().orElse(null));
-            CassandraDatabaseSettings databaseSettings = dbConfiguration.getDatabaseSettings();
+            config.physicalDatabaseId(dbConfiguration.physicalDatabaseId().orElse(null));
+            CassandraDatabaseSettings databaseSettings = dbConfiguration.databaseSettings();
             config.databaseSettings(databaseSettings.isEmpty() ? null : databaseSettings.toDTO());
         }
-        config.dbNamePrefix(cassandraProperties.getCassandraDbCreationConfig().
-                dbaasApiPropertiesConfig.getDbaaseApiProperties().getDbPrefix());
-        config.userRole(cassandraProperties.getCassandraDbCreationConfig().
-                dbaasApiPropertiesConfig.getDbaaseApiProperties().getRuntimeUserRole());
+        config.dbNamePrefix(cassandraProperties.cassandraDbCreationConfig().
+                dbaasApiPropertiesConfig().getDbaaseApiProperties().getDbPrefix());
+        config.userRole(cassandraProperties.cassandraDbCreationConfig().
+                dbaasApiPropertiesConfig().getDbaaseApiProperties().getRuntimeUserRole());
         return config.build();
     }
 

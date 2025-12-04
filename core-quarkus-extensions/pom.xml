@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.netcracker.cloud.quarkus</groupId>
-    <version>7.3.2-SNAPSHOT</version>
+    <version>8.0.0-SNAPSHOT</version>
     <artifactId>cloud-core-quarkus</artifactId>
     <packaging>pom</packaging>
 
@@ -16,7 +16,7 @@
 
     <properties>
         <lombok.version>1.18.42</lombok.version>
-        <quarkus.version>3.20.3</quarkus.version>
+        <quarkus.version>3.27.1</quarkus.version>
         <maven.compiler.release>17</maven.compiler.release>
     </properties>
 

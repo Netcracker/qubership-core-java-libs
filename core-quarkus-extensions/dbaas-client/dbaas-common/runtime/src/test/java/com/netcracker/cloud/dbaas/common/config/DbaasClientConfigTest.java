@@ -26,10 +26,10 @@ class DbaasClientConfigTest {
 
     @Test
     void testDbaasClientConfigBuild() {
-        assertTrue(dbaasClientConfig.dbaasAgentUrl.isEmpty());
-        assertEquals(DBAAS_AGGREGATOR_ADDRESS, dbaasClientConfig.dbaasUrl.get());
-        assertEquals(DBAAS_USERNAME, dbaasClientConfig.dbaasUsername.get());
-        assertEquals(DBAAS_PASSWORD, dbaasClientConfig.dbaasPassword.get());
+        assertTrue(dbaasClientConfig.dbaasAgentUrl().isEmpty());
+        assertEquals(DBAAS_AGGREGATOR_ADDRESS, dbaasClientConfig.dbaasUrl().get());
+        assertEquals(DBAAS_USERNAME, dbaasClientConfig.dbaasUsername().get());
+        assertEquals(DBAAS_PASSWORD, dbaasClientConfig.dbaasPassword().get());
     }
 
     @NoArgsConstructor

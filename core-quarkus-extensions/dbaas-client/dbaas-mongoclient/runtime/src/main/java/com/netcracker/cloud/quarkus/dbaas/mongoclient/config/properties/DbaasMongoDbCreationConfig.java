@@ -1,16 +1,18 @@
 package com.netcracker.cloud.quarkus.dbaas.mongoclient.config.properties;
 
 import com.netcracker.cloud.dbaas.common.config.DbaasApiPropertiesConfig;
-import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithParentName;
 
-@ConfigRoot(name = "dbaas.mongo.api", phase = ConfigPhase.RUN_TIME)
-public class DbaasMongoDbCreationConfig {
+@ConfigMapping(prefix = "quarkus.dbaas.mongo.api")
+@ConfigRoot(phase = ConfigPhase.RUN_TIME)
+public interface DbaasMongoDbCreationConfig {
+
     /**
      * Property with MongoDB role which send request and database name prefix.
      */
-    @ConfigItem(name = ConfigItem.PARENT)
-    public DbaasApiPropertiesConfig dbaasApiPropertiesConfig;
-
+    @WithParentName
+    DbaasApiPropertiesConfig dbaasApiPropertiesConfig();
 }

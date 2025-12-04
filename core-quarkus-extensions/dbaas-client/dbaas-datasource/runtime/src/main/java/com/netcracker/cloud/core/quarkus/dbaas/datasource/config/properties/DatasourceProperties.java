@@ -1,85 +1,88 @@
 package com.netcracker.cloud.core.quarkus.dbaas.datasource.config.properties;
 
-import io.quarkus.runtime.annotations.ConfigGroup;
-import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithDefault;
+import io.smallrye.config.WithName;
+import io.smallrye.config.WithParentName;
 
-import java.util.HashMap;
 import java.util.Map;
 
-@ConfigRoot(name = "dbaas", phase = ConfigPhase.RUN_TIME)
-public class DatasourceProperties {
+@ConfigMapping(prefix = "quarkus.dbaas")
+@ConfigRoot(phase = ConfigPhase.RUN_TIME)
+public interface DatasourceProperties {
 
     /**
      * jdbc config
      */
-    @ConfigItem(name = "datasource.jdbc")
-    public JDBCConfig jdbc;
+    @WithName("datasource.jdbc")
+    JDBCConfig jdbc();
 
     /**
      * enhanced-leak-report
      */
-    @ConfigItem(name = "datasource.enhanced-leak-report.enable", defaultValue = "false")
-    public Boolean enhancedLeakReport;
+    @WithName("datasource.enhanced-leak-report.enable")
+    @WithDefault("false")
+    boolean enhancedLeakReport();
 
     /**
      * debug-listener
      */
-    @ConfigItem(name = "datasource.debug-listener.enable", defaultValue = "false")
-    public Boolean debugDatasourceListeners;
+    @WithName("datasource.debug-listener.enable")
+    @WithDefault("false")
+    boolean debugDatasourceListeners();
 
     /**
      * globalJdbcProperties
      */
-    @ConfigItem(name = "datasource.jdbc-properties")
-    public Map<String, String> globalJdbcProperties = new HashMap<>();
+    @WithName("datasource.jdbc-properties")
+    Map<String, String> globalJdbcProperties();
 
     /**
      * global xaProperties
      */
-    @ConfigItem(name = "datasource.xa-properties")
-    public Map<String, String> globalXaProperties = new HashMap<>();
+    @WithName("datasource.xa-properties")
+    Map<String, String> globalXaProperties();
 
     /**
      * global XA configuration
      */
-    @ConfigItem(name = "datasource.xa", defaultValue = "false")
-    public Boolean xa;
+    @WithName("datasource.xa")
+    @WithDefault("false")
+    boolean xa();
 
     /**
      * jdbc
      */
-    @ConfigMapping
-    public Map<String, JDBCProperties> datasources = new HashMap<>();
+    @WithParentName
+    Map<String, JDBCProperties> datasources();
 
-    @ConfigGroup
-    public static class JDBCProperties {
+    interface JDBCProperties {
 
         /**
          * jdbc config
          */
-        @ConfigItem(name = "jdbc")
-        public JDBCConfig jdbc;
+        @WithName("jdbc")
+        JDBCConfig jdbc();
 
         /**
          * jdbcProperties
          */
-        @ConfigItem(name = "jdbc-properties")
-        public Map<String, String> jdbcProperties = new HashMap<>();
+        @WithName("jdbc-properties")
+        Map<String, String> jdbcProperties();
 
         /**
          * xaProperties
          */
-        @ConfigItem(name = "xa-properties")
-        public Map<String, String> xaProperties = new HashMap<>();
+        @WithName("xa-properties")
+        Map<String, String> xaProperties();
 
         /**
          * is XA datasource
          */
-        @ConfigItem(name = "xa", defaultValue = "false")
-        public Boolean xa;
+        @WithName("xa")
+        @WithDefault("false")
+        boolean xa();
     }
-
 }

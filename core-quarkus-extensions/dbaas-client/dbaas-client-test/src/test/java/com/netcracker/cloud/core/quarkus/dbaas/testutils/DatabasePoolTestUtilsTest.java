@@ -34,12 +34,9 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class DatabasePoolTestUtilsTest {
-    private static final String TEST_MS_NAME = "test-ms";
     private static final String TEST_NAMESPACE = "test-namespace";
 
     @Test
@@ -50,33 +47,35 @@ public class DatabasePoolTestUtilsTest {
         when(logicalDbProvider.order()).thenReturn(100);
         when(providerOfLogicalDb.stream()).thenReturn(Stream.of(logicalDbProvider));
 
-        DbaasApiPropertiesConfig apiConfig = new DbaasApiPropertiesConfig();
-        apiConfig.runtimeUserRole = Optional.of("admin");
-        apiConfig.dbPrefix = Optional.empty();
+        DbaasApiPropertiesConfig apiConfig = mock(DbaasApiPropertiesConfig.class);
+        when(apiConfig.runtimeUserRole()).thenReturn(Optional.of("admin"));
+        when(apiConfig.dbPrefix()).thenReturn(Optional.empty());
+        when(apiConfig.getDbaaseApiProperties()).thenCallRealMethod();
         DbaaSPostgresDbCreationConfig config = mock(DbaaSPostgresDbCreationConfig.class);
-        config.dbaasApiPropertiesConfig = apiConfig;
+        when(config.dbaasApiPropertiesConfig()).thenReturn(apiConfig);
 
         AgroalConnectionPoolConfiguration agroalPoolConfiguration = mock(AgroalConnectionPoolConfiguration.class);
         when(agroalPoolConfiguration.maxSize()).thenReturn(5);
         when(agroalPoolConfiguration.minSize()).thenReturn(1);
 
-        DatasourceProperties properties = new DatasourceProperties();
-        properties.globalJdbcProperties = new HashMap<>();
-        properties.debugDatasourceListeners = false;
+        DatasourceProperties properties = mock(DatasourceProperties.class);
+        when(properties.globalJdbcProperties()).thenReturn(new HashMap<>());
+        when(properties.debugDatasourceListeners()).thenReturn(false);
         DbaasDatasourcePoolConfiguration poolConfiguration = mock(DbaasDatasourcePoolConfiguration.class);
         when(poolConfiguration.getDatasourceProperties()).thenReturn(properties);
         when(poolConfiguration.getJdbcProperties(any())).thenCallRealMethod();
 
-        CoreFlywayConfig flywayConfig = new CoreFlywayConfig();
-        flywayConfig.globalFlywayConfig = new FlywayConfig();
-        flywayConfig.globalFlywayConfig.cleanAndMigrateAtStart = false;
+        CoreFlywayConfig coreFlywayConfig = mock(CoreFlywayConfig.class);
+        FlywayConfig flywayConfig = mock(FlywayConfig.class);
+        when(flywayConfig.cleanAndMigrateAtStart()).thenReturn(Boolean.FALSE);
+        when(coreFlywayConfig.globalFlywayConfig()).thenReturn(flywayConfig);
 
         AgroalConnectionPoolConfigurationFactory poolConfigFactory = mock(AgroalConnectionPoolConfigurationFactory.class);
-        when(poolConfigFactory.createAgroalConnectionPoolConfiguration(logicalDbname, new HashMap<String,Object>())).thenReturn(agroalPoolConfiguration);
+        when(poolConfigFactory.createAgroalConnectionPoolConfiguration(logicalDbname, new HashMap())).thenReturn(agroalPoolConfiguration);
         DbaaSPostgresDbCreationServiceImpl creationService = new DbaaSPostgresDbCreationServiceImpl(
                 TEST_NAMESPACE,
                 mock(MigrationService.class),
-                flywayConfig,
+                coreFlywayConfig,
                 poolConfigFactory,
                 mock(AgroalConnectionFactoryConfiguration.class),
                 config,

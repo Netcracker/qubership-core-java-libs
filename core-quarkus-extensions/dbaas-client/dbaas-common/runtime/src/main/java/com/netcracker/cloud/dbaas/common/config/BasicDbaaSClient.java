@@ -25,8 +25,8 @@ public class BasicDbaaSClient {
     }
 
     public DbaasClient build() {
-        String url = config.dbaasUrl.get();
-        String credentials = Credentials.basic(config.dbaasUsername.get(), config.dbaasPassword.get());
+        String url = config.dbaasUrl().get();
+        String credentials = Credentials.basic(config.dbaasUsername().get(), config.dbaasPassword().get());
         OkHttpClient httpClient = new OkHttpClient.Builder()
                 .addInterceptor(chain -> {
                     Request original = chain.request();

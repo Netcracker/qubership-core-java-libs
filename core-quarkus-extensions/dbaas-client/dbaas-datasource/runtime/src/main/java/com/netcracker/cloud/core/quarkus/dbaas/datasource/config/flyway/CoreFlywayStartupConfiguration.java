@@ -23,7 +23,7 @@ public class CoreFlywayStartupConfiguration {
     private static final Logger log = Logger.getLogger(CoreFlywayStartupConfiguration.class);
 
     void onStart(@Observes StartupEvent event, @Named(SERVICE_DATASOURCE) AgroalDataSource serviceDataSource) {
-        if (coreFlywayConfig.globalFlywayConfig.cleanAndMigrateAtStart) {
+        if (coreFlywayConfig.globalFlywayConfig().cleanAndMigrateAtStart()) {
             Flyway flyway = coreFlywayCreator.createFlyway(serviceDataSource, null);
             log.debug("Core flyway: clean and run start time migration");
             flyway.clean();

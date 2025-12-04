@@ -27,7 +27,7 @@ public class M2MDbaaSClient {
     }
 
     public DbaasClient build() {
-        String url = config.dbaasAgentUrl.orElse(DEFAULT_DBAAS_AGENT_ADDRESS);
+        String url = config.dbaasAgentUrl().orElse(DEFAULT_DBAAS_AGENT_ADDRESS);
         OkHttpClient httpClient = new OkHttpClient.Builder()
                 .addInterceptor(chain -> {
                     Request original = chain.request();

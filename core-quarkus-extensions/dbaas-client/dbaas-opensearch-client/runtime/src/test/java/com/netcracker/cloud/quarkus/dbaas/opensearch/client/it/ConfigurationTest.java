@@ -29,7 +29,7 @@ public class ConfigurationTest {
 
         @Test
         public void testExtensionsContainsPrefixAndRole() {
-            Optional<String> userRole = config.runtimeUserRole;
+            Optional<String> userRole = config.runtimeUserRole();
             Assertions.assertNotNull(userRole);
             Assertions.assertEquals("rw", userRole.get());
         }
@@ -43,8 +43,8 @@ public class ConfigurationTest {
 
         @Test
         public void testExtensionsContainsPrefixAndRole() {
-            Optional<Integer> maxConnTotal = configurationProperty.maxConnTotal;
-            Optional<Integer> maxConnPerRoute = configurationProperty.maxConnPerRoute;
+            Optional<Integer> maxConnTotal = configurationProperty.maxConnTotal();
+            Optional<Integer> maxConnPerRoute = configurationProperty.maxConnPerRoute();
             Assertions.assertTrue(maxConnTotal.isPresent());
             Assertions.assertTrue(maxConnPerRoute.isPresent());
             Assertions.assertEquals(Integer.valueOf(50), maxConnTotal.get());

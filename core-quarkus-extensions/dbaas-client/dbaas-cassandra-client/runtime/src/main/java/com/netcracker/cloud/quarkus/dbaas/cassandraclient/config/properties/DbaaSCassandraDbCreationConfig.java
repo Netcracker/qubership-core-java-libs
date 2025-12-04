@@ -1,47 +1,47 @@
 package com.netcracker.cloud.quarkus.dbaas.cassandraclient.config.properties;
 
 import com.netcracker.cloud.dbaas.common.config.DbaasApiPropertiesConfig;
-import io.quarkus.runtime.annotations.ConfigGroup;
-import io.quarkus.runtime.annotations.ConfigItem;
-import lombok.Getter;
+import io.smallrye.config.WithDefault;
+import io.smallrye.config.WithName;
+import io.smallrye.config.WithParentName;
 
 import java.util.Map;
 
-@Getter
-@ConfigGroup
-public class DbaaSCassandraDbCreationConfig {
+public interface DbaaSCassandraDbCreationConfig {
 
     /**
      * Property with Cassandra creation parameters for service database.
      */
-    @ConfigItem(name = "service")
-    CassandraDbConfiguration serviceDbConfiguration;
+    @WithName("service")
+    CassandraDbConfiguration serviceDbConfiguration();
 
     /**
      * Property with Cassandra creation parameters for tenant databases.
      */
-    @ConfigItem(name = "tenant")
-    Map<String, CassandraDbConfiguration> tenantDbConfiguration;
+    @WithName("tenant")
+    Map<String, CassandraDbConfiguration> tenantDbConfiguration();
 
     /**
      * Property with DB Classifier.
      */
-    @ConfigItem(name = "db-classifier", defaultValue = "default")
-    String dbClassifier;
+    @WithName("db-classifier")
+    @WithDefault("default")
+    String dbClassifier();
 
     /**
      * Property with database name prefix and runtime user role.
      */
-    @ConfigItem(name = ConfigItem.PARENT)
-    public DbaasApiPropertiesConfig dbaasApiPropertiesConfig;
+    @WithParentName
+    DbaasApiPropertiesConfig dbaasApiPropertiesConfig();
 
-    public CassandraDbConfiguration getCassandraDbConfiguration(String tenantId) {
+    default CassandraDbConfiguration getCassandraDbConfiguration(String tenantId) {
         if (tenantId != null) {
-            CassandraDbConfiguration cassandraDbConfiguration = tenantDbConfiguration.get(tenantId);
-            return cassandraDbConfiguration != null ? cassandraDbConfiguration : tenantDbConfiguration.get("tenant");
-        } else {
-            return serviceDbConfiguration;
+            Map<String, CassandraDbConfiguration> tenants = tenantDbConfiguration();
+            if (tenants != null) {
+                CassandraDbConfiguration cassandraDbConfiguration = tenants.get(tenantId);
+                return cassandraDbConfiguration != null ? cassandraDbConfiguration : tenants.get("tenant");
+            }
         }
+        return serviceDbConfiguration();
     }
-
 }

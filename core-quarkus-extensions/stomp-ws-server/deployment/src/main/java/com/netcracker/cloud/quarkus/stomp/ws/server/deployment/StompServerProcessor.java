@@ -26,7 +26,7 @@ public class StompServerProcessor {
     public void configureStompWsServer(StompServerRecorder stompServerRecorder,
                                        BuildProducer<RouteBuildItem> routes,
                                        CoreVertxBuildItem vertx) {
-        if (stompServerConfig.isSockJS) {
+        if (stompServerConfig.isSockJS()) {
             configureStompServerOverSockJs(stompServerRecorder, routes, vertx);
         } else {
             configureStompServerOverWebsocket(stompServerRecorder, routes, vertx);
@@ -36,13 +36,13 @@ public class StompServerProcessor {
     private void configureStompServerOverSockJs(StompServerRecorder stompServerRecorder,
                                                 BuildProducer<RouteBuildItem> routes,
                                                 CoreVertxBuildItem vertx) {
-        stompServerRecorder.initStompServer(vertx.getVertx(), stompServerConfig.websocketPath, true);
+        stompServerRecorder.initStompServer(vertx.getVertx(), stompServerConfig.websocketPath(), true);
         routes.produce(RouteBuildItem.builder()
-                .route(stompServerConfig.websocketPath + infoPathSegment)
+                .route(stompServerConfig.websocketPath() + infoPathSegment)
                 .handler(stompServerRecorder.sockJsInfoHandler())
                 .build());
         routes.produce(RouteBuildItem.builder()
-                .route(stompServerConfig.websocketPath + "/*")
+                .route(stompServerConfig.websocketPath() + "/*")
                 .handler(stompServerRecorder.stompHandler())
                 .build());
     }
@@ -50,9 +50,9 @@ public class StompServerProcessor {
     private void configureStompServerOverWebsocket(StompServerRecorder stompServerRecorder,
                                                    BuildProducer<RouteBuildItem> routes,
                                                    CoreVertxBuildItem vertx) {
-        stompServerRecorder.initStompServer(vertx.getVertx(), stompServerConfig.websocketPath, false);
+        stompServerRecorder.initStompServer(vertx.getVertx(), stompServerConfig.websocketPath(), false);
         routes.produce(RouteBuildItem.builder()
-                .route(stompServerConfig.websocketPath)
+                .route(stompServerConfig.websocketPath())
                 .handler(stompServerRecorder.stompHandler())
                 .build());
     }

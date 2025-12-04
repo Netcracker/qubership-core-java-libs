@@ -93,7 +93,7 @@ class MetricsTest {
 
     @Test
     void checkDefaultValuesOfOpensearchMetricsProperties() {
-        var dbaasOpensearchMetricsProperties = dbaaSOpensearchConfigurationProperty.getMetrics()
+        var dbaasOpensearchMetricsProperties = dbaaSOpensearchConfigurationProperty.metrics()
             .toDbaasOpensearchMetricsProperties();
 
         Assertions.assertNotNull(dbaasOpensearchMetricsProperties);

@@ -1,36 +1,39 @@
 package com.netcracker.cloud.dbaas.common.config;
 
-import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithName;
 
 import java.util.Optional;
 
-@ConfigRoot(name = "dbaas.api", phase = ConfigPhase.RUN_TIME)
-public class DbaasClientConfig {
-    public final static String DEFAULT_DBAAS_AGENT_ADDRESS = "http://dbaas-agent:8080";
+@ConfigMapping(prefix = "quarkus.dbaas.api")
+@ConfigRoot(phase = ConfigPhase.RUN_TIME)
+public interface DbaasClientConfig {
+
+    String DEFAULT_DBAAS_AGENT_ADDRESS = "http://dbaas-agent:8080";
 
     /**
      * dbaas agent url
      */
-    @ConfigItem(name = "agent.url")
-    public Optional<String> dbaasAgentUrl;
+    @WithName("agent.url")
+    Optional<String> dbaasAgentUrl();
 
     /**
      * dbaas url.
      */
-    @ConfigItem(name = "aggregator.address")
-    public Optional<String> dbaasUrl;
+    @WithName("aggregator.address")
+    Optional<String> dbaasUrl();
 
     /**
      * dbaas aggregator username
      */
-    @ConfigItem(name = "aggregator.username")
-    public Optional<String> dbaasUsername;
+    @WithName("aggregator.username")
+    Optional<String> dbaasUsername();
 
     /**
      * dbaas aggregator password
      */
-    @ConfigItem(name = "aggregator.password")
-    public Optional<String> dbaasPassword;
+    @WithName("aggregator.password")
+    Optional<String> dbaasPassword();
 }

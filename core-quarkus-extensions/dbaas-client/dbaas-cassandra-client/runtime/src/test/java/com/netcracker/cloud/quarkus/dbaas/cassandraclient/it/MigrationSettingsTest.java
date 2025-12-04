@@ -24,7 +24,7 @@ class MigrationSettingsTest {
 
     @Test
     void testMigrationConfigurationLoaded() {
-        SchemaMigrationSettings schemaMigrationSettings = cassandraProperties.getCassandraSessionProperties().getMigration().toSchemaMigrationSettings();
+        SchemaMigrationSettings schemaMigrationSettings = cassandraProperties.cassandraSessionProperties().migration().toSchemaMigrationSettings();
         assertTrue(schemaMigrationSettings.enabled());
         assertTrue(schemaMigrationSettings.amazonKeyspaces().enabled());
         assertEquals(111, schemaMigrationSettings.amazonKeyspaces().tableStatusCheck().preDelay());

@@ -1,31 +1,20 @@
 package com.netcracker.cloud.quarkus.dbaas.cassandraclient.config.properties.metrics;
 
-import io.quarkus.runtime.annotations.ConfigGroup;
-import io.quarkus.runtime.annotations.ConfigItem;
-import lombok.Getter;
-import lombok.experimental.Accessors;
-
 import java.util.Optional;
 
-@ConfigGroup
-@Getter
-@Accessors(fluent = true)
-public class MetricsProperties {
+public interface MetricsProperties {
     /**
      * Whether to enable metrics.
      */
-    @ConfigItem
-    Optional<Boolean> enabled;
+    Optional<Boolean> enabled();
 
     /**
      * The session-level metrics configuration.
      */
-    @ConfigItem
-    SessionProperties session;
+    SessionProperties session();
 
     /**
      * The node-level metrics configuration.
      */
-    @ConfigItem
-    NodeProperties node;
+    NodeProperties node();
 }

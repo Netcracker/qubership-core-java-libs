@@ -66,7 +66,7 @@ public class CassandraClientConfiguration {
     @Produces
     public DbaasCqlSessionBuilderCustomizer getDbaasCqlSessionBuilderCustomizer() {
         return new DefaultDbaasCqlSessionBuilderCustomizer(
-                cassandraProperties.getCassandraSessionProperties()
+                cassandraProperties.cassandraSessionProperties()
                         .getDbaasCassandraProperties());
     }
 
@@ -103,7 +103,7 @@ public class CassandraClientConfiguration {
     @ApplicationScoped
     @UnlessBuildProperty(name = "quarkus.dbaas.cassandra.migration.enabled", stringValue = "false", enableIfMissing = true)
     public MigrationExecutor cassandraMigrationExecutor(Instance<AlreadyMigratedVersionsExtensionPoint> alreadyMigratedVersionsExtensionPoint) {
-        SchemaMigrationSettings schemaMigrationSettings = cassandraProperties.getCassandraSessionProperties().getMigration().toSchemaMigrationSettings();
+        SchemaMigrationSettings schemaMigrationSettings = cassandraProperties.cassandraSessionProperties().migration().toSchemaMigrationSettings();
         SchemaVersionResourceReader schemaVersionResourceReader = new SchemaVersionResourceReaderImpl(schemaMigrationSettings.version(), new SchemaVersionResourceFinderRegistry());
         return new MigrationExecutorImpl(
                 schemaMigrationSettings,
@@ -132,7 +132,7 @@ public class CassandraClientConfiguration {
         Map<String, Object> params = new HashMap<>();
         params.put("microserviceName", microserviceName);
         params.put("namespace", namespace);
-        params.put("dbClassifier", cassandraProperties.getCassandraDbCreationConfig().getDbClassifier());
+        params.put("dbClassifier", cassandraProperties.cassandraDbCreationConfig().dbClassifier());
         return params;
     }
 }
