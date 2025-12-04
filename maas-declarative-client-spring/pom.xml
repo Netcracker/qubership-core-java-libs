@@ -32,8 +32,8 @@
 
         <testcontainers.version>1.21.3</testcontainers.version>
 
-        <maas-declarative-kafka-client.version>5.2.4</maas-declarative-kafka-client.version>
-        <maas-client-spring.version>8.2.3</maas-client-spring.version>
+        <maas-declarative-kafka-client.version>5.2.5</maas-declarative-kafka-client.version>
+        <maas-client-spring.version>8.2.4</maas-client-spring.version>
     </properties>
 
     <dependencyManagement>
