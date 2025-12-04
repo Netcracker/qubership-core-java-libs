@@ -5,11 +5,11 @@
     <parent>
         <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>cloud-core-context-propagation-bom-aggregator</artifactId>
-        <version>6.2.3-SNAPSHOT</version>
+        <version>7.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>cloud-core-context-propagation-bom-internal</artifactId>
-    <version>6.2.3-SNAPSHOT</version>
+    <version>7.0.0-SNAPSHOT</version>
 
     <name>Cloud-Core Context Propagation BOM - Internal</name>
 
@@ -22,7 +22,7 @@
 
         <!-- need to be updated together-->
         <okhttp.version>4.12.0</okhttp.version>
-        <okio.version>3.16.3</okio.version>
+        <okio.version>3.16.4</okio.version>
 
         <slf4j.log4j12.version>2.0.17</slf4j.log4j12.version>
     </properties>
