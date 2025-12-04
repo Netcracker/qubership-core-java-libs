@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-sample-tests</artifactId>
-        <version>8.2.4-SNAPSHOT</version>
+        <version>8.2.4</version>
     </parent>
 
     <artifactId>postgres-sample-test</artifactId>
