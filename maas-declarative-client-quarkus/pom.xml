@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud.maas.declarative</groupId>
     <artifactId>maas-declarative-kafka-client-quarkus-bom</artifactId>
-    <version>6.3.2-SNAPSHOT</version>
+    <version>7.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -16,7 +16,7 @@
     </licenses>
 
     <properties>
-        <quarkus.platform.version>3.20.3</quarkus.platform.version>
+        <quarkus.platform.version>3.27.1</quarkus.platform.version>
 
         <maven.compiler.release>17</maven.compiler.release>
         <maven.compiler.source>17</maven.compiler.source>
@@ -36,8 +36,8 @@
         <assertj-core.version>3.27.6</assertj-core.version>
 
         <maas-declarative-kafka-client.version>5.2.3</maas-declarative-kafka-client.version>
-        <maas-client-quarkus-kafka.version>8.3.1</maas-client-quarkus-kafka.version>
-        <blue-green-state-monitor-quarkus.version>1.4.1</blue-green-state-monitor-quarkus.version>
+        <maas-client-quarkus-kafka.version>9.0.0-SNAPSHOT</maas-client-quarkus-kafka.version>
+        <blue-green-state-monitor-quarkus.version>2.0.0-SNAPSHOT</blue-green-state-monitor-quarkus.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../maas-kafka-quarkus-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
