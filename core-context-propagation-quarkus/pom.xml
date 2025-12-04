@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.netcracker.cloud.quarkus</groupId>
-    <version>7.0.1</version>
+    <version>7.0.2-SNAPSHOT</version>
     <artifactId>cloud-core-context-propagation</artifactId>
 
     <name>Cloud-Core Context Propagation</name>
@@ -50,7 +50,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-context-propagation-quarkus.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-core-context-propagation-quarkus</url>
-        <tag>7.0.1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <repositories>
