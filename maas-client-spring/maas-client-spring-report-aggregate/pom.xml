@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.netcracker.cloud.maas.client</groupId>
         <artifactId>maas-client-spring-parent</artifactId>
-        <version>8.2.5</version>
+        <version>8.2.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 	<packaging>pom</packaging>
