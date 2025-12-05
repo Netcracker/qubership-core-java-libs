@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud.maas.declarative</groupId>
     <artifactId>maas-declarative-kafka-client-quarkus-bom</artifactId>
-    <version>7.0.2</version>
+    <version>7.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -278,7 +278,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-maas-declarative-client-quarkus.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-maas-declarative-client-quarkus</url>
-        <tag>v7.0.2</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <repositories>
