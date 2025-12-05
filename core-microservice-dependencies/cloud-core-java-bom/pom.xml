@@ -22,11 +22,11 @@
         <io.micrometer.verion>1.15.6</io.micrometer.verion>
         <java.version>17</java.version>
         <mongo.evolution.version>7.2.4</mongo.evolution.version>
-        <rest.libraries.version>6.2.4</rest.libraries.version>
-        <dbaas.client.version>8.2.4</dbaas.client.version>
+        <rest.libraries.version>6.2.8</rest.libraries.version>
+        <dbaas.client.version>8.2.5</dbaas.client.version>
         <framework.extension.version>6.2.4</framework.extension.version>
         <context.propagation.version>7.2.4</context.propagation.version>
-        <maas-client.version>11.2.4</maas-client.version>
+        <maas-client.version>11.2.5</maas-client.version>
         <core-error-handling.version>3.2.4</core-error-handling.version>
     </properties>
 
