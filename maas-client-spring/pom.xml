@@ -21,7 +21,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-boot.version>3.5.8</spring-boot.version>
         <spring-cloud.version>2024.0.2</spring-cloud.version>
-        <cloud-core.maas-client.version>11.2.4</cloud-core.maas-client.version>
+        <cloud-core.maas-client.version>11.2.5</cloud-core.maas-client.version>
+        <cloud-core.core-utils.version>2.2.4</cloud-core.core-utils.version>
         <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../maas-client-spring-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
@@ -91,6 +92,15 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.14.1</version>
+                    <configuration>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>1.18.42</version>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
