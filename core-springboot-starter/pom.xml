@@ -10,7 +10,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>qubership-spring-boot-starter-parent</artifactId>
-    <version>11.2.5</version>
+    <version>11.2.6-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>qubership-spring-boot-starter</name>
@@ -131,7 +131,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-springboot-starter.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-core-springboot-starter</url>
-        <tag>v11.2.5</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
