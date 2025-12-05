@@ -5,7 +5,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>restlegacy</artifactId>
-    <version>6.2.8</version>
+    <version>6.2.9-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
