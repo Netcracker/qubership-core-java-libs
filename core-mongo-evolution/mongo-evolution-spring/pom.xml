@@ -26,7 +26,7 @@
         <lombok.version>1.18.42</lombok.version>
         <mongo.test.server.version>1.47.0</mongo.test.server.version>
         <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
-        <mockito.version>5.18.0</mockito.version>
+        <mockito.version>5.21.0</mockito.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../mongo-evolution-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
