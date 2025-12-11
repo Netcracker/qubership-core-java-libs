@@ -13,7 +13,7 @@
   <properties>
     <mockito.version>5.18.0</mockito.version>
     <testcontainers.version>1.21.3</testcontainers.version>
-    <junit.version>5.12.2</junit.version>
+    <junit.version>5.14.1</junit.version>
     <sonar.exclusions>**/DebugDatasourceListener*, **/DataSourceAggregator*</sonar.exclusions>
   </properties>
 

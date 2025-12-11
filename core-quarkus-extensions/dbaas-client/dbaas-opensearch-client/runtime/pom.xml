@@ -10,7 +10,7 @@
 
     <properties>
         <testcontainers.version>1.21.3</testcontainers.version>
-        <junit.version>5.12.2</junit.version>
+        <junit.version>5.14.1</junit.version>
         <sonar.exclusions>**/OpensearchDbaaSApiClientImpl.java</sonar.exclusions>
     </properties>
 
