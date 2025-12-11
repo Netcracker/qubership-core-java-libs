@@ -10,7 +10,7 @@
     </parent>
 
     <properties>
-        <jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
+        <jakarta.servlet-api.version>6.1.0</jakarta.servlet-api.version>
     </properties>
 
     <artifactId>microservice-framework-common</artifactId>
