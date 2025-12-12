@@ -572,3 +572,4 @@ This bean provided automatically by dependency:
 See documentation
 of blue-green-state-monitor-spring
 for detail how configure BlueGreenStatePublisher.
+
