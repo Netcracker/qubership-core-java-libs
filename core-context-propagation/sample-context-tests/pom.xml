@@ -15,7 +15,7 @@
     </licenses>
 
     <properties>
-        <spring.version>6.2.14</spring.version>
+        <spring.version>6.2.15</spring.version>
     </properties>
 
     <dependencies>
