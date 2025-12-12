@@ -20,7 +20,7 @@
         <!--Spring's libraries -->
         <spring.boot.version>3.5.8</spring.boot.version>
         <spring.cloud.version>4.3.0</spring.cloud.version>
-        <spring.version>6.2.14</spring.version>
+        <spring.version>6.2.15</spring.version>
         <spring.security>6.5.7</spring.security>
 
         <!--Test libraries -->
