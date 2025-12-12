@@ -12,7 +12,7 @@
 
     <properties>
         <datastax.cassandra.driver.version>4.17.0</datastax.cassandra.driver.version>
-        <mockito.version>5.18.0</mockito.version>
+        <mockito.version>5.21.0</mockito.version>
         <testcontainers.version>1.20.6</testcontainers.version>
     </properties>
 

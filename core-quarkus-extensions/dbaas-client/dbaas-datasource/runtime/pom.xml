@@ -11,7 +11,7 @@
   <artifactId>dbaas-datasource-postgresql</artifactId>
 
   <properties>
-    <mockito.version>5.18.0</mockito.version>
+    <mockito.version>5.21.0</mockito.version>
     <testcontainers.version>1.21.3</testcontainers.version>
     <junit.version>5.14.1</junit.version>
     <sonar.exclusions>**/DebugDatasourceListener*, **/DataSourceAggregator*</sonar.exclusions>
