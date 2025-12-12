@@ -21,7 +21,7 @@
         <maven.compiler.plugin.version>3.14.1</maven.compiler.plugin.version>
         <build.plugins.plugin.version>3.4.0</build.plugins.plugin.version>
         <okhttp3.version>4.12.0</okhttp3.version>
-        <mockito.version>5.18.0</mockito.version>
+        <mockito.version>5.21.0</mockito.version>
         <spring.version>6.2.15</spring.version>
         <apache.httpclient.version>5.5.1</apache.httpclient.version>
         <sonar.coverage.jacoco.xmlReportPaths>
