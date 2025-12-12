@@ -13,4 +13,3 @@ microservice-framework-extensions contains libraries witch extend microservice-f
 Deprecated
 -----
 `framework-extension-springfox-swagger` module is deprecated and deleted. `framework-extension-springdoc-swagger` should be used instead.
-
