@@ -44,3 +44,4 @@ _**Recommendation:** microservice-framework-resttemplate is a deprecated approac
 So we strongly recommend to use microservice-framework on WebClient._
 
 Also notice that you do not have to specify an artifact version because the version will be taken from `qubership-spring-boot-starter-parent`.
+
