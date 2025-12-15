@@ -78,7 +78,7 @@ because spring-boot-based microservices are maven-inherited from spring-boot-par
             <dependency>
                 <groupId>io.opentelemetry.instrumentation</groupId>
                 <artifactId>opentelemetry-spring-boot-starter</artifactId>
-                <version>2.22.0</version>
+                <version>2.23.0</version>
             </dependency>
             <dependency>
                 <groupId>io.opentelemetry.instrumentation</groupId>
