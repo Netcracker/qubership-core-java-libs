@@ -19,7 +19,7 @@
         <spring.boot.version>3.5.8</spring.boot.version>
         <postgresql.driver.version>42.7.8</postgresql.driver.version>
         <spring.data.mongodb.version>4.5.6</spring.data.mongodb.version>
-        <mongodb.version>5.5.2</mongodb.version>
+        <mongodb.version>5.6.2</mongodb.version>
         <arangodb.driver.version>7.23.0</arangodb.driver.version>
         <arangodb.spring.data.version>4.6.0</arangodb.spring.data.version>
         <java.driver.core.version>4.17.0</java.driver.core.version>
