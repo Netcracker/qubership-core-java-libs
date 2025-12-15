@@ -30,6 +30,7 @@
         <flyway.version>10.22.0</flyway.version>
         <shedlock.version>5.16.0</shedlock.version>
         <testcontainers.version>1.21.3</testcontainers.version>
+        <httpcomponents.version>5.4</httpcomponents.version>
 
         <!--Qubership's libs-->
         <rest-libraries.version>6.2.8</rest-libraries.version>
@@ -107,12 +108,12 @@
             <dependency>
                 <groupId>org.apache.httpcomponents.client5</groupId>
                 <artifactId>httpclient5</artifactId>
-                <version>5.5.1</version>
+                <version>${httpcomponents.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents.core5</groupId>
                 <artifactId>httpcore5</artifactId>
-                <version>5.5.1</version>
+                <version>${httpcomponents.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>
