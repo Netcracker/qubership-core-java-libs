@@ -25,7 +25,7 @@
         <cassandra-unit.version>4.3.1.0</cassandra-unit.version>
         <maven.surefire.version>3.5.4</maven.surefire.version>
 
-        <io.grpc.version>1.69.1</io.grpc.version>
+        <io.grpc.version>1.77.0</io.grpc.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../dbaas-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
