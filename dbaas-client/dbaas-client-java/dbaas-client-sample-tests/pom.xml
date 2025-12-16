@@ -3,7 +3,7 @@
     <parent>
         <artifactId>dbaas-client-parent</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>8.2.6</version>
+        <version>8.2.7-SNAPSHOT</version>
         <relativePath>./../../dbaas-client-parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
