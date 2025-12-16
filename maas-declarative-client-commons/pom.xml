@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud.maas.client</groupId>
     <artifactId>maas-declarative-kafka-client-parent</artifactId>
-    <version>5.2.7</version>
+    <version>5.2.8-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -44,7 +44,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-maas-declarative-client-commons.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-maas-declarative-client-commons</url>
-        <tag>5.2.7</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <dependencyManagement>
