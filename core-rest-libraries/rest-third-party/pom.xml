@@ -14,8 +14,8 @@
 
     <properties>
 
-        <microservice.restclient.version>6.2.4</microservice.restclient.version>
-        <qubership.context.framework>7.2.4</qubership.context.framework>
+        <microservice.restclient.version>6.2.5</microservice.restclient.version>
+        <qubership.context.framework>7.2.5</qubership.context.framework>
 
         <!--Spring's libraries -->
         <spring.boot.version>3.5.8</spring.boot.version>
