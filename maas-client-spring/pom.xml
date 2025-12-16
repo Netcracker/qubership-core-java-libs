@@ -4,7 +4,7 @@
 
     <artifactId>maas-client-spring-parent</artifactId>
     <groupId>com.netcracker.cloud.maas.client</groupId>
-    <version>8.2.6-SNAPSHOT</version>
+    <version>8.2.6</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -41,7 +41,7 @@
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-maas-client-spring.git
         </developerConnection>
         <url>https://github.com/Netcracker/qubership-maas-client-spring</url>
-        <tag>HEAD</tag>
+        <tag>8.2.6</tag>
     </scm>
 
     <dependencyManagement>
