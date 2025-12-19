@@ -83,6 +83,12 @@ To include tests to smoke bundle add annotation @SmokeTest on class or method. T
 class Test
 ```
 
+#### How to use KubernetesClientFactory
+specify field KubernetesClientFactory:
+``` java
+    KubernetesClientFactory kubernetesClientFactory;
+```
+
 #### How to perform port forward
 ##### To get URL with https protocol of the port-forward connection to the service named 'service' at port 9090 located in current namespace and current cloud:
 ``` java

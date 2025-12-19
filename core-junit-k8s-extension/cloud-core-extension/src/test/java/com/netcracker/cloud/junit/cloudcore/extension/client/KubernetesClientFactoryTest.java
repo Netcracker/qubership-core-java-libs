@@ -43,7 +43,7 @@ public class KubernetesClientFactoryTest {
                         Mockito.when(configBuilder.withDisableHostnameVerification(true)).thenReturn(configBuilder);
                         Mockito.when(configBuilder.withRequestRetryBackoffLimit(3)).thenReturn(configBuilder);
                         Mockito.when(configBuilder.withWatchReconnectLimit(3)).thenReturn(configBuilder);
-                        Mockito.when(configBuilder.withRequestTimeout(5000)).thenReturn(configBuilder);
+                        Mockito.when(configBuilder.withRequestTimeout(10000)).thenReturn(configBuilder);
                         Mockito.when(configBuilder.withWebsocketPingInterval(10000)).thenReturn(configBuilder);
                         Mockito.when(configBuilder.withWatchReconnectInterval(5000)).thenReturn(configBuilder);
                         Mockito.when(configBuilder.build()).thenReturn(config);
