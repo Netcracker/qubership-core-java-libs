@@ -8,8 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 class ConsulClientTest {
@@ -30,12 +31,13 @@ class ConsulClientTest {
         QueryParams queryParams = new QueryParams(-1, -1);
         Response<List<GetValue>> expectedResponse = new Response<>(null, 0L, true, 0L);
 
-        when(rawClient.makeGetRequest(anyString(), any(QueryParams.class))).thenReturn(expectedResponse);
+        when(rawClient.makeGetRequestAsync(anyString(), any(QueryParams.class), anyString()))
+                .thenReturn(CompletableFuture.completedFuture(expectedResponse));
 
         Response<List<GetValue>> actualResponse = consulClient.getKVValues(keyPrefix, token, queryParams);
 
         assertEquals(expectedResponse, actualResponse);
-        verify(rawClient, times(1)).makeGetRequest(anyString(), any(QueryParams.class));
+        verify(rawClient, times(1)).makeGetRequestAsync(anyString(), any(QueryParams.class), anyString());
     }
 }
 

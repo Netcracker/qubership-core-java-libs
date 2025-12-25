@@ -19,4 +19,10 @@ public interface ConsulLoggingSourceConfig {
     @WithDefault(DEFAULT_CONSUL_RETRY_TIME)
     Integer consulRetryTime();
 
+    /**
+     * Delay in milliseconds between successful Consul long polling attempts before scheduling the next poll.
+     */
+    @WithDefault("3000")
+    int consulOnSuccessDelayTime();
+
 }

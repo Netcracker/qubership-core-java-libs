@@ -7,11 +7,6 @@ public class QueryParams{
 
     private long waitTime;
     private long index;
-    private String token;
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 
     public long getWaitTime() {
         return waitTime;
@@ -19,10 +14,6 @@ public class QueryParams{
 
     public long getIndex() {
         return index;
-    }
-
-    public String getToken() {
-        return token;
     }
 
     public QueryParams( long waitTime, long index) {
@@ -40,13 +31,8 @@ public class QueryParams{
         if (waitTime != -1) {
             params.add("wait=" + waitTime + "s");
         }
-
         if (index != -1) {
             params.add("index=" + Long.toUnsignedString(index));
-        }
-
-        if (token != null) {
-            params.add("token=" + token);
         }
         params.add("recurse");
         return params;
