@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <testcontainers.version>1.21.3</testcontainers.version>
         <quarkus.version>3.27.1</quarkus.version>
-        <quarkus.core.extention.version>8.0.3</quarkus.core.extention.version>
+        <quarkus.core.extention.version>8.1.0</quarkus.core.extention.version>
         <blue-green-state-monitor.version>1.3.6</blue-green-state-monitor.version>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../aggregator-for-jacoco/target/jacoco-ut/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
