@@ -2,7 +2,9 @@ package com.netcracker.cloud.quarkus.consul.client.http;
 
 import com.netcracker.cloud.quarkus.consul.client.model.GetValue;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class ConsulRawClient {
 
@@ -19,26 +21,23 @@ public class ConsulRawClient {
         if (!consulUrlLowercase.startsWith("https://") && !consulUrlLowercase.startsWith("http://")) {
             consulUrlLowercase = "http://" + consulUrlLowercase;
         }
-
         this.agentAddress = consulUrlLowercase;
     }
 
-    public Response<List<GetValue>> makeGetRequest(String endpoint, QueryParams queryParams) {
-        String url = agentAddress + endpoint;
-        url = generateUrl(url, queryParams);
-        return httpTransport.makeGetRequest(url);
+    public Response<List<GetValue>> makeGetRequest(String endpoint, QueryParams queryParams, String token) {
+        return makeGetRequestAsync(endpoint, queryParams, token).join();
+    }
+
+    public CompletableFuture<Response<List<GetValue>>> makeGetRequestAsync(String endpoint, QueryParams queryParams, String token) {
+        String url = generateUrl(agentAddress + endpoint, queryParams);
+        return httpTransport.makeGetRequestAsync(url, "Authorization", String.format("Bearer %s", token));
     }
 
     public static String generateUrl(String baseUrl, QueryParams queryParams) {
         List<String> allParams = new ArrayList<>(queryParams.toUrlParameters());
         StringBuilder result = new StringBuilder(baseUrl);
-
-        Iterator<String> paramsIterator = allParams.iterator();
-        if (paramsIterator.hasNext()) {
-            result.append("?").append(paramsIterator.next());
-            while (paramsIterator.hasNext()) {
-                result.append("&").append(paramsIterator.next());
-            }
+        if (!allParams.isEmpty()) {
+            result.append("?").append(String.join("&", allParams));
         }
         return result.toString();
     }

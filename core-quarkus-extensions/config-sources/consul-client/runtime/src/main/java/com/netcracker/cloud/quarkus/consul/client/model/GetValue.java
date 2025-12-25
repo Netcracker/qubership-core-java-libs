@@ -3,11 +3,12 @@ package com.netcracker.cloud.quarkus.consul.client.model;
 import com.google.gson.annotations.SerializedName;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class GetValue {
 
-    private static final Charset UTF_8 = Charset.forName("UTF-8");
+    private static final Charset UTF_8 = StandardCharsets.UTF_8;
 
     @SerializedName("CreateIndex")
     private long createIndex;

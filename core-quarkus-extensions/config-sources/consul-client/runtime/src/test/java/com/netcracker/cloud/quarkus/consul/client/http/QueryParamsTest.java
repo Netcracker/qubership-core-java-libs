@@ -2,20 +2,19 @@ package com.netcracker.cloud.quarkus.consul.client.http;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class QueryParamsTest {
 
     @Test
     void testToUrlParameters_withValues() {
         QueryParams queryParams = new QueryParams(10, 100);
-        queryParams.setToken("test-token");
 
         var params = queryParams.toUrlParameters();
 
         assertTrue(params.contains("wait=10s"));
         assertTrue(params.contains("index=100"));
-        assertTrue(params.contains("token=test-token"));
         assertTrue(params.contains("recurse"));
     }
 
