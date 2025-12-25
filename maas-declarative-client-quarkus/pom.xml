@@ -36,8 +36,8 @@
         <assertj-core.version>3.27.6</assertj-core.version>
 
         <maas-declarative-kafka-client.version>5.2.7</maas-declarative-kafka-client.version>
-        <maas-client-quarkus-kafka.version>9.0.3</maas-client-quarkus-kafka.version>
-        <blue-green-state-monitor-quarkus.version>2.0.3</blue-green-state-monitor-quarkus.version>
+        <maas-client-quarkus-kafka.version>9.1.0</maas-client-quarkus-kafka.version>
+        <blue-green-state-monitor-quarkus.version>2.1.0</blue-green-state-monitor-quarkus.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../maas-kafka-quarkus-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
