@@ -5,7 +5,7 @@
   <parent>
     <artifactId>stomp-ws-server-aggregator</artifactId>
     <groupId>com.netcracker.cloud.quarkus</groupId>
-      <version>8.1.1-SNAPSHOT</version>
+      <version>8.1.1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
