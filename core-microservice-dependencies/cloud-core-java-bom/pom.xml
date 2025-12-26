@@ -23,7 +23,7 @@
         <java.version>17</java.version>
         <mongo.evolution.version>7.2.5</mongo.evolution.version>
         <rest.libraries.version>6.2.9</rest.libraries.version>
-        <dbaas.client.version>8.2.6</dbaas.client.version>
+        <dbaas.client.version>8.2.7</dbaas.client.version>
         <framework.extension.version>6.2.5</framework.extension.version>
         <context.propagation.version>7.2.5</context.propagation.version>
         <maas-client.version>11.2.6</maas-client.version>
