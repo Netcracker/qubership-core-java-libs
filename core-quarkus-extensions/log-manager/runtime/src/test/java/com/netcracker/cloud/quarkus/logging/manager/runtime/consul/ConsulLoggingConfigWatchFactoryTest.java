@@ -1,5 +1,6 @@
 package com.netcracker.cloud.quarkus.logging.manager.runtime.consul;
 
+import com.netcracker.cloud.consul.provider.common.TokenStorage;
 import com.netcracker.cloud.quarkus.consul.client.ConsulClient;
 import com.netcracker.cloud.quarkus.consul.client.ConsulSourceConfig;
 import com.netcracker.cloud.quarkus.consul.client.http.QueryParams;
@@ -296,5 +297,35 @@ class ConsulLoggingConfigWatchFactoryTest {
         Assertions.assertNotNull(properties);
         Assertions.assertEquals(1, properties.size());
         Assertions.assertEquals("INFO", properties.get("quarkus.log.category.\"com.test\".level"));
+    }
+
+    @Test
+    void testTokenStorageFailsToProvideToken() throws Exception {
+        ConsulClient consulClient = mock(ConsulClient.class);
+        ConsulSourceConfig consulSourceConfig = mock(ConsulSourceConfig.class);
+
+        TokenStorage failingTokenStorage = new TokenStorage() {
+            @Override
+            public String get() {
+                throw new RuntimeException("Failed to provide token");
+            }
+
+            @Override
+            public void update(String s) {
+
+            }
+        };
+
+        ConsulLoggingConfigWatchFactory factory = new ConsulLoggingConfigWatchFactory(consulClient, failingTokenStorage, "test-ns", "test-ms");
+        Integer waitTime = consulSourceConfig.waitTime();
+        Integer consulRetryTime = consulLoggingSourceConfig.consulRetryTime();
+        int onSuccessDelayTime = consulLoggingSourceConfig.consulOnSuccessDelayTime();
+
+        CompletableFuture<Void> watchFuture = CompletableFuture.runAsync(() -> {
+            factory.watchConsulLoggingRoot("logging/test-ns/test-ms/", waitTime, consulRetryTime, onSuccessDelayTime, 0);
+        });
+
+        watchFuture.get(1, TimeUnit.SECONDS);
+        Assertions.assertFalse(watchFuture.isCompletedExceptionally());
     }
 }

@@ -61,29 +61,39 @@ public class ConsulLoggingConfigWatchFactory {
     }
 
     protected void watchConsulLoggingRoot(String root, int waitTimeSecs, int consulRetryTimeMs, int onSuccessDelayTimeMs, long index) {
-        consulClient.getKVValuesAsync(root, tokenStorage.get(), new QueryParams(waitTimeSecs, index))
-                .whenCompleteAsync((response, ex) -> {
-                    long retryTimeMs;
-                    if (ex != null) {
-                        retryTimeMs = consulRetryTimeMs;
-                        log.warnf("Error on long polling request to /kv/%s. Error: %s. Retrying after %s", root, ex.getMessage(), Duration.ofMillis(retryTimeMs));
+        CompletableFuture.supplyAsync(tokenStorage::get)
+                .whenCompleteAsync((String token, Throwable tokenEx) -> {
+                    if (tokenEx != null) {
+                        log.warnf("Failed to obtain token From TokenStorage. Error: %s. Retrying after %s",
+                                tokenEx.getMessage(), Duration.ofMillis(consulRetryTimeMs));
+                        CompletableFuture.runAsync(() -> watchConsulLoggingRoot(root, waitTimeSecs, consulRetryTimeMs, onSuccessDelayTimeMs, index),
+                                CompletableFuture.delayedExecutor(consulRetryTimeMs, TimeUnit.MILLISECONDS));
                     } else {
-                        List<GetValue> values = Optional.ofNullable(response).map(Response::getValue).orElse(null);
-                        if (values != null) {
-                            retryTimeMs = values.isEmpty() ? consulRetryTimeMs : onSuccessDelayTimeMs;
-                            Map<String, String> updatedProperties = mergeProperties(root, values);
-                            log.debugf("Got update at '/kv/%s' with %d updated keys:\n%s",
-                                    root, updatedProperties.size(), String.join("\n", updatedProperties.keySet()));
-                            firePropertiesUpdated(updatedProperties);
-                        } else {
-                            retryTimeMs = consulRetryTimeMs;
-                        }
+                        consulClient.getKVValuesAsync(root, token, new QueryParams(waitTimeSecs, index))
+                                .whenCompleteAsync((response, ex) -> {
+                                    long retryTimeMs;
+                                    if (ex != null) {
+                                        retryTimeMs = consulRetryTimeMs;
+                                        log.warnf("Error on long polling request to /kv/%s. Error: %s. Retrying after %s", root, ex.getMessage(), Duration.ofMillis(retryTimeMs));
+                                    } else {
+                                        List<GetValue> values = Optional.ofNullable(response).map(Response::getValue).orElse(null);
+                                        if (values != null) {
+                                            retryTimeMs = values.isEmpty() ? consulRetryTimeMs : onSuccessDelayTimeMs;
+                                            Map<String, String> updatedProperties = mergeProperties(root, values);
+                                            log.debugf("Got update at '/kv/%s' with %d updated keys:\n%s",
+                                                    root, updatedProperties.size(), String.join("\n", updatedProperties.keySet()));
+                                            firePropertiesUpdated(updatedProperties);
+                                        } else {
+                                            retryTimeMs = consulRetryTimeMs;
+                                        }
+                                    }
+                                    // reschedule next poll
+                                    Long indx = Optional.ofNullable(response).map(Response::getConsulIndex).orElse(0L);
+                                    log.debugf("Re-schedulling watching for Consul properties at '/kv/%s' with index: '%d' after retryTime: %s", root, indx, Duration.ofMillis(retryTimeMs));
+                                    CompletableFuture.runAsync(() -> watchConsulLoggingRoot(root, waitTimeSecs, consulRetryTimeMs, onSuccessDelayTimeMs, indx),
+                                            CompletableFuture.delayedExecutor(retryTimeMs, TimeUnit.MILLISECONDS));
+                                });
                     }
-                    // reschedule next poll
-                    Long indx = Optional.ofNullable(response).map(Response::getConsulIndex).orElse(0L);
-                    log.debugf("Re-schedulling watching for Consul properties at '/kv/%s' with index: '%d' after retryTime: %s", root, indx, Duration.ofMillis(retryTimeMs));
-                    CompletableFuture.runAsync(() -> watchConsulLoggingRoot(root, waitTimeSecs, consulRetryTimeMs, onSuccessDelayTimeMs, indx),
-                            CompletableFuture.delayedExecutor(retryTimeMs, TimeUnit.MILLISECONDS));
                 });
     }
 
