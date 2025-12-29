@@ -30,7 +30,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quarkus.version>3.27.1</quarkus.version>
-		<quarkus.core.extention.version>8.1.1</quarkus.core.extention.version>
+		<quarkus.core.extention.version>8.1.2</quarkus.core.extention.version>
 
 		<cloud-core.maas-client.version>11.2.6</cloud-core.maas-client.version>
 
