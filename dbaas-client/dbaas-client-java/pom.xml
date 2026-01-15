@@ -17,6 +17,7 @@
         <module>dbaas-client-postgres-base</module>
         <module>dbaas-client-postgres-starter</module>
         <module>dbaas-client-postgres-flyway</module>
+        <module>dbaas-client-mongo-base</module>
         <module>dbaas-client-mongo-starter</module>
         <module>dbaas-client-opensearch-starter</module>
         <module>dbaas-client-opensearch-base</module>

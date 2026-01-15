@@ -143,6 +143,26 @@ dbaas.api.mongo.runtime-user-role=some-role
 
 You can find more of configuring both tenant-aware and service-aware Spring Data Repositories [in this example](../dbaas-client-sample-tests/mongo-sample-test). 
 
+#### Sharding settings
+
+The 'sharding-settings' property allows to configure sharding for one or more MongoDB collections.
+Each entry in 'sharding-settings' represents an individual collection’s sharding configuration.
+
+You can also specify a 'target-shard' property, which determines the primary shard where the database will be created.
+
+You can specify service and tenant related properties separately.
+
+```
+# Service DB properties
+dbaas.api.mongo.service.database-settings.sharding-settings=[{"collectionName": "serviceCollection1","shardKey": "key1","strategy": "hashed"}]
+dbaas.api.mongo.service.database-settings.target-shard=serviceShardName
+
+# Tenant DB properties
+dbaas.api.mongo.tenant.database-settings.sharding-settings=[{"collectionName": "tenantCollection1","shardKey": "key2","strategy": "hashed"},\
+  {"collectionName": "tenantCollection2","shardKey": "key3","strategy": "hashed"}]
+dbaas.api.mongo.tenant.database-settings.target-shard=tenantShardName
+```
+
 
 ### Access to several databases
 To be able to connect multiple MongoDB databases to one microservice, you need to follow these steps:

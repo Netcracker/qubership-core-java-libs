@@ -1,6 +1,7 @@
 package com.netcracker.cloud.dbaas.client.config;
 
 import com.netcracker.cloud.dbaas.client.entity.DbaasApiProperties;
+import com.netcracker.cloud.dbaas.client.entity.MongoDatabaseSettings;
 import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
 import com.netcracker.cloud.dbaas.client.management.DatabasePool;
 import com.netcracker.cloud.dbaas.client.management.DbaasMongoDbFactory;
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.MongoConverter;
+import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,9 +39,14 @@ public class DbaasServiceMongoConfiguration {
         Map<String, Object> additionalClassifierFields = new HashMap<>(1);
         additionalClassifierFields.put("dbClassifier", dbClassifierField);
         DbaaSClassifierBuilder classifierBuilder = dbaasClassifierFactory.newServiceClassifierBuilder(additionalClassifierFields);
+        MongoDatabaseSettings databaseSettings = null;
+        if (!CollectionUtils.isEmpty(mongoDbaasApiProperties.getDatabaseSettings(DbaasApiProperties.DbScope.SERVICE))) {
+            databaseSettings = new MongoDatabaseSettings(mongoDbaasApiProperties.getDatabaseSettings(DbaasApiProperties.DbScope.SERVICE));
+        }
         DatabaseConfig databaseConfig = DatabaseConfig.builder()
                 .dbNamePrefix(mongoDbaasApiProperties.getDbPrefix())
                 .userRole(mongoDbaasApiProperties.getRuntimeUserRole())
+                .databaseSettings(databaseSettings)
                 .build();
         return new DbaasMongoDbFactory(classifierBuilder, databasePool, databaseConfig);
     }
