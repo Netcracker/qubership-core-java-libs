@@ -22,7 +22,7 @@
 
         <!-- Align various dependencies that are not really part of the bom-->
         <findbugs.version>3.0.2</findbugs.version>
-        <jsoup.version>1.21.2</jsoup.version>
+        <jsoup.version>1.22.1</jsoup.version>
         <wagon-provider-api.version>3.5.3</wagon-provider-api.version>
 
         <!-- need to be updated together-->
@@ -175,7 +175,7 @@
             <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>consul</artifactId>
-                <version>1.21.3</version>
+                <version>1.21.4</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

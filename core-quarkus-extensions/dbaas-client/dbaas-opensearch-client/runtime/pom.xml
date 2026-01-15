@@ -9,7 +9,7 @@
     <artifactId>dbaas-opensearch-client</artifactId>
 
     <properties>
-        <testcontainers.version>1.21.3</testcontainers.version>
+        <testcontainers.version>1.21.4</testcontainers.version>
         <junit.version>5.14.1</junit.version>
         <sonar.exclusions>**/OpensearchDbaaSApiClientImpl.java</sonar.exclusions>
     </properties>
