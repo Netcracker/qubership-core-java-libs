@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>com.netcracker.cloud</groupId>
-        <version>8.3.1-SNAPSHOT</version>
+        <version>8.3.1</version>
         <artifactId>dbaas-client-spring-parent</artifactId>
         <relativePath>./../dbaas-client-spring-parent/pom.xml</relativePath>
     </parent>
