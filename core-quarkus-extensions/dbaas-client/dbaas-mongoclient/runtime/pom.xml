@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.netcracker.cloud.quarkus</groupId>
     <artifactId>dbaas-mongo-client-parent</artifactId>
-      <version>8.1.3</version>
+      <version>8.1.4-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
