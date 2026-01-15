@@ -12,7 +12,7 @@
 
     <properties>
         <sonar.exclusions>**/entity/**/*, **/management/DbaasClickhouseDatasource.java</sonar.exclusions>
-        <clickhouse-jdbc.version>0.9.4</clickhouse-jdbc.version>
+        <clickhouse-jdbc.version>0.9.6</clickhouse-jdbc.version>
     </properties>
 
     <dependencies>

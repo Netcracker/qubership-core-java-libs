@@ -19,7 +19,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-cassandra</artifactId>
-            <version>4.5.6</version>
+            <version>4.5.7</version>
         </dependency>
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
@@ -61,7 +61,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-            <version>3.5.8</version>
+            <version>3.5.9</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
