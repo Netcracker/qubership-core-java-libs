@@ -699,11 +699,13 @@ Also you can implement `MongoClient` and use your own implementation instead of 
 
 For configuring extension you should use [common properties](#common-properties) and below Quarkus DbaaS MongoDB specific properties:
 
-| Property                                  | Description                                                                         | Default value       | Status                                          |
-|-------------------------------------------|-------------------------------------------------------------------------------------|---------------------|-------------------------------------------------|
-| quarkus.dbaas.mongodb.db-classifier       | Configures field "dbClassifier" in MongoClassifier                                  | default             | since 3.0.0. Property name was changed in 3.0.0 |
-| quarkus.dbaas.mongo.api.db-prefix         | Allows configure database name prefix for both service and tenant database creation | `none. Optional`    | since 3.3.0                                     |
-| quarkus.dbaas.mongo.api.runtime-user-role | Allows configure connection user role for both service and tenant database          | `admin. Optional`   | since 3.8.0                                     |
+| Property                                                                                                    | Description                                                                                                                                                    | Default value     | Status                                          |
+|-------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------------------------------------|
+| quarkus.dbaas.mongodb.db-classifier                                                                         | Configures field "dbClassifier" in MongoClassifier                                                                                                             | default           | since 3.0.0. Property name was changed in 3.0.0 |
+| quarkus.dbaas.mongo.api.db-prefix                                                                           | Allows configure database name prefix for both service and tenant database creation                                                                            | `none. Optional`  | since 3.3.0                                     |
+| quarkus.dbaas.mongo.api.runtime-user-role                                                                   | Allows configure connection user role for both service and tenant database                                                                                     | `admin. Optional` | since 3.8.0                                     |
+| quarkus.dbaas.mongo.api.[service \|\| tenant \|\| tenant.\<tenant-id\>].database-settings.sharding-settings | Allows configure sharding for one or more MongoDB collections. Each entry in 'sharding-settings' represents an individual collection’s sharding configuration. | `none. Optional`  | since 8.1.3                                     |
+| quarkus.dbaas.mongo.api.[service \|\| tenant \|\| tenant.\<tenant-id\>].database-settings.target-shard      | Allows configure the primary shard where the database will be created                                                                                          | `none. Optional`  | since 8.1.3                                     |
 
 ## Opensearch client extension
 

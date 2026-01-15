@@ -44,10 +44,11 @@ public class MongoClientCreationImpl implements MongoClientCreation {
     }
 
 
-    private DatabaseConfig getDbCreateParameters() {
+    private DatabaseConfig getDbCreateParameters(String tenantId) {
         DatabaseConfig.Builder builder = DatabaseConfig.builder();
         builder.dbNamePrefix(dbaasMongoDbCreationConfig.dbaasApiPropertiesConfig().getDbaaseApiProperties().getDbPrefix());
         builder.userRole(dbaasMongoDbCreationConfig.dbaasApiPropertiesConfig().getDbaaseApiProperties().getRuntimeUserRole());
+        dbaasMongoDbCreationConfig.getMongoDbConfiguration(tenantId).getDatabaseSettings().ifPresent(builder::databaseSettings);
         return builder.build();
     }
 
@@ -61,8 +62,9 @@ public class MongoClientCreationImpl implements MongoClientCreation {
     }
 
     private MongoDatabase createMongoDatabase(DbaasDbClassifier dbaasDbClassifier) {
-        DatabaseConfig config = getDbCreateParameters();
         Map<String, Object> classifier = dbaasDbClassifier.asMap();
+        String tenantId = (String) classifier.get("tenantId");
+        DatabaseConfig config = getDbCreateParameters(tenantId);
         log.debug("Create new MongoClient for {}", classifier);
 
         MongoDatabase db = dbaaSClient.getOrCreateDatabase(MongoDBType.INSTANCE, namespace, classifier, config);

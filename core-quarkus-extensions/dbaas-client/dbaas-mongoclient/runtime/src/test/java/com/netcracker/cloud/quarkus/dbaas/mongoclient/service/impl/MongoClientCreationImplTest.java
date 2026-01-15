@@ -8,6 +8,7 @@ import com.netcracker.cloud.dbaas.client.management.DbaasDbClassifier;
 import com.netcracker.cloud.dbaas.common.config.DbaasApiPropertiesConfig;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.config.MongoClientConfiguration;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.config.properties.DbaasMongoDbCreationConfig;
+import com.netcracker.cloud.quarkus.dbaas.mongoclient.config.properties.MongoDbConfiguration;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.entity.connection.MongoDBConnection;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.entity.database.MongoDatabase;
 import io.quarkus.test.junit.QuarkusTest;
@@ -23,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.netcracker.cloud.dbaas.client.DbaasConst.SCOPE;
 import static com.netcracker.cloud.dbaas.client.DbaasConst.SERVICE;
@@ -49,6 +51,7 @@ class MongoClientCreationImplTest {
         DbaasApiProperties dbaasApiProperties = new DbaasApiProperties();
         when(dbaasApiPropertiesConfig.getDbaaseApiProperties()).thenReturn(dbaasApiProperties);
         when(dbaasMongoDbCreationConfig.dbaasApiPropertiesConfig()).thenReturn(dbaasApiPropertiesConfig);
+        when(dbaasMongoDbCreationConfig.getMongoDbConfiguration(any())).thenReturn(new MongoDbConfiguration(Optional.empty()));
 
         mongoClientCreationImpl = new MongoClientCreationImpl(dbaasMongoDbCreationConfig);
         mongoClientCreationImpl.namespace = "test-namespace";

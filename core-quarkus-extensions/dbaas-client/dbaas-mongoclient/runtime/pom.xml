@@ -35,6 +35,10 @@
       <artifactId>dbaas-client-base</artifactId>
     </dependency>
     <dependency>
+        <groupId>com.netcracker.cloud</groupId>
+        <artifactId>dbaas-client-mongo-base</artifactId>
+    </dependency>
+    <dependency>
       <groupId>jakarta.validation</groupId>
       <artifactId>jakarta.validation-api</artifactId>
     </dependency>
