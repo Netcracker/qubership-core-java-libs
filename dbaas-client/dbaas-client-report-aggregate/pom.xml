@@ -137,6 +137,11 @@
             <artifactId>dbaas-client-base-test</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.netcracker.cloud</groupId>
+            <artifactId>dbaas-client-mongo-base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
