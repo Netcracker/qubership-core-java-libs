@@ -9,11 +9,11 @@
     </parent>
 
     <groupId>com.netcracker.cloud</groupId>
-    <artifactId>qubership-spring-boot-starter-parent</artifactId>
+    <artifactId>netcracker-spring-boot-starter-parent</artifactId>
     <version>11.2.10-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>qubership-spring-boot-starter</name>
+    <name>netcracker-spring-boot-starter</name>
     <description>Starter POM for all Cloud Catalog microservices</description>
 
     <licenses>
