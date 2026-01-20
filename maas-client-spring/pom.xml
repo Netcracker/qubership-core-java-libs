@@ -21,8 +21,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-boot.version>3.5.9</spring-boot.version>
         <spring-cloud.version>2024.0.2</spring-cloud.version>
-        <cloud-core.maas-client.version>11.2.6</cloud-core.maas-client.version>
-        <cloud-core.core-utils.version>2.2.5</cloud-core.core-utils.version>
+        <cloud-core.maas-client.version>11.2.7</cloud-core.maas-client.version>
+        <cloud-core.core-utils.version>2.2.6</cloud-core.core-utils.version>
         <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../maas-client-spring-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
