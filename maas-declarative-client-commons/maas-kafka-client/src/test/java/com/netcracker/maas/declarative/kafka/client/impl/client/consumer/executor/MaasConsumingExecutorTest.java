@@ -80,6 +80,8 @@ class MaasConsumingExecutorTest {
             barrier.await("closed", Duration.ofSeconds(1));
         }
 
+        barrier.reset();
+
         verify(consumerCreatorService, times(1)).createKafkaConsumer(any(), any(), any(), any(), any(), any());
         verify(consumer, times(1)).close();
     }
@@ -122,6 +124,8 @@ class MaasConsumingExecutorTest {
             executor.close();
             barrier.await("closed", Duration.ofSeconds(5));
         }
+
+        barrier.reset();
 
         verify(consumerCreatorService, times(2)).createKafkaConsumer(any(), any(), any(), any(), any(), any());
         // suspended executor should close kafka consumer
@@ -169,6 +173,8 @@ class MaasConsumingExecutorTest {
             executor.close();
         }
 
+        barrier.reset();
+
         verify(consumerCreatorService, times(2)).createKafkaConsumer(any(), any(), any(), any(), any(), any());
 
         // there should be 2 close() method calls: one close should be performed in try/catch error handling
@@ -209,6 +215,8 @@ class MaasConsumingExecutorTest {
         } finally {
             executor.close();
         }
+
+        barrier.reset();
 
         verify(consumerCreatorService, times(1)).createKafkaConsumer(any(), any(), any(), any(), any(), any());
         verify(consumer, timeout(10_000).times(1)).close();
@@ -259,6 +267,8 @@ class MaasConsumingExecutorTest {
         } finally {
             executor.close();
         }
+
+        barrier.reset();
 
         verify(consumerCreatorService, times(2)).createKafkaConsumer(any(), any(), any(), any(), any(), any());
         verify(consumer, timeout(10_000).atLeast(2)).commitSync(any()); // TODO validate commit marker
