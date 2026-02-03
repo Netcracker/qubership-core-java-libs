@@ -16,7 +16,7 @@
 
     <properties>
         <lombok.version>1.18.42</lombok.version>
-        <quarkus.version>3.27.1</quarkus.version>
+        <quarkus.version>3.27.2</quarkus.version>
         <maven.compiler.release>17</maven.compiler.release>
     </properties>
 
