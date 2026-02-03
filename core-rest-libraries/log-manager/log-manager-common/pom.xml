@@ -12,7 +12,7 @@
 
     <properties>
         <log4j.version>2.25.2</log4j.version>
-        <logback.version>1.5.22</logback.version>
+        <logback.version>1.5.25</logback.version>
         <jboss.version>3.1.2.Final</jboss.version>
         <slf4j.version>2.0.17</slf4j.version>
         <junit-jupiter-api.version>5.14.1</junit-jupiter-api.version>
