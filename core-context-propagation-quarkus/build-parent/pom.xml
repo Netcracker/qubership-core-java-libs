@@ -25,7 +25,7 @@
         projects -->
         <!-- Quarkus uses jboss-parent and it comes with 3.8.0-jboss-2, we don't want that in the
         templates -->
-        <compiler-plugin.version>3.14.1</compiler-plugin.version>
+        <compiler-plugin.version>3.15.0</compiler-plugin.version>
         <maven.repo.local>${user.home}/.m2/repository</maven.repo.local>
 
         <!-- These properties are needed in order for them to be resolvable by the documentation -->
