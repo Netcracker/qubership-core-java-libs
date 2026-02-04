@@ -97,6 +97,11 @@
 				<artifactId>security-adapters</artifactId>
 				<version>${quarkus.core.extention.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.netcracker.cloud.quarkus</groupId>
+				<artifactId>security-adapters-deployment</artifactId>
+				<version>${quarkus.core.extention.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

@@ -21,6 +21,10 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
+            <artifactId>security-adapters-deployment</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5-internal</artifactId>
             <scope>test</scope>
