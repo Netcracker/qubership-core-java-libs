@@ -91,6 +91,12 @@
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
+			<!-- security-adapters (M2MManager from com.netcracker.cloud.quarkus.security.auth) from qubership-core-quarkus-extensions -->
+			<dependency>
+				<groupId>com.netcracker.cloud.quarkus</groupId>
+				<artifactId>security-adapters</artifactId>
+				<version>${quarkus.core.extention.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

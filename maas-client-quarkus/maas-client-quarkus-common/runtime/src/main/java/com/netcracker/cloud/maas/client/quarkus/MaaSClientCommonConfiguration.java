@@ -2,7 +2,7 @@ package com.netcracker.cloud.maas.client.quarkus;
 
 import com.netcracker.cloud.maas.client.api.MaaSAPIClient;
 import com.netcracker.cloud.maas.client.impl.MaaSAPIClientImpl;
-import com.netcracker.cloud.security.core.auth.M2MManagerLocator;
+import com.netcracker.cloud.quarkus.security.auth.M2MManager;
 import io.quarkus.arc.DefaultBean;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Produces;
@@ -14,6 +14,6 @@ public class MaaSClientCommonConfiguration {
     @DefaultBean
     @Singleton
     public MaaSAPIClient getMaaSAPIClient() {
-        return new MaaSAPIClientImpl(() -> M2MManagerLocator.getM2MManager().getToken().getTokenValue());
+        return new MaaSAPIClientImpl(() -> M2MManager.getInstance().getToken().getTokenValue());
     }
 }
