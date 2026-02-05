@@ -42,10 +42,11 @@ public class KubernetesClientFactoryTest {
                         Mockito.when(configBuilder.withTrustCerts(true)).thenReturn(configBuilder);
                         Mockito.when(configBuilder.withDisableHostnameVerification(true)).thenReturn(configBuilder);
                         Mockito.when(configBuilder.withRequestRetryBackoffLimit(3)).thenReturn(configBuilder);
-                        Mockito.when(configBuilder.withWatchReconnectLimit(3)).thenReturn(configBuilder);
-                        Mockito.when(configBuilder.withRequestTimeout(10000)).thenReturn(configBuilder);
-                        Mockito.when(configBuilder.withWebsocketPingInterval(10000)).thenReturn(configBuilder);
-                        Mockito.when(configBuilder.withWatchReconnectInterval(5000)).thenReturn(configBuilder);
+                        Mockito.when(configBuilder.withWatchReconnectLimit(5)).thenReturn(configBuilder);
+                        Mockito.when(configBuilder.withConnectionTimeout(10000)).thenReturn(configBuilder);
+                        Mockito.when(configBuilder.withRequestTimeout(60000)).thenReturn(configBuilder);
+                        Mockito.when(configBuilder.withWebsocketPingInterval(10000L)).thenReturn(configBuilder);
+                        Mockito.when(configBuilder.withWatchReconnectInterval(3000)).thenReturn(configBuilder);
                         Mockito.when(configBuilder.build()).thenReturn(config);
                     }); MockedConstruction<KubernetesClientBuilder> kubernetesClientBuilderMock = Mockito.mockConstruction(KubernetesClientBuilder.class,
                     (kubernetesClientBuilder, context) -> {

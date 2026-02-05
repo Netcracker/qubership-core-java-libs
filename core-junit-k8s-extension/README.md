@@ -8,34 +8,41 @@
 ## JUnit-5 extension to connect to Kubernetes in integration tests
 
 <!-- TOC -->
-  * [JUnit-5 extension to connect to Kubernetes in integration tests](#junit-5-extension-to-connect-to-kubernetes-in-integration-tests)
-      * [Requirements:](#requirements)
+
+* [JUnit-5 extension to connect to Kubernetes in integration tests](#junit-5-extension-to-connect-to-kubernetes-in-integration-tests)
+    * [Requirements:](#requirements)
         * [Supports only Kubernetes 1.27+](#supports-only-kubernetes-127)
         * [Requires Java 21+](#requires-java-21)
     * [How to use qubership extension library](#how-to-use-qubership-extension-library)
-      * [Jacoco](#jacoco)
-      * [How to enable extension](#how-to-enable-extension)
-      * [How to include test to smoke bundle](#how-to-include-test-to-smoke-bundle)
-      * [How to perform port forward](#how-to-perform-port-forward)
-        * [To get URL with https protocol of the port-forward connection to the service named 'service' at port 9090 located in current namespace and current cloud:](#to-get-url-with-https-protocol-of-the-port-forward-connection-to-the-service-named-service-at-port-9090-located-in-current-namespace-and-current-cloud)
-        * [To get NetSocketAddress of the port-forward connection to the service named 'postgres' at port 5432 located in custom namespace and custom clouds:](#to-get-netsocketaddress-of-the-port-forward-connection-to-the-service-named-postgres-at-port-5432-located-in-custom-namespace-and-custom-clouds)
-        * [Port-forward URLs format](#port-forward-urls-format)
-        * [To get PortForwardService instance to create port-forwards in runtime:](#to-get-portforwardservice-instance-to-create-port-forwards-in-runtime)
-      * [More examples how to inject tests util services can be found here](#more-examples-how-to-inject-tests-util-services-can-be-found-here)
-      * [Pod Scale > 1](#pod-scale--1)
-      * [Migration from 6.x.x version to 7.x.x](#migration-from-6xx-version-to-7xx)
-        * [PlatformClient was deleted - use KubernetesClient directly](#platformclient-was-deleted---use-kubernetesclient-directly)
-        * [ITHelper was deleted - use TokenService instead](#ithelper-was-deleted---use-tokenservice-instead)
-        * [TlsConfig was deleted because TLS in Cloud-Core provided via static-core-gateway is deprecated and will be deleted](#tlsconfig-was-deleted-because-tls-in-cloud-core-provided-via-static-core-gateway-is-deprecated-and-will-be-deleted)
-        * [There are brand-new annotations to create port-forwards, Kubernetes client etc. These new annotations support work with multiple Kubernetes clouds and allows to create port forwards for raw TCP/UDP connections](#there-are-brand-new-annotations-to-create-port-forwards-kubernetes-client-etc-these-new-annotations-support-work-with-multiple-kubernetes-clouds-and-allows-to-create-port-forwards-for-raw-tcpudp-connections)
+        * [Jacoco](#jacoco)
+        * [How to enable extension](#how-to-enable-extension)
+        * [How to include test to smoke bundle](#how-to-include-test-to-smoke-bundle)
+        * [How to perform port forward](#how-to-perform-port-forward)
+            * [To get URL with https protocol of the port-forward connection to the service named 'service' at port 9090 located in current namespace and current cloud:](#to-get-url-with-https-protocol-of-the-port-forward-connection-to-the-service-named-service-at-port-9090-located-in-current-namespace-and-current-cloud)
+            * [To get NetSocketAddress of the port-forward connection to the service named 'postgres' at port 5432 located in custom namespace and custom clouds:](#to-get-netsocketaddress-of-the-port-forward-connection-to-the-service-named-postgres-at-port-5432-located-in-custom-namespace-and-custom-clouds)
+            * [Port-forward URLs format](#port-forward-urls-format)
+            * [To get PortForwardService instance to create port-forwards in runtime:](#to-get-portforwardservice-instance-to-create-port-forwards-in-runtime)
+        * [More examples how to inject tests util services can be found here](#more-examples-how-to-inject-tests-util-services-can-be-found-here)
+        * [Pod Scale > 1](#pod-scale--1)
+        * [Migration from 6.x.x version to 7.x.x](#migration-from-6xx-version-to-7xx)
+            * [PlatformClient was deleted - use KubernetesClient directly](#platformclient-was-deleted---use-kubernetesclient-directly)
+            * [ITHelper was deleted - use TokenService instead](#ithelper-was-deleted---use-tokenservice-instead)
+            * [TlsConfig was deleted because TLS in Cloud-Core provided via static-core-gateway is deprecated and will be deleted](#tlsconfig-was-deleted-because-tls-in-cloud-core-provided-via-static-core-gateway-is-deprecated-and-will-be-deleted)
+            * [There are brand-new annotations to create port-forwards, Kubernetes client etc. These new annotations support work with multiple Kubernetes clouds and allows to create port forwards for raw TCP/UDP connections](#there-are-brand-new-annotations-to-create-port-forwards-kubernetes-client-etc-these-new-annotations-support-work-with-multiple-kubernetes-clouds-and-allows-to-create-port-forwards-for-raw-tcpudp-connections)
+
 <!-- TOC -->
 
-#### Requirements:
-##### Supports only Kubernetes 1.27+
-##### Requires Java 21+
+### Requirements:
 
-###  How to use qubership extension library
-You can use qubership extension for integration tests in your services. For this you need to put dependency in your pom.xml:
+#### Supports only Kubernetes 1.27+
+
+#### Requires Java 21+
+
+### How to use qubership extension library
+
+You can use qubership extension for integration tests in your services. For this you need to put dependency in your
+pom.xml:
+
 ``` xml
         <dependency>
             <groupId>com.netcracker.cloud.junit.cloudcore</groupId>
@@ -44,8 +51,10 @@ You can use qubership extension for integration tests in your services. For this
         </dependency>
 ```
 
-#### Jacoco
+### Jacoco
+
 Usage example.
+
 ```
 <plugins>
     <plugin>
@@ -73,30 +82,39 @@ Usage example.
 </plugins>
 ```
 
-#### How to enable extension
+### How to enable extension
+
 To enable extension annotate class with tests or parent class with annotation @EnableExtension
 
-#### How to include test to smoke bundle
-To include tests to smoke bundle add annotation @SmokeTest on class or method. To run tests for smoke tests execute maven with key -Dgroups=Smoke
+### How to include test to smoke bundle
+
+To include tests to smoke bundle add annotation @SmokeTest on class or method. To run tests for smoke tests execute
+maven with key -Dgroups=Smoke
+
 ``` java
 @SmokeTest
 class Test
 ```
 
-#### How to use KubernetesClientFactory
+### How to use KubernetesClientFactory
+
 specify field KubernetesClientFactory:
+
 ``` java
     KubernetesClientFactory kubernetesClientFactory;
 ```
 
-#### How to perform port forward
-##### To get URL with https protocol of the port-forward connection to the service named 'service' at port 9090 located in current namespace and current cloud:
+### How to perform port forward
+
+#### To get URL with https protocol of the port-forward connection to the service named 'service' at port 9090 located in current namespace and current cloud:
+
 ``` java
     @PortForward(serviceName = @Value(value = "service"), protocol = @Value(value = "https"), port = @IntValue(9090))
     URL url;
 ```
 
-##### To get NetSocketAddress of the port-forward connection to the service named 'postgres' at port 5432 located in custom namespace and custom clouds:
+#### To get NetSocketAddress of the port-forward connection to the service named 'postgres' at port 5432 located in custom namespace and custom clouds:
+
 ``` java
     @PortForward(serviceName = @Value(value = "postgres"), port = @IntValue(5432),
                  cloud = @Cloud(cloud = @Value(prop = "clouds.cloud_1.name"), namespace = @Value(prop = "clouds.cloud_1.namespaces.origin")))
@@ -107,19 +125,27 @@ specify field KubernetesClientFactory:
     NetSocketAddress postgresAddressCloud2;
 ```
 
-##### Port-forward URLs format
-By default, when there is single cloud specified among System properties (via property clouds.<cloud>.name) then port-forward service constructs host in format:
+#### Port-forward URLs format
+
+By default, when there is single cloud specified among System properties (via property clouds.<cloud>.name) then
+port-forward service constructs host in format:
 <service-name>.<namespace>
-But if there is property portforward.fqdn.hosts.enabled=true or there are more than one cloud property then port-forward service will construct hosts in format:
+But if there is property portforward.fqdn.hosts.enabled=true or there are more than one cloud property then port-forward
+service will construct hosts in format:
 <service-name>.<namespace>.svc.<cloud> where cloud - host name of kubernetes master URL of particular cloud
 
-##### To get PortForwardService instance to create port-forwards in runtime:
+#### To get PortForwardService instance to create port-forwards in runtime:
+
 To achieve this you should:
+
 1) Autowire via @PortForwardClient PortForwardService
 2) Call method portForward(...)
-3) Close portforward after the test. (see @AfterEach cleanup() method). If you doesn't close portforward connection in will be done automatically in the after @AfterAll phase
-If the service is located in the same namespace as is specified in NAMESPACE variable or in property env.cloud-namespace then you may pass only service name otherwise you should pass namespace too. 
-For example:
+3) Close portforward after the test. (see @AfterEach cleanup() method). If you doesn't close portforward connection in
+   will be done automatically in the after @AfterAll phase
+   If the service is located in the same namespace as is specified in NAMESPACE variable or in property
+   env.cloud-namespace then you may pass only service name otherwise you should pass namespace too.
+   For example:
+
 ``` java
     @Cloud
     private PortForwardService portForwardService;
@@ -153,11 +179,13 @@ For example:
     }
 ```
 
-#### More examples how to inject tests util services can be found [here](cloud-core-extension/src/test/java/com/netcracker/cloud/junit/cloudcore/extension/callbacks/classes/TestClass.java)
+### More examples how to inject tests util services can be found [here](cloud-core-extension/src/test/java/com/netcracker/cloud/junit/cloudcore/extension/callbacks/classes/TestClass.java)
 
-#### Pod Scale > 1
+### Pod Scale > 1
+
 By default, port-forward is linked to any of the pods found by the service selector.
 In case when port-forward to the particular pod is required - use
+
 ``` java
     @Cloud
     private PortForwardService portForwardService;
@@ -183,12 +211,75 @@ In case when port-forward to the particular pod is required - use
 
 ```
 
-#### Migration from 6.x.x version to 7.x.x
-##### PlatformClient was deleted - use KubernetesClient directly
-##### ITHelper was deleted - use TokenService instead
-##### TlsConfig was deleted because TLS in Cloud-Core provided via static-core-gateway is deprecated and will be deleted
-##### There are brand-new annotations to create port-forwards, Kubernetes client etc. These new annotations support work with multiple Kubernetes clouds and allows to create port forwards for raw TCP/UDP connections
+### Kubernetes Client Configuration (Fabric8)
+
+DefaultKubernetesClientFactory is used to create KubernetesClient to be injected into tests.
+This factory uses implementations of Fabric8ConfigBuilderAdapter to configure KubernetesClient.
+You can provide your own implementation by implementing Fabric8ConfigBuilderAdapter and putting it at
+'src/main/resources/META-INF/services/com.netcracker.cloud.junit.cloudcore.extension.client.Fabric8ConfigBuilderAdapter' of your test project.
+All discovered at classpath adapters will be used to configure KubernetesClient, applied in order according to their @Priority annotation.
+
+---
+
+#### Default implementation: [DefaultFabric8ConfigBuilderAdapter.java](cloud-core-extension/src/main/java/com/netcracker/cloud/junit/cloudcore/extension/client/DefaultFabric8ConfigBuilderAdapter.java)
+
+The `adapt(ConfigBuilder)` method:
+
+- Applies **network and retry configuration**
+- Configures **watch reconnect behavior**
+- Configures **WebSocket keepalive**
+- Reads all values from **JVM system properties**
+- Falls back to **sensible defaults** if properties are not provided
+
+---
+
+#### Configuration Properties
+
+All properties are **optional**.  
+If not set, the documented default value is used.
+
+#### Request & Network
+
+| Property                          | Type     | Default | Description                                                                                  |
+|-----------------------------------|----------|---------|----------------------------------------------------------------------------------------------|
+| `k8s.request.retry.backoff.limit` | int      | `3`     | Number of retries for failed REST requests (GET/LIST/CREATE/PATCH) using exponential backoff |
+| `k8s.connection.timeout.ms`       | int (ms) | `10000` | TCP connection timeout to Kubernetes API server                                              |
+| `k8s.request.timeout.ms`          | int (ms) | `60000` | Overall timeout for a single HTTP request                                                    |
+
+---
+
+#### Watches (event streaming)
+
+| Property                          | Type     | Default | Description                                |
+|-----------------------------------|----------|---------|--------------------------------------------|
+| `k8s.watch.reconnect.interval.ms` | int (ms) | `3000`  | Delay between watch reconnect attempts     |
+| `k8s.watch.reconnect.limit`       | int      | `5`     | Maximum number of watch reconnect attempts |
+
+> Watches are automatically re-established when they drop due to network issues, API restarts, or resourceVersion
+> expiration.
+
+---
+
+#### WebSocket (exec / logs / port-forward)
+
+| Property                         | Type      | Default | Description                                                                          |
+|----------------------------------|-----------|---------|--------------------------------------------------------------------------------------|
+| `k8s.websocket.ping.interval.ms` | long (ms) | `10000` | Ping interval to keep WebSocket connections alive through proxies and load balancers |
+
+---
+
+### Migration from 6.x.x version to 7.x.x
+
+#### PlatformClient was deleted - use KubernetesClient directly
+
+#### ITHelper was deleted - use TokenService instead
+
+#### TlsConfig was deleted because TLS in Cloud-Core provided via static-core-gateway is deprecated and will be deleted
+
+#### There are brand-new annotations to create port-forwards, Kubernetes client etc. These new annotations support work with multiple Kubernetes clouds and allows to create port forwards for raw TCP/UDP connections
+
 before migration - 6.x.x config:
+
 ``` java
     // #1
     @Named("internal-gateway-service")
@@ -228,7 +319,9 @@ before migration - 6.x.x config:
     @PortForward
     private URL url;
 ```
+
 after migration - 7.x.x config:
+
 ``` java
     // #1 
     @PortForward(serviceName = @Value(value = "internal-gateway-service"))

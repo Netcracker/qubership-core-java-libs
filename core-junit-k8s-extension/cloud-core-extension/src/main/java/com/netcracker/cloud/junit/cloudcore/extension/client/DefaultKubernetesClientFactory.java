@@ -2,6 +2,7 @@ package com.netcracker.cloud.junit.cloudcore.extension.client;
 
 import com.netcracker.cloud.junit.cloudcore.extension.annotations.Priority;
 import com.netcracker.cloud.junit.cloudcore.extension.provider.CloudAndNamespace;
+import com.netcracker.cloud.junit.cloudcore.extension.provider.OrderedServiceLoader;
 import io.fabric8.kubernetes.api.model.NamedContext;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
@@ -10,14 +11,16 @@ import io.fabric8.kubernetes.client.KubernetesClientBuilder;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
-import static io.fabric8.kubernetes.client.utils.HttpClientUtils.getHttpClientFactory;
+import static com.netcracker.cloud.junit.cloudcore.extension.provider.OrderedServiceLoader.SortByPriority.ASC;
 
 @Priority
 public class DefaultKubernetesClientFactory implements AutoCloseable, KubernetesClientFactory {
+
+    public static final String PORTFORWARD_FQDN_ENABLED_PROP = "portforward.fqdn.enabled";
 
     private final Config config;
 
@@ -48,20 +51,27 @@ public class DefaultKubernetesClientFactory implements AutoCloseable, Kubernetes
             } else {
                 config = Config.autoConfigure(namedContext.getName());
             }
-            config = new ConfigBuilder(config)
-                    .withNamespace(cloudAndNamespace.getNamespace())
-                    .withTrustCerts(true)
-                    .withDisableHostnameVerification(true)
-                    .withRequestRetryBackoffLimit(3)
-                    .withWatchReconnectLimit(3)
-                    .withRequestTimeout(10000)
-                    .withWebsocketPingInterval(10000)
-                    .withWatchReconnectInterval(5000)
-                    .build();
-            return new KubernetesClientBuilder().withConfig(config)
-                    .withHttpClientFactory(getHttpClientFactory())
-                    .withHttpClientBuilderConsumer(builder -> builder.connectTimeout(15, TimeUnit.SECONDS))
-                    .build();
+            List<Fabric8ConfigBuilderAdapter> fabric8ConfigBuilderAdapters =
+                    OrderedServiceLoader.loadAll(Fabric8ConfigBuilderAdapter.class, ASC);
+            if (fabric8ConfigBuilderAdapters.isEmpty()) {
+                throw new IllegalStateException("No Fabric8ConfigBuilderAdapter found");
+            }
+            ConfigBuilder configBuilder = new ConfigBuilder(config).withNamespace(cloudAndNamespace.getNamespace());
+            for (Fabric8ConfigBuilderAdapter adapter : fabric8ConfigBuilderAdapters) {
+                configBuilder = adapter.adapt(configBuilder);
+            }
+            config = configBuilder.build();
+
+            List<Fabric8KubernetesClientBuilderAdapter> fabric8KubernetesClientBuilderAdapters =
+                    OrderedServiceLoader.loadAll(Fabric8KubernetesClientBuilderAdapter.class, ASC);
+            if (fabric8KubernetesClientBuilderAdapters.isEmpty()) {
+                throw new IllegalStateException("No Fabric8KubernetesClientBuilderAdapter found");
+            }
+            KubernetesClientBuilder kubernetesClientBuilder = new KubernetesClientBuilder().withConfig(config);
+            for (Fabric8KubernetesClientBuilderAdapter adapter : fabric8KubernetesClientBuilderAdapters) {
+                kubernetesClientBuilder = adapter.adapt(kubernetesClientBuilder);
+            }
+            return kubernetesClientBuilder.build();
         });
     }
 
