@@ -8,28 +8,37 @@
 ## JUnit-5 extension to connect to Kubernetes in integration tests
 
 <!-- TOC -->
-
-* [JUnit-5 extension to connect to Kubernetes in integration tests](#junit-5-extension-to-connect-to-kubernetes-in-integration-tests)
+  * [JUnit-5 extension to connect to Kubernetes in integration tests](#junit-5-extension-to-connect-to-kubernetes-in-integration-tests)
     * [Requirements:](#requirements)
-        * [Supports only Kubernetes 1.27+](#supports-only-kubernetes-127)
-        * [Requires Java 21+](#requires-java-21)
+      * [Supports only Kubernetes 1.27+](#supports-only-kubernetes-127)
+      * [Requires Java 21+](#requires-java-21)
     * [How to use qubership extension library](#how-to-use-qubership-extension-library)
-        * [Jacoco](#jacoco)
-        * [How to enable extension](#how-to-enable-extension)
-        * [How to include test to smoke bundle](#how-to-include-test-to-smoke-bundle)
-        * [How to perform port forward](#how-to-perform-port-forward)
-            * [To get URL with https protocol of the port-forward connection to the service named 'service' at port 9090 located in current namespace and current cloud:](#to-get-url-with-https-protocol-of-the-port-forward-connection-to-the-service-named-service-at-port-9090-located-in-current-namespace-and-current-cloud)
-            * [To get NetSocketAddress of the port-forward connection to the service named 'postgres' at port 5432 located in custom namespace and custom clouds:](#to-get-netsocketaddress-of-the-port-forward-connection-to-the-service-named-postgres-at-port-5432-located-in-custom-namespace-and-custom-clouds)
-            * [Port-forward URLs format](#port-forward-urls-format)
-            * [To get PortForwardService instance to create port-forwards in runtime:](#to-get-portforwardservice-instance-to-create-port-forwards-in-runtime)
-        * [More examples how to inject tests util services can be found here](#more-examples-how-to-inject-tests-util-services-can-be-found-here)
-        * [Pod Scale > 1](#pod-scale--1)
-        * [Migration from 6.x.x version to 7.x.x](#migration-from-6xx-version-to-7xx)
-            * [PlatformClient was deleted - use KubernetesClient directly](#platformclient-was-deleted---use-kubernetesclient-directly)
-            * [ITHelper was deleted - use TokenService instead](#ithelper-was-deleted---use-tokenservice-instead)
-            * [TlsConfig was deleted because TLS in Cloud-Core provided via static-core-gateway is deprecated and will be deleted](#tlsconfig-was-deleted-because-tls-in-cloud-core-provided-via-static-core-gateway-is-deprecated-and-will-be-deleted)
-            * [There are brand-new annotations to create port-forwards, Kubernetes client etc. These new annotations support work with multiple Kubernetes clouds and allows to create port forwards for raw TCP/UDP connections](#there-are-brand-new-annotations-to-create-port-forwards-kubernetes-client-etc-these-new-annotations-support-work-with-multiple-kubernetes-clouds-and-allows-to-create-port-forwards-for-raw-tcpudp-connections)
-
+    * [Jacoco](#jacoco)
+    * [How to enable extension](#how-to-enable-extension)
+    * [How to include test to smoke bundle](#how-to-include-test-to-smoke-bundle)
+    * [How to use KubernetesClientFactory](#how-to-use-kubernetesclientfactory)
+    * [How to perform port forward](#how-to-perform-port-forward)
+      * [To get URL with https protocol of the port-forward connection to the service named 'service' at port 9090 located in current namespace and current cloud:](#to-get-url-with-https-protocol-of-the-port-forward-connection-to-the-service-named-service-at-port-9090-located-in-current-namespace-and-current-cloud)
+      * [To get NetSocketAddress of the port-forward connection to the service named 'postgres' at port 5432 located in custom namespace and custom clouds:](#to-get-netsocketaddress-of-the-port-forward-connection-to-the-service-named-postgres-at-port-5432-located-in-custom-namespace-and-custom-clouds)
+      * [Port-forward URLs format](#port-forward-urls-format)
+      * [To get PortForwardService instance to create port-forwards in runtime:](#to-get-portforwardservice-instance-to-create-port-forwards-in-runtime)
+    * [More examples how to inject tests util services can be found here](#more-examples-how-to-inject-tests-util-services-can-be-found-here)
+    * [Pod Scale > 1](#pod-scale--1)
+    * [Fabric8 Kubernetes ConfigBuilder configuration](#fabric8-kubernetes-configbuilder-configuration)
+      * [Default implementation: DefaultFabric8ConfigBuilderAdapter.java](#default-implementation-defaultfabric8configbuilderadapterjava)
+      * [Configuration Properties](#configuration-properties)
+      * [Request & Network](#request--network)
+      * [Watches (event streaming)](#watches-event-streaming)
+      * [WebSocket (exec / logs / port-forward)](#websocket-exec--logs--port-forward)
+    * [Fabric8 Kubernetes KubernetesClientBuilder configuration](#fabric8-kubernetes-kubernetesclientbuilder-configuration)
+      * [DefaultFabric8KubernetesClientBuilderAdapter](#defaultfabric8kubernetesclientbuilderadapter)
+      * [Purpose](#purpose)
+      * [Configuration Properties](#configuration-properties-1)
+    * [Migration from 6.x.x version to 7.x.x](#migration-from-6xx-version-to-7xx)
+      * [PlatformClient was deleted - use KubernetesClient directly](#platformclient-was-deleted---use-kubernetesclient-directly)
+      * [ITHelper was deleted - use TokenService instead](#ithelper-was-deleted---use-tokenservice-instead)
+      * [TlsConfig was deleted because TLS in Cloud-Core provided via static-core-gateway is deprecated and will be deleted](#tlsconfig-was-deleted-because-tls-in-cloud-core-provided-via-static-core-gateway-is-deprecated-and-will-be-deleted)
+      * [There are brand-new annotations to create port-forwards, Kubernetes client etc. These new annotations support work with multiple Kubernetes clouds and allows to create port forwards for raw TCP/UDP connections](#there-are-brand-new-annotations-to-create-port-forwards-kubernetes-client-etc-these-new-annotations-support-work-with-multiple-kubernetes-clouds-and-allows-to-create-port-forwards-for-raw-tcpudp-connections)
 <!-- TOC -->
 
 ### Requirements:
@@ -211,13 +220,16 @@ In case when port-forward to the particular pod is required - use
 
 ```
 
-### Kubernetes Client Configuration (Fabric8)
+### Fabric8 Kubernetes ConfigBuilder configuration
 
 DefaultKubernetesClientFactory is used to create KubernetesClient to be injected into tests.
-This factory uses implementations of Fabric8ConfigBuilderAdapter to configure KubernetesClient.
+This factory uses implementations of Fabric8ConfigBuilderAdapter to configure ConfigBuilder which is used to create
+KubernetesClient.
 You can provide your own implementation by implementing Fabric8ConfigBuilderAdapter and putting it at
-'src/main/resources/META-INF/services/com.netcracker.cloud.junit.cloudcore.extension.client.Fabric8ConfigBuilderAdapter' of your test project.
-All discovered at classpath adapters will be used to configure KubernetesClient, applied in order according to their @Priority annotation.
+'src/main/resources/META-INF/services/com.netcracker.cloud.junit.cloudcore.extension.client.Fabric8ConfigBuilderAdapter'
+of your test project.
+All discovered at classpath adapters will be used to configure KubernetesClient, applied in order according to their
+@Priority annotation.
 
 ---
 
@@ -267,6 +279,60 @@ If not set, the documented default value is used.
 | `k8s.websocket.ping.interval.ms` | long (ms) | `10000` | Ping interval to keep WebSocket connections alive through proxies and load balancers |
 
 ---
+
+### Fabric8 Kubernetes KubernetesClientBuilder configuration
+
+DefaultKubernetesClientFactory is used to create KubernetesClient to be injected into tests.
+This factory uses implementations of Fabric8KubernetesClientBuilderAdapter to configure KubernetesClientBuilder which is
+used to create KubernetesClient.
+You can provide your own implementation by implementing Fabric8KubernetesClientBuilderAdapter and putting it at
+'
+src/main/resources/META-INF/services/com.netcracker.cloud.junit.cloudcore.extension.client.Fabric8KubernetesClientBuilderAdapter'
+of your test project.
+All discovered at classpath adapters will be used to configure KubernetesClient, applied in order according to their
+@Priority annotation.
+
+#### DefaultFabric8KubernetesClientBuilderAdapter
+
+[DefaultFabric8KubernetesClientBuilderAdapter](cloud-core-extension/src/main/java/com/netcracker/cloud/junit/cloudcore/extension/client/DefaultFabric8KubernetesClientBuilderAdapter.java)
+is the default implementation of
+`Fabric8KubernetesClientBuilderAdapter`. It customizes the Fabric8
+`KubernetesClientBuilder` at the **HTTP transport layer** before the
+`KubernetesClient` is created.
+
+This adapter is discovered via Java SPI and applied together with any other classpath adapters, ordered by `@Priority`.
+
+---
+
+#### Purpose
+
+This adapter provides a minimal, deterministic baseline for HTTP client setup:
+
+- Ensures a specific **HTTP client factory** is used:
+    - `withHttpClientFactory(getHttpClientFactory())`
+- Applies an explicit **connect timeout** to the underlying HTTP client:
+    - `builder.connectTimeout(..., TimeUnit.SECONDS)`
+- Supports overriding behavior via **JVM system properties**, with defaults.
+
+---
+
+#### Configuration Properties
+
+All properties are optional. If not set, defaults are used.
+
+| Property                       | Type | Default | Description                                                                             |
+|--------------------------------|------|---------|-----------------------------------------------------------------------------------------|
+| `k8s.http.connect.timeout.sec` | int  | `15`    | TCP connect timeout (seconds) for establishing connections to the Kubernetes API server |
+
+---
+
+### Use free local ports in port-forwards
+
+By default, port-forwards use as local ports the target ports specified in @PortForward annotation.
+But if you want to use random free OS local port, you need to specify the following property:
+```properties
+portforward.use.free.local.ports=true
+```
 
 ### Migration from 6.x.x version to 7.x.x
 
