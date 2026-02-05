@@ -34,6 +34,7 @@
       * [DefaultFabric8KubernetesClientBuilderAdapter](#defaultfabric8kubernetesclientbuilderadapter)
       * [Purpose](#purpose)
       * [Configuration Properties](#configuration-properties-1)
+    * [Use free local ports in port-forwards](#use-free-local-ports-in-port-forwards)
     * [Migration from 6.x.x version to 7.x.x](#migration-from-6xx-version-to-7xx)
       * [PlatformClient was deleted - use KubernetesClient directly](#platformclient-was-deleted---use-kubernetesclient-directly)
       * [ITHelper was deleted - use TokenService instead](#ithelper-was-deleted---use-tokenservice-instead)
