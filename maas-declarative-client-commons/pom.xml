@@ -28,7 +28,7 @@
 
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <kafka-clients.version>3.9.1</kafka-clients.version>
-        <kafka-blue-green-consumer.version>11.2.7</kafka-blue-green-consumer.version>
+        <kafka-blue-green-consumer.version>11.3.0</kafka-blue-green-consumer.version>
 
         <mockito.version>5.21.0</mockito.version>
         <security-common-authentication.version>5.1.33</security-common-authentication.version>
