@@ -72,7 +72,7 @@ public class PortForwardService {
             } while (portForward == null);
             LocalHostAddressGenerator.put(host, inetAddress);
             cache.put(endpoint, portForward);
-            log.info("Created port forward {}:{} for endpoint {}:{}", host, localPort, host, targetPort);
+            log.info("Created port forward {}:{} for endpoint {}:{}", host, portForward.getLocalPort(), host, targetPort);
             if (!ping(portForward.getLocalAddress(), Duration.ofSeconds(5))) { // todo check if that is working
                 log.warn("Port forward ping for endpoint {}:{} failed", host, targetPort);
             }
