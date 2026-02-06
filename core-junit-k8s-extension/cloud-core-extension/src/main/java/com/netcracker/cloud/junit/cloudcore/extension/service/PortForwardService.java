@@ -23,15 +23,19 @@ public class PortForwardService {
     protected final KubernetesClient kubernetesClient;
     @Getter
     protected boolean fqdn;
+    @Getter
+    protected boolean useFreeLocalPorts;
 
-    public PortForwardService(KubernetesClient kubernetesClient, boolean fqdn) {
-        this(kubernetesClient, new ConcurrentHashMap<>(), fqdn);
+    public PortForwardService(KubernetesClient kubernetesClient, boolean fqdn, boolean useFreeLocalPorts) {
+        this(kubernetesClient, new ConcurrentHashMap<>(), fqdn, useFreeLocalPorts);
     }
 
-    public PortForwardService(KubernetesClient kubernetesClient, Map<Endpoint, LocalPortForward> cache, boolean fqdn) {
+    public PortForwardService(KubernetesClient kubernetesClient, Map<Endpoint, LocalPortForward> cache,
+                              boolean fqdn, boolean useFreeLocalPorts) {
         this.kubernetesClient = kubernetesClient;
         this.cache = cache;
         this.fqdn = fqdn;
+        this.useFreeLocalPorts = useFreeLocalPorts;
     }
 
     public synchronized <T> T portForward(BasePortForwardParams<T> params) {
@@ -39,6 +43,7 @@ public class PortForwardService {
         String cloud = kubernetesClient.getMasterUrl().getHost();
         String name = params.getName();
         int targetPort = params.getPort();
+        int localPort = useFreeLocalPorts ? 0 : targetPort;
         // i.e. my-svc.my-namespace.svc.cluster-domain.example
         String host = fqdn ? String.format("%s.svc.%s", params.host(namespace), cloud) : params.host(namespace);
         Endpoint endpoint = new Endpoint(host, targetPort);
@@ -52,10 +57,10 @@ public class PortForwardService {
                 try {
                     if (params instanceof PodPortForwardParams) {
                         portForward = kubernetesClient.pods().inNamespace(namespace).withName(name)
-                                .portForward(targetPort, inetAddress, targetPort);
+                                .portForward(targetPort, inetAddress, localPort);
                     } else if (params instanceof ServicePortForwardParams || params instanceof UrlPortForwardParams) {
                         portForward = kubernetesClient.services().inNamespace(namespace).withName(name)
-                                .portForward(targetPort, inetAddress, targetPort);
+                                .portForward(targetPort, inetAddress, localPort);
                     } else {
                         throw new IllegalArgumentException("Unsupported port forward params type: " + params.getClass().getName());
                     }
@@ -67,7 +72,7 @@ public class PortForwardService {
             } while (portForward == null);
             LocalHostAddressGenerator.put(host, inetAddress);
             cache.put(endpoint, portForward);
-            log.info("Created port forward for endpoint {}:{}", host, targetPort);
+            log.info("Created port forward {}:{} for endpoint {}:{}", host, portForward.getLocalPort(), host, targetPort);
             if (!ping(portForward.getLocalAddress(), Duration.ofSeconds(5))) { // todo check if that is working
                 log.warn("Port forward ping for endpoint {}:{} failed", host, targetPort);
             }
