@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.netcracker.cloud</groupId>
         <artifactId>blue-green-state-monitor-java</artifactId>
-        <version>1.3.8-SNAPSHOT</version>
+        <version>1.4.0</version>
     </parent>
     <packaging>pom</packaging>
 
