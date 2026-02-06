@@ -5,7 +5,7 @@
   <parent>
       <artifactId>log-manager-parent</artifactId>
     <groupId>com.netcracker.cloud.quarkus</groupId>
-      <version>8.3.0</version>
+      <version>8.3.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
