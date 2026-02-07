@@ -70,7 +70,7 @@ public class CloudCoreJunitCallback implements BeforeAllCallback, AfterAllCallba
                 .min(Comparator.comparing(FieldInstanceProvider::order));
 
         if (fieldInstanceProviderOpt.isEmpty()) {
-            log.debug("No FieldInstanceProvider found for field: '{}' with type: '{}'", field.getName(), field.getType().getName());
+            log.trace("No FieldInstanceProvider found for field: '{}' with type: '{}'", field.getName(), field.getType().getName());
             return;
         }
         try {
