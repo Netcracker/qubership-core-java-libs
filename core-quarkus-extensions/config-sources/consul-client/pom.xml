@@ -5,7 +5,7 @@
   <parent>
       <artifactId>config-sources</artifactId>
       <groupId>com.netcracker.cloud.quarkus</groupId>
-      <version>8.4.0</version>
+      <version>8.4.1-SNAPSHOT</version>
       <relativePath>../pom.xml</relativePath>
   </parent>
 
