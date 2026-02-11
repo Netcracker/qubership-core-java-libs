@@ -3,7 +3,7 @@
     <parent>
         <artifactId>framework-extensions-parent</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>6.4.0</version>
+        <version>6.4.1-SNAPSHOT</version>
         <relativePath>../framework-extensions-parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
