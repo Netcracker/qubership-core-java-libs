@@ -3,7 +3,7 @@
     <parent>
         <artifactId>microservice-framework-parent</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>7.3.1-SNAPSHOT</version>
+        <version>7.4.0</version>
         <relativePath>../microservice-framework-parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
