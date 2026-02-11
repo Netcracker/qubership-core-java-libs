@@ -16,7 +16,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <nc.context.core.version>7.3.0</nc.context.core.version>
+        <nc.context.core.version>7.4.0</nc.context.core.version>
 
         <wagon-provider-api.version>3.5.3</wagon-provider-api.version>
 
