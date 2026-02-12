@@ -1,0 +1,24 @@
+# In this workflow I try to use standard actions and workflows from DevOps
+
+name: Build and Test 2
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  call-maven-publish:
+    uses: netcracker/qubership-workflow-hub/.github/workflows/maven-publish.yml@v2.0.10
+    with:
+      maven-command: "--batch-mode deploy"
+      java-version: "21"
+      upload-artifact: true
+      artifact-id: "my-artifact"
+    secrets:
+      maven-username: TaurMorchant
+      maven-token: ${{ secrets.CORE_LIBS_TOKEN_TEST_VLLA }}
+      sonar-token: ${{ secrets.SONAR_TOKEN }}
