@@ -5,7 +5,7 @@
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>core-error-handling</artifactId>
     <packaging>pom</packaging>
-    <version>3.4.1-SNAPSHOT</version>
+    <version>3.4.1-tmp-monorepo-SNAPSHOT</version>
 
     <licenses>
         <license>

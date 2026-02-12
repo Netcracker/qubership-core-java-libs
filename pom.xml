@@ -7,7 +7,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>qubership-core-java-libs</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0-tmp-monorepo-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Monorepo Aggregator</name>
 
