@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Code quality/security scan on SonarQube
         uses: netcracker/qubership-core-infra/actions/maven-snapshot-deploy@feat/monorepo-workflows
