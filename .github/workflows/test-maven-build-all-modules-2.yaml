@@ -11,14 +11,19 @@ on:
       - '**'
 
 jobs:
-  call-maven-publish:
-    uses: netcracker/qubership-workflow-hub/.github/workflows/maven-publish.yml@v2.0.10
-    with:
-      maven-command: "--batch-mode deploy"
-      java-version: "21"
-      upload-artifact: true
-      artifact-id: "my-artifact"
-    secrets:
-      maven-username: TaurMorchant
-      maven-token: ${{ secrets.CORE_LIBS_TOKEN_TEST_VLLA }}
-      sonar-token: ${{ secrets.SONAR_TOKEN }}
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Code quality/security scan on SonarQube
+        uses: netcracker/qubership-workflow-hub/actions/maven-snapshot-deploy@v2.0.10
+        with:
+          java-version: '21'
+          #additional-mvn-args: 'org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar -Dsonar.projectKey=Netcracker_qubership -Dsonar.organization=netcracker -Dsonar.host.url=https://sonarcloud.io'
+          maven-username: ''${{ github.actor }}'' # For maven central repository it would be ${{ secrets.MAVEN_USER }}. Already set for Netcracker.
+          maven-token: ${{ secrets.CORE_LIBS_TOKEN_TEST_VLLA }} # For maven central repository it would be ${{ secrets.MAVEN_PASSWORD}}. Already set for Netcracker.
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }} # Organization level secret. Already set for Netcracker.
+          gpg-passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }} # Organization level secret. Already set for Netcracker.
+          sonar-token: ${{ secrets.SONAR_TOKEN }} # Organization level secret. Already set for Netcracker.
