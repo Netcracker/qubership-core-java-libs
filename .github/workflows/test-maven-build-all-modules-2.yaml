@@ -25,7 +25,7 @@ jobs:
           maven-username: ${{ secrets.MAVEN_USER }} # For maven central repository it would be ${{ secrets.MAVEN_USER }}. Already set for Netcracker.
           maven-token: ${{ secrets.MAVEN_PASSWORD }} # For maven central repository it would be ${{ secrets.MAVEN_PASSWORD}}. Already set for Netcracker.
           github-username: TaurMorchant
-          github-token: ${{ secrets.github-token }}
+          github-token: ${{ secrets.CORE_LIBS_TOKEN_TEST_VLLA }}
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }} # Organization level secret. Already set for Netcracker.
           gpg-passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }} # Organization level secret. Already set for Netcracker.
           sonar-token: ${{ secrets.SONAR_TOKEN }} # Organization level secret. Already set for Netcracker.
