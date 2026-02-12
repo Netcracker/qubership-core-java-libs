@@ -18,12 +18,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Code quality/security scan on SonarQube
-        uses: netcracker/qubership-workflow-hub/actions/maven-snapshot-deploy@v2.0.10
+        uses: netcracker/qubership-core-infra/actions/maven-snapshot-deploy@feat/monorepo-workflows
         with:
           java-version: '21'
           #additional-mvn-args: 'org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar -Dsonar.projectKey=Netcracker_qubership -Dsonar.organization=netcracker -Dsonar.host.url=https://sonarcloud.io'
           maven-username: ${{ secrets.MAVEN_USER }} # For maven central repository it would be ${{ secrets.MAVEN_USER }}. Already set for Netcracker.
           maven-token: ${{ secrets.MAVEN_PASSWORD }} # For maven central repository it would be ${{ secrets.MAVEN_PASSWORD}}. Already set for Netcracker.
+          github-username: TaurMorchant
+          github-token: ${{ secrets.github-token }}
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }} # Organization level secret. Already set for Netcracker.
           gpg-passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }} # Organization level secret. Already set for Netcracker.
           sonar-token: ${{ secrets.SONAR_TOKEN }} # Organization level secret. Already set for Netcracker.
