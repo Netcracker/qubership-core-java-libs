@@ -73,10 +73,8 @@ jobs:
           echo ""
           
           MODULES=(
-            "utils"
-            "error-handling"
-            "context-propagation"
-            "restclient"
+            "core-utils"
+            "core-error-handling"
           )
           
           for MODULE in "${MODULES[@]}"; do
