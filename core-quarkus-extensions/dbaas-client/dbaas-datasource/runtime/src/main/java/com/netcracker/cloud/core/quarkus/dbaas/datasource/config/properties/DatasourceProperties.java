@@ -55,7 +55,6 @@ public interface DatasourceProperties {
     /**
      * jdbc
      */
-    @WithParentName
     Map<String, JDBCProperties> datasources();
 
     interface JDBCProperties {
