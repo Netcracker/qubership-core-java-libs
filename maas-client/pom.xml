@@ -23,6 +23,7 @@
         <testcontainers.version>1.21.4</testcontainers.version>
         <blue-green-monitor.version>1.5.0</blue-green-monitor.version>
 
+        <kafka.version>4.0.0</kafka.version>
         <jackson.version>2.19.4</jackson.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../report-aggregate/target/site/jacoco-aggregate/jacoco.xml

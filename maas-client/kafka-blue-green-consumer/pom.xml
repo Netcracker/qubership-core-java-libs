@@ -12,15 +12,11 @@
     <artifactId>kafka-blue-green-consumer</artifactId>
     <packaging>jar</packaging>
 
-    <properties>
-        <kafka-client.version>3.9.1</kafka-client.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <version>${kafka-client.version}</version>
+            <version>${kafka.version}</version>
         </dependency>
         <dependency>
             <groupId>com.netcracker.cloud.maas.client</groupId>
