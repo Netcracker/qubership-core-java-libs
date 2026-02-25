@@ -1,4 +1,4 @@
-[![Maven build](https://github.com/Netcracker/qubership-maas-client/actions/workflows/maven-build.yaml/badge.svg)](https://github.com/Netcracker/qubership-maas-client/actions/workflows/maven-build.yaml)
+[![Maven build](https://github.com/Netcracker/qubership-maas-client/actions/workflows/maven-deploy.yml/badge.svg)](https://github.com/Netcracker/qubership-maas-client/actions/workflows/maven-deploy.yml)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?metric=coverage&project=Netcracker_qubership-maas-client)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-maas-client)
 [![duplicated_lines_density](https://sonarcloud.io/api/project_badges/measure?metric=duplicated_lines_density&project=Netcracker_qubership-maas-client)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-maas-client)
 [![vulnerabilities](https://sonarcloud.io/api/project_badges/measure?metric=vulnerabilities&project=Netcracker_qubership-maas-client)](https://sonarcloud.io/summary/overall?id=Netcracker_qubership-maas-client)
