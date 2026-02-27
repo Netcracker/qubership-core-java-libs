@@ -45,8 +45,8 @@ management:
   tracing:
     enabled: true
     sampling.probability: 1.0
-    propagation:
-      type: b3_multi
+otel:
+  propagators: b3multi
 spring:
   cloud:
     consul:

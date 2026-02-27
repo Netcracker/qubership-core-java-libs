@@ -13,13 +13,14 @@ import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.context.Scope;
+import io.opentelemetry.instrumentation.spring.autoconfigure.OpenTelemetryAutoConfiguration;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.metrics.KafkaMetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
+import org.springframework.boot.kafka.autoconfigure.metrics.KafkaMetricsAutoConfiguration;
+import org.springframework.boot.micrometer.tracing.test.autoconfigure.AutoConfigureTracing;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -34,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestPropertySource("classpath:application-test.yaml")
 @ActiveProfiles("test")
 @EnableConfigurationProperties(value = {MaasKafkaLocalDevConfigProps.class, MaasKafkaClientConfigKeeper.class})
-@AutoConfigureObservability
+@AutoConfigureTracing
 class TracingTests extends KafkaTest {
 
     @Autowired
@@ -108,8 +109,7 @@ class TracingTests extends KafkaTest {
             MaasKafkaLocalDevConfig.class,
             MaasKafkaCommonConfig.class,
             MaasKafkaTopicServiceConfig.class,
-            org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryAutoConfiguration.class,
-            org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration.class
+            OpenTelemetryAutoConfiguration.class
     })
     static class TracingApp {
         static {

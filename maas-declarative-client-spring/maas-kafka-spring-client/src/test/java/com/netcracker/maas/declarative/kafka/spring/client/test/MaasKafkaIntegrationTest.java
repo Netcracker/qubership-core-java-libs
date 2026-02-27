@@ -1,24 +1,21 @@
 package com.netcracker.maas.declarative.kafka.spring.client.test;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
-import com.netcracker.cloud.security.core.auth.M2MManager;
 import com.netcracker.maas.declarative.kafka.client.api.*;
 import com.netcracker.maas.declarative.kafka.client.api.model.MaasProducerRecord;
 import com.netcracker.maas.declarative.kafka.spring.client.KafkaTest;
 import com.netcracker.maas.declarative.kafka.spring.client.config.*;
 import com.netcracker.maas.declarative.kafka.spring.client.config.local.dev.MaasKafkaLocalDevConfig;
 import com.netcracker.maas.declarative.kafka.spring.client.config.local.dev.MaasKafkaLocalDevConfigProps;
+import io.opentelemetry.instrumentation.spring.autoconfigure.OpenTelemetryAutoConfiguration;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
@@ -41,7 +38,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @EnableConfigurationProperties(value = {MaasKafkaLocalDevConfigProps.class, MaasKafkaClientConfigKeeper.class})
 @TestPropertySource("classpath:application-test.yaml")
 @ActiveProfiles("test")
-@AutoConfigureObservability
 class MaasKafkaIntegrationTest extends KafkaTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(MaasKafkaIntegrationTest.class);
@@ -57,8 +53,6 @@ class MaasKafkaIntegrationTest extends KafkaTest {
     MaasKafkaClientFactory clientFactory;
     @Autowired
     MaasKafkaClientStateManagerService eventService;
-    @MockBean
-    M2MManager m2MManager;
 
     @Test
     @Timeout(value = 120)
