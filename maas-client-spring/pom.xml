@@ -4,7 +4,7 @@
 
     <artifactId>maas-client-spring-parent</artifactId>
     <groupId>com.netcracker.cloud.maas.client</groupId>
-    <version>8.4.1-SNAPSHOT</version>
+    <version>9.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -16,11 +16,11 @@
     </licenses>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-boot.version>3.5.10</spring-boot.version>
-        <spring-cloud.version>2024.0.2</spring-cloud.version>
+        <spring-boot.version>4.0.2</spring-boot.version>
+        <spring-cloud.version>2025.1.1</spring-cloud.version>
         <cloud-core.maas-client.version>11.4.0</cloud-core.maas-client.version>
         <cloud-core.core-utils.version>2.4.0</cloud-core.core-utils.version>
         <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
