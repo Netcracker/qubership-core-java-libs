@@ -1,9 +1,17 @@
 package com.netcracker.cloud.dbaas.client.opensearch.restclient;
 
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.opensearch.DbaasOpensearchClient;
+import com.netcracker.cloud.dbaas.client.opensearch.config.DbaaSOpensearchConfigurationProperty;
+import com.netcracker.cloud.dbaas.client.opensearch.config.DbaasOpensearchConfiguration;
+import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchProperties;
+import com.netcracker.cloud.dbaas.client.opensearch.restclient.configuration.OpensearchTestConfiguration;
+import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opensearch.client.json.JsonData;
 import org.opensearch.client.opensearch.OpenSearchClient;
@@ -31,14 +39,6 @@ import org.opensearch.client.opensearch.indices.OpenSearchIndicesClient;
 import org.opensearch.client.opensearch.ingest.OpenSearchIngestClient;
 import org.opensearch.client.opensearch.snapshot.OpenSearchSnapshotClient;
 import org.opensearch.client.opensearch.tasks.OpenSearchTasksClient;
-import com.netcracker.cloud.context.propagation.core.ContextManager;
-import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
-import com.netcracker.cloud.dbaas.client.opensearch.DbaasOpensearchClient;
-import com.netcracker.cloud.dbaas.client.opensearch.config.DbaaSOpensearchConfigurationProperty;
-import com.netcracker.cloud.dbaas.client.opensearch.config.DbaasOpensearchConfiguration;
-import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchProperties;
-import com.netcracker.cloud.dbaas.client.opensearch.restclient.configuration.OpensearchTestConfiguration;
-import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,10 +52,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static com.netcracker.cloud.dbaas.client.opensearch.restclient.configuration.OpensearchTestConfiguration.TEST_INDEX;
 import static com.netcracker.cloud.dbaas.client.opensearch.restclient.configuration.OpensearchTestConfiguration.TEST_PREFIX;
 import static com.netcracker.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(properties = {"dbaas.api.opensearch.service.delimiter=-",
         "dbaas.api.opensearch.service.prefix=test",
@@ -104,7 +104,7 @@ class DbaasOpensearchClientImplTest {
     @Test
     void getPrefix() {
         String prefix = serviceClient.getPrefix();
-        Assert.assertEquals(TEST_PREFIX, prefix);
+        assertEquals(TEST_PREFIX, prefix);
     }
 
     @Test
@@ -663,6 +663,7 @@ class DbaasOpensearchClientImplTest {
     }
 
     @Test
+    @Disabled("https://github.com/opensearch-project/opensearch-java/issues/1792")
     void fieldCaps() throws IOException, InterruptedException {
         upsertDocument("1", "Key", "Val");
         upsertDocument("1", "Key", "Val", secondIndexName);

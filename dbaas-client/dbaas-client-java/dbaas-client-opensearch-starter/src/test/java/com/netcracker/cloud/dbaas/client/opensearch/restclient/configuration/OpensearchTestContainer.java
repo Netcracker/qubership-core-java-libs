@@ -10,7 +10,7 @@ import java.time.Duration;
 
 @Slf4j
 public class OpensearchTestContainer extends GenericContainer<OpensearchTestContainer> {
-    private static final DockerImageName OPENSEARCH_IMAGE = DockerImageName.parse("opensearchproject/opensearch:2.11.1");
+    private static final DockerImageName OPENSEARCH_IMAGE = DockerImageName.parse("opensearchproject/opensearch:3.5.0");
 
     public static final int OPENSEARCH_PORT = 9200;
     private static OpensearchTestContainer opensearchContainer;

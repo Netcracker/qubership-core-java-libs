@@ -26,7 +26,6 @@ import javax.sql.DataSource;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 import static com.netcracker.cloud.dbaas.client.entity.connection.PostgresDBConnection.*;
@@ -79,7 +78,7 @@ public class PostgresDatasourceCreator implements DatabaseClientCreator<Postgres
         }
         if (connectionProperties.isTls()) {
             log.info("Connection to postgresql will be secured");
-            if(connectionProperties.isTlsNotStrict())
+            if (connectionProperties.isTlsNotStrict())
                 url = appendUrlParam(url, SSL_MODE_REQUIRE_POSTFIX);
             else
                 url = appendUrlParam(url, SSL_MODE_VERIFY_FULL_POSTFIX);
