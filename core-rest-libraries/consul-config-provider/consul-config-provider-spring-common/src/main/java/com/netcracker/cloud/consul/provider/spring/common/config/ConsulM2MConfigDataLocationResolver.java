@@ -6,7 +6,7 @@ import com.netcracker.cloud.consul.provider.common.client.ConsulRestClient;
 import com.netcracker.cloud.consul.provider.spring.common.Utils;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import com.netcracker.cloud.security.core.auth.M2MManager;
-import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.bootstrap.BootstrapRegistry;
 import org.springframework.boot.context.config.ConfigDataLocation;
 import org.springframework.boot.context.config.ConfigDataLocationResolverContext;
 import org.springframework.boot.logging.DeferredLogFactory;

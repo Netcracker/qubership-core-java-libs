@@ -11,7 +11,7 @@ import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import com.netcracker.cloud.restclient.entity.RestClientResponseEntity;
 import com.netcracker.cloud.restclient.exception.MicroserviceRestClientException;
 import com.netcracker.cloud.restclient.exception.MicroserviceRestClientResponseException;
-import org.springframework.boot.ConfigurableBootstrapContext;
+import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.boot.context.config.ConfigData;
 import org.springframework.boot.context.config.ConfigDataLoaderContext;
 import org.springframework.boot.context.config.Profiles;

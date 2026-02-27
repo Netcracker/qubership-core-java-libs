@@ -44,7 +44,7 @@ public class RestClientExceptionRetryPolicy extends SimpleRetryPolicy {
 
         if (lastThrowable instanceof RestClientResponseException) {
             RestClientResponseException restClientResponseException = (RestClientResponseException) lastThrowable;
-            if (NOT_RETRYABLE_CODES.contains(restClientResponseException.getRawStatusCode()) || isErrorFromSystemWithLegacyProxyError(restClientResponseException)) {
+            if (NOT_RETRYABLE_CODES.contains(restClientResponseException.getStatusCode().value()) || isErrorFromSystemWithLegacyProxyError(restClientResponseException)) {
                 return false;
             }
         }

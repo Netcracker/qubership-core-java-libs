@@ -1,7 +1,5 @@
 package com.netcracker.cloud.restlegacy.restclient.error.v2.v2_1;
 
-import org.hamcrest.*;
-import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.restlegacy.restclient.app.TestConfig;
 import com.netcracker.cloud.restlegacy.restclient.error.ExceptionHandlerControllersAdviceBase;
 import com.netcracker.cloud.restlegacy.restclient.error.TestExceptionHandlingConfiguration;
@@ -9,6 +7,8 @@ import com.netcracker.cloud.restlegacy.restclient.error.v2.ControllerWithCustomE
 import com.netcracker.cloud.restlegacy.restclient.error.v2.ControllerWithV1ExceptionModel;
 import com.netcracker.cloud.restlegacy.restclient.error.v2.CustomExceptionHandler;
 import com.netcracker.cloud.restlegacy.restclient.error.v2.ExceptionHandlingV2MainConfiguration;
+import org.hamcrest.*;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,9 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static com.netcracker.cloud.restlegacy.restclient.error.TestExceptionHandlingRestController.*;
 import static com.netcracker.cloud.restlegacy.restclient.error.v2.Constants.ERROR_HANDLER_VERSION_CONDITION_PROPERTY;
 import static com.netcracker.cloud.restlegacy.restclient.error.v2.Constants.VERSION_2_1;
@@ -33,6 +30,9 @@ import static com.netcracker.cloud.restlegacy.restclient.error.v2.ControllerWith
 import static com.netcracker.cloud.restlegacy.restclient.error.v2.ControllerWithV1ExceptionModel.*;
 import static com.netcracker.cloud.restlegacy.restclient.error.v2.v2_1.ErrorMessageCodes.*;
 import static com.netcracker.cloud.restlegacy.restclient.error.v2.v2_1.MessageParameterTypes.*;
+import static java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;

@@ -9,6 +9,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import com.netcracker.cloud.routesregistration.common.gateway.route.ControlPlaneClient;
