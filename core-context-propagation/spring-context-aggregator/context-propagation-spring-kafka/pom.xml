@@ -3,14 +3,14 @@
     <parent>
         <artifactId>spring-context-aggregator</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>7.4.1-SNAPSHOT</version>
+        <version>8.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>context-propagation-spring-kafka</artifactId>
     <properties>
-        <spring.kafka.version>3.3.12</spring.kafka.version>
+        <spring.kafka.version>4.0.2</spring.kafka.version>
     </properties>
 
     <dependencyManagement>
@@ -18,7 +18,7 @@
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
-                <version>5.14.1</version>
+                <version>6.0.2</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -41,13 +41,13 @@
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
             <artifactId>framework-contexts</artifactId>
-            <version>7.4.1-SNAPSHOT</version>
+            <version>8.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>3.5.10</version>
+            <version>4.0.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>

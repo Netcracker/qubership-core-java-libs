@@ -3,7 +3,7 @@
     <parent>
         <artifactId>context-propagation</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>7.4.1-SNAPSHOT</version>
+        <version>8.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -12,9 +12,9 @@
     <packaging>pom</packaging>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <spring.version>6.2.15</spring.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <spring.version>7.0.3</spring.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../context-propagation-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>

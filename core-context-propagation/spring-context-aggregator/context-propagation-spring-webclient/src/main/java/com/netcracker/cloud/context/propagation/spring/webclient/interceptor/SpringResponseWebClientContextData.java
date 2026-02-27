@@ -23,7 +23,7 @@ public class SpringResponseWebClientContextData implements OutgoingContextData {
     public ClientRequest addHeadersToRequest(ClientRequest clientRequest){
         return ClientRequest.from(clientRequest)
                 .headers(headers -> responseHeaders.forEach((headerKey, headerValue) -> {
-                    if (!headers.containsKey(headerKey)) {
+                    if (!headers.containsHeader(headerKey)) {
                         log.trace("Add header={} with value={} from context", headerKey, headerValue);
                         if (headerValue instanceof String)
                             headers.add(headerKey, (String) headerValue);

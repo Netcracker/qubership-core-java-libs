@@ -4,7 +4,7 @@
     <parent>
         <artifactId>context-propagation</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>7.4.1-SNAPSHOT</version>
+        <version>8.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -52,7 +52,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.14.1</version>
+            <version>6.0.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -81,8 +81,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>21</source>
+                    <target>21</target>
                 </configuration>
             </plugin>
         </plugins>
