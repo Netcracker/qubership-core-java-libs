@@ -41,7 +41,7 @@ public class MicroserviceWebClient extends AbstractMicroserviceRestClient {
     @Getter
     @Setter
     private ObjectMapper mapper = new ObjectMapper()
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            .setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     @Getter
     @Setter
@@ -57,11 +57,11 @@ public class MicroserviceWebClient extends AbstractMicroserviceRestClient {
      * library/service.
      */
     public MicroserviceWebClient() {
-        this.webClient =  WebClient.builder().build();
+        this.webClient = WebClient.builder().build();
     }
 
     public MicroserviceWebClient(HttpClient httpClient) {
-        this.webClient =  WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient)).build();
+        this.webClient = WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient)).build();
     }
 
     public MicroserviceWebClient withRetry(Retry retryPolicy) {
@@ -126,16 +126,15 @@ public class MicroserviceWebClient extends AbstractMicroserviceRestClient {
                 throw new MicroserviceRestClientException("Null HTTP response");
             }
             return new RestClientResponseEntity<>(responseEntity.getBody(),
-                    responseEntity.getStatusCodeValue(),
-                    responseEntity.getHeaders());
+                    responseEntity.getStatusCode().value(),
+                    HeaderUtils.toMap(responseEntity.getHeaders()));
         } catch (WebClientException e) {
             throw processWebClientException(e);
         }
     }
 
     private MicroserviceRestClientException processWebClientException(WebClientException e) {
-        if (e instanceof WebClientResponseException) {
-            WebClientResponseException re = (WebClientResponseException) e;
+        if (e instanceof WebClientResponseException re) {
             // try to convert to TMF response
             MicroserviceRestClientResponseException mce;
             try {
@@ -143,11 +142,11 @@ public class MicroserviceWebClient extends AbstractMicroserviceRestClient {
                 final RemoteCodeException remoteCodeException = converter.buildErrorCodeException(tmfErrorResponse);
                 mce = new MicroserviceRestClientResponseException(remoteCodeException.getMessage(),
                         remoteCodeException,
-                        re.getRawStatusCode(), re.getResponseBodyAsByteArray(), re.getHeaders());
+                        re.getStatusCode().value(), re.getResponseBodyAsByteArray(), HeaderUtils.toMap(re.getHeaders()));
             } catch (Exception ce) {
                 // failed to parse as TMF format, fallback to non-TMF response
                 log.warn("Failed to parse response as TMF error response, cause: {}", ce.getMessage());
-                mce = new MicroserviceRestClientResponseException(re.getMessage(), re, re.getRawStatusCode(), re.getResponseBodyAsByteArray(), re.getHeaders());
+                mce = new MicroserviceRestClientResponseException(re.getMessage(), re, re.getStatusCode().value(), re.getResponseBodyAsByteArray(), HeaderUtils.toMap(re.getHeaders()));
             }
             return mce;
         } else {
