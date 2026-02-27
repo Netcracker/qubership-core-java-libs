@@ -24,9 +24,9 @@
     </modules>
 
 	<properties>
-		<maven.compiler.release>17</maven.compiler.release>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.release>21</maven.compiler.release>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quarkus.version>3.27.2</quarkus.version>
@@ -113,7 +113,7 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>${compiler-plugin.version}</version>
 					<configuration>
-						<release>17</release>
+						<release>21</release>
 					</configuration>
 				</plugin>
 				<plugin>
