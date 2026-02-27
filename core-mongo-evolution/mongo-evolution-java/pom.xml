@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>mongo-evolution</artifactId>
-    <version>7.4.1-SNAPSHOT</version>
+    <version>8.0.0-SNAPSHOT</version>
 
     <name>mongo-evolution-java</name>
     <description>Common mongo-evolution library which is free from any frameworks</description>
@@ -18,12 +18,12 @@
     </licenses>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <java.version>17</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <java.version>21</java.version>
         <annotations.version>26.0.2</annotations.version>
         <reflections.version>0.10.2</reflections.version>
-        <mongodb.version>5.5.2</mongodb.version>
+        <mongodb.version>5.6.3</mongodb.version>
         <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
         <lombok.version>1.18.42</lombok.version>
         <mockito.version>5.21.0</mockito.version>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.14.1</version>
+            <version>6.0.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
