@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.netcracker.cloud</groupId>
-    <version>7.4.1-SNAPSHOT</version>
+    <version>8.0.0-SNAPSHOT</version>
     <artifactId>microservice-framework-parent</artifactId>
     <packaging>pom</packaging>
 
@@ -16,14 +16,14 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
         <maven.pmd.plugin.version>3.7</maven.pmd.plugin.version>
         <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
-        <spring.boot.version>3.5.10</spring.boot.version>
+        <spring.boot.version>4.0.2</spring.boot.version>
         <mockito.version>5.21.0</mockito.version>
-        <spring.security.version>6.5.7</spring.security.version>
-        <spring.version>6.2.15</spring.version>
+        <spring.security.version>7.0.2</spring.security.version>
+        <spring.version>7.0.4</spring.version>
         <lombok.version>1.18.42</lombok.version>
         <jackson.version>2.20.1</jackson.version>
         <microservice.dependencies.version>11.4.0</microservice.dependencies.version>
@@ -37,7 +37,7 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
-                <version>2025.0.1</version>
+                <version>2025.1.1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -69,7 +69,7 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
-                <version>5.14.1</version>
+                <version>6.0.3</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -123,7 +123,7 @@
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
-                <version>2.8.15</version>
+                <version>3.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>

@@ -4,9 +4,9 @@ import com.netcracker.cloud.dbaas.client.config.EnableServiceDbaasPostgresql;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration;
+import org.springframework.boot.data.elasticsearch.autoconfigure.DataElasticsearchAutoConfiguration;
+import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
+import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cloud.config.client.ConfigClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.mock;
 @Configuration
 @EnableServiceDbaasPostgresql
 @EnableAutoConfiguration(exclude = {
-        ElasticsearchDataAutoConfiguration.class,
+        DataElasticsearchAutoConfiguration.class,
         ConfigClientAutoConfiguration.class,
         MongoAutoConfiguration.class,
         RestClientAutoConfiguration.class

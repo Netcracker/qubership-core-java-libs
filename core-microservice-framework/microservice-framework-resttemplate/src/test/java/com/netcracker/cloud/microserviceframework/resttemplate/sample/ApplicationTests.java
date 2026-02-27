@@ -1,19 +1,19 @@
 package com.netcracker.cloud.microserviceframework.resttemplate.sample;
 
+import com.netcracker.cloud.microserviceframework.resttemplate.sample.configuration.RouteConfig;
+import com.netcracker.cloud.routesregistration.common.gateway.route.ControlPlaneClient;
+import com.netcracker.cloud.routesregistration.common.gateway.route.GatewayNameKey;
+import com.netcracker.cloud.routesregistration.common.gateway.route.rest.RegistrationRequest;
+import com.netcracker.cloud.routesregistration.common.gateway.route.v3.domain.RouteConfigurationRequestV3;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
-import com.netcracker.cloud.microserviceframework.resttemplate.sample.configuration.RouteConfig;
-import com.netcracker.cloud.routesregistration.common.gateway.route.ControlPlaneClient;
-import com.netcracker.cloud.routesregistration.common.gateway.route.GatewayNameKey;
-import com.netcracker.cloud.routesregistration.common.gateway.route.rest.RegistrationRequest;
-import com.netcracker.cloud.routesregistration.common.gateway.route.v3.domain.RouteConfigurationRequestV3;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 import java.util.concurrent.TimeUnit;
