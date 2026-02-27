@@ -10,8 +10,8 @@ import com.netcracker.cloud.dbaas.client.cassandra.entity.DbaasCassandraMetricsP
 import com.netcracker.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperties;
 import com.netcracker.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
 import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;

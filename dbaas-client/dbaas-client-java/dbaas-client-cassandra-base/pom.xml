@@ -25,11 +25,15 @@
             <artifactId>dbaas-client-base</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.datastax.oss</groupId>
+            <groupId>org.apache.cassandra</groupId>
             <artifactId>java-driver-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.datastax.oss</groupId>
+            <groupId>com.github.stephenc.jcip</groupId>
+            <artifactId>jcip-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cassandra</groupId>
             <artifactId>java-driver-metrics-micrometer</artifactId>
         </dependency>
         <dependency>

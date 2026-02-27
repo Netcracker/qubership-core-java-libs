@@ -22,7 +22,7 @@
         <mongodb.version>5.6.2</mongodb.version>
         <arangodb.driver.version>7.25.0</arangodb.driver.version>
         <arangodb.spring.data.version>5.0.0</arangodb.spring.data.version>
-        <java.driver.core.version>4.17.0</java.driver.core.version>
+        <java.driver.core.version>4.19.2</java.driver.core.version>
         <jedis.client.version>7.0.0</jedis.client.version>
         <spring.data.redis.version>4.0.2</spring.data.redis.version>
         <jackson-bom.version>2.20.1</jackson-bom.version>
@@ -223,14 +223,19 @@
                 <version>1.16.1</version>
             </dependency>
             <dependency>
-                <groupId>com.datastax.oss</groupId>
+                <groupId>org.apache.cassandra</groupId>
                 <artifactId>java-driver-core</artifactId>
                 <version>${java.driver.core.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.datastax.oss</groupId>
+                <groupId>org.apache.cassandra</groupId>
                 <artifactId>java-driver-metrics-micrometer</artifactId>
                 <version>${java.driver.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.stephenc.jcip</groupId>
+                <artifactId>jcip-annotations</artifactId>
+                <version>1.0-1</version>
             </dependency>
             <dependency>
                 <groupId>redis.clients</groupId>
