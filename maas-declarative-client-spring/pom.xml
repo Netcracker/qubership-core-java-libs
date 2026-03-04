@@ -26,7 +26,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
 
-        <spring-boot.version>4.0.2</spring-boot.version>
+        <spring-boot.version>4.0.3</spring-boot.version>
         <spring-cloud.version>2025.1.1</spring-cloud.version>
         <springdoc.version>1.6.11</springdoc.version>
 
@@ -160,7 +160,7 @@ because spring-boot-based microservices are maven-inherited from spring-boot-par
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-surefire-plugin</artifactId>
-                            <version>3.5.4</version>
+                            <version>3.5.5</version>
                             <configuration>
                                 <environmentVariables>
                                     <TESTCONTAINERS_RYUK_CONTAINER_IMAGE>
@@ -191,7 +191,7 @@ because spring-boot-based microservices are maven-inherited from spring-boot-par
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-surefire-plugin</artifactId>
-                            <version>3.5.4</version>
+                            <version>3.5.5</version>
                             <configuration>
                                 <environmentVariables>
                                     <DOCKER_HOST>${env.TEST_DOCKER_URL}</DOCKER_HOST>
