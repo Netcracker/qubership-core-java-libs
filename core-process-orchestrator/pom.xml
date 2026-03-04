@@ -19,8 +19,8 @@
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <surefire-plugin.version>3.5.4</surefire-plugin.version>
-        <jackson.version>2.20.1</jackson.version>
+        <surefire-plugin.version>3.5.5</surefire-plugin.version>
+        <jackson.version>2.20.2</jackson.version>
     </properties>
 
     <dependencies>
