@@ -24,10 +24,10 @@
 
         <flatten-maven-plugin.version>1.7.3</flatten-maven-plugin.version>
         <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
-        <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
 
         <commons-lang3.version>3.12.0</commons-lang3.version>
-        <kafka-clients.version>4.0.0</kafka-clients.version>
+        <kafka-clients.version>4.1.1</kafka-clients.version>
         <kafka-blue-green-consumer.version>11.4.1</kafka-blue-green-consumer.version>
 
         <mockito.version>5.21.0</mockito.version>
