@@ -15,16 +15,16 @@
 
     <properties>
         <powermock.version>2.0.9</powermock.version>
-        <spring.version>7.0.3</spring.version>
-        <spring.boot.version>4.0.2</spring.boot.version>
-        <postgresql.driver.version>42.7.9</postgresql.driver.version>
-        <spring.data.mongodb.version>5.0.2</spring.data.mongodb.version>
-        <mongodb.version>5.6.2</mongodb.version>
+        <spring.version>7.0.5</spring.version>
+        <spring.boot.version>4.0.3</spring.boot.version>
+        <postgresql.driver.version>42.7.10</postgresql.driver.version>
+        <spring.data.mongodb.version>5.0.3</spring.data.mongodb.version>
+        <mongodb.version>5.6.3</mongodb.version>
         <arangodb.driver.version>7.25.0</arangodb.driver.version>
         <arangodb.spring.data.version>5.0.0</arangodb.spring.data.version>
         <java.driver.core.version>4.19.2</java.driver.core.version>
         <jedis.client.version>7.0.0</jedis.client.version>
-        <spring.data.redis.version>4.0.2</spring.data.redis.version>
+        <spring.data.redis.version>4.0.3</spring.data.redis.version>
         <jackson-bom.version>2.20.2</jackson-bom.version>
         <jakarta-annotation.version>3.0.0</jakarta-annotation.version>
         <flyway.version>11.14.1</flyway.version>
@@ -159,12 +159,12 @@
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.5.25</version>
+                <version>1.5.32</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
-                <version>1.5.25</version>
+                <version>1.5.32</version>
             </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
@@ -220,7 +220,7 @@
             <dependency>
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-core</artifactId>
-                <version>1.16.2</version>
+                <version>1.16.3</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.cassandra</groupId>
@@ -306,7 +306,7 @@
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
-                <version>6.0.2</version>
+                <version>6.0.3</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
