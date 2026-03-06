@@ -14,7 +14,7 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <spring.version>7.0.3</spring.version>
+        <spring.version>7.0.5</spring.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../context-propagation-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
