@@ -1,0 +1,5 @@
+com.netcracker.cloud.bluegreen.spring.config.InMemoryConfig
+com.netcracker.cloud.bluegreen.spring.config.BlueGreenStatePublisherConfiguration
+com.netcracker.cloud.bluegreen.spring.config.BlueGreenMicroserviceMutexConfiguration
+com.netcracker.cloud.bluegreen.spring.config.BlueGreenGlobalMutexConfiguration
+com.netcracker.cloud.bluegreen.spring.config.BGStateConfiguration
