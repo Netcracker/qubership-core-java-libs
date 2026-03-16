@@ -1,0 +1,67 @@
+{
+  "addresses": {
+    "SASL_SSL": [
+      "localkafka.kafka-cluster:9094"
+    ]
+  },
+  "name": "local.sampleTopic7.e083a1816e8f4547a7a0eaaecaf33645",
+  "classifier": {
+    "name": "sampleTopic7",
+    "namespace": "local"
+  },
+  "namespace": "local",
+  "instance": "localkafka",
+  "caCert": "MIID7jCCAtagAwIBAgIRAKorRWLpa+wpB5+lf7XixDcwDQYJKoZIhvcNAQELBQAwgYkxFTATBgNVBAYTDEFua2gtTW9ycG9yazEaMBgGA1UEChMRVW5zZWVuIFVuaXZlcnNpdHkxEDAOBgNVBAsTB0xpYnJhcnkxQjBABgNVBAMTOUxhbmRvb3AncyBGYXN0IERhdGEgRGV2IFNlbGYgU2lnbmVkIENlcnRpZmljYXRlIEF1dGhvcml0eTAeFw0yMDEwMDIxMDI0MTNaFw0yMTEwMDIxNjI0MTNaMIGJMRUwEwYDVQQGEwxBbmtoLU1vcnBvcmsxGjAYBgNVBAoTEVVuc2VlbiBVbml2ZXJzaXR5MRAwDgYDVQQLEwdMaWJyYXJ5MUIwQAYDVQQDEzlMYW5kb29wJ3MgRmFzdCBEYXRhIERldiBTZWxmIFNpZ25lZCBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCdkG7znYXF2TMGwnG+BNd13MC4htzrvltbYxs88twruFuUZ6mKjcNfbZkShenwchK/YHfTVhnVAJjMC/dsKLhB7GbIJ+PfM/weBBPBcqaLL4IXkJvYmNyY3fxhrIzx6cTgvoxR2q22r2hM546egSaafgfsOY/1rZqppK/Tuc0XFTuMnvOidW1f1FXDjJ9twc6rTVTimAYGEtNEFcVscyOyjo59tXoygsH/fPc7oHPzgaSdSZpSTpe6Y2vP5YA0vfu6Nv1m5N3x+jF9oQIPlzMILJot5cTbr4pdT1otq71MFyHPUIVOQT1yYT8CTJe4PmIx8iePucY8nAP3ymHJWfS1AgMBAAGjTzBNMA4GA1UdDwEB/wQEAwICpDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDwYDVR0TAQH/BAUwAwEB/zALBgNVHREEBDACggAwDQYJKoZIhvcNAQELBQADggEBAJZDDxU/ktUizIklBQddv1EviNq1awIDWO2rx6tKqQ7o6Dp/DzD5SKU7JOUo0XC/XkczINDBh8q2O+rDHFsO35yNgO+OJBn0q7YkOu37Beh9ofG89q7ilCzTqqRrXc6HPzDBfbDvM2F223qoNgzf4fSM+9kNoiib2IaTmDUp9LH9IoTmUPwCbwh2XnWd3fxBIxUjhEaFAfphie/jp6BPF1JouVdMYFyxvKwfYHTQlDm+ufJuFySBx+fI/qV1c612MyTzEHJIgBTrRvC08QFeWKuwGgYCVDf9tCSD0ThzJE6A/NOO6U0opyOKjSpX3RQT/qViZMEo0DV3RsYgBUL6038=",
+  "credential": {
+    "client": [
+      {
+        "password": "plain:alice-secret",
+        "type": "SCRAM",
+        "username": "alice"
+      }
+    ]
+  },
+  "requestedSettings": {
+    "numPartitions": 1,
+    "replicationFactor": 1,
+    "replicaAssignment": null,
+    "configs": null
+  },
+  "actualSettings": {
+    "numPartitions": 1,
+    "replicationFactor": 1,
+    "replicaAssignment": {
+      "0": [
+        3
+      ]
+    },
+    "configs": {
+      "cleanup.policy": "delete",
+      "compression.type": "producer",
+      "delete.retention.ms": "86400000",
+      "file.delete.delay.ms": "60000",
+      "flush.messages": "9223372036854775807",
+      "flush.ms": "9223372036854775807",
+      "follower.replication.throttled.replicas": "",
+      "index.interval.bytes": "4096",
+      "leader.replication.throttled.replicas": "",
+      "max.compaction.lag.ms": "9223372036854775807",
+      "max.message.bytes": "1048588",
+      "message.downconversion.enable": "true",
+      "message.format.version": "2.7-IV2",
+      "message.timestamp.difference.max.ms": "9223372036854775807",
+      "message.timestamp.type": "CreateTime",
+      "min.cleanable.dirty.ratio": "0.5",
+      "min.compaction.lag.ms": "0",
+      "min.insync.replicas": "2",
+      "preallocate": "false",
+      "retention.bytes": "-1",
+      "retention.ms": "604800000",
+      "segment.bytes": "1073741824",
+      "segment.index.bytes": "10485760",
+      "segment.jitter.ms": "0",
+      "segment.ms": "604800000",
+      "unclean.leader.election.enable": "false"
+    }
+  }
+}
