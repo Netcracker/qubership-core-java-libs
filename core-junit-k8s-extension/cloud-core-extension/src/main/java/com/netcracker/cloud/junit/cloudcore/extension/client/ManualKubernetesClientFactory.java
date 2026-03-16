@@ -1,0 +1,40 @@
+package com.netcracker.cloud.junit.cloudcore.extension.client;
+
+import com.netcracker.cloud.junit.cloudcore.extension.annotations.Priority;
+import com.netcracker.cloud.junit.cloudcore.extension.provider.CloudAndNamespace;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import lombok.Setter;
+
+import java.util.function.Function;
+
+@Priority(0)
+public class ManualKubernetesClientFactory implements AutoCloseable, KubernetesClientFactory {
+
+    @Setter
+    private static Function<CloudAndNamespace, KubernetesClient> function;
+    @Setter
+    private static String context;
+    @Setter
+    private static String namespace;
+
+    public KubernetesClient getKubernetesClient(String context, String namespace) {
+        if (function == null) {
+            throw new IllegalStateException("No function provided");
+        }
+        return function.apply(new CloudAndNamespace(context, namespace));
+    }
+
+    @Override
+    public String getCurrentContext() {
+        return context;
+    }
+
+    @Override
+    public String getNamespace() {
+        return namespace;
+    }
+
+    @Override
+    public void close() {
+    }
+}
