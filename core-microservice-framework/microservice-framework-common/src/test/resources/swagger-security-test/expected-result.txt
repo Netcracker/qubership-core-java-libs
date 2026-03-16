@@ -1,0 +1,6 @@
+<a name="securityconfiguration"></a>
+## Security Configuration
+|Endpoint|Criteria|
+|---|---|
+|POST /pet/{petId}|hasRole(ROLE_ADMIN)|
+|DELETE /pet/{petId}|hasRole(ROLE_ADMIN)|
