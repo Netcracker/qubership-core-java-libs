@@ -1,0 +1,38 @@
+maas:
+  local-dev:
+    enabled: true
+  kafka:
+    client:
+      consumer:
+        testConsumer:
+          topic:
+            name: test_topic
+            namespace: cloudmaas-test
+            managedby: self
+          is-tenant: false
+          group:
+            id: maas-test-group
+          kafka-consumer:
+            property:
+              key:
+                deserializer: org.apache.kafka.common.serialization.StringDeserializer
+              value:
+                deserializer: org.apache.kafka.common.serialization.StringDeserializer
+              auto:
+                offset:
+                  reset: earliest
+      producer:
+        test-producer:
+          topic:
+            name: test_topic
+            namespace: cloudmaas-test
+            managedby: self
+          is-tenant: false
+          kafka-producer:
+            property:
+              key:
+                serializer: org.apache.kafka.common.serialization.StringSerializer
+              value:
+                serializer: org.apache.kafka.common.serialization.StringSerializer
+    local-dev:
+      enabled: true
