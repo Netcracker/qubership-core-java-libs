@@ -1,0 +1,34 @@
+@startuml
+
+top to bottom direction
+skinparam linetype ortho
+
+interface ConvertFrom<T> << interface >>
+interface ConvertTo<T> << interface >>
+interface Error << interface >>
+interface ErrorResponse<M> << interface >>
+class ErrorResponseConverter<R, M>
+class HttpRemoteCodeException
+class HttpRemoteMultiCauseException
+class MetaKey<T>
+class MetaWrapper
+class RemoteCodeException
+class RemoteMultiCauseException
+class TmfError
+class TmfErrorResponse
+class TmfErrorResponseConverter
+class TmfMetaDeserializer
+class TmfResponseDeserializer
+
+ErrorResponseConverter         -[#595959,dashed]->  Error
+ErrorResponseConverter         -[#595959,dashed]->  ErrorResponse
+HttpRemoteCodeException        -[#000082,plain]-^  RemoteCodeException
+HttpRemoteMultiCauseException  -[#000082,plain]-^  RemoteMultiCauseException
+MetaKey                        -[#008200,dashed]-^  ConvertFrom
+MetaKey                        -[#008200,dashed]-^  ConvertTo
+RemoteMultiCauseException      -[#000082,plain]-^  RemoteCodeException
+TmfError                       -[#008200,dashed]-^  Error
+TmfErrorResponse               -[#008200,dashed]-^  ErrorResponse
+TmfErrorResponse               -[#000082,plain]-^  TmfError
+TmfErrorResponseConverter      -[#000082,plain]-^  ErrorResponseConverter
+@enduml
