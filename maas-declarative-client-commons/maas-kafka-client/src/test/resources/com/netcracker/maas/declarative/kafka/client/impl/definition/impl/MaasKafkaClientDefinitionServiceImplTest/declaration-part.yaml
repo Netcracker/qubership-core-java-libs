@@ -1,0 +1,188 @@
+maas:
+  kafka:
+    local-dev:
+      enabled: true
+    client:
+      producer:
+        quota-spec-cdc-outgoing-topic:
+          topic:
+            name: quota-spec-cdc-outgoing-topic
+            namespace: qm-local
+            actual-name: ex-quota-spec-cdc-outgoing
+            managedby: maas
+            on-topic-exists: merge
+            versioned: true
+            template: base
+            partitions: 3
+            replication-factor: inherit
+            configs:
+              abc: cde
+              max.compaction.lag.ms: "10000"
+          is-tenant: true
+          kafka-producer:
+            property:
+              key:
+                serializer: io.quarkus.kafka.client.serialization.ObjectMapperSerializer
+              value:
+                serializer: io.quarkus.kafka.client.serialization.ObjectMapperSerializer
+        quota-cleaning-hdb-persistence-topic:
+          topic:
+            name: quota-db-cleaning-HDB-persist-topic
+            namespace: qm-local
+            managedby: maas
+            on-topic-exists: merge
+          is-tenant: true
+          kafka-producer:
+            property:
+              key:
+                serializer: io.quarkus.kafka.client.serialization.ObjectMapperSerializer
+              value:
+                serializer: io.quarkus.kafka.client.serialization.ObjectMapperSerializer
+        quota-notification-message:
+          topic:
+            name: quota-db-cleaning-notification-topic
+            namespace: qm-local
+            managedby: maas
+            on-topic-exists: merge
+          is-tenant: true
+          kafka-producer:
+            property:
+              key:
+                serializer: io.quarkus.kafka.client.serialization.ObjectMapperSerializer
+              value:
+                serializer: io.quarkus.kafka.client.serialization.ObjectMapperSerializer
+        quota-cdc-outgoing-topic:
+          topic:
+            name: quota-cdc-outgoing-topic
+            namespace: qm-local
+            managedby: maas
+            on-topic-exists: merge
+          is-tenant: true
+          kafka-producer:
+            property:
+              key:
+                serializer: io.quarkus.kafka.client.serialization.ObjectMapperSerializer
+              value:
+                serializer: io.quarkus.kafka.client.serialization.ObjectMapperSerializer
+      consumer:
+        qm-sales-lead-change:
+          topic:
+            name: sales-lead-change-topic
+            actual-name: qm-local-lead-management-core-service-sales-lead-change-{tenant-id}
+            namespace: qm-local
+            managedby: self
+            on-topic-exists: merge
+            versioned: true
+            configs:
+              abc: cde
+              max.compaction.lag.ms: "10000"
+          is-tenant: true
+          blue-green:
+            enabled: true
+            consistency-mode: GUARANTEE_CONSUMPTION
+            candidate-offset-shift: PT5S
+            filter-enabled: false
+          pool-duration: 10
+          kafka-consumer:
+            property:
+              group:
+                id: qm-local-${cloud.application.name}-sales-lead-change-group
+              key:
+                deserializer: org.apache.kafka.common.serialization.StringDeserializer
+              value:
+                deserializer: org.apache.kafka.common.serialization.StringDeserializer
+              auto:
+                offset:
+                  reset: latest
+              allow:
+                auto:
+                  create:
+                    topics: false
+              errors:
+                tolerance: all
+          group:
+            id: qm-local-${cloud.application.name}-sales-lead-change-group
+        quota-confirm-notification:
+          topic:
+            name: quota-db-cleaning-confirmation-topic
+            actual-name: qm-local-quota_dbCleaningConfirmation-{tenant-id}
+            namespace: qm-local
+            managedby: self
+            on-topic-exists: merge
+          is-tenant: true
+          kafka-consumer:
+            property:
+              key:
+                deserializer: org.apache.kafka.common.serialization.StringDeserializer
+              value:
+                deserializer: com.netcracker.maas.qm.core.cleaning.deserializer.ConfirmationMessageDeserializer
+              auto:
+                offset:
+                  reset: latest
+              allow:
+                auto:
+                  create:
+                    topics: false
+              errors:
+                tolerance: all
+          group:
+            id: qm-local-${cloud.application.name}-cleaning-confirmation-consumer-group
+        quota-cleaning-notification:
+          topic:
+            name: quota-db-cleaning-notification-topic
+            actual-name: qm-local-quota_dbCleaningNotification-{tenant-id}
+            namespace: qm-local
+            managedby: self
+            on-topic-exists: merge
+          dedicated-thread-pool-size: 5
+          is-tenant: true
+          kafka-consumer:
+            property:
+              key:
+                deserializer: org.apache.kafka.common.serialization.StringDeserializer
+              value:
+                deserializer: com.netcracker.maas.qm.core.cleaning.deserializer.NotificationMessageDeserializer
+              auto:
+                offset:
+                  reset: latest
+              allow:
+                auto:
+                  create:
+                    topics: false
+              errors:
+                tolerance: all
+          group:
+            id: qm-local-${cloud.application.name}-cleaning-notification-consumer-group
+        qm-sales-lead-change-use-bg-defaults:
+          topic:
+            name: sales-lead-change-topic
+            actual-name: qm-local-lead-management-core-service-sales-lead-change-{tenant-id}
+            namespace: qm-local
+            managedby: self
+            on-topic-exists: merge
+            configs:
+              abc: cde
+              max.compaction.lag.ms: "10000"
+          is-tenant: true
+          blue-green:
+            enabled: true
+          pool-duration: 10
+          kafka-consumer:
+            property:
+              group:
+                id: qm-local-${cloud.application.name}-sales-lead-change-group
+              key:
+                deserializer: org.apache.kafka.common.serialization.StringDeserializer
+              value:
+                deserializer: org.apache.kafka.common.serialization.StringDeserializer
+              auto:
+                offset:
+                  reset: latest
+              allow:
+                auto:
+                  create:
+                    topics: false
+              errors:
+                tolerance: all
+          group:
+            id: qm-local-${cloud.application.name}-sales-lead-change-group

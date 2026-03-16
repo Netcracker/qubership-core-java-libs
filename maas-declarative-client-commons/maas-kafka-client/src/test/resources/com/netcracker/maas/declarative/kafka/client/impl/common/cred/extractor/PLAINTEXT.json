@@ -1,0 +1,21 @@
+{
+  "addresses": {
+    "PLAINTEXT": [
+      "server1:9092",
+      "server2:9092"
+    ]
+  },
+  "classifier": {
+    "name": "testTopic",
+    "namespace": "maas-local"
+  },
+  "credential": {
+    "client": [
+      {
+        "password": "plain:admin",
+        "type": "PLAIN",
+        "username": "admin"
+      }
+    ]
+  }
+}
