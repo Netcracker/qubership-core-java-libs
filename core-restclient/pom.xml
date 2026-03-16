@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.netcracker.cloud</groupId>
+    <version>7.0.1-SNAPSHOT</version>
+    <artifactId>microservice-restclient-aggregator</artifactId>
+    <packaging>pom</packaging>
+
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <modules>
+        <module>parent</module>
+        <module>microservice-restclient-api</module>
+        <module>microservice-restclient-test-utils</module>
+        <module>microservice-restclient-webclient</module>
+        <module>microservice-restclient-resttemplate</module>
+        <module>microservice-restclient-report-aggregate</module>
+    </modules>
+
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-restclient.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-restclient.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-restclient</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <repositories>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/netcracker/*</url>
+            <snapshots />
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/netcracker/qubership-core-restclient</url>
+        </repository>
+    </distributionManagement>
+</project>
