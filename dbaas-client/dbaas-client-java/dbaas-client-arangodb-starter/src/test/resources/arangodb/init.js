@@ -1,0 +1,2 @@
+require("@arangodb").db._createDatabase("db-test-name-1", {}, [{username: "test-username", passwd: "test-password", active: true}])
+require("@arangodb").db._createDatabase("db-test-name-2", {}, [{username: "test-username", passwd: "test-password", active: true}])
