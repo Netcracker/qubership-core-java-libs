@@ -9,6 +9,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,6 +19,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 import static com.netcracker.cloud.maas.bluegreen.kafka.impl.BGKafkaConsumerConfig.builder;
+import static com.netcracker.cloud.maas.bluegreen.kafka.util.TestUtils.uniqueGroupId;
+import static com.netcracker.cloud.maas.bluegreen.kafka.util.TestUtils.uniqueTopicName;
 import static org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 
@@ -25,8 +28,11 @@ import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 class BGKafkaMultiTopicConsumerTest extends AbstractKafkaClusterTest {
 
     @Test
-    void testMultiTopicConsumerGroup() {
-        Set<String> topics = Set.of("topic-1", "topic-2");
+    void testMultiTopicConsumerGroup(TestInfo testInfo) {
+        Set<String> topics = Set.of(
+            uniqueTopicName(testInfo, "topic-1"),
+            uniqueTopicName(testInfo, "topic-2")
+        );
 
         admin.createTopics(topics.stream().map(topic -> new NewTopic(topic, partitions, replicationFactor)).toList()).values().values()
                 .forEach(future -> {
@@ -37,7 +43,7 @@ class BGKafkaMultiTopicConsumerTest extends AbstractKafkaClusterTest {
                     }
                 });
 
-        String multiTopicGroup = "multi-topic-group";
+        String multiTopicGroup = uniqueGroupId(testInfo, "multi-topic-group");
         var connectionProperties = Map.<String, Object>of(
                 BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
                 GROUP_ID_CONFIG, multiTopicGroup,

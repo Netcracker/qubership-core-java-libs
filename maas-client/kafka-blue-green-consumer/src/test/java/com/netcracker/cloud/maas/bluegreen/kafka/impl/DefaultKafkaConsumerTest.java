@@ -1,6 +1,7 @@
 package com.netcracker.cloud.maas.bluegreen.kafka.impl;
 
 import com.netcracker.cloud.bluegreen.impl.service.InMemoryBlueGreenStatePublisher;
+import com.netcracker.cloud.maas.bluegreen.kafka.util.TestUtils;
 import com.netcracker.cloud.maas.client.impl.Env;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
@@ -28,6 +29,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static com.netcracker.cloud.framework.contexts.xversion.XVersionContextObject.X_VERSION_SERIALIZATION_NAME;
+import static com.netcracker.cloud.maas.bluegreen.kafka.util.TestUtils.uniqueTopicName;
 import static org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,52 +47,59 @@ class DefaultKafkaConsumerTest {
         log.info("Saved record : {}", r);
     };
 
-    Admin admin;
-    String bootstrapServers;
-    Properties producerProps;
+    static Admin admin;
+    static String bootstrapServers;
+    static Properties producerProps;
 
     @Container
-    KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0")).withKraft();
+    static KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0")).withKraft();
 
-    @BeforeEach
-    void setupKafka() {
+    @BeforeAll
+    static void setupKafka() {
         bootstrapServers = kafkaContainer.getBootstrapServers();
         Properties props = new Properties();
         props.put(BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         admin = Admin.create(props);
-        admin.createTopics(List.of(new NewTopic(TOPIC_NAME, 1, (short) 1)));
 
         producerProps = new Properties();
         producerProps.putAll(Map.of(ProducerConfig.CLIENT_ID_CONFIG, "test-preparation",
                 BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName(),
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName()));
-        try (KafkaProducer<String, String> producer = new KafkaProducer<>(producerProps)) {
-            producer.send(new ProducerRecord<>(TOPIC_NAME, 0, "1", "<order1>"), callback);
-            producer.send(new ProducerRecord<>(TOPIC_NAME, 0, "2", "<order2>"), callback);
-            producer.send(new ProducerRecord<>(TOPIC_NAME, 0, "3", "<order3>", v2headers), callback);
-        }
     }
 
-    @AfterEach
-    void cleanup() {
+    @AfterAll
+    static void cleanup() {
         Optional.ofNullable(admin).ifPresent(Admin::close);
+    }
+
+    @BeforeEach
+    void setupKafkaData(TestInfo testInfo) {
+        String topicName = uniqueTopicName(testInfo, TOPIC_NAME);
+        admin.createTopics(List.of(new NewTopic(topicName, 1, (short) 1)));
+
+        try (KafkaProducer<String, String> producer = new KafkaProducer<>(producerProps)) {
+            producer.send(new ProducerRecord<>(topicName, 0, "1", "<order1>"), callback);
+            producer.send(new ProducerRecord<>(topicName, 0, "2", "<order2>"), callback);
+            producer.send(new ProducerRecord<>(topicName, 0, "3", "<order3>", v2headers), callback);
+        }
     }
 
     @Timeout(60)
     @Test
-    void testConsumer() {
+    void testConsumer(TestInfo testInfo) {
         System.setProperty(Env.PROP_NAMESPACE, NAMESPACE);
+        String topicName = uniqueTopicName(testInfo, TOPIC_NAME);
 
         var properties = Map.<String, Object>of(
                 BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
-                GROUP_ID_CONFIG, "default",
+                GROUP_ID_CONFIG, TestUtils.uniqueGroupId(testInfo, "default"),
                 ENABLE_AUTO_COMMIT_CONFIG, "false",
                 AUTO_OFFSET_RESET_CONFIG, "earliest",
                 KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
                 VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class
         );
-        var config = BGKafkaConsumerConfig.builder(properties, TOPIC_NAME, () -> "fake", new InMemoryBlueGreenStatePublisher(Env.namespace())).build();
+        var config = BGKafkaConsumerConfig.builder(properties, topicName, () -> "fake", new InMemoryBlueGreenStatePublisher(Env.namespace())).build();
 
         try (var consumer = new DefaultKafkaConsumer<String, String>(config)) {
             var records = consumer.poll(POLL_TIMEOUT).get();
@@ -112,10 +121,10 @@ class DefaultKafkaConsumerTest {
 
     @Timeout(60)
     @Test
-    void testPartitionedTopicOffset() throws Exception {
+    void testPartitionedTopicOffset(TestInfo testInfo) throws Exception {
         System.setProperty(Env.PROP_NAMESPACE, NAMESPACE);
 
-        var PRICES_TOPIC = "prices";
+        var PRICES_TOPIC = uniqueTopicName(testInfo, "prices");
         admin.createTopics(List.of(new NewTopic(PRICES_TOPIC, 2, (short) 1)));
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(producerProps)) {
             producer.send(new ProducerRecord<>(PRICES_TOPIC, 0, "1", "discount1"), callback);
@@ -125,7 +134,7 @@ class DefaultKafkaConsumerTest {
 
         var properties = Map.<String, Object>of(
                 BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
-                GROUP_ID_CONFIG, "c2",
+                GROUP_ID_CONFIG, TestUtils.uniqueGroupId(testInfo, "c2"),
                 ENABLE_AUTO_COMMIT_CONFIG, "false",
                 AUTO_OFFSET_RESET_CONFIG, "earliest",
                 KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,

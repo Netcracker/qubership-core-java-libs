@@ -9,6 +9,7 @@ import com.netcracker.cloud.maas.bluegreen.kafka.impl.AdminAdapterImpl;
 import com.netcracker.cloud.maas.bluegreen.kafka.impl.BGKafkaConsumerConfig;
 import com.netcracker.cloud.maas.bluegreen.kafka.impl.BGKafkaConsumerImpl;
 import com.netcracker.cloud.maas.bluegreen.kafka.impl.OffsetsIndexer;
+import com.netcracker.cloud.maas.bluegreen.kafka.util.TestUtils;
 import com.netcracker.cloud.maas.client.impl.Env;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
@@ -24,10 +25,13 @@ import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -40,6 +44,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.netcracker.cloud.framework.contexts.xversion.XVersionContextObject.X_VERSION_SERIALIZATION_NAME;
+import static com.netcracker.cloud.maas.bluegreen.kafka.util.TestUtils.uniqueGroupId;
+import static com.netcracker.cloud.maas.bluegreen.kafka.util.TestUtils.uniqueTopicName;
 import static org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -59,52 +65,59 @@ class BGKafkaConsumerTest {
     private Duration POLL_TIMEOUT = Duration.ofSeconds(10);
 
     @Container
-    KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0")).withKraft();
+    static KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0")).withKraft();
 
-    Admin admin;
-    String bootstrapServers;
-    Properties producerProps;
+    static Admin admin;
+    static String bootstrapServers;
+    static Properties producerProps;
 
-    @BeforeEach
-    void setupKafka() {
+    @BeforeAll
+    static void setupKafka() {
         bootstrapServers = kafkaContainer.getBootstrapServers();
         Properties props = new Properties();
         props.put(BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         admin = Admin.create(props);
-        admin.createTopics(List.of(new NewTopic(TOPIC_NAME, 1, (short) 1)));
 
         producerProps = new Properties();
         producerProps.putAll(Map.of(ProducerConfig.CLIENT_ID_CONFIG, "test-preparation",
                 BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName(),
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName()));
+    }
+
+    @AfterAll
+    static void cleanup() {
+        Optional.ofNullable(admin).ifPresent(Admin::close);
+    }
+
+    @BeforeEach
+    void setupKafkaData(TestInfo testInfo) {
+        String topicName = uniqueTopicName(testInfo, TOPIC_NAME);
+        admin.createTopics(List.of(new NewTopic(topicName, 1, (short) 1)));
+
         Callback callback = (r, e) -> {
             Assertions.assertNull(e);
             log.info("Saved record : {}", r);
         };
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(producerProps)) {
-            producer.send(new ProducerRecord<>(TOPIC_NAME, 0, "1", "<order1>"), callback);
-            producer.send(new ProducerRecord<>(TOPIC_NAME, 0, "2", "<order2>"), callback);
-            producer.send(new ProducerRecord<>(TOPIC_NAME, 0, "3", "<order3>"), callback);
+            producer.send(new ProducerRecord<>(topicName, 0, "1", "<order1>"), callback);
+            producer.send(new ProducerRecord<>(topicName, 0, "2", "<order2>"), callback);
+            producer.send(new ProducerRecord<>(topicName, 0, "3", "<order3>"), callback);
         }
-    }
-
-    @AfterEach
-    void cleanup() {
-        Optional.ofNullable(admin).ifPresent(Admin::close);
     }
 
     // no offset exists in kafka, test to set brand-new group id according to initial offset set policies
     @Test
-    void testNewOffsetSet() throws Exception {
+    void testNewOffsetSet(TestInfo testInfo) throws Exception {
         System.setProperty(Env.PROP_NAMESPACE, NAMESPACE_1);
+        String topicName = uniqueTopicName(testInfo, TOPIC_NAME);
         var connectionProperties = Map.<String, Object>of(
                 "bootstrap.servers", bootstrapServers,
-                "group.id", "brandnew",
+                "group.id", uniqueGroupId(testInfo, "brandnew"),
                 "enable.auto.commit", "false");
 
         Supplier<BGKafkaConsumerImpl<String, String>> consumerSupplier = () -> new BGKafkaConsumerImpl<>(BGKafkaConsumerConfig.builder(connectionProperties,
-                        TOPIC_NAME, M2M_TOKEN_SUPPLIER, new InMemoryBlueGreenStatePublisher(Env.namespace()))
+                        topicName, M2M_TOKEN_SUPPLIER, new InMemoryBlueGreenStatePublisher(Env.namespace()))
                 .deserializers(new StringDeserializer(), new StringDeserializer())
                 .consistencyMode(ConsumerConsistencyMode.GUARANTEE_CONSUMPTION).build());
 
@@ -130,11 +143,12 @@ class BGKafkaConsumerTest {
 
     // test migration from non-bg to bg-aware consumer
     @Test
-    void testOffsetMigration() throws Exception {
+    void testOffsetMigration(TestInfo testInfo) throws Exception {
         System.setProperty(Env.PROP_NAMESPACE, NAMESPACE_1);
+        String topicName = uniqueTopicName(testInfo, TOPIC_NAME);
         var connectionProperties = Map.<String, Object>of(
                 "bootstrap.servers", bootstrapServers,
-                "group.id", "migration",
+                "group.id", uniqueGroupId(testInfo, "migration"),
                 "enable.auto.commit", "false",
                 "key.deserializer", StringDeserializer.class.getName(),
                 "value.deserializer", StringDeserializer.class.getName(),
@@ -145,7 +159,7 @@ class BGKafkaConsumerTest {
             var props = new HashMap<>(connectionProperties);
             props.put(AUTO_OFFSET_RESET_CONFIG, "earliest");
             try (var consumer = new KafkaConsumer<>(props)) {
-                consumer.subscribe(List.of(TOPIC_NAME));
+                consumer.subscribe(List.of(topicName));
                 var records = consumer.poll(POLL_TIMEOUT);
                 assertEquals(3, records.count());
                 // commit only first record
@@ -157,7 +171,7 @@ class BGKafkaConsumerTest {
 
         // create bg consumer, that should handle existing offset and migrate bg offset version
         try (BGKafkaConsumerImpl<String, String> consumer = new BGKafkaConsumerImpl<>(BGKafkaConsumerConfig.builder(connectionProperties,
-                        "orders", M2M_TOKEN_SUPPLIER, new InMemoryBlueGreenStatePublisher(Env.namespace()))
+                        topicName, M2M_TOKEN_SUPPLIER, new InMemoryBlueGreenStatePublisher(Env.namespace()))
                 .deserializers(new StringDeserializer(), new StringDeserializer()).build())) {
             // explicitly define types to prevent generics misconfigurations
             RecordsBatch<String, String> records = consumer.poll(POLL_TIMEOUT).get();
@@ -170,10 +184,11 @@ class BGKafkaConsumerTest {
     }
 
     @Test
-    void testCandidate() {
+    void testCandidate(TestInfo testInfo) {
+        String topicName = uniqueTopicName(testInfo, TOPIC_NAME);
         var connectionProperties = Map.<String, Object>of(
                 "bootstrap.servers", bootstrapServers,
-                "group.id", "order-proc",
+                "group.id", uniqueGroupId(testInfo, "order-proc"),
                 "enable.auto.commit", "false");
 
         var v1 = new Version("v1");
@@ -195,11 +210,11 @@ class BGKafkaConsumerTest {
 
         RecordsBatch<String, String> records;
         try (BGKafkaConsumerImpl<String, String> consumerActive = new BGKafkaConsumerImpl<>(BGKafkaConsumerConfig.builder(connectionProperties,
-                        TOPIC_NAME, M2M_TOKEN_SUPPLIER, statePublisherActive)
+                        topicName, M2M_TOKEN_SUPPLIER, statePublisherActive)
                 .deserializers(new StringDeserializer(), new StringDeserializer())
                 .consistencyMode(ConsumerConsistencyMode.GUARANTEE_CONSUMPTION).build());
              BGKafkaConsumerImpl<String, String> consumerCandidate = new BGKafkaConsumerImpl<>(BGKafkaConsumerConfig.builder(connectionProperties,
-                             TOPIC_NAME, M2M_TOKEN_SUPPLIER, statePublisherCandidate)
+                             topicName, M2M_TOKEN_SUPPLIER, statePublisherCandidate)
                      .deserializers(new StringDeserializer(), new StringDeserializer())
                      .consistencyMode(ConsumerConsistencyMode.GUARANTEE_CONSUMPTION)
                      .candidateOffsetSetupStrategy(OffsetSetupStrategy.LATEST).build())) {
@@ -217,7 +232,7 @@ class BGKafkaConsumerTest {
 
             // commit only first record offset
             consumerActive.commitSync(records.getBatch().get(0).getCommitMarker());
-            dumpOffsets("order-proc", "orders");
+            dumpOffsets(uniqueGroupId(testInfo, "order-proc"), topicName);
 
             log.info(" =========================================================================");
             log.info(" construct candidate consumer");
@@ -225,16 +240,16 @@ class BGKafkaConsumerTest {
 
             // no records because of defined initial offset policy
             assertTrue(consumerCandidate.poll(POLL_TIMEOUT).isEmpty());
-            dumpOffsets("order-proc", "orders");
+            dumpOffsets(uniqueGroupId(testInfo, "order-proc"), topicName);
 
             log.info(" =========================================================================");
             log.info(" add some more records");
             log.info(" =========================================================================");
 
             try (KafkaProducer<String, String> producer = new KafkaProducer<>(producerProps)) {
-                producer.send(new ProducerRecord<>(TOPIC_NAME, 0, "4", "<order4>", v1headers));
-                producer.send(new ProducerRecord<>(TOPIC_NAME, 0, "5", "<order5>", v2headers));
-                producer.send(new ProducerRecord<>(TOPIC_NAME, 0, "6", "<order6>"));
+                producer.send(new ProducerRecord<>(topicName, 0, "4", "<order4>", v1headers));
+                producer.send(new ProducerRecord<>(topicName, 0, "5", "<order5>", v2headers));
+                producer.send(new ProducerRecord<>(topicName, 0, "6", "<order6>"));
             }
 
             log.info(" =========================================================================");
@@ -259,7 +274,7 @@ class BGKafkaConsumerTest {
             log.info(" poll by legacy consumer ");
             log.info(" =========================================================================");
             records = consumerActive.poll(POLL_TIMEOUT).get();
-            dumpOffsets("order-proc", "orders");
+            dumpOffsets(uniqueGroupId(testInfo, "order-proc"), topicName);
             assertEquals(1, records.getBatch().size());
             assertEquals("4", records.getBatch().get(0).getConsumerRecord().key());
 
@@ -267,7 +282,7 @@ class BGKafkaConsumerTest {
             log.info(" poll by active consumer ");
             log.info(" =========================================================================");
             records = consumerCandidate.poll(POLL_TIMEOUT).get();
-            dumpOffsets("order-proc", "orders");
+            dumpOffsets(uniqueGroupId(testInfo, "order-proc"), topicName);
             assertEquals(4, records.getBatch().size());
             assertEquals("2", records.getBatch().get(0).getConsumerRecord().key());
             assertEquals("3", records.getBatch().get(1).getConsumerRecord().key());
@@ -277,8 +292,8 @@ class BGKafkaConsumerTest {
     }
 
     @Test
-    void testPartitionedTopicOffsetMarker() throws Exception {
-        var PRICES_TOPIC = "prices";
+    void testPartitionedTopicOffsetMarker(TestInfo testInfo) throws Exception {
+        var PRICES_TOPIC = uniqueTopicName(testInfo, "prices");
         admin.createTopics(List.of(new NewTopic(PRICES_TOPIC, 2, (short) 1)));
 
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(producerProps)) {
@@ -289,7 +304,7 @@ class BGKafkaConsumerTest {
 
         var connectionProperties = Map.<String, Object>of(
                 BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
-                GROUP_ID_CONFIG, "test-marker-prices",
+                GROUP_ID_CONFIG, uniqueGroupId(testInfo, "test-marker-prices"),
                 ENABLE_AUTO_COMMIT_CONFIG, "false",
                 AUTO_OFFSET_RESET_CONFIG, "earliest",
                 KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,

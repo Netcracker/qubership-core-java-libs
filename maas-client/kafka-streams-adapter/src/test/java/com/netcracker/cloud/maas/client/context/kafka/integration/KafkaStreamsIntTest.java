@@ -34,10 +34,11 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.Timeout;
 import org.junitpioneer.jupiter.SetSystemProperty;
 import org.mockito.Mockito;
@@ -46,6 +47,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
+import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -62,32 +64,44 @@ class KafkaStreamsIntTest {
     static String APP_ID = "words.count.app";
 
     @Container
-    KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0")
+    static KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0")
             .asCompatibleSubstituteFor("confluentinc/cp-kafka")).withKraft();
 
-    Admin admin;
-    String bootstrapServers;
+    static Admin admin;
+    static String bootstrapServers;
 
-    @BeforeEach
-    void setupKafka() {
+    @BeforeAll
+    static void setupKafka() {
         bootstrapServers = kafkaContainer.getBootstrapServers();
         Properties props = new Properties();
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         admin = Admin.create(props);
     }
 
-    @AfterEach
-    void cleanup() {
+    @AfterAll
+    static void cleanup() {
         Optional.ofNullable(admin).ifPresent(Admin::close);
+    }
+
+    static String uniqueTopicName(TestInfo testInfo, String baseName) {
+        String testName = testInfo.getTestMethod()
+                .map(Method::getName)
+                .orElse("unknown");
+        return baseName + "-" + testName;
     }
 
     @Test
     @SetSystemProperty(key = Env.PROP_NAMESPACE, value = "test-namespace")
     @Timeout(value = 2, unit = TimeUnit.MINUTES)
-    void testStreams() {
+    void testStreams(TestInfo testInfo) {
+        String textTopic = uniqueTopicName(testInfo, TEXT_TOPIC);
+        String wordsTopic = uniqueTopicName(testInfo, WORDS_TOPIC);
+        String appId = uniqueTopicName(testInfo, APP_ID);
+        String countsStoreName = uniqueTopicName(testInfo, COUNTS_STORE_NAME);
+
         admin.createTopics(List.of(
-                new NewTopic(TEXT_TOPIC, 1, (short) 1),
-                new NewTopic(WORDS_TOPIC, 1, (short) 1)
+                new NewTopic(textTopic, 1, (short) 1),
+                new NewTopic(wordsTopic, 1, (short) 1)
         ));
         Properties producerProps = new Properties();
         producerProps.put(ProducerConfig.CLIENT_ID_CONFIG, "lines-submitter");
@@ -100,8 +114,8 @@ class KafkaStreamsIntTest {
                             "2", "word2 word2",
                             "3", "word3 word3 word3")
                     .forEach((key, sentence) -> {
-                        log.info("Sending record '{}':'{}' to '{}' topic", key, sentence, TEXT_TOPIC);
-                        producer.send(new ProducerRecord<>(TEXT_TOPIC, 0, key, sentence));
+                        log.info("Sending record '{}':'{}' to '{}' topic", key, sentence, textTopic);
+                        producer.send(new ProducerRecord<>(textTopic, 0, key, sentence));
                     });
         }
 
@@ -136,18 +150,18 @@ class KafkaStreamsIntTest {
         });
 
         Properties kafkaStreamProps = new Properties();
-        kafkaStreamProps.put(StreamsConfig.APPLICATION_ID_CONFIG, APP_ID);
+        kafkaStreamProps.put(StreamsConfig.APPLICATION_ID_CONFIG, appId);
         kafkaStreamProps.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         kafkaStreamProps.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         kafkaStreamProps.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
 
         StreamsBuilder builder = new StreamsBuilder();
-        KStream<String, String> textLines = builder.stream(TEXT_TOPIC);
+        KStream<String, String> textLines = builder.stream(textTopic);
         KTable<String, Long> wordCounts = textLines
                 .flatMapValues(textLine -> Arrays.asList(textLine.toLowerCase().split("\\W+")))
                 .groupBy((key, word) -> word)
-                .count(Materialized.as(COUNTS_STORE_NAME));
-        wordCounts.toStream().to(WORDS_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
+                .count(Materialized.as(countsStoreName));
+        wordCounts.toStream().to(wordsTopic, Produced.with(Serdes.String(), Serdes.Long()));
 
         Function<Map<String, Object>, ForwardingAdmin> adminSupplier = config -> MaaSKafkaAdminWrapper.builder(config, kafkaMaaSClient).build();
         MaaSKafkaClientSupplier clientSupplier = new MaaSKafkaClientSupplier(adminSupplier);
@@ -160,12 +174,12 @@ class KafkaStreamsIntTest {
             consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
             consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
             try (KafkaConsumer<String, Long> kafkaConsumer = new KafkaConsumer<>(consumerProps)) {
-                kafkaConsumer.subscribe(List.of(WORDS_TOPIC));
+                kafkaConsumer.subscribe(List.of(wordsTopic));
                 List<String> result = new ArrayList<>();
                 while (result.size() != 3) {
                     ConsumerRecords<String, Long> poll = kafkaConsumer.poll(Duration.ofSeconds(1));
-                    poll.records(WORDS_TOPIC).forEach(record -> {
-                        log.info("Received record '{}':'{}' from '{}' topic", record.key(), record.value(), WORDS_TOPIC);
+                    poll.records(wordsTopic).forEach(record -> {
+                        log.info("Received record '{}':'{}' from '{}' topic", record.key(), record.value(), wordsTopic);
                         result.add(record.key());
                     });
                 }
@@ -177,8 +191,8 @@ class KafkaStreamsIntTest {
     }
 
     @Test
-    void testCustomFuncs() {
-        String testTopic = "test-topic";
+    void testCustomFuncs(TestInfo testInfo) {
+        String testTopic = uniqueTopicName(testInfo, "test-topic");
         KafkaMaaSClient kafkaMaaSClient = Mockito.mock(KafkaMaaSClient.class);
 
         Mockito.when(kafkaMaaSClient.getTopic(Mockito.any())).thenAnswer(i -> {
@@ -228,11 +242,11 @@ class KafkaStreamsIntTest {
 
 
     @Test
-    void testTopicPresentInKafkaButNotPresentInMaaS() throws Exception {
+    void testTopicPresentInKafkaButNotPresentInMaaS(TestInfo testInfo) throws Exception {
         KafkaMaaSClient kafkaMaaSClient = Mockito.mock(KafkaMaaSClient.class);
 
         // create topic so it will be present in Kafka
-        String testTopic = "test-topic-not-present-in-maas";
+        String testTopic = uniqueTopicName(testInfo, "test-topic-not-present-in-maas");
         admin.createTopics(List.of(new NewTopic(testTopic, 1, (short) 1)));
 
         Mockito.when(kafkaMaaSClient.getTopic(Mockito.any())).thenAnswer(i -> {

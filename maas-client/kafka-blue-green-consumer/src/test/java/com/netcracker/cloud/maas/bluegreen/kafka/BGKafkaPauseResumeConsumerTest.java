@@ -11,6 +11,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,6 +20,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.netcracker.cloud.maas.bluegreen.kafka.impl.BGKafkaConsumerConfig.builder;
+import static com.netcracker.cloud.maas.bluegreen.kafka.util.TestUtils.uniqueGroupId;
+import static com.netcracker.cloud.maas.bluegreen.kafka.util.TestUtils.uniqueTopicName;
 import static org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 
@@ -26,8 +29,11 @@ import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 class BGKafkaPauseResumeConsumerTest extends AbstractKafkaClusterTest {
 
     @Test
-    void testBGConsumerPauseResume() {
-        Set<String> topics = new TreeSet<>(Set.of("topic-1", "topic-2"));
+    void testBGConsumerPauseResume(TestInfo testInfo) {
+        Set<String> topics = new TreeSet<>(Set.of(
+            uniqueTopicName(testInfo, "topic-1"),
+            uniqueTopicName(testInfo, "topic-2")
+        ));
 
         admin.createTopics(topics.stream().map(topic -> new NewTopic(topic, partitions, replicationFactor)).toList()).values().values()
                 .forEach(future -> {
@@ -40,7 +46,7 @@ class BGKafkaPauseResumeConsumerTest extends AbstractKafkaClusterTest {
 
         var connectionProperties = Map.<String, Object>of(
                 BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
-                GROUP_ID_CONFIG, "bg-pause-resume-multi-topic-group",
+                GROUP_ID_CONFIG, uniqueGroupId(testInfo, "bg-pause-resume-multi-topic-group"),
                 ENABLE_AUTO_COMMIT_CONFIG, "false",
                 KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
                 VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class
@@ -144,8 +150,11 @@ class BGKafkaPauseResumeConsumerTest extends AbstractKafkaClusterTest {
     }
 
     @Test
-    void testDefaultConsumerPauseResume() {
-        Set<String> topics = new TreeSet<>(Set.of("topic-1", "topic-2"));
+    void testDefaultConsumerPauseResume(TestInfo testInfo) {
+        Set<String> topics = new TreeSet<>(Set.of(
+            uniqueTopicName(testInfo, "topic-1"),
+            uniqueTopicName(testInfo, "topic-2")
+        ));
 
         admin.createTopics(topics.stream().map(topic -> new NewTopic(topic, partitions, replicationFactor)).toList()).values().values()
                 .forEach(future -> {
@@ -158,7 +167,7 @@ class BGKafkaPauseResumeConsumerTest extends AbstractKafkaClusterTest {
 
         var connectionProperties = Map.<String, Object>of(
                 BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
-                GROUP_ID_CONFIG, "default-pause-resume-multi-topic-group",
+                GROUP_ID_CONFIG, uniqueGroupId(testInfo, "default-pause-resume-multi-topic-group"),
                 ENABLE_AUTO_COMMIT_CONFIG, "false",
                 KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
                 VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class
@@ -222,11 +231,14 @@ class BGKafkaPauseResumeConsumerTest extends AbstractKafkaClusterTest {
     }
 
     @Test
-    void testBGConsumerPauseResumeNotInitiated() {
-        Set<String> topics = new TreeSet<>(Set.of("topic-1", "topic-2"));
+    void testBGConsumerPauseResumeNotInitiated(TestInfo testInfo) {
+        Set<String> topics = new TreeSet<>(Set.of(
+            uniqueTopicName(testInfo, "topic-1"),
+            uniqueTopicName(testInfo, "topic-2")
+        ));
         var connectionProperties = Map.<String, Object>of(
                 BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
-                GROUP_ID_CONFIG, "bg-pause-resume-multi-topic-group",
+                GROUP_ID_CONFIG, uniqueGroupId(testInfo, "bg-pause-resume-multi-topic-group"),
                 ENABLE_AUTO_COMMIT_CONFIG, "false",
                 KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
                 VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class
