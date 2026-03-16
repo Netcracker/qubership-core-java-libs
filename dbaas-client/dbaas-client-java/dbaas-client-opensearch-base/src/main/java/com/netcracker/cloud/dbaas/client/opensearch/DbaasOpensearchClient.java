@@ -1,0 +1,17 @@
+package com.netcracker.cloud.dbaas.client.opensearch;
+
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import org.opensearch.client.opensearch.OpenSearchClient;
+
+public interface DbaasOpensearchClient {
+
+    OpenSearchClient getClient();
+
+    OpenSearchClient getClient(DatabaseConfig databaseConfig);
+
+    String getPrefix();
+
+    String normalize(String name);
+
+    String normalize(DatabaseConfig databaseConfig, String name);
+}

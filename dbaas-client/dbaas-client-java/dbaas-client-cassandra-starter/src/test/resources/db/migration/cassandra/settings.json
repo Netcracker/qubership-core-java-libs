@@ -1,0 +1,14 @@
+{
+  "1": {
+    "tableOperations": [
+      {
+        "tableName": "sample_migration_table_1",
+        "operationType": "CREATE"
+      },
+      {
+        "tableName": "sample_migration_table_2",
+        "operationType": "CREATE"
+      }
+    ]
+  }
+}
