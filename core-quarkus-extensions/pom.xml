@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.netcracker.cloud.quarkus</groupId>
+    <version>8.0.4-SNAPSHOT</version>
+    <artifactId>cloud-core-quarkus</artifactId>
+    <packaging>pom</packaging>
+
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <properties>
+        <lombok.version>1.18.42</lombok.version>
+        <quarkus.version>3.27.1</quarkus.version>
+        <maven.compiler.release>17</maven.compiler.release>
+    </properties>
+
+    <modules>
+        <module>context</module>
+        <module>build-parent</module>
+        <module>stomp-ws-server</module>
+        <module>security</module>
+        <module>log-manager</module>
+        <module>config-sources</module>
+        <module>dbaas-client</module>
+        <module>cloud-core-quarkus-bom</module>
+        <module>routes-registrator</module>
+        <module>maas-client</module>
+        <module>rest-api-deprecation-switcher</module>
+        <module>report-aggregate</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Quarkus Extensions Dependencies are coming from quarkus-bom-deployment (that also imports quarkus-bom) -->
+            <dependency>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-quarkus-extensions.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-quarkus-extensions.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-quarkus-extensions</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <repositories>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/netcracker/*</url>
+            <snapshots />
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/netcracker/qubership-core-quarkus-extensions</url>
+        </repository>
+    </distributionManagement>
+</project>
