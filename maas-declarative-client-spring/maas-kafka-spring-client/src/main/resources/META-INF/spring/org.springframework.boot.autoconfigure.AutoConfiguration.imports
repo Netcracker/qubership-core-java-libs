@@ -1,0 +1,9 @@
+com.netcracker.maas.declarative.kafka.spring.client.config.local.dev.MaasKafkaLocalDevConfigProps
+com.netcracker.maas.declarative.kafka.spring.client.config.local.dev.MaasKafkaLocalDevConfig
+com.netcracker.maas.declarative.kafka.spring.client.config.MaasKafkaClientConfigKeeper
+com.netcracker.maas.declarative.kafka.spring.client.config.MaasKafkaClientFactoryConfig
+com.netcracker.maas.declarative.kafka.spring.client.config.MaasKafkaClientStateManagerConfig
+com.netcracker.maas.declarative.kafka.spring.client.config.MaasKafkaCommonConfig
+com.netcracker.maas.declarative.kafka.spring.client.config.MaasKafkaProdClientConfig
+com.netcracker.maas.declarative.kafka.spring.client.config.MaasKafkaProps
+com.netcracker.maas.declarative.kafka.spring.client.config.MaasKafkaTopicServiceConfig

@@ -1,0 +1,58 @@
+maas:
+  local-dev:
+    enabled: true
+  kafka:
+    propagation: b3
+    client:
+      consumer:
+        test-consumer:
+          topic:
+            name: test_topic
+            namespace: cloudmaas-test
+            managedby: self
+          is-tenant: false
+          group:
+            id: maas-test-group
+          kafka-consumer:
+            property:
+              key:
+                deserializer: org.apache.kafka.common.serialization.StringDeserializer
+              value:
+                deserializer: org.apache.kafka.common.serialization.StringDeserializer
+              auto:
+                offset:
+                  reset: earliest
+      producer:
+        test-producer:
+          topic:
+            name: test_topic
+            namespace: cloudmaas-test
+            managedby: self
+          is-tenant: false
+          kafka-producer:
+            property:
+              key:
+                serializer: org.apache.kafka.common.serialization.StringSerializer
+              value:
+                serializer: org.apache.kafka.common.serialization.StringSerializer
+    local-dev:
+      enabled: true
+      tenant-ids: 00000000-0000-0000-0000-000000000000
+      config:
+        bootstrap:
+          servers: localhost:9092
+management:
+  tracing:
+    enabled: true
+    sampling.probability: 1.0
+    propagation:
+      type: b3_multi
+spring:
+  cloud:
+    consul:
+      enabled: false
+    stream:
+      kafka.binder:
+        enableObservation: true
+        headers:
+          - b3
