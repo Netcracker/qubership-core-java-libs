@@ -1,0 +1,43 @@
+package com.netcracker.cloud.dbaas.client.redis.configuration;
+
+import com.netcracker.cloud.dbaas.client.entity.DbaasApiProperties;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaasClassifierFactory;
+import com.netcracker.cloud.dbaas.client.redis.connection.DbaasRedisConnectionFactoryBuilder;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+
+@Configuration
+@Import(DbaasRedisConfiguration.class)
+public class TenantDbaasRedisConfiguration {
+
+    public static final String TENANT_DBAAS_REDIS_CONNECTION_FACTORY = "tenantDbaasRedisConnectionFactory";
+    public static final String TENANT_DBAAS_REDIS_TEMPLATE = "tenantDbaasRedisTemplate";
+
+    @Bean(TENANT_DBAAS_REDIS_CONNECTION_FACTORY)
+    @ConditionalOnMissingBean(name = TENANT_DBAAS_REDIS_CONNECTION_FACTORY)
+    public RedisConnectionFactory tenantRedisConnectionFactory(DbaasRedisConnectionFactoryBuilder builder,
+                                                               DbaasApiProperties redisDbaasApiProperties,
+                                                               DbaasClassifierFactory classifierFactory) {
+        DatabaseConfig databaseConfig = DatabaseConfig.builder()
+                .dbNamePrefix(redisDbaasApiProperties.getDbPrefix())
+                .build();
+
+        return builder.newBuilder(classifierFactory.newServiceClassifierBuilder()).withDatabaseConfig(databaseConfig).build();
+    }
+
+    @Bean(TENANT_DBAAS_REDIS_TEMPLATE)
+    @ConditionalOnMissingBean(name = TENANT_DBAAS_REDIS_TEMPLATE)
+    public RedisTemplate<String, Object> tenantRedisTemplate(@Qualifier(TENANT_DBAAS_REDIS_CONNECTION_FACTORY) RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(connectionFactory);
+        return redisTemplate;
+    }
+
+}

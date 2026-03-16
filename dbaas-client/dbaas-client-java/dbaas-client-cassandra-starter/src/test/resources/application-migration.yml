@@ -1,0 +1,27 @@
+spring.config.activate.on-profile: migration
+
+cloud.microservice.name: test-app-migration
+cloud.microservice.namespace: default
+
+dbaas.cassandra.migration:
+  enabled: true
+  amazon-keyspaces:
+    enabled: true
+    table-status-check:
+      pre-delay: 111
+      retry-delay: 111
+  schema-history-table-name: "schema-history-table-test"
+  version:
+    directory-path: "version-dir-path-test"
+    settings-resource-path: "settings-res-path-test"
+    resource-name-pattern: "res-name=pattern-test"
+  template:
+    definitions-resource-path: "def-res-path-test"
+  lock:
+    table-name: "lock-table-name-test"
+    retry-delay: 111
+    lock-lifetime: 111
+    extension-period: 111
+    extension-fail-retry-delay: 111
+  schema-agreement:
+    await-retry-delay: 111
