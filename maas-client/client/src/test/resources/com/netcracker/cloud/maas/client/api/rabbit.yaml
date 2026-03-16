@@ -1,0 +1,20 @@
+---
+apiVersion: nc.maas.rabbit/v1
+kind: vhost
+spec:
+  classifier:
+    name: bread-and-circus
+  entities:
+    exchanges:
+      - name: orders
+        type: topic
+    queues:
+      - name: breads
+      - name: circuses
+    bindings:
+      - source: orders
+        destination: breads
+        routing_key: bread
+      - source: orders
+        destination: circuses
+        routing_key: circus
