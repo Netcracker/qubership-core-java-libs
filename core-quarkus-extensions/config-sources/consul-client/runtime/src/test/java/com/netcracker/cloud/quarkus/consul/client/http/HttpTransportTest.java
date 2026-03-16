@@ -1,0 +1,72 @@
+package com.netcracker.cloud.quarkus.consul.client.http;
+
+import com.netcracker.cloud.quarkus.consul.client.model.GetValue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
+
+class HttpTransportTest {
+
+    private HttpClient httpClient;
+    private HttpTransport httpTransport;
+
+    @BeforeEach
+    void setUp(){
+        httpClient = mock(HttpClient.class);
+        httpTransport = new HttpTransport(httpClient);
+    }
+
+    @Test
+    void testMakeGetRequest_success() throws Exception {
+        String url = "http://localhost:8500/v1/kv/test";
+        HttpResponse<String> mockResponse = mock(HttpResponse.class);
+
+        when(mockResponse.statusCode()).thenReturn(200);
+        when(mockResponse.body()).thenReturn("[]");
+        when(mockResponse.headers()).thenReturn(HttpHeaders.of(Map.of(
+                        "X-Consul-Index", List.of("100"),
+                        "X-Consul-Knownleader", List.of("true"),
+                        "X-Consul-Lastcontact", List.of("50")),
+                (k, v) -> true ));
+
+        when(httpClient.sendAsync(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(CompletableFuture.completedFuture(mockResponse));
+        Response<List<GetValue>> response = httpTransport.makeGetRequest(url);
+
+        assertNotNull(response);
+        assertEquals(100, response.getConsulIndex());
+    }
+
+    @Test
+    void testMakeGetRequest_404() throws IOException, InterruptedException {
+        String url = "http://localhost:8500/v1/kv/test";
+        HttpResponse<String> mockResponse = mock(HttpResponse.class);
+        when(mockResponse.statusCode()).thenReturn(404);
+        when(httpClient.sendAsync(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(CompletableFuture.completedFuture(mockResponse));
+
+        when(mockResponse.headers()).thenReturn(HttpHeaders.of(Map.of(
+                        "X-Consul-Index", List.of("100"),
+                        "X-Consul-Knownleader", List.of("true"),
+                        "X-Consul-Lastcontact", List.of("50")
+                ),
+                (k, v) -> true ));
+
+        Response<List<GetValue>> response = httpTransport.makeGetRequest(url);
+
+        assertNotNull(response);
+        assertEquals(List.of(), response.getValue());
+    }
+}
