@@ -1,0 +1,26 @@
+---
+apiVersion: nc.maas.kafka/v1
+kind: topic
+spec:
+  classifier:
+    name: events
+
+---
+apiVersion: nc.maas.kafka/v1
+kind: topic
+spec:
+  classifier:
+    name: orders
+
+---
+apiVersion: nc.maas.rabbit/v1
+kind: vhost
+spec:
+  classifier:
+    name: abc3
+  instanceId: ''
+  entities:
+    exchanges:
+      - name: ex1
+    queues:
+      - name: q1
