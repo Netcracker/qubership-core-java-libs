@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.netcracker.cloud</groupId>
+    <artifactId>mongo-evolution-aggregator</artifactId>
+    <version>7.3.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <modules>
+        <module>mongo-evolution-java</module>
+        <module>mongo-evolution-spring</module>
+        <module>mongo-evolution-report-aggregate</module>
+    </modules>
+
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-mongo-evolution.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-mongo-evolution.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-mongo-evolution</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <repositories>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/netcracker/*</url>
+            <snapshots />
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/netcracker/qubership-core-mongo-evolution</url>
+        </repository>
+    </distributionManagement>
+
+</project>
