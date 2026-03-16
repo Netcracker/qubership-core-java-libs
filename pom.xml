@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.netcracker.cloud</groupId>
+    <artifactId>qubership-core-java-libs</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Monorepo Aggregator</name>
+
+    <modules>
+        <module>core-utils</module>
+        <module>core-error-handling</module>
+        <module>core-process-orchestrator</module>
+        <module>core-context-propagation</module>
+        <module>core-microservice-framework-extensions</module>
+        <module>core-mongo-evolution</module>
+        <module>core-junit-k8s-extension</module>
+        <module>core-restclient</module>
+        <module>core-context-propagation-quarkus</module>
+        <module>core-rest-libraries</module>
+        <module>core-blue-green-state-monitor</module>
+        <module>dbaas-client</module>
+        <module>maas-client</module>
+        <module>maas-client-spring</module>
+        <module>maas-declarative-client-commons</module>
+        <module>core-microservice-dependencies</module>
+        <module>core-quarkus-extensions</module>
+        <module>maas-declarative-client-spring</module>
+        <module>core-microservice-framework</module>
+        <module>core-blue-green-state-monitor-quarkus</module>
+        <module>maas-client-quarkus</module>
+        <module>core-springboot-starter</module>
+        <module>maas-declarative-client-quarkus</module>
+    </modules>
+
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-java-libs</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/Netcracker/qubership-core-java-libs</url>
+        </repository>
+    </distributionManagement>
+
+</project>
