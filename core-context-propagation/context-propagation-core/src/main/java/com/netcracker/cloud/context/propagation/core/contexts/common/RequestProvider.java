@@ -1,0 +1,30 @@
+package com.netcracker.cloud.context.propagation.core.contexts.common;
+
+import com.netcracker.cloud.context.propagation.core.RegisterProvider;
+import com.netcracker.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.supports.providers.AbstractContextProvider;
+import com.netcracker.cloud.context.propagation.core.supports.strategies.DefaultStrategies;
+import org.jetbrains.annotations.Nullable;
+
+@RegisterProvider
+public class RequestProvider extends AbstractContextProvider<RequestContextObject> {
+
+    public static final String REQUEST_CONTEXT_NAME = "request";
+    private final Strategy<RequestContextObject> strategy = DefaultStrategies.threadLocalWithInheritanceDefaultStrategy(() -> provide(null));
+
+    @Override
+    public Strategy<RequestContextObject> strategy() {
+        return strategy;
+    }
+
+    @Override
+    public final String contextName() {
+        return REQUEST_CONTEXT_NAME;
+    }
+
+    @Override
+    public RequestContextObject provide(@Nullable IncomingContextData incomingContextData) {
+        return new RequestContextObject(incomingContextData);
+    }
+}

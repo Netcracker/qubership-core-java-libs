@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>context-propagation</artifactId>
+        <groupId>com.netcracker.cloud</groupId>
+        <version>8.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>spring-context-aggregator</artifactId>
+    <packaging>pom</packaging>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <spring.version>7.0.5</spring.version>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../../context-propagation-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+    </properties>
+    <modules>
+        <module>context-propagation-spring-rabbit</module>
+        <module>context-propagation-spring-kafka</module>
+        <module>context-propagation-spring-common</module>
+        <module>context-propagation-spring-resttemplate</module>
+        <module>context-propagation-spring-webclient</module>
+    </modules>
+
+</project>
