@@ -1,0 +1,20 @@
+server.port: 0
+cloud:
+  microservice:
+    name: test-app
+    namespace: test-namespace
+spring:
+  application:
+    name: test-app
+    namespace: test-namespace
+    cloud_namespace: test-namespace
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+apigateway:
+  external:
+    public:
+      url: http://fake-public-gw:8080
+idp:
+  gateway:
+    route: /api/v1/identity-provider
