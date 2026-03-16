@@ -9,7 +9,6 @@ import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import com.netcracker.cloud.routesregistration.common.gateway.route.ControlPlaneClient;
@@ -98,33 +97,43 @@ class RoutesRestRegistrationProcessorTest {
     void postRoutes() throws Exception {
         Collection<RouteEntry> routes = routeAnnotationProcessor.scanForRoutes();
 
-        startRoutesPostingThreads(routes);
-
         int postRequestsCount = POST_ROUTES_CALLS_NUMBER * RoutesTestConfiguration.THREADS_NUM;
 
+        // Enqueue mock responses BEFORE starting async requests
         for (int i = 0; i < postRequestsCount; i++) {
             server.enqueue(new MockResponse().setResponseCode(201));
         }
-        List<RecordedRequest> recordedRequests = new ArrayList<>(server.getRequestCount());
+
+        startRoutesPostingThreads(routes);
+
+        List<RecordedRequest> recordedRequests = new ArrayList<>(postRequestsCount);
         for (int i = 0; i < postRequestsCount; i++) {
-            recordedRequests.add(server.takeRequest(2, TimeUnit.MINUTES));
+            RecordedRequest request = server.takeRequest(2, TimeUnit.MINUTES);
+            recordedRequests.add(request);
         }
-        assertEquals(postRequestsCount, server.getRequestCount());
+
+        assertEquals(postRequestsCount, server.getRequestCount(),
+                String.format("Expected %d requests but got %d", postRequestsCount, server.getRequestCount()));
 
         List<RouteConfigurationRequestV3> recordedRequestBodies = readRequests(recordedRequests);
 
         List<RouteConfigurationRequestV3> publicGroup = recordedRequestBodies.stream()
-                .filter(recordedRequest -> recordedRequest.getGateways().get(0).equals(RoutesTestConfiguration.PUBLIC_NODE_GROUP))
-                .collect(Collectors.toList());
+                .filter(recordedRequest -> recordedRequest.getGateways().getFirst().equals(RoutesTestConfiguration.PUBLIC_NODE_GROUP))
+                .toList();
         List<RouteConfigurationRequestV3> privateGroup = recordedRequestBodies.stream()
-                .filter(recordedRequest -> recordedRequest.getGateways().get(0).equals(RoutesTestConfiguration.PRIVATE_NODE_GROUP))
-                .collect(Collectors.toList());
+                .filter(recordedRequest -> recordedRequest.getGateways().getFirst().equals(RoutesTestConfiguration.PRIVATE_NODE_GROUP))
+                .toList();
         List<RouteConfigurationRequestV3> internalGroup = recordedRequestBodies.stream()
-                .filter(recordedRequest -> recordedRequest.getGateways().get(0).equals(RoutesTestConfiguration.INTERNAL_NODE_GROUP))
-                .collect(Collectors.toList());
-        assertTrue(publicGroup.size() > 2);
-        assertTrue(privateGroup.size() > 2);
-        assertTrue(internalGroup.size() > 2);
+                .filter(recordedRequest -> recordedRequest.getGateways().getFirst().equals(RoutesTestConfiguration.INTERNAL_NODE_GROUP))
+                .toList();
+
+
+        assertTrue(publicGroup.size() >= RoutesTestConfiguration.THREADS_NUM,
+                String.format("publicGroup.size()=%d, expected >= %d", publicGroup.size(), RoutesTestConfiguration.THREADS_NUM));
+        assertTrue(privateGroup.size() >= RoutesTestConfiguration.THREADS_NUM,
+                String.format("privateGroup.size()=%d, expected >= %d", privateGroup.size(), RoutesTestConfiguration.THREADS_NUM));
+        assertTrue(internalGroup.size() >= RoutesTestConfiguration.THREADS_NUM,
+                String.format("internalGroup.size()=%d, expected >= %d", internalGroup.size(), RoutesTestConfiguration.THREADS_NUM));
     }
 
     private List<RouteConfigurationRequestV3> readRequests(List<RecordedRequest> requests) {
