@@ -1,0 +1,23 @@
+quarkus.http.port:
+  8080
+
+"%disabled-profile":
+  deprecated:
+    api:
+      disabled: false
+
+"%annotations-profile":
+  quarkus:
+    http:
+      root-path: /root
+  deprecated:
+    api:
+      disabled: true
+
+"%properties-profile":
+  deprecated:
+     api:
+       disabled: true
+       patterns:
+         - /api/v1/** [GET PUT DELETE]
+         - /api/v2/**
