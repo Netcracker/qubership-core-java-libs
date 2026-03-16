@@ -1,0 +1,35 @@
+package com.netcracker.cloud.context.propagation.core.providers.initsteps;
+
+import com.netcracker.cloud.context.propagation.core.ContextInitializationStep;
+import com.netcracker.cloud.context.propagation.core.RegisterProvider;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.supports.providers.AbstractContextProviderOnThreadLocal;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Supplier;
+
+@RegisterProvider
+public class InitializationStepPostAuthn extends AbstractContextProviderOnThreadLocal<String> {
+
+    public static final String CONTEXT_NAME = "InitStepPostAuthn";
+
+    @Override
+    public ContextInitializationStep getInitializationStep() {
+        return ContextInitializationStep.POST_AUTHENTICATION;
+    }
+
+    @Override
+    public final String contextName() {
+        return CONTEXT_NAME;
+    }
+
+    @Override
+    public String provide(@Nullable IncomingContextData incomingContextData) {
+        return CONTEXT_NAME;
+    }
+
+    @Override
+    protected Supplier<String> defaultContextObject() {
+        return () -> null;
+    }
+}
