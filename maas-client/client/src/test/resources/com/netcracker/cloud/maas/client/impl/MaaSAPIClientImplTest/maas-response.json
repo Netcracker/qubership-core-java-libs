@@ -1,0 +1,110 @@
+[
+  {
+    "request": {
+      "apiVersion": "nc.maas.kafka/v1",
+      "kind": "topic",
+      "spec": {
+        "classifier": {
+          "name": "events",
+          "namespace": "cloud-dev"
+        }
+      }
+    },
+    "result": {
+      "status": "error",
+      "error": "Error apply config: service: default kafka instance is not configured, \n\tConfig: &{Kind:{ApiVersion:nc.maas.kafka/v1 Kind:topic} Pragma:<nil> Spec:{Name: Classifier:map[name:events] ExternallyManaged:false Instance: NumPartitions:<nil> ReplicationFactor:<nil> ReplicaAssignment:map[] Configs:map[] Template:}}"
+    }
+  },
+  {
+    "request": {
+      "apiVersion": "nc.maas.kafka/v1",
+      "kind": "topic",
+      "spec": {
+        "classifier": {
+          "name": "orders",
+          "namespace": "cloud-dev"
+        }
+      }
+    },
+    "result": {
+      "status": "error",
+      "error": "Error apply config: service: default kafka instance is not configured, \n\tConfig: &{Kind:{ApiVersion:nc.maas.kafka/v1 Kind:topic} Pragma:<nil> Spec:{Name: Classifier:map[name:orders] ExternallyManaged:false Instance: NumPartitions:<nil> ReplicationFactor:<nil> ReplicaAssignment:map[] Configs:map[] Template:}}"
+    }
+  },
+  {
+    "request": {
+      "apiVersion": "nc.maas.rabbit/v1",
+      "kind": "vhost",
+      "spec": {
+        "classifier": {
+          "name": "abc3",
+          "namespace": "cloud-dev"
+        },
+        "instanceId": "",
+        "entities": {
+          "exchanges": [
+            {
+              "name": "ex1"
+            }
+          ],
+          "queues": [
+            {
+              "name": "q1"
+            }
+          ]
+        },
+        "policies": null,
+        "deletions": {}
+      }
+    },
+    "result": {
+      "status": "ok",
+      "data": {
+        "vhost": {
+          "cnn": "ampq://localhost:5672/cloud-dev.abc3",
+          "username": "4e4ef8d4db16408b888dccb917a2daa0",
+          "password": "plain:b58879c480844b3aad17852b31808736"
+        },
+        "entities": {
+          "exchanges": [
+            {
+              "arguments": {},
+              "auto_delete": false,
+              "durable": false,
+              "incoming": [],
+              "internal": false,
+              "name": "ex1",
+              "outgoing": [],
+              "type": "direct",
+              "user_who_performed_action": "4e4ef8d4db16408b888dccb917a2daa0",
+              "vhost": "cloud-dev.abc3"
+            }
+          ],
+          "queues": [
+            {
+              "arguments": {},
+              "auto_delete": false,
+              "consumer_details": [],
+              "deliveries": [],
+              "durable": false,
+              "exclusive": false,
+              "garbage_collection": {
+                "fullsweep_after": -1,
+                "max_heap_size": -1,
+                "min_bin_vheap_size": -1,
+                "min_heap_size": -1,
+                "minor_gcs": -1
+              },
+              "incoming": [],
+              "name": "q1",
+              "node": "rabbit@localhost",
+              "type": "classic",
+              "vhost": "cloud-dev.abc3"
+            }
+          ]
+        },
+        "deletions": {}
+      }
+    }
+  }
+]

@@ -1,0 +1,72 @@
+{
+  "addresses": {
+    "PLAINTEXT": [
+      "localkafka.kafka-cluster:9092"
+    ],
+    "SASL_SSL": [
+      "localkafka.kafka-cluster:9094"
+    ]
+  },
+  "name": "local.sampleTopic7.e083a1816e8f4547a7a0eaaecaf33645",
+  "classifier": {
+    "name": "sampleTopic7",
+    "namespace": "local"
+  },
+  "namespace": "local",
+  "instance": "localkafka",
+  "caCert": "MIID7jCCAtagAwIBAgIRAKorRWLpa+wpB5+lf7XixDcwDQYJKoZIhvcNAQELBQAwgYkxFTATBgNVBAYTDEFua2gtTW9ycG9yazEaMBgGA1UEChMRVW5zZWVuIFVuaXZlcnNpdHkxEDAOBgNVBAsTB0xpYnJhcnkxQjBABgNVBAMTOUxhbmRvb3AncyBGYXN0IERhdGEgRGV2IFNlbGYgU2lnbmVkIENlcnRpZmljYXRlIEF1dGhvcml0eTAeFw0yMDEwMDIxMDI0MTNaFw0yMTEwMDIxNjI0MTNaMIGJMRUwEwYDVQQGEwxBbmtoLU1vcnBvcmsxGjAYBgNVBAoTEVVuc2VlbiBVbml2ZXJzaXR5MRAwDgYDVQQLEwdMaWJyYXJ5MUIwQAYDVQQDEzlMYW5kb29wJ3MgRmFzdCBEYXRhIERldiBTZWxmIFNpZ25lZCBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCdkG7znYXF2TMGwnG+BNd13MC4htzrvltbYxs88twruFuUZ6mKjcNfbZkShenwchK/YHfTVhnVAJjMC/dsKLhB7GbIJ+PfM/weBBPBcqaLL4IXkJvYmNyY3fxhrIzx6cTgvoxR2q22r2hM546egSaafgfsOY/1rZqppK/Tuc0XFTuMnvOidW1f1FXDjJ9twc6rTVTimAYGEtNEFcVscyOyjo59tXoygsH/fPc7oHPzgaSdSZpSTpe6Y2vP5YA0vfu6Nv1m5N3x+jF9oQIPlzMILJot5cTbr4pdT1otq71MFyHPUIVOQT1yYT8CTJe4PmIx8iePucY8nAP3ymHJWfS1AgMBAAGjTzBNMA4GA1UdDwEB/wQEAwICpDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDwYDVR0TAQH/BAUwAwEB/zALBgNVHREEBDACggAwDQYJKoZIhvcNAQELBQADggEBAJZDDxU/ktUizIklBQddv1EviNq1awIDWO2rx6tKqQ7o6Dp/DzD5SKU7JOUo0XC/XkczINDBh8q2O+rDHFsO35yNgO+OJBn0q7YkOu37Beh9ofG89q7ilCzTqqRrXc6HPzDBfbDvM2F223qoNgzf4fSM+9kNoiib2IaTmDUp9LH9IoTmUPwCbwh2XnWd3fxBIxUjhEaFAfphie/jp6BPF1JouVdMYFyxvKwfYHTQlDm+ufJuFySBx+fI/qV1c612MyTzEHJIgBTrRvC08QFeWKuwGgYCVDf9tCSD0ThzJE6A/NOO6U0opyOKjSpX3RQT/qViZMEo0DV3RsYgBUL6038=",
+  "credential": {
+    "client": [
+      {
+        "password": "plain:alice-secret",
+        "type": "sslCert+plain",
+        "username": "alice",
+        "clientCert": "MIID/TCCAuWgAwIBAgIQHO0KyuduE+XLmgQniMWsRjANBgkqhkiG9w0BAQsFADCBiTEVMBMGA1UEBhMMQW5raC1Nb3Jwb3JrMRowGAYDVQQKExFVbnNlZW4gVW5pdmVyc2l0eTEQMA4GA1UECxMHTGlicmFyeTFCMEAGA1UEAxM5TGFuZG9vcCdzIEZhc3QgRGF0YSBEZXYgU2VsZiBTaWduZWQgQ2VydGlmaWNhdGUgQXV0aG9yaXR5MB4XDTIwMTAwMjEwMjQxNVoXDTMwMDkzMDEwMjQxNVowVjEVMBMGA1UEBhMMQW5raC1Nb3Jwb3JrMRowGAYDVQQKExFVbnNlZW4gVW5pdmVyc2l0eTEQMA4GA1UECxMHTGlicmFyeTEPMA0GA1UEAxMGY2xpZW50MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAznD5Apmzm9+/hXWBjdAGRZM3OuG3DQkmtZ4742JwzIlpQPrEFPIIiCordsOUEdSB0E7ClTsw2OHSogzsx0p8IjLqmbR7jQajoE+hdsMg1n1JNLkgvCk4B8YibKcIHEr7Rl7fGfgJJODbHxsksAoOvahtSBSQMCIi/PjS47edB9mPrFMsxpcC9meRb8Tin0A37ZHE4r+P3CZUKf0P+93prdNBpCdeg1ItSfN0GtjMKvKTwIzhEd1MLCV0ejkw8Z8mW7mRCG8ByHi1vvrvl9AJ/P1YmDciZuVWJiBZ1GxUZuoKtCN+XFyAZjqec8mmT3wVBoA5ZJbFSxnXiWFwj7epeQIDAQABo4GSMIGPMA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDAYDVR0TAQH/BAIwADBQBgNVHREESTBHggw3ZDJlNDQ1NzViYmSCBWthZmthghhsb2NhbGthZmthLmthZmthLWNsdXN0ZXKHBH8AAAGHBH8AAAGHBMCoY2SHBKwftoAwDQYJKoZIhvcNAQELBQADggEBAG4N5VRLUbYd39KR/bfVMftfhSKd3MnXgIT6goWL36ShmqD7MKnoRIyVmlSe2Ko0laJiVvFrhzd/W6U8O7J5OMEdKjF3VZPrFTOz/oSOFr6PO7jt3h6Z91Tq2lVkupoilacw0DCirgA1EYIxZsqKsjje941qZxHuJ4AssNox3P2eU5tWo/caSHPG2P3KBmCnC9eVVU9B5iD894DKr1ueFYg3fmDIDcXYu/Dq32oAO80DbVH0wATE1bGrItvVar6nWLttA/4uUE63a7OP9TZGCB4YjGTzpWHtlpl7AC+qeTmt0tScH/Zf3Fm8fG1uhVZBE5xdZkXmgkXzJaNJ94jeijM=",
+        "clientKey": "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDOcPkCmbOb37+FdYGN0AZFkzc64bcNCSa1njvjYnDMiWlA+sQU8giIKit2w5QR1IHQTsKVOzDY4dKiDOzHSnwiMuqZtHuNBqOgT6F2wyDWfUk0uSC8KTgHxiJspwgcSvtGXt8Z+Akk4NsfGySwCg69qG1IFJAwIiL8+NLjt50H2Y+sUyzGlwL2Z5FvxOKfQDftkcTiv4/cJlQp/Q/73emt00GkJ16DUi1J83Qa2Mwq8pPAjOER3UwsJXR6OTDxnyZbuZEIbwHIeLW++u+X0An8/ViYNyJm5VYmIFnUbFRm6gq0I35cXIBmOp5zyaZPfBUGgDlklsVLGdeJYXCPt6l5AgMBAAECggEAdUY8TzvdipkrBbfhJxyb0350C6EaCe++68G+J8hOaANPpbhPF87/Bcte8ZLdVNux+xIi+/+qGir/K0vIXtZzekIOf87FuTGiVnmmMf9bcj2uDqN0cy+/QrtN5wdkVh5KbImMmAYNu8N490zGJLMx+I/rtNzppE5gLfF0bCRssn3h1ctSooqqjGI1+fu59Ee9kFMvWdlndqPZqthUu39ZhL6a3xfpIUuqfMPEvG9UZiSRNWcrPwZD56sR1DNRDJhRg4WpTpyjcSFGV9SzD69v9/P5mKix46da04ORQGgOyWl/VIUNON69BNUeSNhcWMSPWKpS4SNE+0x6Ib+y99Ot4QKBgQDacHPxTWWIlcV7IIDSDAmF7URfUwD81SoIBwiO309CkwOZxTpUWZNOr6wauFwgZa+ltyT7V3jHPMzqWKo1rzjGO1XZLRT/7xToiZwNXsvF+FyMoADQoJommFOzI2XTHl+Xt58H3DfVQ5vb01QaU7nE/Y5/Gdl0o5BdwJBgzeZQVQKBgQDx8GCcidai4npFiKuUQPaDoLflq9la2T/7/y9sHOaF9f7Jpg35nFakWEB9e7VWs7+AycxzOYXSMjP9QczGpLvKZFv70a8ewhopUGoSbAxXOHYLNlfimSLcThF9edQGkyU2h+whQBJBPr4mMa326fiUIM6NZOxHTIcWM74JgMdIlQKBgQCT13BhbQS/QL776q/Feign4MJZ0g/lD1D3Retg53r5kA7r0DT+SfINW5CcNRMFSk1rV11MT5OLJXd7VK8+zm0anaYo6v4/ik0YZaqc0gAQ6VuaQeDLUyeB368mm1qbXP9N7BVSeJXBXZTrX0iY2Pnufb4oABLRgrJ/AYm2OyUaUQKBgANu59AQ3KzfDeEiuVyXN2hSxYlK0QDLCG9pBaFBH7xS61StOJGMOGaIohGlycL7NgJ72pzf+hgrgjVb064V9FxA5FVEenmzQ2/GplqwkdRDBtnN4Z1jku0RZoojSnD1cZe+gglOwXOPkl80YUWZuF9Rv9ydzASO/3O/NDkqTKmpAoGBAL+QJfrzQ/Q9EiiXmOI3LUK/UeAKQAyf3J4QFRNFKLixlbl3Xa/Fa2y2YlVAbgnYxUcRcsaUmv77MNL5CxwUvC9hEnQAsGcPRjKNx6Qjuy/piuHjgueGLrY+nrgeTN/j+J111V6Db0kg/vU1PlESKHfT4qvZ7FWRLl5B22qVRR4h"
+      }
+    ]
+  },
+  "requestedSettings": {
+    "numPartitions": 1,
+    "replicationFactor": 1,
+    "replicaAssignment": null,
+    "configs": null
+  },
+  "actualSettings": {
+    "numPartitions": 1,
+    "replicationFactor": 1,
+    "replicaAssignment": {
+      "0": [
+        3
+      ]
+    },
+    "configs": {
+      "cleanup.policy": "delete",
+      "compression.type": "producer",
+      "delete.retention.ms": "86400000",
+      "file.delete.delay.ms": "60000",
+      "flush.messages": "9223372036854775807",
+      "flush.ms": "9223372036854775807",
+      "follower.replication.throttled.replicas": "",
+      "index.interval.bytes": "4096",
+      "leader.replication.throttled.replicas": "",
+      "max.compaction.lag.ms": "9223372036854775807",
+      "max.message.bytes": "1048588",
+      "message.downconversion.enable": "true",
+      "message.format.version": "2.7-IV2",
+      "message.timestamp.difference.max.ms": "9223372036854775807",
+      "message.timestamp.type": "CreateTime",
+      "min.cleanable.dirty.ratio": "0.5",
+      "min.compaction.lag.ms": "0",
+      "min.insync.replicas": "2",
+      "preallocate": "false",
+      "retention.bytes": "-1",
+      "retention.ms": "604800000",
+      "segment.bytes": "1073741824",
+      "segment.index.bytes": "10485760",
+      "segment.jitter.ms": "0",
+      "segment.ms": "604800000",
+      "unclean.leader.election.enable": "false"
+    }
+  }
+}

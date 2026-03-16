@@ -1,0 +1,27 @@
+{
+  "major": 2,
+  "minor": 12,
+  "supportedMajors": [
+    1,
+    2
+  ],
+  "specs": [
+    {
+      "specRootUrl": "/api",
+      "major": 2,
+      "minor": 12,
+      "supportedMajors": [
+        1,
+        2
+      ]
+    },
+    {
+      "specRootUrl": "/api/blugreen",
+      "major": 1,
+      "minor": 1,
+      "supportedMajors": [
+        1
+      ]
+    }
+  ]
+}

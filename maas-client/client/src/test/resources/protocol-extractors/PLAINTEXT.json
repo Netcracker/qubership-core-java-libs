@@ -1,0 +1,17 @@
+{
+  "addresses": {
+    "PLAINTEXT": [
+      "server1:9092",
+      "server2:9092"
+    ]
+  },
+  "credential": {
+    "client": [
+      {
+        "password": "plain:admin",
+        "type": "PLAIN",
+        "username": "admin"
+      }
+    ]
+  }
+}
