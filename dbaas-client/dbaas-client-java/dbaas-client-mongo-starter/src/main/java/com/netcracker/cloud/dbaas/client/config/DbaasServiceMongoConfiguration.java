@@ -1,0 +1,61 @@
+package com.netcracker.cloud.dbaas.client.config;
+
+import com.netcracker.cloud.dbaas.client.entity.DbaasApiProperties;
+import com.netcracker.cloud.dbaas.client.entity.MongoDatabaseSettings;
+import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
+import com.netcracker.cloud.dbaas.client.management.DatabasePool;
+import com.netcracker.cloud.dbaas.client.management.DbaasMongoDbFactory;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSClassifierBuilder;
+import com.netcracker.cloud.dbaas.client.management.classifier.DbaasClassifierFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.convert.MongoConverter;
+import org.springframework.util.CollectionUtils;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.netcracker.cloud.dbaas.client.config.DbaasMongoConfiguration.*;
+
+@Configuration
+@Import({DbaasMongoConfiguration.class})
+public class DbaasServiceMongoConfiguration {
+
+    @Bean(name = {SERVICE_MONGO_DB_FACTORY})
+    @ConditionalOnMissingBean(name = SERVICE_MONGO_DB_FACTORY)
+    @Primary
+    public MongoDatabaseFactory serviceMongoDbFactory(DatabasePool databasePool,
+                                                      DbaasClassifierFactory dbaasClassifierFactory,
+                                                      @Value("${dbaas.mongo.dbClassifier:default}") String dbClassifierField,
+                                                      DbaasApiProperties mongoDbaasApiProperties) {
+        Map<String, Object> additionalClassifierFields = new HashMap<>(1);
+        additionalClassifierFields.put("dbClassifier", dbClassifierField);
+        DbaaSClassifierBuilder classifierBuilder = dbaasClassifierFactory.newServiceClassifierBuilder(additionalClassifierFields);
+        MongoDatabaseSettings databaseSettings = null;
+        if (!CollectionUtils.isEmpty(mongoDbaasApiProperties.getDatabaseSettings(DbaasApiProperties.DbScope.SERVICE))) {
+            databaseSettings = new MongoDatabaseSettings(mongoDbaasApiProperties.getDatabaseSettings(DbaasApiProperties.DbScope.SERVICE));
+        }
+        DatabaseConfig databaseConfig = DatabaseConfig.builder()
+                .dbNamePrefix(mongoDbaasApiProperties.getDbPrefix())
+                .userRole(mongoDbaasApiProperties.getRuntimeUserRole())
+                .databaseSettings(databaseSettings)
+                .build();
+        return new DbaasMongoDbFactory(classifierBuilder, databasePool, databaseConfig);
+    }
+
+    @Bean(name = {SERVICE_MONGO_TEMPLATE})
+    @ConditionalOnMissingBean(name = SERVICE_MONGO_TEMPLATE)
+    @Primary
+    public MongoTemplate serviceMongoTemplate(@Qualifier(SERVICE_MONGO_DB_FACTORY) MongoDatabaseFactory serviceAwareMongoDbFactory,
+                                              @Autowired(required = false) @Qualifier(SERVICE_MONGO_CONVERTER) MongoConverter mongoConverter) {
+        return new MongoTemplate(serviceAwareMongoDbFactory, mongoConverter);
+    }
+}

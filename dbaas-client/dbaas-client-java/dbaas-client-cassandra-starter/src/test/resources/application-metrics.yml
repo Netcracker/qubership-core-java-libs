@@ -1,0 +1,12 @@
+cloud.microservice.name: test-app
+cloud.microservice.namespace: default
+dbaas.cassandra.metrics:
+  session:
+    enabled: [bytes-sent,bytes-received,connected-nodes,cql-requests]
+    cql-requests:
+      highest-latency : 10s
+      lowest-latency : 10ms
+      significant-digits : 2
+      refresh-interval : 1m
+  node:
+    enabled: [pool.open-connections,pool.available-streams,pool.in-flight]
