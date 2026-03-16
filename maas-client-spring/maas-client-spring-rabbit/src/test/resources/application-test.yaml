@@ -1,0 +1,3 @@
+maas.local-dev.enabled:true
+spring.cloud.consul.config.enabled:false
+cloud.microservice.namespace=test-ns
