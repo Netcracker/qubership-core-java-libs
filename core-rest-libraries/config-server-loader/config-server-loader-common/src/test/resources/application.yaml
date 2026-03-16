@@ -1,0 +1,3 @@
+cloud:
+  microservice:
+    name: "my-test-app"
