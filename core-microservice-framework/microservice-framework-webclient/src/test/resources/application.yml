@@ -1,0 +1,23 @@
+SECRET_PATH: src/test/resources/secret
+server.port: 0
+cloud:
+  microservice:
+    name: test-app
+    namespace: test-namespace
+spring:
+  application:
+    name: test-app
+    cloud_namespace: test-namespace
+    namespace: test-namespace
+  main:
+    allow-bean-definition-overriding: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+apigateway:
+  external:
+    public:
+      url: http://fake-public-gw:8080
+idp:
+  gateway:
+    route: /api/v1/identity-provider
