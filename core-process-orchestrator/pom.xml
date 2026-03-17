@@ -171,10 +171,9 @@
     </build>
 
     <scm>
-        <connection>scm:git:https://github.com/Netcracker/qubership-core-process-orchestrator.git</connection>
-        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-process-orchestrator.git
-        </developerConnection>
-        <url>https://github.com/Netcracker/qubership-core-process-orchestrator</url>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-java-libs</url>
         <tag>HEAD</tag>
     </scm>
 

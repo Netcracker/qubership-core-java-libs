@@ -127,10 +127,9 @@
     </repositories>
 
     <scm>
-        <connection>scm:git:https://github.com/Netcracker/qubership-core-springboot-starter.git</connection>
-        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-springboot-starter.git
-        </developerConnection>
-        <url>https://github.com/Netcracker/qubership-core-springboot-starter</url>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-java-libs</url>
         <tag>HEAD</tag>
     </scm>
 
