@@ -160,10 +160,9 @@
     </build>
 
     <scm>
-        <connection>scm:git:https://github.com/Netcracker/qubership-core-blue-green-state-monitor-quarkus.git</connection>
-        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-blue-green-state-monitor-quarkus.git
-        </developerConnection>
-        <url>https://github.com/Netcracker/qubership-core-blue-green-state-monitor-quarkus</url>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-java-libs</url>
         <tag>HEAD</tag>
     </scm>
 
