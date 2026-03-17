@@ -48,10 +48,9 @@
     </modules>
 
     <scm>
-        <connection>scm:git:https://github.com/Netcracker/qubership-maas-client.git</connection>
-        <developerConnection>scm:git:https://github.com/Netcracker/qubership-maas-client.git
-        </developerConnection>
-        <url>https://github.com/Netcracker/qubership-maas-client</url>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-java-libs</url>
         <tag>HEAD</tag>
     </scm>
 

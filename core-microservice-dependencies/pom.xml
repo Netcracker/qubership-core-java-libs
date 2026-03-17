@@ -20,10 +20,9 @@
     </modules>
 
     <scm>
-        <connection>scm:git:https://github.com/Netcracker/qubership-core-microservice-dependencies.git</connection>
-        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-microservice-dependencies.git
-        </developerConnection>
-        <url>https://github.com/Netcracker/qubership-core-microservice-dependencies</url>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-java-libs</url>
         <tag>HEAD</tag>
     </scm>
 
