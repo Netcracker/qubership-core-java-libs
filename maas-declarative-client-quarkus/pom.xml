@@ -274,10 +274,9 @@
     </build>
 
     <scm>
-        <connection>scm:git:https://github.com/Netcracker/qubership-maas-declarative-client-quarkus.git</connection>
-        <developerConnection>scm:git:https://github.com/Netcracker/qubership-maas-declarative-client-quarkus.git
-        </developerConnection>
-        <url>https://github.com/Netcracker/qubership-maas-declarative-client-quarkus</url>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-java-libs</url>
         <tag>HEAD</tag>
     </scm>
 

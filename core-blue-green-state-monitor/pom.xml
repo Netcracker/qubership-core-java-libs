@@ -32,10 +32,9 @@
     </modules>
 
     <scm>
-        <connection>scm:git:https://github.com/Netcracker/qubership-core-blue-green-state-monitor.git</connection>
-        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-blue-green-state-monitor.git
-        </developerConnection>
-        <url>https://github.com/Netcracker/qubership-core-blue-green-state-monitor</url>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-java-libs</url>
         <tag>HEAD</tag>
     </scm>
 
