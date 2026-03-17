@@ -16,6 +16,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -23,6 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ConsulLoggingConfigWatchFactoryTest {
+    private static final String LOG_LEVEL_KEY = "quarkus.log.category.\"com.test\".level";
 
     private static final String[] prefixes = new String[]{"test/null", "test/application", "test/app-name"};
     ConsulSourceConfig consulDefaultSourceConfig;
@@ -72,7 +77,7 @@ class ConsulLoggingConfigWatchFactoryTest {
     }
 
     @Test
-    void initConsulLoggingWatch_fireLogUpdated() throws Exception {
+    void initConsulLoggingWatch_fireLogUpdated() {
         ConsulClient consulClient = mock(ConsulClient.class);
         ConsulSourceConfig consulSourceConfig = mock(ConsulSourceConfig.class);
         GetValue getValue = new GetValue();
@@ -92,22 +97,21 @@ class ConsulLoggingConfigWatchFactoryTest {
             return CompletableFuture.completedFuture(response);
         });
 
-        CompletableFuture<Map<String, String>> future = new CompletableFuture<>();
+        ArrayBlockingQueue<Map<String, String>> queue = new ArrayBlockingQueue<>(10);
         ConsulLoggingConfigWatchFactory factory = new ConsulLoggingConfigWatchFactory(consulClient, new TokenStorageStub(), "test-ns", "test-ms") {
             @Override
             protected void firePropertiesUpdated(Map<String, String> properties) {
-                future.complete(properties);
+                queue.add(properties);
             }
         };
         factory.initConsulLoggingWatch(new StartupEvent(), consulSourceConfig, consulLoggingSourceConfig);
-        Map<String, String> properties = future.get(5, TimeUnit.SECONDS);
-        Assertions.assertNotNull(properties);
+
+        Map<String, String> properties = awaitLogLevel(queue, "DEBUG");
         Assertions.assertEquals(1, properties.size());
-        Assertions.assertEquals("DEBUG", properties.get("quarkus.log.category.\"com.test\".level"));
     }
 
     @Test
-    void initConsulLoggingWatch_fireLogUpdated_whenConsulEmpty() throws Exception {
+    void initConsulLoggingWatch_fireLogUpdated_whenConsulEmpty() {
         ConsulClient consulClient = mock(ConsulClient.class);
         ConsulSourceConfig consulSourceConfig = mock(ConsulSourceConfig.class);
         GetValue getValueWithNullValue = new GetValue();
@@ -140,23 +144,20 @@ class ConsulLoggingConfigWatchFactoryTest {
             return CompletableFuture.completedFuture(response);
         });
 
-        ArrayBlockingQueue<Map<String, String>> future = new ArrayBlockingQueue<>(3);
+        ArrayBlockingQueue<Map<String, String>> queue = new ArrayBlockingQueue<>(10);
         ConsulLoggingConfigWatchFactory factory = new ConsulLoggingConfigWatchFactory(consulClient, new TokenStorageStub(), "test-ns", "test-ms") {
             @Override
             protected void firePropertiesUpdated(Map<String, String> properties) {
-                future.add(properties);
+                queue.add(properties);
             }
         };
 
         factory.initConsulLoggingWatch(new StartupEvent(), consulSourceConfig, consulLoggingSourceConfig);
-        Map<String, String> properties = future.poll(5, TimeUnit.SECONDS);
-        Assertions.assertNotNull(properties);
-        Assertions.assertTrue(properties.isEmpty());
 
-        properties = future.poll(5, TimeUnit.SECONDS);
-        Assertions.assertNotNull(properties);
+        awaitEmptyProperties(queue);
+
+        Map<String, String> properties = awaitLogLevel(queue, "DEBUG");
         Assertions.assertEquals(1, properties.size());
-        Assertions.assertEquals("DEBUG", properties.get("quarkus.log.category.\"com.test\".level"));
     }
 
     @Test
@@ -266,37 +267,21 @@ class ConsulLoggingConfigWatchFactoryTest {
 
         factory.initConsulLoggingWatch(new StartupEvent(), consulSourceConfig, consulLoggingSourceConfig);
 
-        int waitTimeSeconds = 1;
-
-        Map<String, String> properties = future.poll(waitTimeSeconds, TimeUnit.SECONDS);
-        Assertions.assertNotNull(properties);
-
-        properties = future.poll(waitTimeSeconds, TimeUnit.SECONDS);
-        Assertions.assertNotNull(properties);
-
-        properties = future.poll(waitTimeSeconds, TimeUnit.SECONDS);
-        Assertions.assertNotNull(properties);
+        Map<String, String> properties = awaitLogLevel(future, "DEBUG");
         Assertions.assertEquals(1, properties.size());
-        Assertions.assertEquals("DEBUG", properties.get("quarkus.log.category.\"com.test\".level"));
 
         getValue3.setValue(Base64.getEncoder().encodeToString(("ERROR").getBytes()));
         responseQueue3.add(new Response<>(List.of(getValue3), 2L, true, 1L));
-        properties = future.poll(waitTimeSeconds, TimeUnit.SECONDS);
-        Assertions.assertNotNull(properties);
+        properties = awaitLogLevel(future, "ERROR");
         Assertions.assertEquals(1, properties.size());
-        Assertions.assertEquals("ERROR", properties.get("quarkus.log.category.\"com.test\".level"));
 
         responseQueue3.add(new Response<>(List.of(), 3L, true, 1L));
-        properties = future.poll(waitTimeSeconds, TimeUnit.SECONDS);
-        Assertions.assertNotNull(properties);
+        properties = awaitLogLevel(future, "WARN");
         Assertions.assertEquals(1, properties.size());
-        Assertions.assertEquals("WARN", properties.get("quarkus.log.category.\"com.test\".level"));
 
         responseQueue2.add(new Response<>(List.of(), 3L, true, 1L));
-        properties = future.poll(waitTimeSeconds, TimeUnit.SECONDS);
-        Assertions.assertNotNull(properties);
+        properties = awaitLogLevel(future, "INFO");
         Assertions.assertEquals(1, properties.size());
-        Assertions.assertEquals("INFO", properties.get("quarkus.log.category.\"com.test\".level"));
     }
 
     @Test
@@ -327,5 +312,26 @@ class ConsulLoggingConfigWatchFactoryTest {
 
         watchFuture.get(1, TimeUnit.SECONDS);
         Assertions.assertFalse(watchFuture.isCompletedExceptionally());
+    }
+
+    private Map<String, String> awaitLogLevel(BlockingQueue<Map<String, String>> queue,
+                                               String expectedLevel) {
+        var result = new AtomicReference<Map<String, String>>();
+        await().atMost(3, SECONDS).until(() -> {
+            Map<String, String> props = queue.poll();
+            if (props != null && expectedLevel.equals(props.get(LOG_LEVEL_KEY))) {
+                result.set(props);
+                return true;
+            }
+            return false;
+        });
+        return result.get();
+    }
+
+    private void awaitEmptyProperties(BlockingQueue<Map<String, String>> queue) {
+        await().atMost(3, SECONDS).until(() -> {
+            Map<String, String> props = queue.poll();
+            return props != null && props.isEmpty();
+        });
     }
 }
