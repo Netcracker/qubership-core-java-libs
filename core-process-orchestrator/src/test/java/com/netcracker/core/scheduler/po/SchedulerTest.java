@@ -127,6 +127,7 @@ class SchedulerTest {
         testProcess.addTask(LongRunningTask.class);
         ProcessInstanceImpl instance = orchestrator.createProcess(testProcess);
         orchestrator.startProcess(instance);
+        waitForProcessCondition(instance.getId(), this::isInProgress);
         orchestrator.terminateProcess(instance.getId());
         waitForProcess(instance.getId());
         Assertions.assertEquals(TaskState.TERMINATED, orchestrator.getProcessInstance(instance.getId()).getState());
@@ -142,6 +143,7 @@ class SchedulerTest {
         }
         ProcessInstanceImpl instance = orchestrator.createProcess(testProcess);
         orchestrator.startProcess(instance);
+        waitForProcessCondition(instance.getId(), this::isInProgress);
         orchestrator.terminateProcess(instance.getId());
         waitForProcess(instance.getId());
         Assertions.assertEquals(TaskState.TERMINATED, orchestrator.getProcessInstance(instance.getId()).getState());
@@ -155,6 +157,7 @@ class SchedulerTest {
         testProcess.addTask(LongRunningTask.class);
         ProcessInstanceImpl instance = orchestrator.createProcess(testProcess);
         orchestrator.startProcess(instance);
+        waitForProcessCondition(instance.getId(), this::isInProgress);
         orchestrator.terminateProcess(instance.getId());
         waitForProcess(instance.getId());
         Assertions.assertEquals(TaskState.TERMINATED, orchestrator.getProcessInstance(instance.getId()).getState());
@@ -310,7 +313,7 @@ class SchedulerTest {
 
     private boolean isInProgress(String id) {
         ProcessInstanceImpl instance = orchestrator.getProcessInstance(id);
-        return instance.getTasks().stream().anyMatch(t -> t.getState().equals(TaskState.IN_PROGRESS) || t.getState().equals(TaskState.NOT_STARTED));
+        return instance.getTasks().stream().anyMatch(t -> t.getState().equals(TaskState.IN_PROGRESS));
     }
 
     private boolean isStopped(String id) {

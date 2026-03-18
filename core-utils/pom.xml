@@ -5,7 +5,7 @@
     <groupId>com.netcracker.cloud.security.core.utils</groupId>
     <artifactId>core-utils-aggregator</artifactId>
     <packaging>pom</packaging>
-    <version>2.4.2-SNAPSHOT</version>
+    <version>2.4.3-SNAPSHOT</version>
     <name>core-utils-aggregator</name>
 
     <licenses>
