@@ -1,16 +1,14 @@
 package com.netcracker.cloud.microserviceframework.application;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
 import com.netcracker.cloud.microserviceframework.TestApplication;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.boot.web.servlet.ServletContextInitializerBeans;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
 import java.util.List;
@@ -22,7 +20,7 @@ import static org.hamcrest.Matchers.hasItem;
 class MicroserviceApplicationContextTest {
 
     private static final String SPRINGFRAMEWORK_PACKAGE = "org.springframework";
-    private ConfigurableApplicationContext context;
+    private MicroserviceApplicationContext context;
 
     @BeforeAll
     static void init() {
@@ -31,9 +29,7 @@ class MicroserviceApplicationContextTest {
 
     @AfterEach
     void tearDown() {
-        if (context != null) {
-            context.close();
-        }
+        context.close();
     }
 
     @Test
@@ -78,12 +74,10 @@ class MicroserviceApplicationContextTest {
         );
     }
 
-    private List<Class<?>> getFilterClasses(ConfigurableApplicationContext context) {
-        ServletContextInitializerBeans initializers = new ServletContextInitializerBeans(context.getBeanFactory());
-        return initializers
+    private List<Class<?>> getFilterClasses(MicroserviceApplicationContext context) {
+        return context.getServletContextInitializerBeans()
                 .stream()
                 .filter(initializer -> initializer instanceof FilterRegistrationBean)
-                .filter(initializer -> ((FilterRegistrationBean<?>) initializer).isEnabled())
                 .map(initializer -> ((FilterRegistrationBean) initializer).getFilter().getClass())
                 .collect(Collectors.toList());
     }

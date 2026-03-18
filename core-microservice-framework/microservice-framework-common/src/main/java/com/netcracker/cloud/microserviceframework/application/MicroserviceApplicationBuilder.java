@@ -1,14 +1,13 @@
 package com.netcracker.cloud.microserviceframework.application;
 
+import org.jetbrains.annotations.NotNull;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
-import jakarta.servlet.Filter;
-import org.jetbrains.annotations.NotNull;
+import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.Banner;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
 
+import jakarta.servlet.Filter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -88,10 +87,11 @@ public final class MicroserviceApplicationBuilder {
      *
      * @return context
      */
-    public ConfigurableApplicationContext build() {
-        return new SpringApplicationBuilder(applicationClass)
+    public MicroserviceApplicationContext build() {
+        return (MicroserviceApplicationContext) new SpringApplicationBuilder(applicationClass)
+                .contextFactory(ApplicationContextFactory.ofContextClass(MicroserviceApplicationContext.class))
                 .bannerMode(Banner.Mode.OFF)
-                .initializers(context -> ((GenericApplicationContext) context).registerBean(MicroserviceApplicationContext.class, filterPackagesToExclude, filterClasses))
+                .environment(new MicroserviceApplicationEnvironment(filterPackagesToExclude, filterClasses))
                 .run(arguments.toArray(new String[0]));
     }
 }
