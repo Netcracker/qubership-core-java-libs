@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <groupId>com.netcracker.cloud</groupId>
-    <version>9.0.2-SNAPSHOT</version>
+    <version>8.5.1-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dbaas-client-parent</artifactId>
@@ -17,13 +17,13 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
         <mockito.version>5.14.2</mockito.version>
         <powermock.version>2.0.9</powermock.version>
         <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
         <cassandra-unit.version>4.3.1.0</cassandra-unit.version>
-        <maven.surefire.version>3.5.5</maven.surefire.version>
+        <maven.surefire.version>3.5.4</maven.surefire.version>
 
         <io.grpc.version>1.77.0</io.grpc.version>
         <sonar.coverage.jacoco.xmlReportPaths>
@@ -103,12 +103,6 @@
     </build>
 
     <repositories>
-        <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <releases><enabled>true</enabled></releases>
-            <snapshots><enabled>false</enabled></snapshots>
-        </repository>
         <repository>
             <id>github</id>
             <url>https://maven.pkg.github.com/netcracker/*</url>
