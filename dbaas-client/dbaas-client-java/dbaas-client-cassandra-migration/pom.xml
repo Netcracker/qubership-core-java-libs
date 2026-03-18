@@ -12,7 +12,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.cassandra</groupId>
+            <groupId>com.datastax.oss</groupId>
             <artifactId>java-driver-core</artifactId>
         </dependency>
         <dependency>
