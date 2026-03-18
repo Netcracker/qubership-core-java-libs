@@ -7,7 +7,6 @@ import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
 import com.netcracker.cloud.restlegacy.restclient.service.MessageService;
 import org.hamcrest.Matcher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.retry.RetryStatistics;
 import org.springframework.retry.stats.StatisticsRepository;
@@ -26,7 +25,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureTestRestTemplate
 public class ExceptionHandlerControllersAdviceBase {
 
     @Autowired

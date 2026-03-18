@@ -3,7 +3,7 @@
     <parent>
         <artifactId>config-server-loader</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>7.0.2-SNAPSHOT</version>
+        <version>6.4.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -50,10 +50,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
+            <version>3.5.10</version>
         </dependency>
 
         <!-- Test dependencies -->
@@ -69,18 +66,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-resttestclient</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.5</version>
+                <version>3.5.4</version>
             </plugin>
         </plugins>
     </build>

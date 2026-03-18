@@ -5,7 +5,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>rest-libraries-parent</artifactId>
-    <version>7.0.2-SNAPSHOT</version>
+    <version>6.4.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -17,9 +17,10 @@
     </licenses>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
         <org.powermock.version>2.0.9</org.powermock.version>
+        <junit.verson>4.12</junit.verson>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -84,12 +85,6 @@
     </build>
 
     <repositories>
-        <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <releases><enabled>true</enabled></releases>
-            <snapshots><enabled>false</enabled></snapshots>
-        </repository>
         <repository>
             <id>github</id>
             <url>https://maven.pkg.github.com/netcracker/*</url>

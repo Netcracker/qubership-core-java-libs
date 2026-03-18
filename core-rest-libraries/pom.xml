@@ -5,7 +5,7 @@
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>rest-libraries</artifactId>
     <packaging>pom</packaging>
-    <version>7.0.2-SNAPSHOT</version>
+    <version>6.4.1-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -16,7 +16,7 @@
     </licenses>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
     </properties>
 
     <modules>
@@ -35,10 +35,11 @@
     </modules>
 
     <scm>
-        <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
-        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
-        <url>https://github.com/Netcracker/qubership-core-java-libs</url>
-        <tag>HEAD</tag>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-rest-libraries.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-rest-libraries.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-rest-libraries</url>
+        <tag>rest-libraries-6.2.5</tag>
     </scm>
 
     <build>
@@ -56,12 +57,6 @@
     </build>
 
     <repositories>
-        <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <releases><enabled>true</enabled></releases>
-            <snapshots><enabled>false</enabled></snapshots>
-        </repository>
         <repository>
             <id>github</id>
             <url>https://maven.pkg.github.com/netcracker/*</url>
