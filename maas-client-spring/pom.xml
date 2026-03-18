@@ -4,7 +4,7 @@
 
     <artifactId>maas-client-spring-parent</artifactId>
     <groupId>com.netcracker.cloud.maas.client</groupId>
-    <version>9.0.1-SNAPSHOT</version>
+    <version>9.0.1</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -40,7 +40,7 @@
         <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
         <url>https://github.com/Netcracker/qubership-core-java-libs</url>
-        <tag>HEAD</tag>
+        <tag>maas-client-spring-parent-9.0.1</tag>
     </scm>
 
     <dependencyManagement>
