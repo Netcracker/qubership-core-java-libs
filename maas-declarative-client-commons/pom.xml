@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud.maas.client</groupId>
     <artifactId>maas-declarative-kafka-client-parent</artifactId>
-    <version>5.4.2-SNAPSHOT</version>
+    <version>5.4.2</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -43,7 +43,7 @@
         <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
         <url>https://github.com/Netcracker/qubership-core-java-libs</url>
-        <tag>HEAD</tag>
+        <tag>maas-declarative-kafka-client-parent-5.4.2</tag>
     </scm>
 
     <dependencyManagement>
