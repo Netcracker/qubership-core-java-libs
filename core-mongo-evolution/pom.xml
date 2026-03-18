@@ -5,7 +5,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>mongo-evolution-aggregator</artifactId>
-    <version>8.0.1</version>
+    <version>8.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -26,7 +26,7 @@
         <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
         <url>https://github.com/Netcracker/qubership-core-java-libs</url>
-        <tag>mongo-evolution-aggregator-8.0.1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <repositories>
