@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.netcracker.cloud</groupId>
-    <version>6.4.1-SNAPSHOT</version>
+    <version>6.4.1</version>
     <artifactId>microservice-restclient-aggregator</artifactId>
     <packaging>pom</packaging>
 
@@ -29,7 +29,7 @@
         <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
         <url>https://github.com/Netcracker/qubership-core-java-libs</url>
-        <tag>HEAD</tag>
+        <tag>microservice-restclient-aggregator-6.4.1</tag>
     </scm>
 
     <repositories>
