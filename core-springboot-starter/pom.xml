@@ -10,7 +10,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>netcracker-spring-boot-starter-parent</artifactId>
-    <version>11.4.2-SNAPSHOT</version>
+    <version>11.4.2</version>
     <packaging>pom</packaging>
 
     <name>netcracker-spring-boot-starter</name>
@@ -136,7 +136,7 @@
         <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
         <url>https://github.com/Netcracker/qubership-core-java-libs</url>
-        <tag>HEAD</tag>
+        <tag>netcracker-spring-boot-starter-parent-11.4.2</tag>
     </scm>
 
     <distributionManagement>
