@@ -1,9 +1,11 @@
 package com.netcracker.cloud.quarkus.routesregistration.runtime.gateway.route;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netcracker.cloud.quarkus.security.auth.M2MManager;
 import com.netcracker.cloud.routesregistration.common.gateway.route.*;
 import com.netcracker.cloud.routesregistration.common.gateway.route.rest.RegistrationRequestFactory;
 import com.netcracker.cloud.routesregistration.common.gateway.route.transformation.RouteTransformer;
+import com.netcracker.cloud.routesregistration.common.service.TopologyConfigService;
 import com.netcracker.cloud.security.core.auth.Token;
 import io.quarkus.arc.Unremovable;
 import io.reactivex.Scheduler;
@@ -125,7 +127,9 @@ public class RouteRegistrationConfig {
     RoutesRestRegistrationProcessor routesRestRegistrationProcessor(ControlPlaneClient controlPlaneClient,
                                                                     RouteRetryManager retryManager,
                                                                     RouteTransformer routeTransformer,
-                                                                    RegistrationRequestFactory registrationRequestFactory) {
+                                                                    RegistrationRequestFactory registrationRequestFactory,
+                                                                    TopologyConfigService topologyConfigService) {
+
         return new RoutesRestRegistrationProcessor(
                 controlPlaneClient,
                 retryManager,
@@ -136,6 +140,11 @@ public class RouteRegistrationConfig {
                 Utils.formatMicroserviceInternalURL(
                         cloudServiceName, microserviceName, getPort(), "/", postRoutesAppnameDisabled)
         );
+    }
+
+    @Produces
+    TopologyConfigService topologyConfigService(ObjectMapper objectMapper) {
+        return new TopologyConfigService(objectMapper);
     }
 
     private String getPort() {

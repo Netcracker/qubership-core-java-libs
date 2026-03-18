@@ -22,6 +22,10 @@
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
     </dependency>
+      <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-jackson</artifactId>
+      </dependency>
     <!-- Qubership -->
     <dependency>
       <groupId>com.netcracker.cloud.quarkus</groupId>
