@@ -9,7 +9,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>cloud-core-context-propagation-bom-internal</artifactId>
-    <version>7.2.3-SNAPSHOT</version>
+    <version>7.2.4-SNAPSHOT</version>
 
     <name>Cloud-Core Context Propagation BOM - Internal</name>
 
