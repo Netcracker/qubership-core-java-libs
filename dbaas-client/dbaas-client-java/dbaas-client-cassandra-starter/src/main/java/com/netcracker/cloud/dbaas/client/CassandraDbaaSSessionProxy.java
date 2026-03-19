@@ -20,11 +20,11 @@ import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @AllArgsConstructor
 @Slf4j

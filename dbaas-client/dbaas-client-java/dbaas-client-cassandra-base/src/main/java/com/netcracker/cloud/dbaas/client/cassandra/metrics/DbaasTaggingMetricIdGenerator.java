@@ -9,7 +9,7 @@ import com.datastax.oss.driver.internal.core.metrics.DefaultMetricId;
 import com.datastax.oss.driver.internal.core.metrics.MetricId;
 import com.datastax.oss.driver.internal.core.metrics.TaggingMetricIdGenerator;
 import com.datastax.oss.driver.shaded.guava.common.collect.ImmutableMap;
-import edu.umd.cs.findbugs.annotations.NonNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
