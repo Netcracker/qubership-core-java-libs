@@ -1,15 +1,17 @@
 package com.netcracker.cloud.routesregistration.common.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
-import io.reactivex.Scheduler;
-import io.reactivex.schedulers.Schedulers;
 import com.netcracker.cloud.routesregistration.common.annotation.processing.RouteHostMapping;
 import com.netcracker.cloud.routesregistration.common.gateway.route.*;
 import com.netcracker.cloud.routesregistration.common.gateway.route.rest.RegistrationRequestFactory;
 import com.netcracker.cloud.routesregistration.common.gateway.route.transformation.RouteTransformer;
+import com.netcracker.cloud.routesregistration.common.service.TopologyConfigService;
 import com.netcracker.cloud.routesregistration.common.spring.gateway.route.RouteAnnotationProcessor;
 import com.netcracker.cloud.routesregistration.common.spring.gateway.route.RouteFormatter;
 import com.netcracker.cloud.routesregistration.common.spring.gateway.route.SpringControlPlaneClient;
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -19,6 +21,8 @@ import org.springframework.core.env.Environment;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.netcracker.cloud.routesregistration.common.gateway.route.ServiceMeshType.ISTIO;
 
 @Configuration
 public class RouteRegistrationProcessorConfiguration {
@@ -47,7 +51,7 @@ public class RouteRegistrationProcessorConfiguration {
         this.postRoutesEnabled = postRoutesEnabled;
 
         this.cloudServiceName = microserviceName;
-        if(deploymentVersion != null && !deploymentVersion.isEmpty()){
+        if (deploymentVersion != null && !deploymentVersion.isEmpty()) {
             this.cloudServiceName += "-" + deploymentVersion;
         }
     }
@@ -98,7 +102,9 @@ public class RouteRegistrationProcessorConfiguration {
     RoutesRestRegistrationProcessor routesRestRegistrationProcessor(ControlPlaneClient controlPlaneClient,
                                                                     RouteRetryManager routeRetryManager,
                                                                     RouteTransformer routeTransformer,
-                                                                    RegistrationRequestFactory registrationRequestFactory) {
+                                                                    RegistrationRequestFactory registrationRequestFactory,
+                                                                    TopologyConfigService topologyConfigService) {
+
         String microserviceInternalURL = Utils.formatMicroserviceInternalURL(
                 cloudServiceName,
                 microserviceName,
@@ -111,7 +117,8 @@ public class RouteRegistrationProcessorConfiguration {
                 routeRetryManager,
                 routeTransformer,
                 registrationRequestFactory,
-                postRoutesEnabled,
+                postRoutesEnabled
+                        && topologyConfigService.getServiceMeshType() != ISTIO,
                 microserviceName,
                 microserviceInternalURL);
     }
@@ -129,5 +136,10 @@ public class RouteRegistrationProcessorConfiguration {
     @Bean
     RoutesRegistrationDelayProvider routesRegistrationDelayProvider() {
         return new RoutesRegistrationDelayProvider();
+    }
+
+    @Bean
+    TopologyConfigService topologyConfigService(ObjectMapper objectMapper) {
+        return new TopologyConfigService(objectMapper);
     }
 }

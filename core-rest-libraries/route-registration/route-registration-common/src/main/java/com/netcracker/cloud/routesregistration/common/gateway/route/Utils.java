@@ -12,7 +12,7 @@ public class Utils {
                                                        String contextPath,
                                                        boolean postRoutesAppnameDisabled) {
         String host = microserviceName;
-        if (cloudServiceName != null &&! cloudServiceName.isEmpty()) {
+        if (cloudServiceName != null && !cloudServiceName.isEmpty()) {
             host = cloudServiceName;
         }
 
