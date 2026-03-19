@@ -35,7 +35,7 @@
         <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
         <jacoco.plugin.version>0.8.7</jacoco.plugin.version>
         <jandex-maven-plugin.version>3.5.3</jandex-maven-plugin.version>
-        <rest-libraries.version>7.0.1</rest-libraries.version>
+        <rest-libraries.version>7.0.2-SNAPSHOT</rest-libraries.version>
         <maas-client.version>12.0.0-SNAPSHOT</maas-client.version>
         <error-handling.version>4.0.0-SNAPSHOT</error-handling.version>
     </properties>
