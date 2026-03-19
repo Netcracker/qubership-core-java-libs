@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>cloud-core-quarkus-bom-parent</artifactId>
-        <version>8.4.4-SNAPSHOT</version>
+        <version>8.4.3-SNAPSHOT</version>
         <relativePath>../cloud-core-quarkus-bom-parent/pom.xml</relativePath>
     </parent>
     <artifactId>cloud-core-quarkus-bom-internal</artifactId>
@@ -13,9 +13,9 @@
 
     <properties>
         <!-- Qubership -->
-        <context.propagation.core.version>7.4.1</context.propagation.core.version>
-        <dbaas-client.version>8.5.1</dbaas-client.version>
-        <tls-utils.version>2.4.3</tls-utils.version>
+        <context.propagation.core.version>8.0.1</context.propagation.core.version>
+        <dbaas-client.version>9.0.1</dbaas-client.version>
+        <tls-utils.version>2.4.2</tls-utils.version>
 
         <!-- Dev tools -->
         <freemarker.version>2.3.34</freemarker.version>
