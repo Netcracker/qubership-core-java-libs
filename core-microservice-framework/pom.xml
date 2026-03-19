@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>microservice-framework-aggregator</artifactId>
-    <version>8.0.2-SNAPSHOT</version>
+    <version>7.4.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>microservice-framework-aggregator</name>
     <description>Common microservice framework library</description>
@@ -19,7 +19,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
         <maven.pmd.plugin.version>3.28.0</maven.pmd.plugin.version>
         <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
@@ -34,9 +34,10 @@
     </modules>
 
     <scm>
-        <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
-        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
-        <url>https://github.com/Netcracker/qubership-core-java-libs</url>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-microservice-framework.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-microservice-framework.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-microservice-framework</url>
         <tag>HEAD</tag>
     </scm>
 
@@ -71,12 +72,6 @@
     </reporting>
 
     <repositories>
-        <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <releases><enabled>true</enabled></releases>
-            <snapshots><enabled>false</enabled></snapshots>
-        </repository>
         <repository>
             <id>github</id>
             <url>https://maven.pkg.github.com/netcracker/*</url>

@@ -2,9 +2,6 @@ package com.netcracker.cloud.restlegacy.restclient.error.v2.v2_1;
 
 import lombok.Getter;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Getter
@@ -21,14 +18,7 @@ public class NamedMessageParameter {
     }
 
     public static NamedMessageParameter date(final String parameterName, final Date parameterValue) {
-        String formattedDate = null;
-        if (parameterValue != null) {
-            ZonedDateTime zonedDateTime = parameterValue.toInstant()
-                    .atZone(ZoneId.systemDefault());
-            formattedDate = zonedDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME);
-        }
-
-        return new NamedMessageParameter(parameterName, formattedDate, "date");
+        return new NamedMessageParameter(parameterName, parameterValue, "date");
     }
 
     public static NamedMessageParameter number(final String parameterName, final Number parameterValue) {

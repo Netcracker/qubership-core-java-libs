@@ -1,7 +1,6 @@
 package com.netcracker.cloud.restlegacy.resttemplate.configuration;
 
 import com.netcracker.cloud.restlegacy.resttemplate.configuration.customizer.PoolingHttpClientConnectionManagerCustomizer;
-import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
@@ -13,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class ConnectionManagerConfiguration {
@@ -27,9 +25,6 @@ public class ConnectionManagerConfiguration {
     @Value("${connection.readTimeout:60000}")
     private int readTimeout;
 
-    @Value("${connection.connectTimeout:60000}")
-    private int connectTimeout;
-
     @Bean(name = "coreConnectionManager")
     @Primary
     HttpClientConnectionManager poolingHttpClientConnectionManager(
@@ -38,7 +33,6 @@ public class ConnectionManagerConfiguration {
         SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(Timeout.ofMilliseconds(readTimeout)).build();
         final PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = PoolingHttpClientConnectionManagerBuilder.create()
                 .setDefaultSocketConfig(socketConfig)
-                .setDefaultConnectionConfig(ConnectionConfig.custom().setConnectTimeout(connectTimeout, TimeUnit.MILLISECONDS).build())
                 .build();
         if (maxConnectionsTotal != null) {
             poolingHttpClientConnectionManager.setMaxTotal(maxConnectionsTotal);

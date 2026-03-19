@@ -2,8 +2,11 @@ package com.netcracker.cloud.dbaas.client.cassandra.auth;
 
 import com.datastax.oss.driver.api.core.auth.PlainTextAuthProviderBase;
 import com.datastax.oss.driver.api.core.metadata.EndPoint;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
+
+import jakarta.inject.Provider;
+
 
 @Slf4j
 public class DbaaSAuthProvider extends PlainTextAuthProviderBase {
@@ -19,7 +22,7 @@ public class DbaaSAuthProvider extends PlainTextAuthProviderBase {
     }
 
     @Override
-    protected @NonNull Credentials getCredentials(@NonNull EndPoint endPoint, @NonNull String serverAuthenticator) {
+    protected Credentials getCredentials(@NonNull EndPoint endPoint, @NonNull String serverAuthenticator) {
         return new Credentials(username.toCharArray(), password.toCharArray(), AUTH_ID);
     }
 }

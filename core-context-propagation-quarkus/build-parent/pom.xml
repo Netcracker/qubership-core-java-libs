@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>cloud-core-context-propagation</artifactId>
-        <version>7.2.3-SNAPSHOT</version>
+        <version>7.2.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -88,7 +88,7 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${compiler-plugin.version}</version>
                     <configuration>
-                        <release>21</release>
+                        <release>17</release>
                     </configuration>
                 </plugin>
                 <plugin>

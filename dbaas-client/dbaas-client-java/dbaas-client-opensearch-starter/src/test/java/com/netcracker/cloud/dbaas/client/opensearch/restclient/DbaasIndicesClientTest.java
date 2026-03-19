@@ -252,8 +252,8 @@ public class DbaasIndicesClientTest {
         GetIndicesSettingsRequest request = new GetIndicesSettingsRequest.Builder().index(serviceClient.normalize(TEST_INDEX)).build();
         GetIndicesSettingsResponse getSettingsResponse = serviceClient.getClient().indices().getSettings(request);
         assertNotNull(getSettingsResponse);
-        Integer numberOfReplicasString = getSettingsResponse.get(fullIndexName).settings().index().numberOfReplicas();
-        assertEquals(1, numberOfReplicasString);
+        String numberOfReplicasString = getSettingsResponse.get(fullIndexName).settings().index().numberOfReplicas();
+        assertEquals("1", numberOfReplicasString);
     }
 
     @Test
@@ -300,7 +300,7 @@ public class DbaasIndicesClientTest {
         CreateIndexRequest request = new CreateIndexRequest.Builder()
                 .index(serviceClient.normalize(TEST_INDEX))
                 .settings(settingsBuilder -> settingsBuilder
-                        .numberOfShards(initialAmountOfShards)
+                        .numberOfShards(String.valueOf(initialAmountOfShards))
                         .blocksWrite(true))
                 .build();
         serviceClient.getClient().indices().create(request);
@@ -316,7 +316,8 @@ public class DbaasIndicesClientTest {
         GetIndicesSettingsRequest getIndicesSettingsRequest = new GetIndicesSettingsRequest.Builder().index(serviceClient.normalize(targetIdx)).build();
         GetIndicesSettingsResponse getSettingsResponse = serviceClient.getClient().indices().getSettings(getIndicesSettingsRequest);
         assertNotNull(getSettingsResponse);
-        Integer newAmountOfShards = getSettingsResponse.get(prefixWithDelimiter + targetIdx).settings().index().numberOfShards();
+        String numberOfShardsString = getSettingsResponse.get(prefixWithDelimiter + targetIdx).settings().index().numberOfShards();
+        int newAmountOfShards = Integer.parseInt(numberOfShardsString);
         assertTrue(newAmountOfShards < initialAmountOfShards);
     }
 
@@ -326,7 +327,7 @@ public class DbaasIndicesClientTest {
         CreateIndexRequest request = new CreateIndexRequest.Builder()
                 .index(serviceClient.normalize(TEST_INDEX))
                 .settings(settingsBuilder -> settingsBuilder
-                        .numberOfShards(initialAmountOfShards)
+                        .numberOfShards(String.valueOf(initialAmountOfShards))
                         .blocksWrite(true))
                 .build();
         serviceClient.getClient().indices().create(request);
@@ -345,7 +346,8 @@ public class DbaasIndicesClientTest {
         GetIndicesSettingsRequest getIndicesSettingsRequest = new GetIndicesSettingsRequest.Builder().index(serviceClient.normalize(targetIdx)).build();
         GetIndicesSettingsResponse getSettingsResponse = serviceClient.getClient().indices().getSettings(getIndicesSettingsRequest);
         assertNotNull(getSettingsResponse);
-        Integer newAmountOfShards = getSettingsResponse.get(prefixWithDelimiter + targetIdx).settings().index().numberOfShards();
+        String numberOfShardsString = getSettingsResponse.get(prefixWithDelimiter + targetIdx).settings().index().numberOfShards();
+        int newAmountOfShards = Integer.parseInt(numberOfShardsString);
         assertEquals(targetAmountOfShards, newAmountOfShards);
     }
 
@@ -417,7 +419,7 @@ public class DbaasIndicesClientTest {
         PutIndicesSettingsRequest request = new PutIndicesSettingsRequest.Builder()
                 .index(serviceClient.normalize(TEST_INDEX))
                 .settings(new IndexSettings.Builder()
-                        .numberOfReplicas(numOfReplicas).build())
+                        .numberOfReplicas(String.valueOf(numOfReplicas)).build())
                 .build();
         AcknowledgedResponseBase updateSettingsResponse = serviceClient.getClient().indices().putSettings(request);
         assertTrue(updateSettingsResponse.acknowledged());
@@ -425,7 +427,8 @@ public class DbaasIndicesClientTest {
         GetIndicesSettingsRequest getIndicesSettingsRequest = new GetIndicesSettingsRequest.Builder().index(serviceClient.normalize(TEST_INDEX)).build();
         GetIndicesSettingsResponse getSettingsResponse = serviceClient.getClient().indices().getSettings(getIndicesSettingsRequest);
         assertNotNull(getSettingsResponse);
-        Integer newAmountOfReplicas = getSettingsResponse.get(fullIndexName).settings().index().numberOfReplicas();
+        String numberOfReplicasString = getSettingsResponse.get(fullIndexName).settings().index().numberOfReplicas();
+        int newAmountOfReplicas = Integer.parseInt(numberOfReplicasString);
         assertEquals(numOfReplicas, newAmountOfReplicas);
     }
 
@@ -456,8 +459,8 @@ public class DbaasIndicesClientTest {
     public void putIndexTemplate() throws IOException {
         IndexSettings settings = new IndexSettings.Builder()
                 .index(new IndexSettings.Builder()
-                        .numberOfShards(3)
-                        .numberOfReplicas(1).build()).build();
+                        .numberOfShards("3")
+                        .numberOfReplicas("1").build()).build();
         String firstPattern = TEST_INDEX;
         String secondPattern = "log-*";
         PutIndexTemplateRequest request = new PutIndexTemplateRequest.Builder()
@@ -530,8 +533,8 @@ public class DbaasIndicesClientTest {
                 .name(serviceClient.normalize(TEST_TEMPLATE))
                 .indexPatterns(serviceClient.normalize(firstPattern), serviceClient.normalize(secondPattern))
                 .template(new IndexTemplateMapping.Builder().settings(new IndexSettings.Builder()
-                                .numberOfShards(3)
-                                .numberOfReplicas(1)
+                                .numberOfShards("3")
+                                .numberOfReplicas("1")
                                 .build())
                         .build())
                 .priority(0)
@@ -577,8 +580,8 @@ public class DbaasIndicesClientTest {
                 .name(serviceClient.normalize(TEST_TEMPLATE))
                 .indexPatterns(firstPattern, secondPattern)
                 .template(new IndexTemplateMapping.Builder().settings(new IndexSettings.Builder()
-                                .numberOfShards(3)
-                                .numberOfReplicas(1)
+                                .numberOfShards("3")
+                                .numberOfReplicas("1")
                                 .build())
                         .build())
                 .priority(0)
@@ -618,8 +621,8 @@ public class DbaasIndicesClientTest {
                 .name(serviceClient.normalize(TEST_TEMPLATE))
                 .indexPatterns(firstPattern, secondPattern)
                 .template(new IndexTemplateMapping.Builder().settings(new IndexSettings.Builder()
-                                .numberOfShards(3)
-                                .numberOfReplicas(1)
+                                .numberOfShards("3")
+                                .numberOfReplicas("1")
                                 .build())
                         .build())
                 .priority(0)

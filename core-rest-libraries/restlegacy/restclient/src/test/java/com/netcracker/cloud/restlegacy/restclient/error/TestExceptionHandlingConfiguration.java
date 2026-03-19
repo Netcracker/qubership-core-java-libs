@@ -5,16 +5,14 @@ import com.netcracker.cloud.restlegacy.restclient.app.TestConfig;
 import com.netcracker.cloud.restlegacy.restclient.configuration.annotation.EnableControllersAdvice;
 import com.netcracker.cloud.restlegacy.restclient.configuration.annotation.EnableDefaultRetryTemplate;
 import com.netcracker.cloud.restlegacy.restclient.configuration.annotation.EnableMessagesResolving;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
-import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
-import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
-import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
-import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +25,7 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriTemplateHandler;
 
+import jakarta.annotation.PostConstruct;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Properties;
@@ -38,7 +37,7 @@ import java.util.Properties;
 @EnableDefaultRetryTemplate
 @SuppressWarnings("unused")
 @Import({TestConfig.class, WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class, DispatcherServletAutoConfiguration.class})
-@AutoConfigureTestRestTemplate
+
 public class TestExceptionHandlingConfiguration {
     @ConditionalOnMissingBean
     @Bean
@@ -55,7 +54,7 @@ public class TestExceptionHandlingConfiguration {
 
     @Bean
     public ServletWebServerFactory servletContainerFactory() {
-        TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
+        UndertowServletWebServerFactory factory = new UndertowServletWebServerFactory();
         factory.setPort(0);
         return factory;
     }

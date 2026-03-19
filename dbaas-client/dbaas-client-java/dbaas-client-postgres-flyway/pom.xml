@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.netcracker.cloud</groupId>
         <artifactId>dbaas-client-spring-parent</artifactId>
-        <version>9.0.2-SNAPSHOT</version>
+        <version>8.5.2-SNAPSHOT</version>
         <relativePath>../dbaas-client-spring-parent/pom.xml</relativePath>
     </parent>
     <artifactId>dbaas-client-postgres-flyway</artifactId>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.10</version>
+            <version>42.7.9</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

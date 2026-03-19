@@ -5,7 +5,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>dbaas-client-root</artifactId>
-    <version>9.0.2-SNAPSHOT</version>
+    <version>8.5.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -24,9 +24,10 @@
     </modules>
 
     <scm>
-        <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
-        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
-        <url>https://github.com/Netcracker/qubership-core-java-libs</url>
+        <connection>scm:git:https://github.com/Netcracker/qubership-dbaas-client.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-dbaas-client.git
+        </developerConnection>
+        <url>https://github.com/Netcracker/qubership-dbaas-client</url>
         <tag>HEAD</tag>
     </scm>
 
@@ -41,12 +42,6 @@
     </reporting>
 
     <repositories>
-        <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <releases><enabled>true</enabled></releases>
-            <snapshots><enabled>false</enabled></snapshots>
-        </repository>
         <repository>
             <id>github</id>
             <url>https://maven.pkg.github.com/netcracker/*</url>

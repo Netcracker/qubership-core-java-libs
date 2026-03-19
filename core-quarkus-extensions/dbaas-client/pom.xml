@@ -3,7 +3,7 @@
     <parent>
         <artifactId>cloud-core-quarkus</artifactId>
         <groupId>com.netcracker.cloud.quarkus</groupId>
-        <version>8.4.3-SNAPSHOT</version>
+        <version>8.4.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -12,8 +12,8 @@
     <packaging>pom</packaging>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
     <modules>

@@ -5,7 +5,7 @@
 	<packaging>pom</packaging>
 	<artifactId>maas-client-quarkus-parent</artifactId>
 	<groupId>com.netcracker.cloud.quarkus</groupId>
-	<version>9.3.3-SNAPSHOT</version>
+	<version>9.3.4-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -24,15 +24,15 @@
     </modules>
 
 	<properties>
-		<maven.compiler.release>21</maven.compiler.release>
-		<maven.compiler.source>21</maven.compiler.source>
-		<maven.compiler.target>21</maven.compiler.target>
+		<maven.compiler.release>17</maven.compiler.release>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quarkus.version>3.27.2</quarkus.version>
-		<quarkus.core.extention.version>8.4.2</quarkus.core.extention.version>
+		<quarkus.core.extention.version>8.4.3</quarkus.core.extention.version>
 
-		<cloud-core.maas-client.version>11.4.2</cloud-core.maas-client.version>
+		<cloud-core.maas-client.version>11.4.3</cloud-core.maas-client.version>
 
 		<surefire-plugin.version>3.5.5</surefire-plugin.version>
 		<lombok.version>1.18.26</lombok.version>
@@ -113,7 +113,7 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>${compiler-plugin.version}</version>
 					<configuration>
-						<release>21</release>
+						<release>17</release>
 					</configuration>
 				</plugin>
 				<plugin>

@@ -39,6 +39,7 @@ public class ClientHttpRequestFactoryConfiguration {
         } else {
             HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
             requestFactory.setConnectionRequestTimeout(connectionRequestTimeout);
+            requestFactory.setConnectTimeout(connectTimeout);
             requestFactory.setHttpClient(httpClientBuilder.build());
             return requestFactory;
         }

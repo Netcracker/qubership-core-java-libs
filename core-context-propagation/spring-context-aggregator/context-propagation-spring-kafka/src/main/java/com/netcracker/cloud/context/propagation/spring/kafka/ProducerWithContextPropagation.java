@@ -9,7 +9,6 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.*;
 import org.apache.kafka.common.errors.ProducerFencedException;
 import org.apache.kafka.common.header.Header;
-import org.apache.kafka.common.metrics.KafkaMetric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +38,12 @@ public class ProducerWithContextPropagation<K, V> implements Producer<K, V> {
 	}
 
 	@Override
+	@Deprecated
+	public void sendOffsetsToTransaction(Map<TopicPartition, OffsetAndMetadata> offsets, String consumerGroupId) throws ProducerFencedException {
+		delegate.sendOffsetsToTransaction(offsets, consumerGroupId);
+	}
+
+	@Override
 	public void sendOffsetsToTransaction(Map<TopicPartition, OffsetAndMetadata> offsets, ConsumerGroupMetadata groupMetadata) throws ProducerFencedException {
 		delegate.sendOffsetsToTransaction(offsets, groupMetadata);
 	}
@@ -53,17 +58,7 @@ public class ProducerWithContextPropagation<K, V> implements Producer<K, V> {
 		delegate.abortTransaction();
 	}
 
-    @Override
-    public void registerMetricForSubscription(KafkaMetric kafkaMetric) {
-        delegate.registerMetricForSubscription(kafkaMetric);
-    }
-
-    @Override
-    public void unregisterMetricFromSubscription(KafkaMetric kafkaMetric) {
-        delegate.unregisterMetricFromSubscription(kafkaMetric);
-    }
-
-    private void dumpContextIntoHeaders(ProducerRecord<K, V> record) {
+	private void dumpContextIntoHeaders(ProducerRecord<K, V> record) {
 		log.debug("Propagate context into headers for: {}", record);
 		for (Header header : KafkaContextPropagation.propagateContext()) {
 			record.headers().add(header);

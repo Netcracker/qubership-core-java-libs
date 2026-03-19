@@ -118,13 +118,13 @@ class RoutesRestRegistrationProcessorTest {
         List<RouteConfigurationRequestV3> recordedRequestBodies = readRequests(recordedRequests);
 
         List<RouteConfigurationRequestV3> publicGroup = recordedRequestBodies.stream()
-                .filter(recordedRequest -> recordedRequest.getGateways().getFirst().equals(RoutesTestConfiguration.PUBLIC_NODE_GROUP))
+                .filter(recordedRequest -> recordedRequest.getGateways().get(0).equals(RoutesTestConfiguration.PUBLIC_NODE_GROUP))
                 .toList();
         List<RouteConfigurationRequestV3> privateGroup = recordedRequestBodies.stream()
-                .filter(recordedRequest -> recordedRequest.getGateways().getFirst().equals(RoutesTestConfiguration.PRIVATE_NODE_GROUP))
+                .filter(recordedRequest -> recordedRequest.getGateways().get(0).equals(RoutesTestConfiguration.PRIVATE_NODE_GROUP))
                 .toList();
         List<RouteConfigurationRequestV3> internalGroup = recordedRequestBodies.stream()
-                .filter(recordedRequest -> recordedRequest.getGateways().getFirst().equals(RoutesTestConfiguration.INTERNAL_NODE_GROUP))
+                .filter(recordedRequest -> recordedRequest.getGateways().get(0).equals(RoutesTestConfiguration.INTERNAL_NODE_GROUP))
                 .toList();
 
 

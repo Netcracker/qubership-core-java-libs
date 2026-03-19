@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.netcracker.cloud.maas.declarative</groupId>
         <artifactId>maas-declarative-kafka-client-quarkus-parent</artifactId>
-        <version>7.3.3-SNAPSHOT</version>
+        <version>7.3.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -72,7 +72,7 @@
         <dependency>
             <groupId>com.netcracker.cloud.security.core.utils</groupId>
             <artifactId>tls-utils</artifactId>
-            <version>2.4.2</version>
+            <version>2.4.3</version>
         </dependency>
     </dependencies>
 

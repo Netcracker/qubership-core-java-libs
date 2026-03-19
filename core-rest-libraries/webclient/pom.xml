@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.netcracker.cloud</groupId>
         <artifactId>rest-libraries-parent</artifactId>
-        <version>7.0.2-SNAPSHOT</version>
+        <version>6.4.2-SNAPSHOT</version>
         <relativePath>../rest-libraries-parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -55,14 +55,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-restclient</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -88,7 +80,7 @@
         <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-test</artifactId>
-            <version>3.8.3</version>
+            <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
