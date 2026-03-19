@@ -66,7 +66,7 @@ class MicroserviceWebClientTest extends BaseMicroserviceRestClientTest {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Another-Test-Header-Name", "Another-Header-Value");
 
-        response = restClient.doRequest(testUrl, HttpMethod.POST, httpHeaders, null, Void.class);
+        response = restClient.doRequest(testUrl, HttpMethod.POST, HeaderUtils.toMap(httpHeaders), null, Void.class);
         recordedRequest = mockBackEnd.takeRequest(60, TimeUnit.SECONDS);
         assertEquals(HttpStatus.OK.value(), response.getHttpStatus());
         assertNotNull(recordedRequest);
@@ -109,7 +109,7 @@ class MicroserviceWebClientTest extends BaseMicroserviceRestClientTest {
             restClient.doRequest(testUrl, HttpMethod.POST, null, null, Void.class);
         } catch (MicroserviceRestClientResponseException e) {
             assertEquals(HttpStatus.BAD_REQUEST.value(), e.getHttpStatus());
-            assertEquals(httpHeaders, e.getResponseHeaders());
+            assertEquals(HeaderUtils.toMap(httpHeaders), e.getResponseHeaders());
             assertEquals(errorMessage, e.getResponseBodyAsString());
             gotExpectedException = true;
         }
@@ -129,7 +129,7 @@ class MicroserviceWebClientTest extends BaseMicroserviceRestClientTest {
 
         WebClient webClient = getWebClientMock();
         Mockito.when(webClient.method(any(org.springframework.http.HttpMethod.class)))
-                .thenThrow(new MicroserviceRestClientResponseException(responseMessage, httpStatus, responseBody.getBytes(), new HttpHeaders()));
+                .thenThrow(new MicroserviceRestClientResponseException(responseMessage, httpStatus, responseBody.getBytes(), HeaderUtils.toMap(new HttpHeaders())));
         restClient = new MicroserviceWebClient(webClient);
 
         try {

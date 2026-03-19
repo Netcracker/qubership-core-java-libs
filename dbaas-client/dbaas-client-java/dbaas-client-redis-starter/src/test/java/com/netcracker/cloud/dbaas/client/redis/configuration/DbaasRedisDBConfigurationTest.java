@@ -7,11 +7,11 @@ import com.netcracker.cloud.dbaas.client.redis.test.configuration.MockedRedisDBC
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Duration;
@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 })
 class DbaasRedisDBConfigurationTest {
 
-    @SpyBean
+    @MockitoSpyBean
     private DatabasePool databasePool;
 
     @Autowired
@@ -37,7 +37,7 @@ class DbaasRedisDBConfigurationTest {
 
 
     @Autowired
-    private RedisProperties redisProperties;
+    private DataRedisProperties redisProperties;
 
     @Autowired
     private DbaasApiProperties redisDbaasApiProperties;

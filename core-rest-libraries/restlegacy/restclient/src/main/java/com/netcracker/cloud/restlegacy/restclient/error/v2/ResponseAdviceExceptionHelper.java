@@ -115,7 +115,7 @@ public class ResponseAdviceExceptionHelper {
 
     public static boolean isKnownResponseFormat(RestClientResponseException ex) {
         final HttpHeaders responseHeaders = ex.getResponseHeaders();
-        return responseHeaders != null && responseHeaders.containsKey(NC_ERROR_HEADER);
+        return responseHeaders != null && responseHeaders.containsHeader(NC_ERROR_HEADER);
     }
 
     private static HttpHeaders addTransitiveMarkerHeader(HttpHeaders headers) {
@@ -133,7 +133,7 @@ public class ResponseAdviceExceptionHelper {
         }
         final RestClientResponseException restClientResponseException = (RestClientResponseException) e;
         final HttpHeaders responseHeaders = restClientResponseException.getResponseHeaders();
-        return responseHeaders != null && responseHeaders.containsKey(ADVICE_NC_ERROR_TRANSITIVE_HEADER);
+        return responseHeaders != null && responseHeaders.containsHeader(ADVICE_NC_ERROR_TRANSITIVE_HEADER);
     }
 
     private static HttpHeaders addCommonNcHeaders(HttpHeaders headers) {

@@ -28,7 +28,7 @@ class SpringWebClientInterceptorTest {
         ClientResponse response = mock(ClientResponse.class);
 
         ExchangeFunction exchange = r -> {
-            assertTrue(r.headers().containsKey(HttpHeaders.ACCEPT_LANGUAGE));
+            assertTrue(r.headers().containsHeader(HttpHeaders.ACCEPT_LANGUAGE));
             assertEquals(Collections.singletonList("ru"), r.headers().get(HttpHeaders.ACCEPT_LANGUAGE));
             return Mono.just(response);
         };
@@ -45,7 +45,7 @@ class SpringWebClientInterceptorTest {
         ClientResponse response = mock(ClientResponse.class);
 
         ExchangeFunction exchange = r -> {
-            assertFalse(r.headers().containsKey(HttpHeaders.ACCEPT_LANGUAGE));
+            assertFalse(r.headers().containsHeader(HttpHeaders.ACCEPT_LANGUAGE));
             return Mono.just(response);
         };
 

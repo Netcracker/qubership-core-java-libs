@@ -1,12 +1,12 @@
 # Bootstrap Configuration
-org.springframework.cloud.bootstrap.BootstrapConfiguration=\
+org.springframework.boot.bootstrap.BootstrapConfiguration=\
 legacy.com.netcracker.cloud.configserver.common.configuration.MicroserviceSourceLocatorConfiguration
 
 # Environment PostProcessor
-org.springframework.boot.env.EnvironmentPostProcessor=\
+org.springframework.boot.EnvironmentPostProcessor=\
 com.netcracker.cloud.configserver.common.configuration.BeforeConfigServerDataLoaderEnvironmentPostProcessor,\
 com.netcracker.cloud.configserver.common.configuration.AfterConfigServerDataLoaderEnvironmentPostProcessor
 
 # Spring Boot Bootstrappers
-org.springframework.boot.BootstrapRegistryInitializer=\
+org.springframework.boot.bootstrap.BootstrapRegistryInitializer=\
 com.netcracker.cloud.configserver.common.configuration.CustomConfigServerBootstrapper

@@ -1,10 +1,10 @@
 package com.netcracker.cloud.restlegacy.restclient.error.v2;
 
-import org.hamcrest.*;
-import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.restlegacy.restclient.app.TestConfig;
 import com.netcracker.cloud.restlegacy.restclient.error.ExceptionHandlerControllersAdviceBase;
 import com.netcracker.cloud.restlegacy.restclient.error.TestExceptionHandlingConfiguration;
+import org.hamcrest.*;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
@@ -12,15 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.http.MediaType;
 import org.springframework.retry.RetryStatistics;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static com.netcracker.cloud.restlegacy.restclient.error.ErrorMessageCodes.DB_IN_CONFLICT_ERROR_CODE;
 import static com.netcracker.cloud.restlegacy.restclient.error.TestExceptionHandlingRestController.*;
 import static com.netcracker.cloud.restlegacy.restclient.error.v2.Constants.ERROR_HANDLER_VERSION_CONDITION_PROPERTY;
@@ -28,6 +24,11 @@ import static com.netcracker.cloud.restlegacy.restclient.error.v2.Constants.VERS
 import static com.netcracker.cloud.restlegacy.restclient.error.v2.ControllerWithCustomException.CUSTOM_DATA_FROM_CUSTOM_EXCEPTION;
 import static com.netcracker.cloud.restlegacy.restclient.error.v2.ControllerWithCustomException.THROW_CUSTOM_EXEPTION_WITH_CUSTOM_DATA;
 import static com.netcracker.cloud.restlegacy.restclient.error.v2.ControllerWithV1ExceptionModel.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = {TestConfig.class, TestExceptionHandlingConfiguration.class, ControllerWithV1ExceptionModel.class, CustomExceptionHandler.class, ControllerWithCustomException.class},
         properties = {ERROR_HANDLER_VERSION_CONDITION_PROPERTY + "=" + VERSION_2})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureJsonTesters
 class ExceptionHandlerControllersAdviceTest extends ExceptionHandlerControllersAdviceBase {
 

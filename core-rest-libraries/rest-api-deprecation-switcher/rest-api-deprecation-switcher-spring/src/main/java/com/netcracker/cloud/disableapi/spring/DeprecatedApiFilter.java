@@ -45,7 +45,7 @@ public class DeprecatedApiFilter implements Filter {
             Set<String> httpMethods = deprecatedPathMethods.getValue();
             ResponseEntity<TmfErrorResponse> disabledApiResponse = errorHandler.buildErrorResponse(httpServletRequest, httpMethods, pathPattern);
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-            httpServletResponse.setStatus(disabledApiResponse.getStatusCodeValue());
+            httpServletResponse.setStatus(disabledApiResponse.getStatusCode().value());
             httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
             PrintWriter out = httpServletResponse.getWriter();
             objectMapper.writeValue(out, disabledApiResponse.getBody());

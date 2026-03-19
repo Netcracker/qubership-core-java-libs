@@ -21,7 +21,7 @@ public class SpringResponseRestTemplateContextData implements OutgoingContextDat
 
     public HttpRequest addHeadersToRequest(HttpRequest httpRequest){
         for(Map.Entry<String, Object> entry : responseHeaders.entrySet()){
-            if(!httpRequest.getHeaders().containsKey(entry.getKey())) {
+            if(!httpRequest.getHeaders().containsHeader(entry.getKey())) {
                 log.trace("Add header={} with value={} from context", entry.getKey(), entry.getValue());
 
                 if (entry.getValue() instanceof String)

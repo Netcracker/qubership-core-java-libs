@@ -28,7 +28,7 @@ class SpringRestTemplateInterceptorTest {
 
         SpringRestTemplateInterceptor interceptor = new SpringRestTemplateInterceptor();
         ClientHttpResponse response = interceptor.intercept(request, new byte[]{1}, new RequestExecution());
-        assertTrue(response.getHeaders().containsKey(HttpHeaders.ACCEPT_LANGUAGE));
+        assertTrue(response.getHeaders().containsHeader(HttpHeaders.ACCEPT_LANGUAGE));
         assertEquals(Collections.singletonList("ru"), response.getHeaders().get(HttpHeaders.ACCEPT_LANGUAGE));
     }
 
@@ -40,7 +40,7 @@ class SpringRestTemplateInterceptorTest {
 
         SpringRestTemplateInterceptor interceptor = new SpringRestTemplateInterceptor();
         ClientHttpResponse response = interceptor.intercept(request, new byte[]{1}, new RequestExecution());
-        assertFalse(response.getHeaders().containsKey(HttpHeaders.ACCEPT_LANGUAGE));
+        assertFalse(response.getHeaders().containsHeader(HttpHeaders.ACCEPT_LANGUAGE));
     }
 
     static class RequestExecution implements ClientHttpRequestExecution {
@@ -51,11 +51,6 @@ class SpringRestTemplateInterceptorTest {
                 @Override
                 public HttpStatus getStatusCode() throws IOException {
                     return HttpStatus.OK;
-                }
-
-                @Override
-                public int getRawStatusCode() throws IOException {
-                    return 0;
                 }
 
                 @Override

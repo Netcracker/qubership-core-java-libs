@@ -4,18 +4,18 @@
     <parent>
         <groupId>com.netcracker.cloud</groupId>
         <artifactId>log-manager</artifactId>
-        <version>6.4.2-SNAPSHOT</version>
+        <version>7.0.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>log-manager-common</artifactId>
 
     <properties>
-        <log4j.version>2.25.2</log4j.version>
-        <logback.version>1.5.25</logback.version>
+        <log4j.version>2.25.3</log4j.version>
+        <logback.version>1.5.32</logback.version>
         <jboss.version>3.1.2.Final</jboss.version>
         <slf4j.version>2.0.17</slf4j.version>
-        <junit-jupiter-api.version>5.14.1</junit-jupiter-api.version>
+        <junit-jupiter-api.version>6.0.3</junit-jupiter-api.version>
         <mockito-inline.version>5.2.0</mockito-inline.version>
     </properties>
 
