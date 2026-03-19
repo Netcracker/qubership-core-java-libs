@@ -15,7 +15,7 @@
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
             <artifactId>core-error-handling-rest</artifactId>
-            <version>4.0.0-SNAPSHOT</version> <!--todo property-->
+            <version>${error-handling.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

@@ -72,7 +72,7 @@
         <dependency>
             <groupId>com.netcracker.cloud.security.core.utils</groupId>
             <artifactId>tls-utils</artifactId>
-            <version>3.0.0-SNAPSHOT</version><!--todo property-->
+            <version>${core-utils.version}</version>
         </dependency>
     </dependencies>
 

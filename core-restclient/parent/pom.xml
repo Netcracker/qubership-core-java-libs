@@ -24,6 +24,9 @@
         <mockito.version>5.21.0</mockito.version>
         <spring.version>7.0.5</spring.version>
         <apache.httpclient.version>5.5.2</apache.httpclient.version>
+
+        <error-handling.version>4.0.0-SNAPSHOT</error-handling.version>
+
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../microservice-restclient-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>

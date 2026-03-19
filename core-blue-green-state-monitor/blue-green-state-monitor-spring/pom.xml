@@ -31,7 +31,7 @@
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
             <artifactId>consul-config-provider-common</artifactId>
-            <version>7.0.2-SNAPSHOT</version> <!--todo property-->
+            <version>${rest-libraries.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
