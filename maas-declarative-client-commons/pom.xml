@@ -28,10 +28,10 @@
 
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <kafka-clients.version>4.1.1</kafka-clients.version>
-        <kafka-blue-green-consumer.version>11.4.3</kafka-blue-green-consumer.version>
+        <maas-client.version>12.0.0-SNAPSHOT</maas-client.version>
 
         <mockito.version>5.21.0</mockito.version>
-        <security-common-authentication.version>5.1.33</security-common-authentication.version>
+        <security-common-authentication.version>5.1.33</security-common-authentication.version><!--todo not needed?-->
     </properties>
 
 
@@ -56,7 +56,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>kafka-blue-green-consumer</artifactId>
-                <version>${kafka-blue-green-consumer.version}</version>
+                <version>${maas-client.version}</version>
             </dependency>
 
             <!-- test dependencies -->
