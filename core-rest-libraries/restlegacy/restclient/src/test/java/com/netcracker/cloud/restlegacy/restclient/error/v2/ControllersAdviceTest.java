@@ -1,19 +1,22 @@
 package com.netcracker.cloud.restlegacy.restclient.error.v2;
 
+import com.netcracker.cloud.restlegacy.restclient.app.TestConfig;
+import com.netcracker.cloud.restlegacy.restclient.error.*;
+import com.netcracker.cloud.restlegacy.restclient.service.MessageService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import com.netcracker.cloud.restlegacy.restclient.app.TestConfig;
-import com.netcracker.cloud.restlegacy.restclient.error.*;
-import com.netcracker.cloud.restlegacy.restclient.service.MessageService;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.MethodParameter;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.retry.RetryStatistics;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -25,12 +28,14 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.text.MessageFormat;
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 import static com.netcracker.cloud.restlegacy.restclient.error.v2.ControllerWithV2ExceptionModel.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = {TestConfig.class, TestExceptionHandlingConfiguration.class, ControllerWithV2ExceptionModel.class})
+@ExtendWith(MockitoExtension.class)
 class ControllersAdviceTest extends ExceptionHandlerControllersAdviceBase {
 
     private final MessageFormat messageFormat = new MessageFormat("{0}");
@@ -97,13 +102,11 @@ class ControllersAdviceTest extends ExceptionHandlerControllersAdviceBase {
 
         String fieldMessage = "FieldMessage";
         Object[] parameters = {fieldError.getField(), fieldMessage};
-        String templateMessage = "Parameters: {0}";
         String message = "Parameters: " + Arrays.toString(parameters);
         ErrorType commonErrorType = ErrorType.UNPROCESSABLE_ENTITY_VALIDATION_FAILED;
 
         when(messageService.getMessageCode(commonErrorType.getErrorCode())).thenReturn(commonErrorType.getErrorCode());
         when(messageService.getMessage(fieldError)).thenReturn(fieldMessage);
-        when(messageService.getMessage(commonErrorType.getMessageCode())).thenReturn(templateMessage);
         when(messageService.getMessage(commonErrorType.getMessageCode(), fieldError.getField(), messageService.getMessage(fieldError))).thenReturn(message);
 
         ErrorsDescription.ErrorDescription error = getError(baseAdvice.handleMethodArgumentNotValidException(
@@ -137,7 +140,7 @@ class ControllersAdviceTest extends ExceptionHandlerControllersAdviceBase {
 
         setMessageServiceResponse(errorType, null, null, templateMessage);
         ErrorsDescription.ErrorDescription error = getError(baseAdvice.handleHttpMessageNotReadableException(
-                httpServletRequest, new HttpMessageNotReadableException(templateMessage)
+                httpServletRequest, new HttpMessageNotReadableException(templateMessage, new MockClientHttpResponse())
         ));
 
         defaultAssert(errorType, error, null, templateMessage);
@@ -230,9 +233,12 @@ class ControllersAdviceTest extends ExceptionHandlerControllersAdviceBase {
     }
 
     private void setMessageServiceResponse(ErrorType errorType, Object[] parameters, String messageWithParams, String templateMessage) {
-        when(messageService.getMessageCode(errorType.getErrorCode())).thenReturn(errorType.getErrorCode());
-        when(messageService.getMessage(errorType.getMessageCode(), parameters)).thenReturn(messageWithParams);
-        when(messageService.getMessage(errorType.getMessageCode())).thenReturn(templateMessage);
+        lenient().when(messageService.getMessageCode(errorType.getErrorCode()))
+                .thenReturn(errorType.getErrorCode());
+        lenient().when(messageService.getMessage(errorType.getMessageCode(), parameters))
+                .thenReturn(messageWithParams);
+        lenient().when(messageService.getMessage(errorType.getMessageCode()))
+                .thenReturn(templateMessage);
     }
 
     private ErrorsDescription.ErrorDescription getError(ResponseEntity<ErrorsDescription> resp) {

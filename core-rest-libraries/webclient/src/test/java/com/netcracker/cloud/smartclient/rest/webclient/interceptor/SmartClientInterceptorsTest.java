@@ -38,7 +38,7 @@ class SmartClientInterceptorsTest {
         ClientResponse response = mock(ClientResponse.class);
 
         ExchangeFunction exchange = r -> {
-            assertTrue(r.headers().containsKey(ACCEPT_LANGUAGE));
+            assertTrue(r.headers().containsHeader(ACCEPT_LANGUAGE));
             return Mono.just(response);
         };
 
@@ -52,7 +52,7 @@ class SmartClientInterceptorsTest {
         ClientResponse response = mock(ClientResponse.class);
 
         ExchangeFunction exchange = r -> {
-            assertFalse(r.headers().containsKey(ACCEPT_LANGUAGE));
+            assertFalse(r.headers().containsHeader(ACCEPT_LANGUAGE));
             return Mono.just(response);
         };
 
@@ -83,7 +83,7 @@ class SmartClientInterceptorsTest {
         ClientResponse response = mock(ClientResponse.class);
 
         ExchangeFunction exchange = r -> {
-            assertTrue(r.headers().containsKey(allowedHeader));
+            assertTrue(r.headers().containsHeader(allowedHeader));
             return Mono.just(response);
         };
 

@@ -4,7 +4,7 @@ import com.netcracker.cloud.configserver.common.configuration.AbstractCustomConf
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import com.netcracker.cloud.restclient.webclient.MicroserviceWebClient;
 import com.netcracker.cloud.security.core.auth.M2MManager;
-import org.springframework.boot.ConfigurableBootstrapContext;
+import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.WebClient;

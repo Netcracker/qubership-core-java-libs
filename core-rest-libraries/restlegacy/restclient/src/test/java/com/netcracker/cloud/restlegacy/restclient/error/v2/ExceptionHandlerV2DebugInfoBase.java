@@ -13,9 +13,9 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static com.netcracker.cloud.restlegacy.restclient.error.TestExceptionHandlingRestController.THROW_ANY_EXCEPTION_METHOD;
 import static com.netcracker.cloud.restlegacy.restclient.error.v2.Constants.DEBUG_MODE_PROPERTY_NAME;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

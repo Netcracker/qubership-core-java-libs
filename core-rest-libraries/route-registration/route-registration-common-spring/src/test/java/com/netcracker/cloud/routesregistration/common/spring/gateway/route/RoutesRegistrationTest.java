@@ -2,12 +2,6 @@ package com.netcracker.cloud.routesregistration.common.spring.gateway.route;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.reactivex.Scheduler;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import com.netcracker.cloud.routesregistration.common.gateway.route.ControlPlaneClient;
 import com.netcracker.cloud.routesregistration.common.gateway.route.RouteRetryManager;
@@ -15,6 +9,12 @@ import com.netcracker.cloud.routesregistration.common.gateway.route.RoutesRestRe
 import com.netcracker.cloud.routesregistration.common.gateway.route.rest.RegistrationRequestFactory;
 import com.netcracker.cloud.routesregistration.common.gateway.route.transformation.RouteTransformer;
 import com.netcracker.cloud.routesregistration.common.gateway.route.v3.domain.RouteConfigurationRequestV3;
+import io.reactivex.Scheduler;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;

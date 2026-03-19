@@ -2,7 +2,7 @@ package com.netcracker.cloud.restlegacy.resttemplate;
 
 import com.netcracker.cloud.security.common.restclient.OAuthRestTemplateProvider;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.HttpMessageConverter;

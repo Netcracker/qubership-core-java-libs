@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.netcracker.cloud</groupId>
         <artifactId>rest-libraries</artifactId>
-        <version>6.4.2-SNAPSHOT</version>
+        <version>7.0.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -14,14 +14,14 @@
 
     <properties>
 
-        <microservice.restclient.version>6.4.1</microservice.restclient.version>
-        <qubership.context.framework>7.4.1</qubership.context.framework>
+        <microservice.restclient.version>7.0.1</microservice.restclient.version>
+        <qubership.context.framework>8.0.1</qubership.context.framework>
 
         <!--Spring's libraries -->
-        <spring.boot.version>3.5.10</spring.boot.version>
-        <spring.cloud.version>4.3.1</spring.cloud.version>
-        <spring.version>6.2.15</spring.version>
-        <spring.security>6.5.7</spring.security>
+        <spring.boot.version>4.0.3</spring.boot.version>
+        <spring.cloud.version>5.0.1</spring.cloud.version>
+        <spring.version>7.0.5</spring.version>
+        <spring.security>7.0.3</spring.security>
 
         <!--Test libraries -->
         <mockito.version>5.21.0</mockito.version>
@@ -127,6 +127,31 @@
                 <artifactId>spring-security-core</artifactId>
                 <version>${spring.security}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-restclient</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-security</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-oauth2-client</artifactId>
+                <version>${spring.security}</version>
+            </dependency>
 
             <!-- Test libraries -->
             <dependency>
@@ -172,6 +197,30 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-resttestclient</artifactId>
+                <version>${spring.boot.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-test-autoconfigure</artifactId>
+                <version>${spring.boot.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-webmvc-test</artifactId>
+                <version>${spring.boot.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-restclient-test</artifactId>
+                <version>${spring.boot.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.mock-server</groupId>
                 <artifactId>mockserver-netty</artifactId>
                 <version>5.15.0</version>
@@ -180,19 +229,19 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
-                <version>5.13.4</version>
+                <version>6.0.3</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
-                <version>5.13.4</version>
+                <version>6.0.3</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>io.undertow</groupId>
                 <artifactId>undertow-servlet</artifactId>
-                <version>2.3.22.Final</version>
+                <version>2.3.23.Final</version>
                 <scope>test</scope>
             </dependency>
 
@@ -205,7 +254,7 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-consul-config</artifactId>
-                <version>4.3.1</version>
+                <version>${spring.cloud.version}</version>
             </dependency>
 
             <!--MISC-->
