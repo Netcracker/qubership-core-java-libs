@@ -3,7 +3,7 @@
     <parent>
         <artifactId>restlegacy-parent</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>6.4.2-SNAPSHOT</version>
+        <version>7.0.1</version>
         <relativePath>../restlegacy-parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -56,7 +56,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-oauth2-client</artifactId>
-            <version>6.5.7</version>
+            <version>7.0.3</version>
         </dependency>
 
         <!-- Test dependencies -->
