@@ -21,8 +21,8 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <java.version>17</java.version>
-        <spring.data.mongodb.version>4.5.8</spring.data.mongodb.version>
-        <spring.boot.version>3.5.10</spring.boot.version>
+        <spring.data.mongodb.version>5.0.3</spring.data.mongodb.version>
+        <spring.boot.version>4.0.3</spring.boot.version>
         <lombok.version>1.18.42</lombok.version>
         <mongo.test.server.version>1.47.0</mongo.test.server.version>
         <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.14.1</version>
+            <version>6.0.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>

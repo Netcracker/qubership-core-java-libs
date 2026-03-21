@@ -5,13 +5,13 @@
     <parent>
         <artifactId>dbaas-client-spring-parent</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>8.5.2-SNAPSHOT</version>
+        <version>9.0.1</version>
         <relativePath>./../dbaas-client-spring-parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
-        <hikaricp.version>5.1.0</hikaricp.version>
+        <hikaricp.version>7.0.2</hikaricp.version>
     </properties>
 
     <dependencies>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
-            <version>3.5.8</version>
+            <version>4.0.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
