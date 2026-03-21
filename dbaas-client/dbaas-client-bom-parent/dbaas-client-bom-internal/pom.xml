@@ -17,15 +17,15 @@
         <powermock.version>2.0.9</powermock.version>
         <spring.version>6.2.15</spring.version>
         <spring.boot.version>3.5.10</spring.boot.version>
-        <postgresql.driver.version>42.7.9</postgresql.driver.version>
+        <postgresql.driver.version>42.7.10</postgresql.driver.version>
         <spring.data.mongodb.version>4.5.8</spring.data.mongodb.version>
-        <mongodb.version>5.6.2</mongodb.version>
+        <mongodb.version>5.6.3</mongodb.version>
         <arangodb.driver.version>7.25.0</arangodb.driver.version>
-        <arangodb.spring.data.version>4.6.0</arangodb.spring.data.version>
+        <arangodb.spring.data.version>4.7.0</arangodb.spring.data.version>
         <java.driver.core.version>4.17.0</java.driver.core.version>
         <jedis.client.version>5.2.0</jedis.client.version>
         <spring.data.redis.version>3.5.8</spring.data.redis.version>
-        <jackson-bom.version>2.20.1</jackson-bom.version>
+        <jackson-bom.version>2.20.2</jackson-bom.version>
         <jakarta-annotation.version>3.0.0</jakarta-annotation.version>
         <flyway.version>10.22.0</flyway.version>
         <shedlock.version>5.16.0</shedlock.version>
@@ -159,12 +159,12 @@
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.5.25</version>
+                <version>1.5.32</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
-                <version>1.5.25</version>
+                <version>1.5.32</version>
             </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
@@ -220,7 +220,7 @@
             <dependency>
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-core</artifactId>
-                <version>1.16.1</version>
+                <version>1.16.3</version>
             </dependency>
             <dependency>
                 <groupId>com.datastax.oss</groupId>
@@ -308,7 +308,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.27.6</version>
+                <version>3.27.7</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
