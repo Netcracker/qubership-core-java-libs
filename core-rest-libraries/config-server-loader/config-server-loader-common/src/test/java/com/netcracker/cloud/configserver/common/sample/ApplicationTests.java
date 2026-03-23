@@ -16,12 +16,11 @@
 
 package com.netcracker.cloud.configserver.common.sample;
 
-import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.configserver.common.configuration.TestConfiguration;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.cloud.config.client.ConfigClientAutoConfiguration;
 
@@ -41,7 +40,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
                 TestConfiguration.CONTEXT_REFRESH_AMOUNT_PROP_KEY + "=1"
         },
         webEnvironment = RANDOM_PORT)
-@EnableAutoConfiguration(exclude = {ConfigClientAutoConfiguration.class, SecurityAutoConfiguration.class})
+@EnableAutoConfiguration(exclude = {ConfigClientAutoConfiguration.class})
 public class ApplicationTests {
 
 

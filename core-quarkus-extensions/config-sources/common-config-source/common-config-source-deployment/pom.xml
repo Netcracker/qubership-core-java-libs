@@ -3,15 +3,15 @@
     <parent>
         <artifactId>common-config-source</artifactId>
         <groupId>com.netcracker.cloud.quarkus</groupId>
-        <version>8.4.4-SNAPSHOT</version>
+        <version>9.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>external-config-source-common-deployment</artifactId>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <sonar.exclusions>**/*BuildItem*, **/*Exception*</sonar.exclusions>
     </properties>
 

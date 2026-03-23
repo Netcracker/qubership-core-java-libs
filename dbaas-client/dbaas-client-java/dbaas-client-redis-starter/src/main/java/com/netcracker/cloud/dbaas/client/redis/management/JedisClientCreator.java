@@ -6,19 +6,18 @@ import com.netcracker.cloud.dbaas.client.redis.entity.database.RedisConnectorSet
 import com.netcracker.cloud.dbaas.client.redis.entity.database.RedisDatabase;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import redis.clients.jedis.JedisPoolConfig;
-
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisProperties;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import redis.clients.jedis.JedisPoolConfig;
 
 @AllArgsConstructor
 @Slf4j
 public class JedisClientCreator implements DatabaseClientCreator<RedisDatabase, RedisConnectorSettings> {
 
-    private RedisProperties redisProperties;
+    private DataRedisProperties redisProperties;
 
     @Override
     public void create(RedisDatabase database) {
@@ -46,15 +45,15 @@ public class JedisClientCreator implements DatabaseClientCreator<RedisDatabase, 
     }
 
     private void applyPropertiesConfiguration(JedisClientConfiguration.JedisClientConfigurationBuilder configBuilder) {
-        PropertyMapper mapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+        PropertyMapper mapper = PropertyMapper.get();
         mapper.from(redisProperties.getSsl().isEnabled()).whenTrue().toCall(configBuilder::useSsl);
         mapper.from(redisProperties.getTimeout()).to(configBuilder::readTimeout);
         mapper.from(redisProperties.getConnectTimeout()).to(configBuilder::connectTimeout);
         mapper.from(redisProperties.getClientName()).to(configBuilder::clientName);
-        mapper.from(redisProperties.getJedis().getPool()).whenNonNull().to(pool -> applyPoolConfiguration(configBuilder, mapper, pool));
+        mapper.from(redisProperties.getJedis().getPool()).to(pool -> applyPoolConfiguration(configBuilder, mapper, pool));
     }
 
-    private void applyPoolConfiguration(JedisClientConfiguration.JedisClientConfigurationBuilder clientConfigurationBuilder, PropertyMapper mapper, RedisProperties.Pool pool) {
+    private void applyPoolConfiguration(JedisClientConfiguration.JedisClientConfigurationBuilder clientConfigurationBuilder, PropertyMapper mapper, DataRedisProperties.Pool pool) {
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
         mapper.from(pool.getMaxActive()).to(jedisPoolConfig::setMaxTotal);
         mapper.from(pool.getMaxIdle()).to(jedisPoolConfig::setMaxIdle);

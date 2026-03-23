@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud.maas.declarative</groupId>
     <artifactId>maas-declarative-kafka-client-quarkus-bom</artifactId>
-    <version>7.3.4-SNAPSHOT</version>
+    <version>8.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -18,9 +18,9 @@
     <properties>
         <quarkus.platform.version>3.27.2</quarkus.platform.version>
 
-        <maven.compiler.release>17</maven.compiler.release>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -35,9 +35,10 @@
         <testcontainers.version>1.18.3</testcontainers.version>
         <assertj-core.version>3.27.7</assertj-core.version>
 
-        <maas-declarative-kafka-client.version>5.4.3</maas-declarative-kafka-client.version>
-        <maas-client-quarkus-kafka.version>9.3.3</maas-client-quarkus-kafka.version>
-        <blue-green-state-monitor-quarkus.version>2.3.3</blue-green-state-monitor-quarkus.version>
+        <maas-declarative-kafka-client.version>6.0.0-SNAPSHOT</maas-declarative-kafka-client.version>
+        <maas-client-quarkus-kafka.version>10.0.0-SNAPSHOT</maas-client-quarkus-kafka.version>
+        <blue-green-state-monitor-quarkus.version>3.0.0-SNAPSHOT</blue-green-state-monitor-quarkus.version>
+        <core-utils.version>3.0.0-SNAPSHOT</core-utils.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../maas-kafka-quarkus-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
@@ -169,6 +170,11 @@
                                 <artifactId>quarkus-extension-processor</artifactId>
                                 <version>${quarkus.platform.version}</version>
                             </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.42</version>
+                        </path>
                         </annotationProcessorPaths>
                     </configuration>
                 </plugin>

@@ -89,6 +89,12 @@ public class WebClientConfiguration {
         return smartWebClient.getWebClientBuilder().build();
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    public WebClient.Builder webClientBuilder() {
+        return WebClient.builder();
+    }
+
     @PostConstruct
     public void enableContextPropagation() {
         CoreContextPropagator.installHook();

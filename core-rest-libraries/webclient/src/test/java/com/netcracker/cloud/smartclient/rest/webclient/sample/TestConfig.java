@@ -2,8 +2,8 @@ package com.netcracker.cloud.smartclient.rest.webclient.sample;
 
 import com.netcracker.cloud.smartclient.config.annotation.EnableFrameworkWebClient;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.security.autoconfigure.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -14,12 +14,6 @@ import java.util.Properties;
 @Configuration
 @EnableFrameworkWebClient
 public class TestConfig {
-
-    @Bean
-    @ConditionalOnMissingBean
-    public WebClient.Builder webClientBuilder() {
-        return WebClient.builder();
-    }
 
     @Bean
     @ConditionalOnMissingBean

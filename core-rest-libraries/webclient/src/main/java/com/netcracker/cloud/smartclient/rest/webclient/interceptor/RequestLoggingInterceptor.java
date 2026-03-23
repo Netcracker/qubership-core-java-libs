@@ -29,14 +29,14 @@ public class RequestLoggingInterceptor implements ExchangeFilterFunction {
                                         "\n\theaders={}",
                                 request.url(),
                                 request.method(),
-                                request.headers().keySet()
+                                request.headers().headerNames()
                         ))
                 .doOnNext(r ->
                         LOGGER.debug("Response: " +
                                         "\n\tstatus code={}" +
                                         "\n\theader={}",
                                 response.statusCode(),
-                                response.headers().asHttpHeaders().keySet()
+                                response.headers().asHttpHeaders().headerNames()
                         ));
     }
 }

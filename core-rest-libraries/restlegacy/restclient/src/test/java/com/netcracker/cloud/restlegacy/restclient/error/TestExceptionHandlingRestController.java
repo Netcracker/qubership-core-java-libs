@@ -1,5 +1,7 @@
 package com.netcracker.cloud.restlegacy.restclient.error;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -11,8 +13,6 @@ import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import java.util.Date;
 
 import static com.netcracker.cloud.restlegacy.restclient.error.v2.v2_1.NamedMessageParameter.date;

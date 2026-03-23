@@ -11,7 +11,7 @@ import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import com.netcracker.cloud.restclient.resttemplate.MicroserviceRestTemplate;
 import com.netcracker.cloud.security.core.auth.M2MManager;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ConfigurableBootstrapContext;
+import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;

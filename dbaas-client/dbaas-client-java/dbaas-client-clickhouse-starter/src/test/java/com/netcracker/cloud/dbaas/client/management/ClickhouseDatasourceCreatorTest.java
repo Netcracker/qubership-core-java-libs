@@ -1,22 +1,21 @@
 package com.netcracker.cloud.dbaas.client.management;
 
-import com.netcracker.cloud.dbaas.client.entity.database.ClickhouseDatasourceCreator;
 import com.netcracker.cloud.dbaas.client.entity.connection.ClickhouseConnection;
 import com.netcracker.cloud.dbaas.client.entity.database.ClickhouseDatabase;
+import com.netcracker.cloud.dbaas.client.entity.database.ClickhouseDatasourceCreator;
 import com.netcracker.cloud.dbaas.client.entity.database.DbaasClickhouseDatasourceProperties;
 import org.junit.jupiter.api.Test;
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.io.IOException;
 
 import static com.netcracker.cloud.dbaas.client.DbaasConst.ADMIN_ROLE;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @ContextConfiguration(classes = {TestClickhouseConfig.class})
@@ -30,7 +29,7 @@ class ClickhouseDatasourceCreatorTest {
 
     @Autowired
     private ClickhouseDatasourceCreator clickhouseDatasourceCreator;
-    @SpyBean
+    @MockitoSpyBean
     DbaasClickhouseDatasourceProperties datasourceProperties;
 
 

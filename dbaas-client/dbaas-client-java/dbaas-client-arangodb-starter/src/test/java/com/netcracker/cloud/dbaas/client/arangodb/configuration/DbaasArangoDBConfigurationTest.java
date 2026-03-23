@@ -14,10 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Map;
@@ -42,7 +42,7 @@ import static com.netcracker.cloud.dbaas.client.arangodb.configuration.TenantDba
 })
 class DbaasArangoDBConfigurationTest {
 
-    @SpyBean
+    @MockitoSpyBean
     private DatabasePool databasePool;
 
     @Autowired

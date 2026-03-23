@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 import static com.netcracker.cloud.dbaas.client.arangodb.test.ArangoTestCommon.*;
 
 public class TestArangoDBContainer extends GenericContainer<TestArangoDBContainer> {
-    private static final DockerImageName ARANGODB_IMAGE = DockerImageName.parse("arangodb/arangodb:3.11.10");
+    private static final DockerImageName ARANGODB_IMAGE = DockerImageName.parse("arangodb:3.11.10");
     private static final String ARANGO_INIT_SCRIPT_LOCATION = "/docker-entrypoint-initdb.d/init.js";
 
     static final String RYUK_CONTAINER_IMAGE_PROPERTY = "ryuk.container.image";

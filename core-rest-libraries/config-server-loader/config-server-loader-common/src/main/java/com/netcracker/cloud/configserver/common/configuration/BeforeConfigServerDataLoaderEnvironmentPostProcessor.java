@@ -1,9 +1,9 @@
 package com.netcracker.cloud.configserver.common.configuration;
 
-import org.springframework.boot.DefaultPropertiesPropertySource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
-import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.boot.EnvironmentPostProcessor;
+import org.springframework.boot.env.DefaultPropertiesPropertySource;
 import org.springframework.cloud.config.client.ConfigClientProperties;
 import org.springframework.cloud.config.client.ConfigServerConfigDataLocationResolver;
 import org.springframework.core.Ordered;

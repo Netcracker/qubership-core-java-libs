@@ -10,9 +10,9 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.TestPropertySource;
 
+import static com.netcracker.cloud.microserviceframework.testconfig.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static com.netcracker.cloud.microserviceframework.testconfig.TestConstants.*;
 
 class DisableSpringCloudHealthIndicatorsTest {
 
@@ -50,12 +50,14 @@ class DisableSpringCloudHealthIndicatorsTest {
     @TestPropertySource(properties = {
             "spring.cloud.config.enabled=" + false
     })
-    private static class ThereIsNoSpringCloudPropertyValue {}
+    private static class ThereIsNoSpringCloudPropertyValue {
+    }
 
     @SpringBootTest(classes = DisableSpringCloudHealthIndicators.class)
     @TestPropertySource(properties = {
             DISCOVERY_PROPERTY,
             "spring.cloud.config.enabled=" + false
     })
-    private static class ThereIsSpringCloudPropertyValue {}
+    private static class ThereIsSpringCloudPropertyValue {
+    }
 }

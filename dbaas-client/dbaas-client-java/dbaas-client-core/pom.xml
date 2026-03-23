@@ -3,7 +3,7 @@
     <parent>
         <artifactId>dbaas-client-spring-parent</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>8.5.2-SNAPSHOT</version>
+        <version>9.0.2-SNAPSHOT</version>
         <relativePath>./../dbaas-client-spring-parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -67,6 +67,13 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <parameters>true</parameters>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.42</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
         </plugins>
