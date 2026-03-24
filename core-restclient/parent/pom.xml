@@ -25,7 +25,7 @@
         <spring.version>7.0.5</spring.version>
         <apache.httpclient.version>5.5.2</apache.httpclient.version>
 
-        <error-handling.version>4.0.0-SNAPSHOT</error-handling.version>
+        <error-handling.version>4.0.0</error-handling.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../microservice-restclient-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
@@ -37,7 +37,7 @@
             <!--This dependency is not used directly, but it is required transitively for BWC-->
             <groupId>com.netcracker.cloud.security.core.utils</groupId>
             <artifactId>tls-utils</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
 
