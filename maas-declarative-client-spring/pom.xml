@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud.maas.declarative</groupId>
     <artifactId>maas-declarative-kafka-client-spring-bom</artifactId>
-    <version>7.0.3</version>
+    <version>7.0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -229,7 +229,7 @@ because spring-boot-based microservices are maven-inherited from spring-boot-par
         <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
         <url>https://github.com/Netcracker/qubership-core-java-libs</url>
-        <tag>maas-declarative-kafka-client-spring-bom-7.0.3</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
