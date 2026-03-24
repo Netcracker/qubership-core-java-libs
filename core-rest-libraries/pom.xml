@@ -17,7 +17,7 @@
 
     <properties>
         <java.version>21</java.version>
-        <core-utils.version>3.0.0-SNAPSHOT</core-utils.version>
+        <core-utils.version>3.0.0</core-utils.version>
     </properties>
 
     <modules>

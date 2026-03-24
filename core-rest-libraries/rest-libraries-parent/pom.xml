@@ -21,7 +21,7 @@
         <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
         <org.powermock.version>2.0.9</org.powermock.version>
 
-        <error-handling.version>4.0.0-SNAPSHOT</error-handling.version>
+        <error-handling.version>4.0.0</error-handling.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../report-aggregate/target/site/jacoco-aggregate/jacoco.xml
