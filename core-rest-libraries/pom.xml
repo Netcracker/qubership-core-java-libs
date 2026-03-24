@@ -5,7 +5,7 @@
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>rest-libraries</artifactId>
     <packaging>pom</packaging>
-    <version>7.0.2</version>
+    <version>7.0.3-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -39,7 +39,7 @@
         <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
         <url>https://github.com/Netcracker/qubership-core-java-libs</url>
-        <tag>rest-libraries-7.0.2</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <build>
