@@ -251,7 +251,8 @@ public class OpensearchDbaaSApiClientImpl implements OpensearchDbaaSApiClient {
 
     private String getDatabasePrefix(DatabaseConfig databaseConfig, Map<String, Object> classifier) {
         if (opensearchCreationConfig != null && databaseConfig.getDbNamePrefix() == null) {
-            if (opensearchCreationConfig.singleTenantPrefixConfig() != null && opensearchCreationConfig.singleTenantPrefixConfig() != null
+            if (opensearchCreationConfig.singleTenantPrefixConfig() != null
+                    && opensearchCreationConfig.singleTenantPrefixConfig().prefix().isPresent()
                     && classifier.get(SCOPE) == TENANT) {
                 return opensearchCreationConfig.singleTenantPrefixConfig().prefix().get()
                         .replace("{tenantId}", (String) classifier.get(TENANT_ID));
