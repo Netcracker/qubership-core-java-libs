@@ -32,9 +32,9 @@
 
         <testcontainers.version>1.21.4</testcontainers.version>
 
-        <maas-declarative-kafka-client.version>5.3.1</maas-declarative-kafka-client.version>
-        <maas-client-spring.version>8.3.1</maas-client-spring.version>
-        <blue-green-state-monitor.version>1.4.1</blue-green-state-monitor.version>
+        <maas-declarative-kafka-client.version>5.3.2</maas-declarative-kafka-client.version>
+        <maas-client-spring.version>8.3.2</maas-client-spring.version>
+        <blue-green-state-monitor.version>1.4.2</blue-green-state-monitor.version>
     </properties>
 
     <dependencyManagement>
