@@ -55,7 +55,7 @@ public class RouteRegistrationConfig {
         this.controlPlaneUrl = controlPlaneUrl;
         this.postRoutesAppnameDisabled = postRoutesAppnameDisabled;
         this.microservicePort = microservicePort;
-        this.postRoutesEnabled = postRoutesEnabled && !isIstioEnabled(serviceMeshType.orElse(CORE));;
+        this.postRoutesEnabled = postRoutesEnabled && !isIstioEnabled(serviceMeshType.orElse(CORE));
 
         this.cloudServiceName = microserviceName;
         this.deploymentVersion = deploymentVersion;
