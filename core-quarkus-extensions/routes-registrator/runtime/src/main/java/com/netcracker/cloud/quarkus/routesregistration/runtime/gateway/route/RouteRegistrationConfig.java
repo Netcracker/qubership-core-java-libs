@@ -17,6 +17,9 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.Optional;
 
+import static com.netcracker.cloud.routesregistration.common.gateway.route.ServiceMeshType.CORE;
+import static com.netcracker.cloud.routesregistration.common.gateway.route.Utils.isIstioEnabled;
+
 @ApplicationScoped
 public class RouteRegistrationConfig {
     private final static String DEFAULT_CONTROL_PLANE_ADDRESS = "http://control-plane:8080";
@@ -45,13 +48,14 @@ public class RouteRegistrationConfig {
                                    @ConfigProperty(name = "apigateway.routes.registration.appname.disabled", defaultValue = "false") Boolean postRoutesAppnameDisabled,
                                    @ConfigProperty(name = "quarkus.http.port", defaultValue = "8080") String microservicePort,
                                    @ConfigProperty(name = "apigateway.routes.registration.enabled", defaultValue = "true") Boolean postRoutesEnabled,
-                                   @ConfigProperty(name = "cloud.microservice.bg_version") Optional<String> deploymentVersion) {
+                                   @ConfigProperty(name = "cloud.microservice.bg_version") Optional<String> deploymentVersion,
+                                   @ConfigProperty(name = "SERVICE_MESH_TYPE") Optional<ServiceMeshType> serviceMeshType) {
         this.microserviceName = microserviceName;
         this.cloudNamespace = cloudNamespace;
         this.controlPlaneUrl = controlPlaneUrl;
         this.postRoutesAppnameDisabled = postRoutesAppnameDisabled;
         this.microservicePort = microservicePort;
-        this.postRoutesEnabled = postRoutesEnabled;
+        this.postRoutesEnabled = postRoutesEnabled && !isIstioEnabled(serviceMeshType.orElse(CORE));
 
         this.cloudServiceName = microserviceName;
         this.deploymentVersion = deploymentVersion;

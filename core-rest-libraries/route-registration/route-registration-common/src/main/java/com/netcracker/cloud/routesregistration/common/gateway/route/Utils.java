@@ -3,6 +3,9 @@ package com.netcracker.cloud.routesregistration.common.gateway.route;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
+import java.util.Optional;
+
+import static com.netcracker.cloud.routesregistration.common.gateway.route.ServiceMeshType.ISTIO;
 
 @Slf4j
 public class Utils {
@@ -12,7 +15,7 @@ public class Utils {
                                                        String contextPath,
                                                        boolean postRoutesAppnameDisabled) {
         String host = microserviceName;
-        if (cloudServiceName != null &&! cloudServiceName.isEmpty()) {
+        if (cloudServiceName != null && !cloudServiceName.isEmpty()) {
             host = cloudServiceName;
         }
 
@@ -55,5 +58,11 @@ public class Utils {
         return Constants.PUBLIC_GATEWAY_SERVICE.equals(gatewayName)
                 || Constants.PRIVATE_GATEWAY_SERVICE.equals(gatewayName)
                 || Constants.INTERNAL_GATEWAY_SERVICE.equals(gatewayName);
+    }
+
+    public static boolean isIstioEnabled(ServiceMeshType serviceMeshType) {
+        return Optional.ofNullable(serviceMeshType)
+                .map(ISTIO::equals)
+                .orElse(false);
     }
 }
