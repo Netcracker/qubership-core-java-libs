@@ -1,11 +1,9 @@
 package com.netcracker.cloud.quarkus.routesregistration.runtime.gateway.route;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netcracker.cloud.quarkus.security.auth.M2MManager;
 import com.netcracker.cloud.routesregistration.common.gateway.route.*;
 import com.netcracker.cloud.routesregistration.common.gateway.route.rest.RegistrationRequestFactory;
 import com.netcracker.cloud.routesregistration.common.gateway.route.transformation.RouteTransformer;
-import com.netcracker.cloud.routesregistration.common.service.TopologyConfigService;
 import com.netcracker.cloud.security.core.auth.Token;
 import io.quarkus.arc.Unremovable;
 import io.reactivex.Scheduler;
@@ -18,6 +16,9 @@ import okhttp3.Request;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.Optional;
+
+import static com.netcracker.cloud.routesregistration.common.gateway.route.ServiceMeshType.CORE;
+import static com.netcracker.cloud.routesregistration.common.gateway.route.Utils.isIstioEnabled;
 
 @ApplicationScoped
 public class RouteRegistrationConfig {
@@ -47,13 +48,14 @@ public class RouteRegistrationConfig {
                                    @ConfigProperty(name = "apigateway.routes.registration.appname.disabled", defaultValue = "false") Boolean postRoutesAppnameDisabled,
                                    @ConfigProperty(name = "quarkus.http.port", defaultValue = "8080") String microservicePort,
                                    @ConfigProperty(name = "apigateway.routes.registration.enabled", defaultValue = "true") Boolean postRoutesEnabled,
-                                   @ConfigProperty(name = "cloud.microservice.bg_version") Optional<String> deploymentVersion) {
+                                   @ConfigProperty(name = "cloud.microservice.bg_version") Optional<String> deploymentVersion,
+                                   @ConfigProperty(name = "SERVICE_MESH_TYPE") Optional<ServiceMeshType> serviceMeshType) {
         this.microserviceName = microserviceName;
         this.cloudNamespace = cloudNamespace;
         this.controlPlaneUrl = controlPlaneUrl;
         this.postRoutesAppnameDisabled = postRoutesAppnameDisabled;
         this.microservicePort = microservicePort;
-        this.postRoutesEnabled = postRoutesEnabled;
+        this.postRoutesEnabled = postRoutesEnabled && !isIstioEnabled(serviceMeshType.orElse(CORE));;
 
         this.cloudServiceName = microserviceName;
         this.deploymentVersion = deploymentVersion;
@@ -127,9 +129,7 @@ public class RouteRegistrationConfig {
     RoutesRestRegistrationProcessor routesRestRegistrationProcessor(ControlPlaneClient controlPlaneClient,
                                                                     RouteRetryManager retryManager,
                                                                     RouteTransformer routeTransformer,
-                                                                    RegistrationRequestFactory registrationRequestFactory,
-                                                                    TopologyConfigService topologyConfigService) {
-
+                                                                    RegistrationRequestFactory registrationRequestFactory) {
         return new RoutesRestRegistrationProcessor(
                 controlPlaneClient,
                 retryManager,
@@ -140,11 +140,6 @@ public class RouteRegistrationConfig {
                 Utils.formatMicroserviceInternalURL(
                         cloudServiceName, microserviceName, getPort(), "/", postRoutesAppnameDisabled)
         );
-    }
-
-    @Produces
-    TopologyConfigService topologyConfigService(ObjectMapper objectMapper) {
-        return new TopologyConfigService(objectMapper);
     }
 
     private String getPort() {

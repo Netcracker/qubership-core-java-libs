@@ -2,7 +2,7 @@ package com.netcracker.cloud.routesregistration.common.gateway.route;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class UtilsTest {
 
@@ -10,5 +10,12 @@ class UtilsTest {
     void formatMicroserviceInternalURLTest() {
         String result = Utils.formatMicroserviceInternalURL("cloudTest", "nameTest", "portTest", "/contextTest", false);
         assertEquals("http://cloudTest:portTest/contextTest", result);
+    }
+
+    @Test
+    void isIstioEnabled() {
+        assertFalse(Utils.isIstioEnabled(null));
+        assertFalse(Utils.isIstioEnabled(ServiceMeshType.CORE));
+        assertTrue(Utils.isIstioEnabled(ServiceMeshType.ISTIO));
     }
 }

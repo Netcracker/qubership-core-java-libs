@@ -1,17 +1,15 @@
 package com.netcracker.cloud.routesregistration.common.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
 import com.netcracker.cloud.routesregistration.common.annotation.processing.RouteHostMapping;
 import com.netcracker.cloud.routesregistration.common.gateway.route.*;
 import com.netcracker.cloud.routesregistration.common.gateway.route.rest.RegistrationRequestFactory;
 import com.netcracker.cloud.routesregistration.common.gateway.route.transformation.RouteTransformer;
-import com.netcracker.cloud.routesregistration.common.service.TopologyConfigService;
 import com.netcracker.cloud.routesregistration.common.spring.gateway.route.RouteAnnotationProcessor;
 import com.netcracker.cloud.routesregistration.common.spring.gateway.route.RouteFormatter;
 import com.netcracker.cloud.routesregistration.common.spring.gateway.route.SpringControlPlaneClient;
-import io.reactivex.Scheduler;
-import io.reactivex.schedulers.Schedulers;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -22,7 +20,8 @@ import org.springframework.core.env.Environment;
 import java.util.List;
 import java.util.Optional;
 
-import static com.netcracker.cloud.routesregistration.common.gateway.route.ServiceMeshType.ISTIO;
+import static com.netcracker.cloud.routesregistration.common.gateway.route.ServiceMeshType.CORE;
+import static com.netcracker.cloud.routesregistration.common.gateway.route.Utils.isIstioEnabled;
 
 @Configuration
 public class RouteRegistrationProcessorConfiguration {
@@ -41,14 +40,15 @@ public class RouteRegistrationProcessorConfiguration {
                                                    @Value("${server.servlet.context-path:/}") String contextPath,
                                                    @Value("${server.port}") String microservicePort,
                                                    @Value("${apigateway.routes.registration.appname.disabled:false}") Boolean postRoutesAppnameDisabled,
-                                                   @Value("${apigateway.routes.registration.enabled:true}") Boolean postRoutesEnabled) {
+                                                   @Value("${apigateway.routes.registration.enabled:true}") Boolean postRoutesEnabled,
+                                                   @Value("${SERVICE_MESH_TYPE:}") Optional<ServiceMeshType> serviceMeshType) {
         this.microserviceName = microserviceName;
         this.deploymentVersion = deploymentVersion;
         this.cloudNamespace = cloudNamespace;
         this.contextPath = contextPath;
         this.microservicePort = microservicePort;
         this.postRoutesAppnameDisabled = postRoutesAppnameDisabled;
-        this.postRoutesEnabled = postRoutesEnabled;
+        this.postRoutesEnabled = postRoutesEnabled && !isIstioEnabled(serviceMeshType.orElse(CORE));
 
         this.cloudServiceName = microserviceName;
         if (deploymentVersion != null && !deploymentVersion.isEmpty()) {
@@ -102,9 +102,7 @@ public class RouteRegistrationProcessorConfiguration {
     RoutesRestRegistrationProcessor routesRestRegistrationProcessor(ControlPlaneClient controlPlaneClient,
                                                                     RouteRetryManager routeRetryManager,
                                                                     RouteTransformer routeTransformer,
-                                                                    RegistrationRequestFactory registrationRequestFactory,
-                                                                    TopologyConfigService topologyConfigService) {
-
+                                                                    RegistrationRequestFactory registrationRequestFactory) {
         String microserviceInternalURL = Utils.formatMicroserviceInternalURL(
                 cloudServiceName,
                 microserviceName,
@@ -117,8 +115,7 @@ public class RouteRegistrationProcessorConfiguration {
                 routeRetryManager,
                 routeTransformer,
                 registrationRequestFactory,
-                postRoutesEnabled
-                        && topologyConfigService.getServiceMeshType() != ISTIO,
+                postRoutesEnabled,
                 microserviceName,
                 microserviceInternalURL);
     }
@@ -138,8 +135,7 @@ public class RouteRegistrationProcessorConfiguration {
         return new RoutesRegistrationDelayProvider();
     }
 
-    @Bean
-    TopologyConfigService topologyConfigService(ObjectMapper objectMapper) {
-        return new TopologyConfigService(objectMapper);
+    protected Boolean getPostRoutesEnabled() {
+        return postRoutesEnabled;
     }
 }
