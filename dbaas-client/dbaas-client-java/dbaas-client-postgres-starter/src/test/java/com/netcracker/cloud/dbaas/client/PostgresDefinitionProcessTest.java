@@ -15,9 +15,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -45,7 +45,7 @@ public class PostgresDefinitionProcessTest {
     @Autowired
     private PgDefinitionProcess pgDefinitionProcess;
 
-    @SpyBean
+    @MockitoSpyBean
     private PostgresDatasourceCreator datasourceCreator;
 
     @Test

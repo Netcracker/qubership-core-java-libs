@@ -5,13 +5,13 @@
     <parent>
         <artifactId>cloud-core-quarkus-bom</artifactId>
         <groupId>com.netcracker.cloud.quarkus</groupId>
-        <version>8.4.4-SNAPSHOT</version>
+        <version>9.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>cloud-core-quarkus-bom-parent</artifactId>
     <packaging>pom</packaging>
 
     <properties>
-        <nc.context-quarkus.version>7.2.3</nc.context-quarkus.version>
+        <nc.context-quarkus.version>8.0.0</nc.context-quarkus.version>
     </properties>
 </project>

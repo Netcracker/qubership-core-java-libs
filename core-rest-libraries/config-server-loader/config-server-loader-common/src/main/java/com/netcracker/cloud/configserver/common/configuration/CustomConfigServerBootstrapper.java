@@ -1,8 +1,8 @@
 package com.netcracker.cloud.configserver.common.configuration;
 
 import lombok.AllArgsConstructor;
-import org.springframework.boot.BootstrapRegistry;
-import org.springframework.boot.BootstrapRegistryInitializer;
+import org.springframework.boot.bootstrap.BootstrapRegistry;
+import org.springframework.boot.bootstrap.BootstrapRegistryInitializer;
 import org.springframework.boot.context.config.ConfigData;
 import org.springframework.cloud.config.client.ConfigServerBootstrapper;
 

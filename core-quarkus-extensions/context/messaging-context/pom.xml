@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>context-parent</artifactId>
 		<groupId>com.netcracker.cloud.quarkus</groupId>
-        <version>8.4.4-SNAPSHOT</version>
+        <version>9.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -22,6 +22,15 @@
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>${compiler-plugin.version}</version>
+					    <configuration>
+					        <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.42</version>
+                        </path>
+					        </annotationProcessorPaths>
+					    </configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>

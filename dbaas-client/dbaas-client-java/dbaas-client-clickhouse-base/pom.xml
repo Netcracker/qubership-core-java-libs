@@ -3,7 +3,7 @@
     <parent>
         <artifactId>dbaas-client-java-parent</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>8.5.2-SNAPSHOT</version>
+        <version>9.0.3-SNAPSHOT</version>
         <relativePath>../dbaas-client-java-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -12,7 +12,7 @@
 
     <properties>
         <sonar.exclusions>**/entity/**/*, **/management/DbaasClickhouseDatasource.java</sonar.exclusions>
-        <clickhouse-jdbc.version>0.9.6</clickhouse-jdbc.version>
+        <clickhouse-jdbc.version>0.9.8</clickhouse-jdbc.version>
     </properties>
 
     <dependencies>

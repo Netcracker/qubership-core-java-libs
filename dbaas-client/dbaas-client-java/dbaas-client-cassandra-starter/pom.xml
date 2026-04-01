@@ -7,8 +7,8 @@
     <parent>
         <artifactId>dbaas-client-spring-parent</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>8.5.2-SNAPSHOT</version>
-        <relativePath>./../dbaas-client-spring-parent/</relativePath>
+        <version>9.0.3-SNAPSHOT</version>
+        <relativePath>./../dbaas-client-spring-parent</relativePath>
     </parent>
 
     <dependencies>
@@ -19,7 +19,12 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-cassandra</artifactId>
-            <version>4.5.8</version>
+            <version>5.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-cassandra</artifactId>
+            <version>4.0.3</version>
         </dependency>
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
@@ -30,7 +35,7 @@
             <artifactId>dbaas-client-cassandra-migration</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.datastax.oss</groupId>
+            <groupId>org.apache.cassandra</groupId>
             <artifactId>java-driver-core</artifactId>
         </dependency>
         <dependency>
@@ -61,7 +66,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-            <version>3.5.10</version>
+            <version>4.0.3</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>

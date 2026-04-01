@@ -2,18 +2,17 @@ package com.netcracker.cloud.dbaas.client.arangodb.service;
 
 import com.arangodb.springframework.core.ArangoOperations;
 import com.arangodb.springframework.core.template.ArangoTemplate;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 public class DbaasArangoTemplateTest {
 
     @Mock

@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.netcracker.cloud.maas.declarative</groupId>
         <artifactId>maas-declarative-kafka-client-quarkus-parent</artifactId>
-        <version>7.3.4-SNAPSHOT</version>
+        <version>8.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -72,7 +72,7 @@
         <dependency>
             <groupId>com.netcracker.cloud.security.core.utils</groupId>
             <artifactId>tls-utils</artifactId>
-            <version>2.4.3</version>
+            <version>${core-utils.version}</version>
         </dependency>
     </dependencies>
 
@@ -91,6 +91,11 @@
                             <groupId>io.quarkus</groupId>
                             <artifactId>quarkus-extension-processor</artifactId>
                             <version>${quarkus.platform.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.42</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>

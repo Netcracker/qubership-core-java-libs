@@ -3,7 +3,7 @@ package com.netcracker.cloud.configserver.common.configuration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.DefaultBootstrapContext;
+import org.springframework.boot.bootstrap.DefaultBootstrapContext;
 import org.springframework.boot.context.config.ConfigDataLocation;
 import org.springframework.boot.context.config.ConfigDataLocationResolverContext;
 import org.springframework.boot.context.config.Profiles;

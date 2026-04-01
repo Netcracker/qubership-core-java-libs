@@ -1,7 +1,7 @@
 package com.netcracker.cloud.configserver.common.configuration;
 
-import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.configserver.common.sample.ApplicationTests;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.endpoint.event.RefreshEvent;
 import org.springframework.context.ApplicationEventPublisher;

@@ -4,7 +4,7 @@
     <parent>
         <artifactId>microservice-restclient-parent</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>6.4.2-SNAPSHOT</version>
+        <version>7.0.3-SNAPSHOT</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
     <artifactId>microservice-restclient-resttemplate</artifactId>
@@ -17,7 +17,7 @@
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
             <artifactId>core-error-handling-rest</artifactId>
-            <version>3.4.3</version>
+            <version>${error-handling.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.14.1</version>
+            <version>6.0.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

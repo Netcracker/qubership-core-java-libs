@@ -5,7 +5,7 @@
     <parent>
         <artifactId>cloud-core-quarkus</artifactId>
         <groupId>com.netcracker.cloud.quarkus</groupId>
-        <version>8.4.4-SNAPSHOT</version>
+        <version>9.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>build-parent</artifactId>
@@ -35,9 +35,9 @@
         <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
         <jacoco.plugin.version>0.8.7</jacoco.plugin.version>
         <jandex-maven-plugin.version>3.5.3</jandex-maven-plugin.version>
-        <rest-libraries.version>6.4.2-SNAPSHOT</rest-libraries.version>
-        <maas-client.version>11.4.3</maas-client.version>
-        <error-handling.version>3.4.3</error-handling.version>
+        <rest-libraries.version>7.0.2</rest-libraries.version>
+        <maas-client.version>12.0.0</maas-client.version>
+        <error-handling.version>4.0.0</error-handling.version>
     </properties>
 
     <profiles>
@@ -81,7 +81,14 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${compiler-plugin.version}</version>
                     <configuration>
-                        <release>17</release>
+                        <release>21</release>
+                        <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.42</version>
+                        </path>
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
                 <plugin>

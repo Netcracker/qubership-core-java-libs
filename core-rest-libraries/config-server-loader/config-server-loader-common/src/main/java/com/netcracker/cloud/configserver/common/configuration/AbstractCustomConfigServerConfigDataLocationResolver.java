@@ -1,8 +1,7 @@
 package com.netcracker.cloud.configserver.common.configuration;
 
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
-import org.apache.commons.logging.Log;
-import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.bootstrap.BootstrapRegistry;
 import org.springframework.boot.context.config.ConfigDataLocation;
 import org.springframework.boot.context.config.ConfigDataLocationNotFoundException;
 import org.springframework.boot.context.config.ConfigDataLocationResolverContext;

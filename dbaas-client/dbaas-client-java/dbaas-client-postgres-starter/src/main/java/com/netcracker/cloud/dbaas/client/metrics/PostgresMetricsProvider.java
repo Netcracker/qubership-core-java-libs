@@ -7,8 +7,8 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.MeterBinder;
 
-import org.springframework.boot.actuate.metrics.jdbc.DataSourcePoolMetrics;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
+import org.springframework.boot.jdbc.metrics.DataSourcePoolMetrics;
 
 import javax.sql.DataSource;
 
