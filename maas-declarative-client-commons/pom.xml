@@ -27,7 +27,7 @@
         <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
 
         <commons-lang3.version>3.12.0</commons-lang3.version>
-        <kafka-clients.version>4.1.1</kafka-clients.version>
+        <kafka-clients.version>4.2.0</kafka-clients.version>
         <maas-client.version>12.0.0</maas-client.version>
 
         <mockito.version>5.21.0</mockito.version>
