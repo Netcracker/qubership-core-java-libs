@@ -5,7 +5,7 @@
     <groupId>com.netcracker.cloud.security.core.utils</groupId>
     <artifactId>core-utils-aggregator</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.1</version>
+    <version>3.0.2-SNAPSHOT</version>
     <name>core-utils-aggregator</name>
 
     <licenses>
@@ -32,7 +32,7 @@
         <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
         <url>https://github.com/Netcracker/qubership-core-java-libs</url>
-        <tag>core-utils-aggregator-3.0.1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <repositories>
