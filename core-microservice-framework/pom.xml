@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>microservice-framework-aggregator</artifactId>
-    <version>8.0.3</version>
+    <version>8.0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>microservice-framework-aggregator</name>
     <description>Common microservice framework library</description>
@@ -37,7 +37,7 @@
         <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
         <url>https://github.com/Netcracker/qubership-core-java-libs</url>
-        <tag>microservice-framework-aggregator-8.0.3</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <build>
