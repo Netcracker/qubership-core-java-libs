@@ -3,7 +3,7 @@
     <packaging>pom</packaging>
     <groupId>com.netcracker.cloud.junit.cloudcore</groupId>
     <artifactId>cloud-core-parent</artifactId>
-    <version>8.8.5-SNAPSHOT</version>
+    <version>8.8.5</version>
 
     <licenses>
         <license>
@@ -30,7 +30,7 @@
         <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
         <url>https://github.com/Netcracker/qubership-core-java-libs</url>
-        <tag>HEAD</tag>
+        <tag>cloud-core-parent-8.8.5</tag>
     </scm>
 
     <dependencyManagement>
