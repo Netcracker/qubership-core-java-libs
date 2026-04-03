@@ -16,7 +16,7 @@
     </licenses>
 
     <properties>
-        <quarkus.platform.version>3.27.2</quarkus.platform.version>
+        <quarkus.platform.version>3.27.3</quarkus.platform.version>
 
         <maven.compiler.release>21</maven.compiler.release>
         <maven.compiler.source>21</maven.compiler.source>
@@ -179,7 +179,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.42</version>
+                            <version>1.18.44</version>
                         </path>
                         </annotationProcessorPaths>
                     </configuration>

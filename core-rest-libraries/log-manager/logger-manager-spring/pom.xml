@@ -19,7 +19,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>4.0.3</version>
+            <version>4.0.5</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -72,7 +72,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.42</version>
+                            <version>1.18.44</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
