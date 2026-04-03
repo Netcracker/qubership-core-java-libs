@@ -5,7 +5,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>dbaas-client-root</artifactId>
-    <version>8.4.3-SNAPSHOT</version>
+    <version>8.4.3</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -27,7 +27,7 @@
         <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
         <url>https://github.com/Netcracker/qubership-core-java-libs</url>
-        <tag>HEAD</tag>
+        <tag>dbaas-client-root-8.4.3</tag>
     </scm>
 
     <reporting>
