@@ -5,7 +5,7 @@
     <groupId>com.netcracker.cloud.security.core.utils</groupId>
     <artifactId>core-utils-aggregator</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>3.0.2-SNAPSHOT</version>
     <name>core-utils-aggregator</name>
 
     <licenses>
@@ -85,7 +85,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.42</version>
+                            <version>1.18.44</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>

@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.netcracker.cloud.maas.declarative</groupId>
         <artifactId>maas-declarative-kafka-client-quarkus-parent</artifactId>
-        <version>8.0.1-SNAPSHOT</version>
+        <version>8.0.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -95,7 +95,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.42</version>
+                            <version>1.18.44</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>

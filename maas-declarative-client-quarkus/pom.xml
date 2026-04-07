@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud.maas.declarative</groupId>
     <artifactId>maas-declarative-kafka-client-quarkus-bom</artifactId>
-    <version>8.0.1-SNAPSHOT</version>
+    <version>8.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -16,7 +16,7 @@
     </licenses>
 
     <properties>
-        <quarkus.platform.version>3.27.2</quarkus.platform.version>
+        <quarkus.platform.version>3.27.3</quarkus.platform.version>
 
         <maven.compiler.release>21</maven.compiler.release>
         <maven.compiler.source>21</maven.compiler.source>
@@ -35,10 +35,11 @@
         <testcontainers.version>1.18.3</testcontainers.version>
         <assertj-core.version>3.27.7</assertj-core.version>
 
-        <maas-declarative-kafka-client.version>6.0.0</maas-declarative-kafka-client.version>
-        <maas-client-quarkus-kafka.version>10.0.0</maas-client-quarkus-kafka.version>
-        <blue-green-state-monitor-quarkus.version>3.0.0</blue-green-state-monitor-quarkus.version>
-        <core-utils.version>3.0.0</core-utils.version>
+        <maas-declarative-kafka-client.version>6.0.1</maas-declarative-kafka-client.version>
+        <kafka-clients.version>4.2.0</kafka-clients.version>
+        <maas-client-quarkus-kafka.version>10.0.1</maas-client-quarkus-kafka.version>
+        <blue-green-state-monitor-quarkus.version>3.0.1</blue-green-state-monitor-quarkus.version>
+        <core-utils.version>3.0.1</core-utils.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../maas-kafka-quarkus-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
@@ -65,6 +66,11 @@
                 <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>maas-declarative-kafka-client</artifactId>
                 <version>${maas-declarative-kafka-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>${kafka-clients.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
@@ -173,7 +179,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.42</version>
+                            <version>1.18.44</version>
                         </path>
                         </annotationProcessorPaths>
                     </configuration>

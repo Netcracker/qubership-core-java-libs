@@ -5,7 +5,7 @@
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>core-error-handling</artifactId>
     <packaging>pom</packaging>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.2-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -77,7 +77,7 @@
                             <path>
                                 <groupId>org.projectlombok</groupId>
                                 <artifactId>lombok</artifactId>
-                                <version>1.18.42</version>
+                                <version>1.18.44</version>
                             </path>
                         </annotationProcessorPaths>
                     </configuration>

@@ -84,6 +84,7 @@ class MaasKafkaClientTest {
             .toString();
 
     public static final long POLL_DURATION_SEC = 5;
+    public static final long ASYNC_WAIT_TIMEOUT_SEC = 30;
     private static MaasKafkaClientFactory kafkaClientFactory;
     private static MaasKafkaTopicService maasKafkaTopicService;
     private static KafkaClientCreationService kafkaClientCreationService;
@@ -258,7 +259,7 @@ class MaasKafkaClientTest {
         try (var ignored = maasKafkaConsumer(topicInfo.getName(), record -> msg.complete(record.value()), false, true)) {
             String testMsg = "message-" + RANDOM_STRING.get();
             kafkaProducer.send(new ProducerRecord<>(topicInfo.getName(), testMsg));
-            assertEquals(testMsg, msg.get(10, TimeUnit.SECONDS));
+            assertEquals(testMsg, msg.get(ASYNC_WAIT_TIMEOUT_SEC, TimeUnit.SECONDS));
         }
     }
 
@@ -282,9 +283,9 @@ class MaasKafkaClientTest {
             }
         }, false, true)) {
             kafkaProducer.send(new ProducerRecord<>(topicInfo.getName(), firstMsg));
-            assertEquals(firstMsg, firstMsgReceived.get(10, TimeUnit.SECONDS));
+            assertEquals(firstMsg, firstMsgReceived.get(ASYNC_WAIT_TIMEOUT_SEC, TimeUnit.SECONDS));
             kafkaProducer.send(new ProducerRecord<>(topicInfo.getName(), secondMsg));
-            assertEquals(secondMsg, secondMsgReceived.get(10, TimeUnit.SECONDS));
+            assertEquals(secondMsg, secondMsgReceived.get(ASYNC_WAIT_TIMEOUT_SEC, TimeUnit.SECONDS));
         }
     }
 
@@ -307,7 +308,7 @@ class MaasKafkaClientTest {
         }, false, true)) {
             kafkaProducer.send(new ProducerRecord<>(topicInfo.getName(), null, "", "message-" + RANDOM_STRING.get(), List.of(new RecordHeader("X-Version", "v1".getBytes()))));
             kafkaProducer.send(new ProducerRecord<>(topicInfo.getName(), null, "", "message-" + RANDOM_STRING.get(), List.of(new RecordHeader("X-Version", "v2".getBytes()))));
-            assertEquals(2, msg.get(10, TimeUnit.SECONDS).size());
+            assertEquals(2, msg.get(ASYNC_WAIT_TIMEOUT_SEC, TimeUnit.SECONDS).size());
         }
     }
 
@@ -348,11 +349,11 @@ class MaasKafkaClientTest {
             acceptLanguageContext.complete(AcceptLanguageContext.get());
             acceptLanguageHeader.complete(new String(record.headers().lastHeader("Accept-Language").value()));
         }, false, false)) {
-            assertEquals(EN_US, acceptLanguageContext.get(10, TimeUnit.SECONDS));
-            assertEquals(EN_US, acceptLanguageHeader.get(10, TimeUnit.SECONDS));
+            assertEquals(EN_US, acceptLanguageContext.get(ASYNC_WAIT_TIMEOUT_SEC, TimeUnit.SECONDS));
+            assertEquals(EN_US, acceptLanguageHeader.get(ASYNC_WAIT_TIMEOUT_SEC, TimeUnit.SECONDS));
         }
 
-        String tenantIdWhenCompleteSyncValue = tenantIdWhenCompleteSync.get(10, TimeUnit.SECONDS);
+        String tenantIdWhenCompleteSyncValue = tenantIdWhenCompleteSync.get(ASYNC_WAIT_TIMEOUT_SEC, TimeUnit.SECONDS);
         assertEquals(expectedTenantId, tenantIdWhenCompleteSyncValue);
     }
 

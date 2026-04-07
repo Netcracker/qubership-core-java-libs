@@ -5,7 +5,7 @@
     <parent>
         <artifactId>context-propagation</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>8.0.3-SNAPSHOT</version>
+        <version>8.0.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -60,7 +60,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.42</version>
+                            <version>1.18.44</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
