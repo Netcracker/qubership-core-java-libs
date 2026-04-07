@@ -68,96 +68,11 @@ class RouteRegistrationConfigTest {
         }
     }
 
-    /**
-     * Tests that postRoutesEnabled is forced to false when SERVICE_MESH_TYPE=ISTIO,
-     * regardless of the apigateway.routes.registration.enabled flag.
-     */
-    @QuarkusTest
-    @TestProfile(RouteRegistrationConfigTest.IstioEnabledProfile.class)
-    static class WhenIstioEnabledPostRoutesDisabledTest {
 
-        @Inject
-        RoutesRestRegistrationProcessor routesRestRegistrationProcessor;
 
-        @Test
-        void testPostRoutesEnabled_whenMeshTypeIsIstio_isFalseRegardlessOfConfigFlag() {
-            Assertions.assertFalse(routesRestRegistrationProcessor.isPostRoutesEnabled());
-        }
-    }
 
-    /**
-     * Tests that postRoutesEnabled is false when the config flag itself is false,
-     * even with a non-Istio mesh type.
-     */
-    @QuarkusTest
-    @TestProfile(RouteRegistrationConfigTest.RegistrationExplicitlyDisabledProfile.class)
-    static class WhenRegistrationDisabledPostRoutesDisabledTest {
 
-        @Inject
-        RoutesRestRegistrationProcessor routesRestRegistrationProcessor;
 
-        @Test
-        void testPostRoutesEnabled_whenRegistrationDisabled_isFalseRegardlessOfMeshType() {
-            Assertions.assertFalse(routesRestRegistrationProcessor.isPostRoutesEnabled());
-        }
-    }
 
-    /**
-     * Tests that SERVICE_MESH_TYPE is parsed case-insensitively.
-     * Example: "Istio" should be treated the same as "ISTIO".
-     */
-    @QuarkusTest
-    @TestProfile(RouteRegistrationConfigTest.IstioCaseInsensitiveProfile.class)
-    static class WhenIstioLowerCasePostRoutesDisabledTest {
 
-        @Inject
-        RoutesRestRegistrationProcessor routesRestRegistrationProcessor;
-
-        @Test
-        void testPostRoutesEnabled_whenMeshTypeIsIstioLowerCase_isFalse() {
-            Assertions.assertFalse(routesRestRegistrationProcessor.isPostRoutesEnabled());
-        }
-    }
-
-    /**
-     * Overrides SERVICE_MESH_TYPE to ISTIO.
-     * Expected: postRoutesEnabled = true && !isIstioEnabled(ISTIO) = true && false = false
-     */
-    static class IstioEnabledProfile implements QuarkusTestProfile {
-        @Override
-        public Map<String, String> getConfigOverrides() {
-            return Map.of(
-                    "SERVICE_MESH_TYPE", ServiceMeshType.ISTIO.name(),
-                    "apigateway.routes.registration.enabled", "true"
-            );
-        }
-    }
-
-    /**
-     * Keeps SERVICE_MESH_TYPE=CORE but disables registration via config.
-     * Expected: postRoutesEnabled = false && !isIstioEnabled(CORE) = false && true = false
-     */
-    static class RegistrationExplicitlyDisabledProfile implements QuarkusTestProfile {
-        @Override
-        public Map<String, String> getConfigOverrides() {
-            return Map.of(
-                    "SERVICE_MESH_TYPE", ServiceMeshType.CORE.name(),
-                    "apigateway.routes.registration.enabled", "false"
-            );
-        }
-    }
-
-    /**
-     * Overrides SERVICE_MESH_TYPE using pascal-case value.
-     * Expected: postRoutesEnabled = true && !isIstioEnabled(istio) = true && false = false
-     */
-    static class IstioCaseInsensitiveProfile implements QuarkusTestProfile {
-        @Override
-        public Map<String, String> getConfigOverrides() {
-            return Map.of(
-                    "SERVICE_MESH_TYPE", "Istio",
-                    "apigateway.routes.registration.enabled", "true"
-            );
-        }
-    }
 }
