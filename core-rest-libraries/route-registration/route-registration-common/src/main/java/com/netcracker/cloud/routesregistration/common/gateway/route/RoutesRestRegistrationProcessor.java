@@ -69,6 +69,10 @@ public class RoutesRestRegistrationProcessor {
         performRoutesRegistration(microserviceUrl, routes);
     }
 
+    public boolean isPostRoutesEnabled() {
+        return postRoutesEnabled;
+    }
+
     private void performRoutesRegistration(String microserviceUrl, Collection<RouteEntry> routes) {
         Collection<RouteEntry> transformedRoutes = routeTransformer.transform(routes);
         CompositeRequest<CommonRequest> requests = registrationRequestFactory.createRequests(

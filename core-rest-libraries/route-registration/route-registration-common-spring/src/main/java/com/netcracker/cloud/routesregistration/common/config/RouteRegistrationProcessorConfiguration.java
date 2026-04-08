@@ -20,6 +20,9 @@ import org.springframework.core.env.Environment;
 import java.util.List;
 import java.util.Optional;
 
+import static com.netcracker.cloud.routesregistration.common.gateway.route.ServiceMeshType.CORE;
+import static com.netcracker.cloud.routesregistration.common.gateway.route.Utils.isIstioEnabled;
+
 @Configuration
 public class RouteRegistrationProcessorConfiguration {
     private final String microserviceName;
@@ -37,17 +40,18 @@ public class RouteRegistrationProcessorConfiguration {
                                                    @Value("${server.servlet.context-path:/}") String contextPath,
                                                    @Value("${server.port}") String microservicePort,
                                                    @Value("${apigateway.routes.registration.appname.disabled:false}") Boolean postRoutesAppnameDisabled,
-                                                   @Value("${apigateway.routes.registration.enabled:true}") Boolean postRoutesEnabled) {
+                                                   @Value("${apigateway.routes.registration.enabled:true}") Boolean postRoutesEnabled,
+                                                   @Value("${SERVICE_MESH_TYPE:}") Optional<ServiceMeshType> serviceMeshType) {
         this.microserviceName = microserviceName;
         this.deploymentVersion = deploymentVersion;
         this.cloudNamespace = cloudNamespace;
         this.contextPath = contextPath;
         this.microservicePort = microservicePort;
         this.postRoutesAppnameDisabled = postRoutesAppnameDisabled;
-        this.postRoutesEnabled = postRoutesEnabled;
+        this.postRoutesEnabled = postRoutesEnabled && !isIstioEnabled(serviceMeshType.orElse(CORE));
 
         this.cloudServiceName = microserviceName;
-        if(deploymentVersion != null && !deploymentVersion.isEmpty()){
+        if (deploymentVersion != null && !deploymentVersion.isEmpty()) {
             this.cloudServiceName += "-" + deploymentVersion;
         }
     }
@@ -129,5 +133,9 @@ public class RouteRegistrationProcessorConfiguration {
     @Bean
     RoutesRegistrationDelayProvider routesRegistrationDelayProvider() {
         return new RoutesRegistrationDelayProvider();
+    }
+
+    protected Boolean getPostRoutesEnabled() {
+        return postRoutesEnabled;
     }
 }
