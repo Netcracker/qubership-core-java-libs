@@ -45,6 +45,34 @@ public class DefaultDbaasCqlSessionBuilderCustomizerTest {
     }
 
     @Test
+    public void testCassandraDriverOption_resolveContactPoints() {
+        DbaasCassandraProperties dbaasCassandraProperties = new DbaasCassandraProperties();
+        ProgrammaticDriverConfigLoaderBuilder configLoader = DriverConfigLoader.programmaticBuilder();
+        DefaultDbaasCqlSessionBuilderCustomizer def = new DefaultDbaasCqlSessionBuilderCustomizer(dbaasCassandraProperties);
+
+        String expectedValue = "true";
+        dbaasCassandraProperties.setResolveContactPoints(true);
+        def.customize(configLoader);
+        String valueFromConfigLoader = configLoader.build().getInitialConfig().getDefaultProfile()
+                .getString(DefaultDriverOption.RESOLVE_CONTACT_POINTS);
+        assertEquals(expectedValue, valueFromConfigLoader);
+
+        expectedValue = "false";
+        dbaasCassandraProperties.setResolveContactPoints(false);
+        def.customize(configLoader);
+        valueFromConfigLoader = configLoader.build().getInitialConfig().getDefaultProfile()
+                .getString(DefaultDriverOption.RESOLVE_CONTACT_POINTS);
+        assertEquals(expectedValue, valueFromConfigLoader);
+
+        expectedValue = "false";
+        dbaasCassandraProperties.setResolveContactPoints(null);
+        def.customize(configLoader);
+        valueFromConfigLoader = configLoader.build().getInitialConfig().getDefaultProfile()
+                .getString(DefaultDriverOption.RESOLVE_CONTACT_POINTS);
+        assertEquals(expectedValue, valueFromConfigLoader);
+    }
+
+    @Test
     public void testCassandraDriverOption_EnablingSsl() {
         ProgrammaticDriverConfigLoaderBuilder configLoaderBuilder = DriverConfigLoader.programmaticBuilder();
 
