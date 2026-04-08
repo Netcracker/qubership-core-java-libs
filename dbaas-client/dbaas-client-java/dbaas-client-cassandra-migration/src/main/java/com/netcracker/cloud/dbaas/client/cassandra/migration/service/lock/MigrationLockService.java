@@ -52,7 +52,7 @@ public class MigrationLockService implements AutoCloseable {
                 CassandraLockProvider.Configuration.builder()
                         .withCqlSession(session.getSession())
                         .withTableName(schemaMigrationSettings.lock().tableName())
-                        .withConsistencyLevel(ConsistencyLevel.LOCAL_QUORUM)
+                        .withConsistencyLevel(ConsistencyLevel.ALL)
                         .build()
         );
         this.lockConfiguration = new LockConfiguration(

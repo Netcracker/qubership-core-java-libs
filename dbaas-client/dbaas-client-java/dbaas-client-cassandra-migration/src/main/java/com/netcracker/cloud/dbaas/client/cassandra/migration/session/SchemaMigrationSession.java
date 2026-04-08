@@ -39,8 +39,8 @@ public class SchemaMigrationSession {
     }
 
     public ResultSet execute(Statement<?> statement) {
-        Statement<?> localQuorumStatement = statement.setConsistencyLevel(ConsistencyLevel.LOCAL_QUORUM);
-        ResultSet resultSet = session.execute(localQuorumStatement);
+        Statement<?> allQuorumStatement = statement.setConsistencyLevel(ConsistencyLevel.ALL);
+        ResultSet resultSet = session.execute(allQuorumStatement);
         checkAndAwaitSchemaAgreement(resultSet);
         return resultSet;
     }
