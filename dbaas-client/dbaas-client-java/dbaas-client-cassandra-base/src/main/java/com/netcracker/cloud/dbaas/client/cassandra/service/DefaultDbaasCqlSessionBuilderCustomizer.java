@@ -73,9 +73,12 @@ public class DefaultDbaasCqlSessionBuilderCustomizer implements DbaasCqlSessionB
         }
 
         // if not defined there is used default: false
-        if (dbaasCassandraProperties.getResolveContactPoints() != null) {
+        if (dbaasCassandraProperties.getResolveContactPoints() == null) {
             // when resolve-contact-points=false then host name will be resolved again every time the driver opens a new connection
             configLoader.withBoolean(DefaultDriverOption.RESOLVE_CONTACT_POINTS, false);
+        } else {
+            configLoader.withBoolean(DefaultDriverOption.RESOLVE_CONTACT_POINTS,
+                    dbaasCassandraProperties.getResolveContactPoints());
         }
 
         // if not defined there is used default: true
