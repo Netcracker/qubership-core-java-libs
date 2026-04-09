@@ -13,6 +13,9 @@ import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.TopicCollection;
 import org.apache.kafka.common.Uuid;
 import org.apache.kafka.common.config.ConfigResource;
+import org.apache.kafka.common.errors.LeaderNotAvailableException;
+import org.apache.kafka.common.errors.NotLeaderOrFollowerException;
+import org.apache.kafka.common.errors.TimeoutException;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.apache.kafka.common.internals.KafkaFutureImpl;
 
@@ -27,6 +30,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @Builder(builderMethodName = "")
 public class MaaSKafkaAdminWrapper extends ForwardingAdmin {
+    private static final int METADATA_FETCH_RETRIES = 8;
+    private static final long METADATA_FETCH_TIMEOUT_SECONDS = 10;
+    private static final long INITIAL_RETRY_BACKOFF_MS = 200;
+    private static final long MAX_RETRY_BACKOFF_MS = 3000;
+
     private final Map<String, Object> configs;
     private final KafkaMaaSClient kafkaMaaSClient;
     @Builder.Default
@@ -104,23 +112,84 @@ public class MaaSKafkaAdminWrapper extends ForwardingAdmin {
 
     protected Config getTopicConfig(String topicName) {
         ConfigResource configResource = new ConfigResource(ConfigResource.Type.TOPIC, topicName);
-        List<ConfigResource> configResources = List.of(configResource);
-        DescribeConfigsResult describeConfigsResult = this.describeConfigs(configResources);
-        Map<ConfigResource, Config> topicConfigs = waitFuture(describeConfigsResult.all(), 1, TimeUnit.MINUTES);
-        log.debug("Config for topic '{}' = {}", topicName, topicConfigs.get(configResource));
-        return topicConfigs.get(configResource);
+        long backoffMs = INITIAL_RETRY_BACKOFF_MS;
+        for (int attempt = 1; attempt <= METADATA_FETCH_RETRIES; attempt++) {
+            try {
+                List<ConfigResource> configResources = List.of(configResource);
+                DescribeConfigsResult describeConfigsResult = this.describeConfigs(configResources);
+                Map<ConfigResource, Config> topicConfigs = waitFuture(
+                        describeConfigsResult.all(),
+                        METADATA_FETCH_TIMEOUT_SECONDS,
+                        TimeUnit.SECONDS
+                );
+                log.debug("Config for topic '{}' = {}", topicName, topicConfigs.get(configResource));
+                return topicConfigs.get(configResource);
+            } catch (Exception e) {
+                if (!isRetryableMetadataException(e) || attempt == METADATA_FETCH_RETRIES) {
+                    throw e;
+                }
+                log.warn(
+                        "Transient Kafka error while describing config for topic '{}' (attempt {}/{}). Retrying in {} ms",
+                        topicName, attempt, METADATA_FETCH_RETRIES, backoffMs
+                );
+                sleepBackoff(backoffMs);
+                backoffMs = Math.min(backoffMs * 2, MAX_RETRY_BACKOFF_MS);
+            }
+        }
+        throw new IllegalStateException("Retry loop finished unexpectedly");
     }
 
     protected TopicDescription getTopicDescription(String topicName) {
-        DescribeTopicsResult describeTopicsResult = this.describeTopics(List.of(topicName));
-        Map<String, TopicDescription> topicDescriptions = waitFuture(describeTopicsResult.allTopicNames(), 1, TimeUnit.MINUTES);
-        log.debug("TopicDescription for topic '{}' = {}", topicName, topicDescriptions.get(topicName));
-        return topicDescriptions.get(topicName);
+        long backoffMs = INITIAL_RETRY_BACKOFF_MS;
+        for (int attempt = 1; attempt <= METADATA_FETCH_RETRIES; attempt++) {
+            try {
+                DescribeTopicsResult describeTopicsResult = this.describeTopics(List.of(topicName));
+                Map<String, TopicDescription> topicDescriptions = waitFuture(
+                        describeTopicsResult.allTopicNames(),
+                        METADATA_FETCH_TIMEOUT_SECONDS,
+                        TimeUnit.SECONDS
+                );
+                log.debug("TopicDescription for topic '{}' = {}", topicName, topicDescriptions.get(topicName));
+                return topicDescriptions.get(topicName);
+            } catch (Exception e) {
+                if (!isRetryableMetadataException(e) || attempt == METADATA_FETCH_RETRIES) {
+                    throw e;
+                }
+                log.warn(
+                        "Transient Kafka error while describing topic '{}' (attempt {}/{}). Retrying in {} ms",
+                        topicName, attempt, METADATA_FETCH_RETRIES, backoffMs
+                );
+                sleepBackoff(backoffMs);
+                backoffMs = Math.min(backoffMs * 2, MAX_RETRY_BACKOFF_MS);
+            }
+        }
+        throw new IllegalStateException("Retry loop finished unexpectedly");
     }
 
     @SneakyThrows
     protected <T> T waitFuture(KafkaFuture<T> future, long timeout, TimeUnit unit) {
         return future.get(timeout, unit);
+    }
+
+    private boolean isRetryableMetadataException(Throwable throwable) {
+        Throwable rootCause = getRootCause(throwable);
+        return rootCause instanceof UnknownTopicOrPartitionException
+                || rootCause instanceof LeaderNotAvailableException
+                || rootCause instanceof NotLeaderOrFollowerException
+                || rootCause instanceof TimeoutException;
+    }
+
+    private Throwable getRootCause(Throwable throwable) {
+        Throwable rootCause = throwable;
+        while (rootCause.getCause() != null) {
+            rootCause = rootCause.getCause();
+        }
+        return rootCause;
+    }
+
+    @SneakyThrows
+    private void sleepBackoff(long backoffMs) {
+        Thread.sleep(backoffMs);
     }
 
     protected Classifier getClassifier(String topicName) {
