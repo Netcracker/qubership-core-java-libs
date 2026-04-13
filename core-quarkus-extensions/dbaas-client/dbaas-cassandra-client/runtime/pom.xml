@@ -13,7 +13,7 @@
     <properties>
         <datastax.cassandra.driver.version>4.19.2</datastax.cassandra.driver.version>
         <mockito.version>5.21.0</mockito.version>
-        <testcontainers.version>1.20.6</testcontainers.version>
+        <testcontainers.version>2.0.3</testcontainers.version>
     </properties>
 
     <dependencies>
@@ -84,7 +84,7 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-junit5</artifactId>
+            <artifactId>quarkus-junit</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -115,7 +115,7 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-junit5-mockito</artifactId>
+            <artifactId>quarkus-junit-mockito</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

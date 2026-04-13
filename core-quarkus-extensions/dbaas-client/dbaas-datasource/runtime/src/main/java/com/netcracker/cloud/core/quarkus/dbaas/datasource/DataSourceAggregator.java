@@ -83,6 +83,12 @@ public class DataSourceAggregator implements AgroalDataSource {
 
     @Override
     @SneakyThrows
+    public Connection getReadOnlyConnection() throws SQLException {
+        return isServiceDb() ? serviceDS.getReadOnlyConnection() : tenantDS.getReadOnlyConnection();
+    }
+
+    @Override
+    @SneakyThrows
     public Connection getConnection() throws SQLException {
         return isServiceDb() ? serviceDS.getConnection() : tenantDS.getConnection();
     }

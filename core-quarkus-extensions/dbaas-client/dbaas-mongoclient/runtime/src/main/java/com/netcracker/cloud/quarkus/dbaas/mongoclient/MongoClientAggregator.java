@@ -218,6 +218,15 @@ public class MongoClientAggregator implements MongoClient {
     }
 
     @Override
+    public void appendMetadata(MongoDriverInformation mongoDriverInformation) {
+        if (isServiceDb()) {
+            serviceMongoClient.appendMetadata(mongoDriverInformation);
+        } else {
+            tenantMongoClient.appendMetadata(mongoDriverInformation);
+        }
+    }
+
+    @Override
     public ClusterDescription getClusterDescription() {
         return isServiceDb() ? serviceMongoClient.getClusterDescription()
                 : tenantMongoClient.getClusterDescription();

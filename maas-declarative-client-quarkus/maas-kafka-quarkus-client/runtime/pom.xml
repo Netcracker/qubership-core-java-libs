@@ -42,7 +42,7 @@
         </dependency>
         <dependency>
             <groupId>io.opentelemetry.instrumentation</groupId>
-            <artifactId>opentelemetry-kafka-clients-common</artifactId>
+            <artifactId>opentelemetry-kafka-clients-common-0.11</artifactId>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>

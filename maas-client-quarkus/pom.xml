@@ -29,7 +29,7 @@
 		<maven.compiler.target>21</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<quarkus.version>3.27.3</quarkus.version>
+		<quarkus.version>3.33.1</quarkus.version>
 		<cloud-core.core-quarkus-extensions.version>9.2.0-SNAPSHOT</cloud-core.core-quarkus-extensions.version>
 
 		<cloud-core.maas-client.version>12.1.0-SNAPSHOT</cloud-core.maas-client.version>
