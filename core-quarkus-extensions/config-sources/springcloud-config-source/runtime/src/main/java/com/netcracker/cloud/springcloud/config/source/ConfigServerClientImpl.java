@@ -5,8 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import com.netcracker.cloud.quarkus.security.auth.M2MManager;
-import com.netcracker.cloud.security.core.auth.Token;
+import com.netcracker.cloud.security.core.utils.k8s.AudienceName;
+import com.netcracker.cloud.security.core.utils.k8s.KubernetesAudienceToken;
 import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
 import okhttp3.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -87,9 +87,8 @@ public class ConfigServerClientImpl implements ConfigServerClient {
         int count = 1;
         while (true) {
             try {
-                Token token = M2MManager.getInstance().getToken();
                 request = request.newBuilder()
-                        .addHeader("Authorization", token.getTokenType() + " " + token.getTokenValue())
+                        .addHeader("Authorization", "Bearer" + " " + KubernetesAudienceToken.getToken(AudienceName.NETCRACKER))
                         .build();
                 Response response = client.newCall(request).execute();
                 return response.body().string();
