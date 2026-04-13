@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.netcracker.cloud</groupId>
         <artifactId>rest-libraries</artifactId>
-        <version>7.1.0-SNAPSHOT</version>
+        <version>7.2.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>rest-security-adapters</artifactId>
@@ -22,7 +22,7 @@
         <dependency>
             <groupId>com.netcracker.cloud.security.core.utils</groupId>
             <artifactId>tls-utils</artifactId>
-            <version>${core-utils.version}</version>
+            <version>${cloud-core.core-utils.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

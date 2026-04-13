@@ -5,7 +5,7 @@
 	<packaging>pom</packaging>
 	<artifactId>maas-client-quarkus-parent</artifactId>
 	<groupId>com.netcracker.cloud.quarkus</groupId>
-	<version>10.0.2-SNAPSHOT</version>
+	<version>10.1.0-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -30,9 +30,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quarkus.version>3.27.3</quarkus.version>
-		<quarkus.core.extention.version>9.0.1</quarkus.core.extention.version>
+		<cloud-core.core-quarkus-extensions.version>9.2.0-SNAPSHOT</cloud-core.core-quarkus-extensions.version>
 
-		<cloud-core.maas-client.version>12.0.1</cloud-core.maas-client.version>
+		<cloud-core.maas-client.version>12.1.0-SNAPSHOT</cloud-core.maas-client.version>
 
 		<surefire-plugin.version>3.5.5</surefire-plugin.version>
 		<lombok.version>1.18.26</lombok.version>
@@ -80,14 +80,14 @@
 			<dependency>
 				<groupId>com.netcracker.cloud.quarkus</groupId>
 				<artifactId>cloud-core-quarkus-bom-internal</artifactId>
-				<version>${quarkus.core.extention.version}</version>
+				<version>${cloud-core.core-quarkus-extensions.version}</version>
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
 			<dependency>
 				<groupId>com.netcracker.cloud.quarkus</groupId>
 				<artifactId>cloud-core-quarkus-bom-publish</artifactId>
-				<version>${quarkus.core.extention.version}</version>
+				<version>${cloud-core.core-quarkus-extensions.version}</version>
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
@@ -95,12 +95,12 @@
 			<dependency>
 				<groupId>com.netcracker.cloud.quarkus</groupId>
 				<artifactId>security-adapters</artifactId>
-				<version>${quarkus.core.extention.version}</version>
+				<version>${cloud-core.core-quarkus-extensions.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.netcracker.cloud.quarkus</groupId>
 				<artifactId>security-adapters-deployment</artifactId>
-				<version>${quarkus.core.extention.version}</version>
+				<version>${cloud-core.core-quarkus-extensions.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

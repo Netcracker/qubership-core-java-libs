@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>cloud-core-quarkus-bom-parent</artifactId>
-        <version>9.1.0-SNAPSHOT</version>
+        <version>9.2.0-SNAPSHOT</version>
         <relativePath>../cloud-core-quarkus-bom-parent/pom.xml</relativePath>
     </parent>
     <artifactId>cloud-core-quarkus-bom-internal</artifactId>
@@ -13,9 +13,9 @@
 
     <properties>
         <!-- Qubership -->
-        <context.propagation.core.version>8.0.3</context.propagation.core.version>
-        <dbaas-client.version>9.0.3</dbaas-client.version>
-        <tls-utils.version>3.0.1</tls-utils.version>
+        <cloud-core.core-context-propagation.version>8.1.0-SNAPSHOT</cloud-core.core-context-propagation.version>
+        <cloud-core.dbaas-client.version>9.1.0-SNAPSHOT</cloud-core.dbaas-client.version>
+        <cloud-core.core-utils.version>3.1.0-SNAPSHOT</cloud-core.core-utils.version>
 
         <!-- Dev tools -->
         <freemarker.version>2.3.34</freemarker.version>
@@ -39,63 +39,63 @@
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>context-propagation-deployment</artifactId>
-                <version>${nc.context-quarkus.version}</version>
+                <version>${cloud-core.core-context-propagation.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>context-propagation</artifactId>
-                <version>${nc.context-quarkus.version}</version>
+                <version>${cloud-core.core-context-propagation.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>context-propagation-core</artifactId>
-                <version>${context.propagation.core.version}</version>
+                <version>${cloud-core.core-context-propagation.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>framework-contexts</artifactId>
-                <version>${context.propagation.core.version}</version>
+                <version>${cloud-core.core-context-propagation.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>dbaas-client-light</artifactId>
-                <version>${dbaas-client.version}</version>
+                <version>${cloud-core.dbaas-client.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud.security.core.utils</groupId>
                 <artifactId>tls-utils</artifactId>
-                <version>${tls-utils.version}</version>
+                <version>${cloud-core.core-utils.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>dbaas-client-base</artifactId>
-                <version>${dbaas-client.version}</version>
+                <version>${cloud-core.dbaas-client.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>dbaas-client-postgres-base</artifactId>
-                <version>${dbaas-client.version}</version>
+                <version>${cloud-core.dbaas-client.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>dbaas-client-opensearch-base</artifactId>
-                <version>${dbaas-client.version}</version>
+                <version>${cloud-core.dbaas-client.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>dbaas-client-cassandra-base</artifactId>
-                <version>${dbaas-client.version}</version>
+                <version>${cloud-core.dbaas-client.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>dbaas-client-mongo-base</artifactId>
-                <version>${dbaas-client.version}</version>
+                <version>${cloud-core.dbaas-client.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>dbaas-client-cassandra-migration</artifactId>
-                <version>${dbaas-client.version}</version>
+                <version>${cloud-core.dbaas-client.version}</version>
             </dependency>
             <!-- Dev tools -->
             <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->

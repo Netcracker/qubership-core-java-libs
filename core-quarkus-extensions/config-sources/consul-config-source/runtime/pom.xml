@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>consul-config-source-parent</artifactId>
-        <version>9.1.0-SNAPSHOT</version>
+        <version>9.2.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -44,7 +44,7 @@
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
             <artifactId>consul-config-provider-common</artifactId>
-            <version>${rest-libraries.version}</version>
+            <version>${cloud-core.core-rest-libraries.version}</version>
         </dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>

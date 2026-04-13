@@ -4,7 +4,7 @@
     <parent>
         <artifactId>rest-api-deprecation-switcher-parent</artifactId>
         <groupId>com.netcracker.cloud.quarkus</groupId>
-        <version>9.1.0-SNAPSHOT</version>
+        <version>9.2.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -14,12 +14,12 @@
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
             <artifactId>rest-api-deprecation-switcher-common</artifactId>
-            <version>${rest-libraries.version}</version>
+            <version>${cloud-core.core-rest-libraries.version}</version>
         </dependency>
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
             <artifactId>core-error-handling-rest</artifactId>
-            <version>${error-handling.version}</version>
+            <version>${cloud-core.core-error-handling.version}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

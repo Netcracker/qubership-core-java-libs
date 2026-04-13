@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>cloud-core-quarkus-bom-parent</artifactId>
-        <version>9.1.0-SNAPSHOT</version>
+        <version>9.2.0-SNAPSHOT</version>
         <relativePath>../cloud-core-quarkus-bom-parent/pom.xml</relativePath>
     </parent>
     <artifactId>cloud-core-quarkus-bom-publish</artifactId>
@@ -16,7 +16,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>cloud-core-context-propagation-bom</artifactId>
-                <version>${nc.context-quarkus.version}</version>
+                <version>${cloud-core.core-context-propagation-quarkus.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
