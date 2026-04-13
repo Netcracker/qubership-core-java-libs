@@ -37,7 +37,7 @@
             <!--This dependency is not used directly, but it is required transitively for BWC-->
             <groupId>com.netcracker.cloud.security.core.utils</groupId>
             <artifactId>tls-utils</artifactId>
-            <version>3.0.2</version>
+            <version>3.0.3</version>
         </dependency>
     </dependencies>
 
