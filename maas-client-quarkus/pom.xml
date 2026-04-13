@@ -35,7 +35,6 @@
 		<cloud-core.maas-client.version>12.1.0-SNAPSHOT</cloud-core.maas-client.version>
 
 		<surefire-plugin.version>3.5.5</surefire-plugin.version>
-		<lombok.version>1.18.26</lombok.version>
 		<!--Qubership -->
 		<nc.quarkus.security.version>${project.version}</nc.quarkus.security.version>
 		<!-- These properties are needed in order for them to be resolvable by the generated projects -->

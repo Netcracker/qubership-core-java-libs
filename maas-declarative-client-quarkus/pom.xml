@@ -32,7 +32,6 @@
         <jandex.version>3.5.3</jandex.version>
         <curator.version>5.1.0</curator.version>
 
-        <testcontainers.version>2.0.3</testcontainers.version>
         <assertj-core.version>3.27.7</assertj-core.version>
 
         <cloud-core.maas-declarative-client-commons.version>6.1.0-SNAPSHOT</cloud-core.maas-declarative-client-commons.version>

@@ -50,8 +50,7 @@
                     <artifactId>javax.inject</artifactId>
                     <groupId>javax.inject</groupId>
                 </exclusion>
-                <!--It's
-                banned dependency by maven-enforcer-plugin-->
+                <!--It's banned dependency by maven-enforcer-plugin-->
                 <exclusion>
                     <groupId>javax.validation</groupId>
                     <artifactId>validation-api</artifactId>

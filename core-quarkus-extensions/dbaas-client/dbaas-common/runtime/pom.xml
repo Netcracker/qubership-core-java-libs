@@ -40,11 +40,6 @@
       <groupId>com.netcracker.cloud</groupId>
       <artifactId>dbaas-client-light</artifactId>
       <exclusions>
-        <!--1.16.10 version of lombok is used, while in another dependencies - 1.18.10-->
-        <exclusion>
-          <groupId>org.projectlombok</groupId>
-          <artifactId>lombok</artifactId>
-        </exclusion>
         <!--avoid usage cause other sl4j libraries are used (jboss)-->
         <exclusion>
           <groupId>ch.qos.logback</groupId>

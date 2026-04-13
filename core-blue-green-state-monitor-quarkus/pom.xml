@@ -20,7 +20,6 @@
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <testcontainers.version>2.0.3</testcontainers.version>
         <quarkus.version>3.33.1</quarkus.version>
         <cloud-core.core-quarkus-extensions.version>9.2.0-SNAPSHOT</cloud-core.core-quarkus-extensions.version>
         <cloud-core.core-blue-green-state-monitor.version>2.1.0-SNAPSHOT</cloud-core.core-blue-green-state-monitor.version>
