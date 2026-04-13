@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud.maas.declarative</groupId>
     <artifactId>maas-declarative-kafka-client-spring-bom</artifactId>
-    <version>7.0.5-SNAPSHOT</version>
+    <version>7.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -32,10 +32,10 @@
 
         <testcontainers.version>1.21.4</testcontainers.version>
 
-        <maas-declarative-kafka-client.version>6.0.1</maas-declarative-kafka-client.version>
+        <cloud-core.maas-declarative-client-commons.version>6.1.0-SNAPSHOT</cloud-core.maas-declarative-client-commons.version>
         <kafka-clients.version>4.2.0</kafka-clients.version>
-        <maas-client-spring.version>9.0.4</maas-client-spring.version>
-        <blue-green-state-monitor.version>2.0.3</blue-green-state-monitor.version>
+        <cloud-core.maas-declarative-client-spring.version>9.1.0-SNAPSHOT</cloud-core.maas-declarative-client-spring.version>
+        <cloud-core.core-blue-green-state-monitor.version>2.1.0-SNAPSHOT</cloud-core.core-blue-green-state-monitor.version>
     </properties>
 
     <dependencyManagement>
@@ -43,12 +43,12 @@
             <dependency>
                 <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>maas-declarative-kafka-client</artifactId>
-                <version>${maas-declarative-kafka-client.version}</version>
+                <version>${cloud-core.maas-declarative-client-commons.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>maas-client-spring</artifactId>
-                <version>${maas-client-spring.version}</version>
+                <version>${cloud-core.maas-declarative-client-spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.kafka</groupId>

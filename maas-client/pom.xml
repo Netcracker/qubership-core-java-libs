@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud.maas.client</groupId>
     <artifactId>maas-client-parent</artifactId>
-    <version>12.0.2-SNAPSHOT</version>
+    <version>12.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -19,9 +19,9 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <cloud-core.context-propagation.version>8.0.3</cloud-core.context-propagation.version>
+        <cloud-core.core-context-propagation.version>8.1.0-SNAPSHOT</cloud-core.core-context-propagation.version>
         <testcontainers.version>1.21.4</testcontainers.version>
-        <blue-green-monitor.version>2.0.3</blue-green-monitor.version>
+        <cloud-core.core-blue-green-state-monitor.version>2.1.0-SNAPSHOT</cloud-core.core-blue-green-state-monitor.version>
 
         <kafka.version>4.2.0</kafka.version>
         <jackson.core.version>2.21.2</jackson.core.version>
@@ -59,17 +59,17 @@
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>blue-green-state-monitor-java-plain</artifactId>
-                <version>${blue-green-monitor.version}</version>
+                <version>${cloud-core.core-blue-green-state-monitor.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>context-propagation-core</artifactId>
-                <version>${cloud-core.context-propagation.version}</version>
+                <version>${cloud-core.core-context-propagation.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>framework-contexts</artifactId>
-                <version>${cloud-core.context-propagation.version}</version>
+                <version>${cloud-core.core-context-propagation.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.junit</groupId>

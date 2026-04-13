@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>cloud-core-java-bom</artifactId>
-    <version>12.0.2-SNAPSHOT</version>
+    <version>12.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>cloud-core-java-bom</name>
@@ -21,13 +21,13 @@
     <properties>
         <io.micrometer.verion>1.16.4</io.micrometer.verion>
         <java.version>21</java.version>
-        <mongo.evolution.version>8.0.3</mongo.evolution.version>
-        <rest.libraries.version>7.0.3</rest.libraries.version>
-        <dbaas.client.version>9.0.3</dbaas.client.version>
-        <framework.extension.version>7.0.3</framework.extension.version>
-        <context.propagation.version>8.0.3</context.propagation.version>
-        <maas-client.version>12.0.1</maas-client.version>
-        <core-error-handling.version>4.0.1</core-error-handling.version>
+        <cloud-core.core-mongo-evolution.version>8.1.0-SNAPSHOT</cloud-core.core-mongo-evolution.version>
+        <cloud-core.core-rest-libraries.version>7.2.0-SNAPSHOT</cloud-core.core-rest-libraries.version>
+        <cloud-core.dbaas-client.version>9.1.0-SNAPSHOT</cloud-core.dbaas-client.version>
+        <cloud-core.core-microservice-framework-extensions.version>7.1.0-SNAPSHOT</cloud-core.core-microservice-framework-extensions.version>
+        <cloud-core.core-context-propagation.version>8.1.0-SNAPSHOT</cloud-core.core-context-propagation.version>
+        <cloud-core.maas-client.version>12.1.0-SNAPSHOT</cloud-core.maas-client.version>
+        <cloud-core.core-error-handling.version>4.1.0-SNAPSHOT</cloud-core.core-error-handling.version>
     </properties>
 
     <dependencyManagement>
@@ -36,55 +36,55 @@
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-error-handling-rest</artifactId>
-                <version>${core-error-handling.version}</version>
+                <version>${cloud-core.core-error-handling.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-error-handling-runtime</artifactId>
-                <version>${core-error-handling.version}</version>
+                <version>${cloud-core.core-error-handling.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>mongo-evolution</artifactId>
-                <version>${mongo.evolution.version}</version>
+                <version>${cloud-core.core-mongo-evolution.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>mongo-evolution-spring</artifactId>
-                <version>${mongo.evolution.version}</version>
+                <version>${cloud-core.core-mongo-evolution.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>dbaas-client-bom</artifactId>
-                <version>${dbaas.client.version}</version>
+                <version>${cloud-core.dbaas-client.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>rest-libraries-bom</artifactId>
-                <version>${rest.libraries.version}</version>
+                <version>${cloud-core.core-rest-libraries.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>framework-extension-bom</artifactId>
-                <version>${framework.extension.version}</version>
+                <version>${cloud-core.core-microservice-framework-extensions.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>context-propagation-bom</artifactId>
-                <version>${context.propagation.version}</version>
+                <version>${cloud-core.core-context-propagation.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>maas-client-bom</artifactId>
-                <version>${maas-client.version}</version>
+                <version>${cloud-core.maas-client.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
