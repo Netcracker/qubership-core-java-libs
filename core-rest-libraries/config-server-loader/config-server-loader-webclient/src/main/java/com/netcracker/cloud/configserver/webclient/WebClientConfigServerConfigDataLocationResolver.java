@@ -4,6 +4,8 @@ import com.netcracker.cloud.configserver.common.configuration.AbstractCustomConf
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import com.netcracker.cloud.restclient.webclient.MicroserviceWebClient;
 import com.netcracker.cloud.security.core.auth.M2MManager;
+import com.netcracker.cloud.security.core.utils.k8s.AudienceName;
+import com.netcracker.cloud.security.core.utils.k8s.KubernetesAudienceToken;
 import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.web.reactive.function.client.ClientRequest;
@@ -38,7 +40,7 @@ public class WebClientConfigServerConfigDataLocationResolver extends AbstractCus
     }
 
     private String getM2MToken(ConfigurableBootstrapContext configurableBootstrapContext) {
-        return configurableBootstrapContext.get(M2MManager.class).getToken().getTokenValue();
+        return KubernetesAudienceToken.getToken(AudienceName.NETCRACKER);
     }
 
     private boolean hasM2M(ConfigurableBootstrapContext configurableBootstrapContext) {

@@ -5,6 +5,8 @@ import com.netcracker.cloud.routesregistration.common.gateway.route.*;
 import com.netcracker.cloud.routesregistration.common.gateway.route.rest.RegistrationRequestFactory;
 import com.netcracker.cloud.routesregistration.common.gateway.route.transformation.RouteTransformer;
 import com.netcracker.cloud.security.core.auth.Token;
+import com.netcracker.cloud.security.core.utils.k8s.AudienceName;
+import com.netcracker.cloud.security.core.utils.k8s.KubernetesAudienceToken;
 import io.quarkus.arc.Unremovable;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
@@ -84,10 +86,9 @@ public class RouteRegistrationConfig {
     OkHttpClient controlPlaneHttpClient() {
         return new OkHttpClient.Builder()
                 .addInterceptor(chain -> {
-                    Token token = M2MManager.getInstance().getToken();
                     Request original = chain.request();
                     Request request = original.newBuilder()
-                            .addHeader("Authorization", token.getTokenType() + " " + token.getTokenValue())
+                            .addHeader("Authorization", "Bearer" + " " + KubernetesAudienceToken.getToken(AudienceName.NETCRACKER))
                             .build();
                     return chain.proceed(request);
                 })

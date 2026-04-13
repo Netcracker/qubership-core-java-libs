@@ -2,10 +2,9 @@ package com.netcracker.cloud.quarkus.routesregistration.runtime.gateway.route;
 
 import com.netcracker.cloud.routesregistration.common.gateway.route.ControlPlaneClient;
 import com.netcracker.cloud.routesregistration.common.gateway.route.RoutesRestRegistrationProcessor;
-import com.netcracker.cloud.routesregistration.common.gateway.route.ServiceMeshType;
+import com.netcracker.cloud.security.core.utils.k8s.AudienceName;
+import com.netcracker.cloud.security.core.utils.k8s.KubernetesAudienceToken;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.QuarkusTestProfile;
-import io.quarkus.test.junit.TestProfile;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;

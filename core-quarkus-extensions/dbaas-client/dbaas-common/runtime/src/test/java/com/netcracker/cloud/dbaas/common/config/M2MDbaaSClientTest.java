@@ -1,5 +1,7 @@
 package com.netcracker.cloud.dbaas.common.config;
 
+import com.netcracker.cloud.security.core.utils.k8s.AudienceName;
+import com.netcracker.cloud.security.core.utils.k8s.KubernetesAudienceToken;
 import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +32,10 @@ class M2MDbaaSClientTest {
         OkHttpClient clientValue = (OkHttpClient) clientField.get(client);
         assertNotNull(client);
         assertEquals(2, clientValue.interceptors().size());
+    }
+    @Test
+    void testCreds() {
+        assertEquals("Bearer "+ KubernetesAudienceToken.getToken(AudienceName.NETCRACKER), new M2MDbaaSClient(null).credentials());
     }
 }
 

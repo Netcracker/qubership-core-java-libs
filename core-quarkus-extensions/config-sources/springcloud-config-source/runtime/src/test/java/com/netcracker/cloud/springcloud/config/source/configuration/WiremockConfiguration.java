@@ -1,6 +1,8 @@
 package com.netcracker.cloud.springcloud.config.source.configuration;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.netcracker.cloud.security.core.utils.k8s.AudienceName;
+import com.netcracker.cloud.security.core.utils.k8s.KubernetesAudienceToken;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
 import java.util.HashMap;
@@ -19,6 +21,7 @@ public class WiremockConfiguration implements QuarkusTestResourceLifecycleManage
         wireMockServer.start();
 
         stubFor(get(urlEqualTo("/test-application/default"))
+                .withHeader("Authorization", equalTo("Bearer "+ KubernetesAudienceToken.getToken(AudienceName.NETCRACKER)))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withBody(

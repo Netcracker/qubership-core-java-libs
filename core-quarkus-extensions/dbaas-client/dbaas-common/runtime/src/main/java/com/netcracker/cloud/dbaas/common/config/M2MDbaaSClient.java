@@ -1,5 +1,7 @@
 package com.netcracker.cloud.dbaas.common.config;
 
+import com.netcracker.cloud.security.core.utils.k8s.AudienceName;
+import com.netcracker.cloud.security.core.utils.k8s.KubernetesAudienceToken;
 import jakarta.enterprise.context.ApplicationScoped;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -7,8 +9,6 @@ import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.dbaas.client.DbaaSClientOkHttpImpl;
 import com.netcracker.cloud.dbaas.client.DbaasClient;
 import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
-import com.netcracker.cloud.quarkus.security.auth.M2MManager;
-import com.netcracker.cloud.security.core.auth.Token;
 import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
 
 import java.util.Optional;
@@ -31,10 +31,8 @@ public class M2MDbaaSClient {
         OkHttpClient httpClient = new OkHttpClient.Builder()
                 .addInterceptor(chain -> {
                     Request original = chain.request();
-                    Token token = M2MManager.getInstance().getToken();
-                    String credentials = token.getTokenType() + " " + token.getTokenValue();
                     Request.Builder requestBuilder = original.newBuilder()
-                            .addHeader("Authorization", credentials);
+                            .addHeader("Authorization", credentials());
                     Optional<TenantContextObject> tenantContextData = ContextManager.getSafe(TENANT_CONTEXT_NAME);
                     if (tenantContextData.isPresent() && tenantContextData.get().getTenant() != null) {
                         requestBuilder.addHeader("tenant", tenantContextData.get().getTenant());
@@ -45,5 +43,9 @@ public class M2MDbaaSClient {
                 .sslSocketFactory(TlsUtils.getSslContext().getSocketFactory(), TlsUtils.getTrustManager())
                 .build();
         return new DbaaSClientOkHttpImpl(url, httpClient);
+    }
+
+    String credentials() {
+        return "Bearer" + " " + KubernetesAudienceToken.getToken(AudienceName.NETCRACKER);
     }
 }

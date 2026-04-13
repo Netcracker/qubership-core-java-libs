@@ -1,5 +1,7 @@
 package com.netcracker.cloud.configserver.resttemplate;
 
+import com.netcracker.cloud.security.core.utils.k8s.AudienceName;
+import com.netcracker.cloud.security.core.utils.k8s.KubernetesAudienceToken;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
@@ -56,7 +58,7 @@ public class RestTemplateConfigServerConfigDataLocationResolver extends Abstract
     }
 
     private String getM2MToken(ConfigurableBootstrapContext configurableBootstrapContext) {
-        return configurableBootstrapContext.get(M2MManager.class).getToken().getTokenValue();
+        return KubernetesAudienceToken.getToken(AudienceName.NETCRACKER);
     }
 
     private boolean hasM2M(ConfigurableBootstrapContext configurableBootstrapContext) {
