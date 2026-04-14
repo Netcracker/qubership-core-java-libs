@@ -2,6 +2,7 @@ package com.netcracker.cloud.dbaas.client;
 
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 
 @Slf4j
 public class ClickhouseTestContainer extends GenericContainer<ClickhouseTestContainer> {
@@ -23,7 +24,8 @@ public class ClickhouseTestContainer extends GenericContainer<ClickhouseTestCont
                     .withEnv("CLICKHOUSE_USER", CLICKHOUSE_ADMIN_USERNAME)
                     .withEnv("CLICKHOUSE_PASSWORD", CLICKHOUSE_ADMIN_PWD)
                     .withEnv("CLICKHOUSE_DB", CLICKHOUSE_ADMIN_DB)
-                    .withExposedPorts(CLICKHOUSE_PORT);
+                    .withExposedPorts(CLICKHOUSE_PORT)
+                    .waitingFor(Wait.forHttp("/ping").forPort(CLICKHOUSE_PORT).forStatusCode(200));
         }
         return container;
     }
