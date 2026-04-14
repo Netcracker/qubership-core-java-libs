@@ -34,7 +34,7 @@
 
         <assertj-core.version>3.27.7</assertj-core.version>
 
-        <cloud-core.maas-declarative-client-commons.version>7.0.0-SNAPSHOT</cloud-core.maas-declarative-client-commons.version>
+        <cloud-core.maas-declarative-client-commons.version>6.1.0-SNAPSHOT</cloud-core.maas-declarative-client-commons.version>
         <kafka-clients.version>4.2.0</kafka-clients.version>
         <cloud-core.maas-declarative-client-quarkus.version>11.0.0-SNAPSHOT</cloud-core.maas-declarative-client-quarkus.version>
         <cloud-core.core-blue-green-state-monitor-quarkus.version>4.0.0-SNAPSHOT</cloud-core.core-blue-green-state-monitor-quarkus.version>
