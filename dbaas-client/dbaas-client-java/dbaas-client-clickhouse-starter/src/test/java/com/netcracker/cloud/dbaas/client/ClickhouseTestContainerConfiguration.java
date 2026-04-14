@@ -5,16 +5,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.testcontainers.clickhouse.ClickHouseContainer;
+import org.testcontainers.containers.GenericContainer;
 
 @Configuration
 public class ClickhouseTestContainerConfiguration {
-    ClickHouseContainer container;
+    GenericContainer<?> container;
 
     @Bean
     @Primary
     @Qualifier("clickhouseContainer")
-    public ClickHouseContainer getContainer() {
+    public GenericContainer<?> getContainer() {
         container = ClickhouseTestContainer.getInstance();
         container.start();
         return container;

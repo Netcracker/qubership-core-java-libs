@@ -30,8 +30,6 @@
         <spring-cloud.version>2025.1.1</spring-cloud.version>
         <springdoc.version>1.6.11</springdoc.version>
 
-        <testcontainers.version>1.21.4</testcontainers.version>
-
         <cloud-core.maas-declarative-client-commons.version>6.1.0-SNAPSHOT</cloud-core.maas-declarative-client-commons.version>
         <kafka-clients.version>4.2.0</kafka-clients.version>
         <cloud-core.maas-declarative-client-spring.version>9.1.0-SNAPSHOT</cloud-core.maas-declarative-client-spring.version>
@@ -95,18 +93,6 @@ because spring-boot-based microservices are maven-inherited from spring-boot-par
                 <groupId>io.opentelemetry.instrumentation</groupId>
                 <artifactId>opentelemetry-kafka-clients-common</artifactId>
                 <version>2.13.3-alpha</version>
-            </dependency>
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>junit-jupiter</artifactId>
-                <version>${testcontainers.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>kafka</artifactId>
-                <version>${testcontainers.version}</version>
-                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
