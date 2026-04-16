@@ -44,12 +44,12 @@ class KubernetesOidcRestClientTest {
             var baseUrl = server.url("").toString();
             var actual = restClient.getOidcConfiguration(baseUrl);
             Assertions.assertEquals("https://192.168.49.2:8443/openid/v1/jwks", actual);
-        }
-        Assertions.assertEquals("/.well-known/openid-configuration", server.takeRequest().getPath());
+            Assertions.assertEquals("/.well-known/openid-configuration", server.takeRequest().getPath());
 
-        actual = restClient.getOidcConfiguration(baseUrl+"/");
-        Assertions.assertEquals("https://192.168.49.2:8443/openid/v1/jwks", actual);
-        Assertions.assertEquals("/.well-known/openid-configuration", server.takeRequest().getPath());
+            actual = restClient.getOidcConfiguration(baseUrl+"/");
+            Assertions.assertEquals("https://192.168.49.2:8443/openid/v1/jwks", actual);
+            Assertions.assertEquals("/.well-known/openid-configuration", server.takeRequest().getPath());
+        }
     }
 
     @Test
