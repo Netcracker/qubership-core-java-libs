@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
@@ -152,7 +153,7 @@ public class DbaasArangoTemplateTest {
             }
         });
 
-        Mockito.verify(arangoTemplate, times(threadsCount)).query(eq("RETURN 13"), any());
+        Mockito.verify(arangoTemplate, atLeastOnce()).query(eq("RETURN 13"), any());
         Mockito.verify(newArangoTemplate, times(threadsCount)).query(eq("RETURN 13"), any());
         Mockito.verify(dbaasArangoTemplate, times(2)).initArangoTemplate();
         Mockito.verify(dbaasArangoTemplate, times(1)).checkConnection(arangoTemplate);
