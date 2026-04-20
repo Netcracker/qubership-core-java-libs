@@ -26,6 +26,7 @@
         <apache.httpclient.version>5.5.2</apache.httpclient.version>
 
         <cloud-core.core-error-handling.version>4.1.0-SNAPSHOT</cloud-core.core-error-handling.version>
+        <cloud-core.core-utils.version>3.1.0-SNAPSHOT</cloud-core.core-utils.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../microservice-restclient-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
@@ -37,7 +38,7 @@
             <!--This dependency is not used directly, but it is required transitively for BWC-->
             <groupId>com.netcracker.cloud.security.core.utils</groupId>
             <artifactId>tls-utils</artifactId>
-            <version>3.0.3</version>
+            <version>${cloud-core.core-utils.version}</version>
         </dependency>
     </dependencies>
 
