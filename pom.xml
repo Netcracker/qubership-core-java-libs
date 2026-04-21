@@ -12,6 +12,7 @@
     <name>Monorepo Aggregator</name>
 
     <modules>
+        <module>qubership-java-internal-bom</module>
         <module>core-utils</module>
         <module>core-error-handling</module>
         <module>core-process-orchestrator</module>
