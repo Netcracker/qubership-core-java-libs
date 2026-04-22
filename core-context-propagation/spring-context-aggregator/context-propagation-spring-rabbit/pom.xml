@@ -10,14 +10,12 @@
 
     <artifactId>context-propagation-spring-rabbit</artifactId>
     <properties>
-        <spring.amqp.version>4.0.2</spring.amqp.version>
         <qpid.version>10.0.1</qpid.version>
     </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework.amqp</groupId>
             <artifactId>spring-amqp</artifactId>
-            <version>${spring.amqp.version}</version>
         </dependency>
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
@@ -27,20 +25,17 @@
         <dependency>
             <groupId>org.springframework.amqp</groupId>
             <artifactId>spring-rabbit</artifactId>
-            <version>${spring.amqp.version}</version>
         </dependency>
 
         <!-- test deps -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>6.0.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.32</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -52,7 +47,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -76,7 +70,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test</artifactId>
-            <version>4.0.5</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
