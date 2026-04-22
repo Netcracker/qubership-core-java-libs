@@ -19,8 +19,6 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <testcontainers.version>2.0.4</testcontainers.version>
-
         <cloud-core.core-rest-libraries.version>7.2.0-SNAPSHOT</cloud-core.core-rest-libraries.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
