@@ -20,8 +20,6 @@
         <java.version>21</java.version>
         <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
         <build.plugins.plugin.version>3.4.0</build.plugins.plugin.version>
-<mockito.version>5.21.0</mockito.version>
-        <spring.version>7.0.6</spring.version>
 
         <cloud-core.core-error-handling.version>4.2.0-SNAPSHOT</cloud-core.core-error-handling.version>
         <cloud-core.core-utils.version>3.1.0-SNAPSHOT</cloud-core.core-utils.version>
