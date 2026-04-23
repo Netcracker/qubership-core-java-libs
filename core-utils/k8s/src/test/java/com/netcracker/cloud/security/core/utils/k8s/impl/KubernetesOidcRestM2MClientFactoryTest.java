@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 
 @ExtendWith(MockitoExtension.class)
-class KubernetesOidcRestClientTest {
+class KubernetesOidcRestM2MClientFactoryTest {
     private String mockJwks;
     private KubernetesOidcRestClient restClient;
     private MockWebServer server;
