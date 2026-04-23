@@ -18,7 +18,7 @@
         <cloud-core.core-context-propagation.version>8.1.0-SNAPSHOT</cloud-core.core-context-propagation.version>
 
         <!--Spring's libraries -->
-        <spring.boot.version>4.0.5</spring.boot.version>
+        <spring.boot.version>4.0.6</spring.boot.version>
         <spring.cloud.version>5.0.1</spring.cloud.version>
         <spring.version>7.0.6</spring.version>
         <spring.security>7.0.4</spring.security>
