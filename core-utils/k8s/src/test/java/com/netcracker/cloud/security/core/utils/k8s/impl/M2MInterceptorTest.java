@@ -25,7 +25,6 @@ class M2MInterceptorTest {
     private WireMockServer wireMockServer;
     private OkHttpClient client;
 
-    // Mocked suppliers for the new interceptor structure
     private Supplier<String> fallbackSupplier;
     private Supplier<String> k8sSupplier;
 
@@ -35,7 +34,7 @@ class M2MInterceptorTest {
     @BeforeEach
     @SuppressWarnings("unchecked")
     void beforeEach() {
-        wireMockServer = new WireMockServer(0); // Random port
+        wireMockServer = new WireMockServer(0);
         wireMockServer.start();
         WireMock.configureFor("localhost", wireMockServer.port());
 
@@ -139,5 +138,45 @@ class M2MInterceptorTest {
                 .url(wireMockServer.baseUrl() + TEST_ENDPOINT)
                 .get()
                 .build();
+    }
+
+    @Test
+    @SneakyThrows
+    void fallbackUrl_RebasesHostWhenFallbackOccurs() {
+        WireMockServer fallbackServer = new WireMockServer(0);
+        fallbackServer.start();
+        WireMock.configureFor("localhost", fallbackServer.port());
+
+        fallbackServer.stubFor(get(urlEqualTo(TEST_ENDPOINT))
+                .withHeader("Authorization", equalTo(FALLBACK_TOKEN_HEADER))
+                .willReturn(aResponse().withStatus(200)));
+
+        wireMockServer.stubFor(get(urlEqualTo(TEST_ENDPOINT))
+                .withHeader("Authorization", equalTo(K8S_TOKEN_HEADER))
+                .willReturn(aResponse().withStatus(401)));
+
+        UrlCache urlCache = new UrlCache(TEST_CACHE_SIZE, TEST_CACHE_DURATION_SEC);
+        String fallbackBaseUrl = "http://localhost:" + fallbackServer.port();
+
+        M2MInterceptor interceptor = new M2MInterceptor(urlCache, fallbackSupplier, k8sSupplier, fallbackBaseUrl);
+        OkHttpClient clientWithFallbackUrl = new OkHttpClient.Builder()
+                .addInterceptor(interceptor)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(wireMockServer.baseUrl() + TEST_ENDPOINT)
+                .get()
+                .build();
+
+        try (Response response = clientWithFallbackUrl.newCall(request).execute()) {
+            assertEquals(200, response.code());
+        }
+
+        wireMockServer.verify(1, getRequestedFor(urlEqualTo(TEST_ENDPOINT))
+                .withHeader("Authorization", equalTo(K8S_TOKEN_HEADER)));
+        fallbackServer.verify(1, getRequestedFor(urlEqualTo(TEST_ENDPOINT))
+                .withHeader("Authorization", equalTo(FALLBACK_TOKEN_HEADER)));
+
+        fallbackServer.stop();
     }
 }
