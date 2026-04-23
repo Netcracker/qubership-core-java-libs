@@ -18,19 +18,9 @@
 
     <properties>
         <spring-boot.version>4.0.5</spring-boot.version>
-        <guava.version>33.5.0-jre</guava.version>
-        <reflections.version>0.10.2</reflections.version>
-        <springdoc.version>3.0.3</springdoc.version>
-        <commons-collections4.version>4.5.0</commons-collections4.version>
-        <jetbrains-annotations.version>26.0.2</jetbrains-annotations.version>
-        <junit-pioneer.version>2.3.0</junit-pioneer.version>
-        <logcaptor.version>2.12.6</logcaptor.version>
-        <mockserver.version>5.15.0</mockserver.version>
-        <system-stubs.version>2.1.8</system-stubs.version>
-        <powermock-reflect.version>2.0.9</powermock-reflect.version>
         <spring-cloud.version>2025.1.1</spring-cloud.version>
-        <jsr305.version>3.0.2</jsr305.version>
-        <undertow.version>2.3.24.Final</undertow.version>
+        <springdoc.version>3.0.3</springdoc.version>
+        <qubership-java-internal-bom.version>1.0.0-SNAPSHOT</qubership-java-internal-bom.version>
     </properties>
 
     <dependencyManagement>
@@ -51,17 +41,6 @@
             </dependency>
 
             <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.reflections</groupId>
-                <artifactId>reflections</artifactId>
-                <version>${reflections.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
                 <version>${springdoc.version}</version>
@@ -73,62 +52,11 @@
             </dependency>
 
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-collections4</artifactId>
-                <version>${commons-collections4.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jetbrains</groupId>
-                <artifactId>annotations</artifactId>
-                <version>${jetbrains-annotations.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.junit-pioneer</groupId>
-                <artifactId>junit-pioneer</artifactId>
-                <version>${junit-pioneer.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.github.logcaptor</groupId>
-                <artifactId>logcaptor</artifactId>
-                <version>${logcaptor.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.mock-server</groupId>
-                <artifactId>mockserver-junit-jupiter</artifactId>
-                <version>${mockserver.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.mock-server</groupId>
-                <artifactId>mockserver-netty</artifactId>
-                <version>${mockserver.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>uk.org.webcompere</groupId>
-                <artifactId>system-stubs-jupiter</artifactId>
-                <version>${system-stubs.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-reflect</artifactId>
-                <version>${powermock-reflect.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.google.code.findbugs</groupId>
-                <artifactId>jsr305</artifactId>
-                <version>${jsr305.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.undertow</groupId>
-                <artifactId>undertow-servlet</artifactId>
-                <version>${undertow.version}</version>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>qubership-java-internal-bom</artifactId>
+                <version>${qubership-java-internal-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

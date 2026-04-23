@@ -331,9 +331,21 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.mock-server</groupId>
+                <artifactId>mockserver-netty</artifactId>
+                <version>${mockserver.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.awaitility</groupId>
                 <artifactId>awaitility</artifactId>
                 <version>${awaitility.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-servlet</artifactId>
+                <version>${undertow.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
