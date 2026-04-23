@@ -29,6 +29,8 @@
         <system-stubs.version>2.1.8</system-stubs.version>
         <powermock-reflect.version>2.0.9</powermock-reflect.version>
         <spring-cloud.version>2025.1.1</spring-cloud.version>
+        <jsr305.version>3.0.2</jsr305.version>
+        <undertow.version>2.3.24.Final</undertow.version>
     </properties>
 
     <dependencyManagement>
@@ -116,6 +118,17 @@
                 <artifactId>powermock-reflect</artifactId>
                 <version>${powermock-reflect.version}</version>
                 <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>${jsr305.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.undertow</groupId>
+                <artifactId>undertow-servlet</artifactId>
+                <version>${undertow.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
