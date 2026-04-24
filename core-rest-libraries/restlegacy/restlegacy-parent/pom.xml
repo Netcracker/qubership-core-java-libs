@@ -12,5 +12,15 @@
     <artifactId>restlegacy-parent</artifactId>
     <packaging>pom</packaging>
 
-
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>qubership-spring-internal-bom</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

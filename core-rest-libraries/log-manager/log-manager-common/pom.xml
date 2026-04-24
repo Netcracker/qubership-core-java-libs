@@ -10,12 +10,20 @@
 
     <artifactId>log-manager-common</artifactId>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>qubership-java-internal-bom</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <properties>
-        <log4j.version>2.25.3</log4j.version>
-        <logback.version>1.5.32</logback.version>
         <jboss.version>3.2.1.Final</jboss.version>
-        <slf4j.version>2.0.17</slf4j.version>
-        <junit-jupiter-api.version>6.0.3</junit-jupiter-api.version>
         <mockito-inline.version>5.2.0</mockito-inline.version>
     </properties>
 
@@ -23,13 +31,11 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -41,15 +47,12 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
             <optional>true</optional>
         </dependency>
-
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit-jupiter-api.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
