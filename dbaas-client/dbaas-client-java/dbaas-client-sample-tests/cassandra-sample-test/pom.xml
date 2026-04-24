@@ -22,7 +22,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.17</version>
         </dependency>
         <dependency>
             <groupId>com.netcracker.cloud</groupId>

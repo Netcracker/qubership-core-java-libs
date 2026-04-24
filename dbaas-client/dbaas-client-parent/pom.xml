@@ -19,8 +19,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>21</java.version>
         <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
-        <mockito.version>5.14.2</mockito.version>
-        <powermock.version>2.0.9</powermock.version>
         <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
         <cassandra-unit.version>4.3.1.0</cassandra-unit.version>
         <maven.surefire.version>3.5.5</maven.surefire.version>

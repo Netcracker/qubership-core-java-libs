@@ -19,12 +19,10 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-cassandra</artifactId>
-            <version>5.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-cassandra</artifactId>
-            <version>4.0.5</version>
         </dependency>
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
