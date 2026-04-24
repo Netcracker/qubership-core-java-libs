@@ -20,12 +20,9 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <cloud-core.core-context-propagation.version>8.2.0-SNAPSHOT</cloud-core.core-context-propagation.version>
-        <testcontainers.version>2.0.5</testcontainers.version>
         <cloud-core.core-blue-green-state-monitor.version>2.1.0-SNAPSHOT</cloud-core.core-blue-green-state-monitor.version>
 
         <kafka.version>4.2.0</kafka.version>
-        <jackson.core.version>2.21.2</jackson.core.version>
-        <jackson.annotations.version>2.21</jackson.annotations.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -72,9 +69,9 @@
                 <version>${cloud-core.core-context-propagation.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.junit</groupId>
-                <artifactId>junit-bom</artifactId>
-                <version>6.0.3</version>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>qubership-java-internal-bom</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
