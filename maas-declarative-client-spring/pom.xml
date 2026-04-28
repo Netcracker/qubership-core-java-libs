@@ -27,7 +27,6 @@
         <maven.compiler.target>21</maven.compiler.target>
 
         <cloud-core.maas-declarative-client-commons.version>6.1.0-SNAPSHOT</cloud-core.maas-declarative-client-commons.version>
-        <kafka-clients.version>4.2.0</kafka-clients.version>
         <cloud-core.maas-declarative-client-spring.version>9.1.0-SNAPSHOT</cloud-core.maas-declarative-client-spring.version>
         <cloud-core.core-blue-green-state-monitor.version>2.1.0-SNAPSHOT</cloud-core.core-blue-green-state-monitor.version>
     </properties>
@@ -50,11 +49,6 @@
                 <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>maas-client-spring</artifactId>
                 <version>${cloud-core.maas-declarative-client-spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-clients</artifactId>
-                <version>${kafka-clients.version}</version>
             </dependency>
 <!--
 specifying opentelemetry version here exactly to match open telemetry which is used by spring boot to avoid conflicts

@@ -22,7 +22,6 @@
         <cloud-core.core-context-propagation.version>8.2.0-SNAPSHOT</cloud-core.core-context-propagation.version>
         <cloud-core.core-blue-green-state-monitor.version>2.1.0-SNAPSHOT</cloud-core.core-blue-green-state-monitor.version>
 
-        <kafka.version>4.2.0</kafka.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>

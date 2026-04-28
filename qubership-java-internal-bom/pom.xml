@@ -73,6 +73,11 @@
         <reflections.version>0.10.2</reflections.version>
         <awaitility.version>4.3.0</awaitility.version>
 
+        <!-- Messaging -->
+        <kafka.version>4.2.0</kafka.version>
+        <rabbitmq.version>5.28.0</rabbitmq.version>
+        <rabbitmq-mock.version>1.2.0</rabbitmq-mock.version>
+
         <!-- Test -->
         <junit-bom.version>6.0.3</junit-bom.version>
         <mockito.version>5.21.0</mockito.version>
@@ -285,6 +290,29 @@
                 <groupId>org.reflections</groupId>
                 <artifactId>reflections</artifactId>
                 <version>${reflections.version}</version>
+            </dependency>
+
+            <!-- ===== Messaging ===== -->
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>${kafka.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-streams</artifactId>
+                <version>${kafka.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.rabbitmq</groupId>
+                <artifactId>amqp-client</artifactId>
+                <version>${rabbitmq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.fridujo</groupId>
+                <artifactId>rabbitmq-mock</artifactId>
+                <version>${rabbitmq-mock.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <!-- ===== Test ===== -->
