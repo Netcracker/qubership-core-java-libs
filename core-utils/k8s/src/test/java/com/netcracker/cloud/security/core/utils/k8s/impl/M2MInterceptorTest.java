@@ -28,8 +28,8 @@ class M2MInterceptorTest {
     private Supplier<String> fallbackSupplier;
     private Supplier<String> k8sSupplier;
 
-    private final String K8S_TOKEN_HEADER = "Bearer k8s-test-token";
-    private final String FALLBACK_TOKEN_HEADER = "Bearer fallback-test-token";
+    private static final String K8S_TOKEN_HEADER = "Bearer k8s-test-token";
+    private static final String FALLBACK_TOKEN_HEADER = "Bearer fallback-test-token";
 
     @BeforeEach
     @SuppressWarnings("unchecked")
