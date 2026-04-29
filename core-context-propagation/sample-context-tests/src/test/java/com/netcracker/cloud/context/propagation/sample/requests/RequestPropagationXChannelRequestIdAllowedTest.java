@@ -5,8 +5,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
+import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
@@ -62,12 +66,16 @@ class RequestPropagationXChannelRequestIdAllowedTest {
     static void beforeAll() {
         System.setProperty("headers.allowed", "custom-header");
         System.setProperty("headers.blocked", "");
+        HeaderPropagationConfiguration.resetCache();
+        ContextManager.reinitialize();
     }
 
     @AfterAll
     static void afterAll() {
         System.clearProperty("headers.allowed");
         System.clearProperty("headers.blocked");
+        HeaderPropagationConfiguration.resetCache();
+        ContextManager.reinitialize();
     }
 
     @BeforeEach
