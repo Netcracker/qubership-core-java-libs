@@ -28,7 +28,7 @@
 
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <kafka-clients.version>4.2.0</kafka-clients.version>
-        <cloud-core.maas-client.version>12.1.0-SNAPSHOT</cloud-core.maas-client.version>
+        <cloud-core.maas-client.version>12.2.0-SNAPSHOT</cloud-core.maas-client.version>
 
         <mockito.version>5.21.0</mockito.version>
     </properties>

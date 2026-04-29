@@ -36,8 +36,8 @@
         <jacoco.plugin.version>0.8.7</jacoco.plugin.version>
         <jandex-maven-plugin.version>3.5.3</jandex-maven-plugin.version>
         <cloud-core.core-rest-libraries.version>7.2.0-SNAPSHOT</cloud-core.core-rest-libraries.version>
-        <cloud-core.maas-client.version>12.1.0-SNAPSHOT</cloud-core.maas-client.version>
-        <cloud-core.core-error-handling.version>4.1.0-SNAPSHOT</cloud-core.core-error-handling.version>
+        <cloud-core.maas-client.version>12.2.0-SNAPSHOT</cloud-core.maas-client.version>
+        <cloud-core.core-error-handling.version>4.2.0-SNAPSHOT</cloud-core.core-error-handling.version>
     </properties>
 
     <profiles>

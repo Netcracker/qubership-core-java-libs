@@ -16,7 +16,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <cloud-core.core-context-propagation.version>8.1.0-SNAPSHOT</cloud-core.core-context-propagation.version>
+        <cloud-core.core-context-propagation.version>8.2.0-SNAPSHOT</cloud-core.core-context-propagation.version>
 
         <wagon-provider-api.version>3.5.3</wagon-provider-api.version>
 

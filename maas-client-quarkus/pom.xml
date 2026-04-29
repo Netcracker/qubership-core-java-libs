@@ -32,7 +32,7 @@
 		<quarkus.version>3.33.1</quarkus.version>
 		<cloud-core.core-quarkus-extensions.version>10.0.0-SNAPSHOT</cloud-core.core-quarkus-extensions.version>
 
-		<cloud-core.maas-client.version>12.1.0-SNAPSHOT</cloud-core.maas-client.version>
+		<cloud-core.maas-client.version>12.2.0-SNAPSHOT</cloud-core.maas-client.version>
 
 		<surefire-plugin.version>3.5.5</surefire-plugin.version>
 		<!--Qubership -->

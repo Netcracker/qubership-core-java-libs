@@ -35,7 +35,7 @@
         <!--Qubership's libs-->
         <cloud-core.core-rest-libraries.version>7.2.0-SNAPSHOT</cloud-core.core-rest-libraries.version>
         <cloud-core.core-restclient.version>7.1.0-SNAPSHOT</cloud-core.core-restclient.version>
-        <cloud-core.core-context-propagation.version>8.1.0-SNAPSHOT</cloud-core.core-context-propagation.version>
+        <cloud-core.core-context-propagation.version>8.2.0-SNAPSHOT</cloud-core.core-context-propagation.version>
         <cloud-core.core-utils.version>3.1.0-SNAPSHOT</cloud-core.core-utils.version>
     </properties>
 
