@@ -29,7 +29,9 @@ public abstract class AbstractXChannelRequestIdStrategy extends AbstractStrategy
     @Override
     public XChannelRequestIdContextObject get() {
         XChannelRequestIdContextObject xChannelRequestIdContextObject = getStrategy().get();
-        MDC.put(MDC_CHANNEL_REQUEST_ID_KEY, xChannelRequestIdContextObject.getChannelRequestId());
+        MDC.put(MDC_CHANNEL_REQUEST_ID_KEY, xChannelRequestIdContextObject.getChannelRequestId() != null 
+            ? xChannelRequestIdContextObject.getChannelRequestId() 
+            : "-");
         return xChannelRequestIdContextObject;
     }
 

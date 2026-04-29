@@ -37,8 +37,7 @@ import com.netcracker.cloud.context.propagation.core.ContextManager;
         "headers.blocked=",
         "cloud-core.context-propagation.url=/test_url/v111/test"
 })
-
-class RequestPropagationTest{
+class RequestPropagationTest {
     @Autowired
     protected WebApplicationContext context;
 

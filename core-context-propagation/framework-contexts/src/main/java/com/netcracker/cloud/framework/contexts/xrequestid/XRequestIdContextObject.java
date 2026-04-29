@@ -47,7 +47,7 @@ public class XRequestIdContextObject implements SerializableContext,
 
     @Override
     public void serialize(OutgoingContextData outgoingContextData) {
-            outgoingContextData.set(X_REQUEST_ID, requestId);
+        outgoingContextData.set(X_REQUEST_ID, requestId);
     }
 
     public String getRequestId() {
@@ -56,7 +56,7 @@ public class XRequestIdContextObject implements SerializableContext,
 
     @Override
     public void propagate(OutgoingContextData outgoingContextData) {
-            outgoingContextData.set(X_REQUEST_ID, requestId);
+        outgoingContextData.set(X_REQUEST_ID, requestId);
     }
 
     @Override

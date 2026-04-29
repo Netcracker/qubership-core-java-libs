@@ -71,6 +71,7 @@ class XChannelRequestIdContextObjectPropagationTest extends AbstractContextTestW
     @Test
     void testXChannelRequestIdPropagationIsBlockedWhenConfigured() {
         System.setProperty(HeaderPropagationConfiguration.HEADERS_BLOCKED_PROPERTY, X_CHANNEL_REQUEST_ID);
+        HeaderPropagationConfiguration.resetCache();
         try {
             RequestContextPropagation.initRequestContext(new ContextDataRequest()); // filter
             ContextDataResponse responseContextData = new ContextDataResponse();

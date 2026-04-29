@@ -6,13 +6,9 @@ import com.netcracker.cloud.context.propagation.core.contexts.ResponsePropagatab
 import com.netcracker.cloud.context.propagation.core.contexts.SerializableContext;
 import com.netcracker.cloud.context.propagation.core.contexts.SerializableDataContext;
 import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 import java.util.Collections;
-import org.slf4j.LoggerFactory;
 
-import java.security.SecureRandom;
 import java.util.Map;
 
 /**
@@ -21,11 +17,9 @@ import java.util.Map;
  */
 public class XChannelRequestIdContextObject implements SerializableContext,
         ResponsePropagatableContext, SerializableDataContext {
-    private static final SecureRandom random = new SecureRandom();
     public static final String X_CHANNEL_REQUEST_ID = "X-Channel-Request-Id";
 
     private String channelRequestId;
-    private static final Logger log = LoggerFactory.getLogger(XChannelRequestIdContextObject.class);
 
     public XChannelRequestIdContextObject(@Nullable IncomingContextData contextData) {
         if (contextData != null && contextData.get(X_CHANNEL_REQUEST_ID) != null) {

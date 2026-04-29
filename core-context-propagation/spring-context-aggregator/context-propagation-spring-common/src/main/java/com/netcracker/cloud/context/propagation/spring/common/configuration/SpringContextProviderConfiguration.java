@@ -35,7 +35,7 @@ public class SpringContextProviderConfiguration {
     public void init() {
         System.setProperty("headers.allowed", allowedHeaders);
         if (environment.containsProperty("headers.blocked")) {
-            System.setProperty("headers.blocked", blockedHeaders); // запишет даже ""
+            System.setProperty("headers.blocked", blockedHeaders);
         }
     }
 }
