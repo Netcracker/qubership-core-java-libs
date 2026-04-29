@@ -13,7 +13,6 @@ import com.netcracker.core.scheduler.po.repository.TaskInstanceRepository;
 import com.netcracker.core.scheduler.po.repository.impl.ContextRepositoryImpl;
 import com.netcracker.core.scheduler.po.repository.impl.ProcessInstanceRepositoryImpl;
 import com.netcracker.core.scheduler.po.repository.impl.TaskInstanceRepositoryImpl;
-import com.netcracker.core.scheduler.po.serializers.ExtendedSerializer;
 import com.netcracker.core.scheduler.po.serializers.JsonPOSerializer;
 import com.netcracker.core.scheduler.po.task.TaskState;
 import com.netcracker.core.scheduler.po.task.templates.AbstractProcessTask;
@@ -61,33 +60,16 @@ public class ProcessOrchestrator {
         this(dataSource, threads, getTasks());
     }
 
-    @SneakyThrows
     public ProcessOrchestrator(DataSource dataSource, Integer threads, List<Task<?>> tasks) {
-        ExtendedSerializer custom = new JsonPOSerializer();
-        List<Task<?>> knownTasks = new ArrayList<>(tasks);
-        executorService = new TaskExecutorService(threads);
-        knownTasks.add(new Process());
-        scheduler = Scheduler.create(dataSource, knownTasks)
-                .enableImmediateExecution()
-                .pollingInterval(Duration.ofSeconds(2))
-                .registerShutdownHook()
-                .shutdownMaxWait(Duration.ofSeconds(10))
-                .heartbeatInterval(Duration.ofSeconds(20))
-                .serializer(custom)
-                .threads(threads)
-                .executorService(executorService)
-                .build();
-        scheduler.start();
-        instance = this;
-        contextRepository = new ContextRepositoryImpl(dataSource, custom);
-        processInstanceRepository = new ProcessInstanceRepositoryImpl(dataSource);
-        taskInstanceRepository = new TaskInstanceRepositoryImpl(dataSource, custom);
+        this(dataSource, threads, tasks,
+                new ContextRepositoryImpl(dataSource, new JsonPOSerializer()),
+                new ProcessInstanceRepositoryImpl(dataSource),
+                new TaskInstanceRepositoryImpl(dataSource, new JsonPOSerializer()));
     }
 
-    // For unit tests
+    @SneakyThrows
     ProcessOrchestrator(DataSource dataSource, Integer threads, List<Task<?>> tasks,
                         ContextRepository contextRepository, ProcessInstanceRepository processInstanceRepository, TaskInstanceRepository taskInstanceRepository) {
-        ExtendedSerializer custom = new JsonPOSerializer();
         List<Task<?>> knownTasks = new ArrayList<>(tasks);
         executorService = new TaskExecutorService(threads);
         knownTasks.add(new Process());
@@ -97,13 +79,13 @@ public class ProcessOrchestrator {
                 .registerShutdownHook()
                 .shutdownMaxWait(Duration.ofSeconds(10))
                 .heartbeatInterval(Duration.ofSeconds(20))
-                .serializer(custom)
+                .serializer(new JsonPOSerializer())
                 .threads(threads)
                 .executorService(executorService)
                 .build();
         scheduler.start();
         instance = this;
-        this.contextRepository = contextRepository;;
+        this.contextRepository = contextRepository;
         this.processInstanceRepository = processInstanceRepository;
         this.taskInstanceRepository = taskInstanceRepository;
     }

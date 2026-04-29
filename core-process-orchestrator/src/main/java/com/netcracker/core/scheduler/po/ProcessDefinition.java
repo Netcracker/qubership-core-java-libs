@@ -74,8 +74,8 @@ public class ProcessDefinition {
                     return taskInstance;
                 }).toList();
 
-        taskInstanceRepository.addTaskInstancesBulk(tasks);
         contextRepository.addContextsBulk(contexts);
+        taskInstanceRepository.addTaskInstancesBulk(tasks);
 
         return instance;
     }

@@ -17,7 +17,7 @@ import java.util.Objects;
 public class ContextRepositoryImpl extends AbstractRepository implements ContextRepository {
 
     private final Serializer serializer;
-    private final String INSERT_QUERY;
+    private final String insertQuery;
 
 
     public ContextRepositoryImpl(DataSource dataSource) {
@@ -27,7 +27,7 @@ public class ContextRepositoryImpl extends AbstractRepository implements Context
     public ContextRepositoryImpl(DataSource dataSource, Serializer serializer) {
         super(dataSource, "po_context");
         this.serializer = serializer;
-        this.INSERT_QUERY = "insert into " + tableName + " (id,context_data,version) values(?,?,?)";
+        this.insertQuery = "insert into " + tableName + " (id,context_data,version) values(?,?,?)";
     }
 
     @Override
@@ -51,7 +51,7 @@ public class ContextRepositoryImpl extends AbstractRepository implements Context
                 (ResultSetMapper<Integer>) resultSet -> resultSet.next() ? resultSet.getInt("version") : null
         );
         if (version == null) {
-            jdbcRunner.execute(INSERT_QUERY, (PreparedStatement p) -> assignParameters(context, p));
+            jdbcRunner.execute(insertQuery, (PreparedStatement p) -> assignParameters(context, p));
             context.setDirty(false);
         } else if (Objects.equals(context.getVersion(), version)) {
             context.setVersion(version + 1);
@@ -75,7 +75,7 @@ public class ContextRepositoryImpl extends AbstractRepository implements Context
 
     @Override
     public void addContextsBulk(List<DataContext> contexts) {
-        jdbcRunner.executeBatch(INSERT_QUERY, contexts, this::assignParameters);
+        jdbcRunner.executeBatch(insertQuery, contexts, this::assignParameters);
     }
 
     private void assignParameters(DataContext context, PreparedStatement p) throws SQLException {

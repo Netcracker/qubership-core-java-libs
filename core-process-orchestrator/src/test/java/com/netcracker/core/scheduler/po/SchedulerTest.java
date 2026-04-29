@@ -31,6 +31,7 @@ import java.util.function.Function;
 
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 
@@ -124,11 +125,13 @@ class SchedulerTest {
 
             mockPO.createProcess(pr);
 
-            verify(taskInstanceRepositoryMock, times(1)).addTaskInstancesBulk(any());
+            verify(taskInstanceRepositoryMock, times(1))
+                    .addTaskInstancesBulk(argThat(tasksList -> tasksList.size() == 2));
             verify(taskInstanceRepositoryMock, times(0)).getTaskInstance(any());
             verify(taskInstanceRepositoryMock, times(0)).putTaskInstance(any());
 
-            verify(contextRepositoryMock, times(1)).addContextsBulk(any());
+            verify(contextRepositoryMock, times(1))
+                    .addContextsBulk(argThat(contextsList -> contextsList.size() == 2));
             verify(contextRepositoryMock, times(0)).getContext(any());
             verify(contextRepositoryMock, times(0)).putContext(any());
         } finally {
