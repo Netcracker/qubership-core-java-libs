@@ -5,6 +5,10 @@ import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContext
 import com.netcracker.cloud.framework.contexts.xversion.XVersionContextObject;
 import com.netcracker.cloud.framework.contexts.xversion.XVersionProvider;
 import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
+import com.netcracker.cloud.maas.client.context.kafka.KafkaContextPropagation.HeadersAdapter;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextObject;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextProvider;
+
 import org.apache.kafka.common.header.Header;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +18,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.lang.reflect.Field;
+
 import static com.netcracker.cloud.framework.contexts.acceptlanguage.AcceptLanguageProvider.ACCEPT_LANGUAGE;
+import static com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextObject.X_CHANNEL_REQUEST_ID;
 import static com.netcracker.cloud.framework.contexts.xversion.XVersionContextObject.X_VERSION_SERIALIZATION_NAME;
 import static com.netcracker.cloud.maas.client.context.kafka.KafkaContextPropagation.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -73,7 +80,45 @@ public class KafkaContextPropagationTest {
 		}
 	}
 
+	@Test
+	void testRestoreXChannelRequestId() {
+		restoreContext(Collections.singletonList(
+				new KafkaHeader(X_CHANNEL_REQUEST_ID, "ch-456".getBytes())));
 
+		XChannelRequestIdContextObject ctx = ContextManager.get(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME);
+		assertEquals("ch-456", ctx.getChannelRequestId());
+	}
+
+	@Test
+	void testDumpDoesNotContainXChannelRequestIdByDefault() {
+		reinitializeRegistry();
+
+		restoreContext(Collections.singletonList(
+				new KafkaHeader(X_CHANNEL_REQUEST_ID, "ch-456".getBytes())));
+
+		Map<String, Object> dumped = new HashMap<>();
+		dumpContext(dumped::put);
+
+		assertNull(dumped.get(X_CHANNEL_REQUEST_ID));
+	}
+
+	@Test
+	void testDumpContainsXChannelRequestIdWhenNotBlocked() {
+		System.setProperty("headers.blocked", "");
+		reinitializeRegistry();
+		try {
+			restoreContext(Collections.singletonList(
+					new KafkaHeader(X_CHANNEL_REQUEST_ID, "ch-456".getBytes())));
+
+			Map<String, Object> dumped = new HashMap<>();
+			dumpContext(dumped::put);
+
+			assertEquals("ch-456", dumped.get(X_CHANNEL_REQUEST_ID));
+		} finally {
+			System.clearProperty("headers.blocked");
+			reinitializeRegistry();
+		}
+	}
 
 	private void setVersionIntoContext(String version) {
 		IncomingContextData ctxData = new HeadersAdapter(Collections.singletonList(new KafkaHeader(X_VERSION_SERIALIZATION_NAME, version.getBytes())));
@@ -106,4 +151,16 @@ public class KafkaContextPropagationTest {
 			return value;
 		}
 	}
+
+    private static void reinitializeRegistry() {
+        try {
+            Field f = ContextManager.class.getDeclaredField("registry");
+            f.setAccessible(true);
+            ((Map) f.get(null)).clear();
+            ContextManager.init();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

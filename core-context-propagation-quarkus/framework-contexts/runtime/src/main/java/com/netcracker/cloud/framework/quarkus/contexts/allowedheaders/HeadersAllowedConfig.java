@@ -15,4 +15,7 @@ public interface HeadersAllowedConfig {
      */
     @WithName("headers.allowed")
     Optional<String> allowedHeaders();
+
+    @WithName("headers.blocked")
+    Optional<String> blockedHeaders();
 }

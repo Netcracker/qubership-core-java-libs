@@ -122,7 +122,7 @@ LoggerWrapper meets the following requirements to log message:
   ```
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>[%d] [%-5p] [request_id=%X{requestId:--}] [tenant_id=%X{tenantId:--}] [traceId=%X{traceId:--}] [spanId=%X{spanId:--}] [thread=%thread] [class=%c{1}] %m%n
+      <pattern>[%d] [%-5p] [request_id=%X{requestId:--}] [tenant_id=%X{tenantId:--}] [x_channel_request_id=%X{x_channel_request_id:--}] [traceId=%X{traceId:--}] [spanId=%X{spanId:--}] [thread=%thread] [class=%c{1}] %m%n
     </encoder>
   </appender>
   ```
@@ -138,7 +138,7 @@ LoggerWrapper meets the following requirements to log message:
   ```
 #### Example of log message for ErrorCodeException with cause as multi-cause exception
   ```
-  [2022-05-19 13:49:23,605] [ERROR] [request_id=-] [tenant_id=-] [traceId=-] [spanId=-] [thread=http-nio-0.0.0.0-8001-exec-1] 
+  [2022-05-19 13:49:23,605] [ERROR] [request_id=-] [tenant_id=-] [x_channel_request_id=-] [traceId=-] [spanId=-] [thread=http-nio-0.0.0.0-8001-exec-1] 
   [class=c.n.c.e.t.a.m.c.ErrorHandler] [error_code=MS-1-1002] [error_id=4a3447c3-60f4-45b7-b888-5fe20cd5e52e] caught exception
   com.netcracker.cloud.errors.test.app.ms2.error.SimpleServiceException: 
   [MS-1-1002][4a3447c3-60f4-45b7-b888-5fe20cd5e52e] Failed to proxy request due to remote error

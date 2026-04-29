@@ -22,9 +22,12 @@ public class SpringContextProviderConfiguration {
     @Value("${headers.allowed:}")
     private String allowedHeaders;
 
+    @Value("${headers.blocked:}")
+    private String blockedHeaders;
 
     @PostConstruct
     public void init() {
         System.setProperty("headers.allowed", allowedHeaders);
+        System.setProperty("headers.blocked", blockedHeaders);
     }
 }

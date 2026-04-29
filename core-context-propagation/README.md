@@ -49,6 +49,7 @@ Framework provides contexts for propagating the following data:
 * [Any custom headers](#allowed-headers);
 * [API version](#api-version);
 * [X-Request-Id](#x-request-id);
+* [X-Channel-Request-Id](#x-channel-request-id);
 * [X-Version](#x-version);
 * [X-Version-Name](#x-version-name);
 * [X-Nc-Client-Ip](#x-nc-client-ip)
@@ -138,6 +139,52 @@ Access:
 ```java
         XRequestIdContextObject xRequestIdContextObject=ContextManager.get(X_REQUEST_ID);
         String xRequestId=xRequestIdContextObject.getRequestId();
+```
+
+##### X-Channel-Request-Id
+
+Propagates and allows to get `X-Channel-Request-Id` value. If an incoming request does not contain the `X-Channel-Request-Id`
+header then a random value is generated. This context is **blocked by default** and will not be propagated to outgoing requests.
+
+**Default behavior:** `X-Channel-Request-Id` is NOT propagated to outgoing responses.
+
+**Enabling propagation:** To allow `X-Channel-Request-Id` to be propagated to outgoing requests, remove it from the
+blacklist using one of the following methods:
+
+1. **Via environment variable:**
+```text
+HEADERS_BLOCKED=
+```
+
+2. **Via system property:**
+```text
+-Dheaders.blocked=
+```
+
+3. **Via application.properties (Spring):**
+```text
+headers.blocked=
+```
+
+**MDC Integration:** 
+The `X-Channel-Request-Id` is automatically integrated with SLF4J's Mapped Diagnostic Context (MDC) for seamless logging.
+
+- **Key:** `x_channel_request_id`
+- **Value:** The channel request ID value, or empty if not set
+
+
+**Access:**
+
+```java
+        XChannelRequestIdContextObject xChannelRequestIdContextObject=ContextManager.get(X_CHANNEL_REQUEST_ID);
+        String xChannelRequestId=xChannelRequestIdContextObject.getChannelRequestId();
+```
+
+**Set:**
+
+```java
+        XChannelRequestIdContextObject xChannelRequestIdContextObject = new XChannelRequestIdContextObject(...);
+        ContextManager.set(X_CHANNEL_REQUEST_ID, xChannelRequestIdContextObject);
 ```
 
 ##### X-Version

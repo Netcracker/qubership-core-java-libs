@@ -1,6 +1,7 @@
 package com.netcracker.cloud.context.propagation.quarkus.runtime.filter;
 
 import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.headerstracking.filters.context.ChannelRequestIdContext;
 import com.netcracker.cloud.headerstracking.filters.context.RequestIdContext;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
@@ -21,14 +22,18 @@ class QuarkusContextProviderResponseFilterTest {
     @BeforeAll
     static void init() {
         ContextManager.clearAll();
+        System.setProperty("headers.blocked", "");
     }
 
     @Test
-    public void testMdcContextMustBeClearedOnResponseFilter() throws IOException {
+    public void testResponseFilterShouldPropagateRequestIds() throws IOException {
         String requestId = "123";
+        String channelRequestId = "channel-456";
         RequestIdContext.set(requestId);
+        ChannelRequestIdContext.set(channelRequestId);
 
         Assertions.assertEquals(requestId, RequestIdContext.get());
+        Assertions.assertEquals(channelRequestId, ChannelRequestIdContext.get());
 
         ContainerRequestContext containerRequestContext = mock(ContainerRequestContext.class);
 
@@ -43,5 +48,9 @@ class QuarkusContextProviderResponseFilterTest {
         String xRequestId = "X-Request-Id";
         assertTrue(containerResponseHeaders.containsKey(xRequestId));
         assertEquals(requestId, containerResponseHeaders.getFirst(xRequestId));
+
+        String xChannelRequestId = "X-Channel-Request-Id";
+        assertTrue(containerResponseHeaders.containsKey(xChannelRequestId));
+        assertEquals(channelRequestId, containerResponseHeaders.getFirst(xChannelRequestId));
     }
 }
