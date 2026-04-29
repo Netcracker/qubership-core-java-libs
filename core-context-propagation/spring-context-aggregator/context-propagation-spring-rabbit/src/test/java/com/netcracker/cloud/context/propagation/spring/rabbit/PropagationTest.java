@@ -2,6 +2,7 @@ package com.netcracker.cloud.context.propagation.spring.rabbit;
 
 import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.context.propagation.spring.rabbit.annotation.EnableRabbitContextPropagation;
+import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
 import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
 import com.netcracker.cloud.headerstracking.filters.context.AllowedHeadersContext;
 import com.netcracker.cloud.headerstracking.filters.context.ChannelRequestIdContext;
@@ -57,9 +58,10 @@ public class PropagationTest {
 
 	private static final String CUSTOM_HEADER = "X-Custom-Header-1";
 	private static final String CUSTOM_HEADER_VALUE = "case-insensitive-test-value";
+	private static final String ANOTHER_HEADER = "X-Custom-Header-2";
+	private static final String ANOTHER_HEADER_VALUE = "blocked-value";
 	private static final String X_CHANNEL_REQUEST_ID_NAME = "X-Channel-Request-Id";
 	private static final String X_CHANNEL_REQUEST_ID_VALUE = "456";
-	private static final String X_REQUEST_ID_NAME = "X-Request-Id";
 
 	@Autowired
 	RabbitTemplate template;
@@ -102,6 +104,7 @@ public class PropagationTest {
     @AfterEach
     void afterEach() {
         System.clearProperty("headers.blocked");
+		HeaderPropagationConfiguration.resetCache();
     }
 
 	@Test
@@ -136,6 +139,25 @@ public class PropagationTest {
 
         assertEquals(X_CHANNEL_REQUEST_ID_VALUE, getHeaderIgnoreCase(receivedHeaders.get(), X_CHANNEL_REQUEST_ID_NAME));
     }
+
+	@Test
+	@Timeout(value = 20, unit = TimeUnit.SECONDS)
+	public void testCustomHeaderBlockedWhenConfiguredByProperty() throws InterruptedException {
+		System.setProperty("headers.blocked", ANOTHER_HEADER);
+		AcceptLanguageContext.set("ZULU");
+		AllowedHeadersContext.set(Map.of(
+				CUSTOM_HEADER, CUSTOM_HEADER_VALUE,
+				ANOTHER_HEADER, ANOTHER_HEADER_VALUE));
+		template.convertAndSend("orders", "invoice", "rye wheat");
+		ContextManager.clearAll();
+
+		if (!awaitLatch.get().await(10, TimeUnit.SECONDS)) {
+			fail("Message listener failed or message doesn't even arrived in 10 seconds");
+		}
+
+		assertNull(getHeaderIgnoreCase(receivedHeaders.get(), ANOTHER_HEADER));
+		assertEquals(CUSTOM_HEADER_VALUE, getHeaderIgnoreCase(receivedHeaders.get(), CUSTOM_HEADER));
+	}
 
 
 	@AfterAll

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
+import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,8 +27,6 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-import java.util.Map;
-import java.lang.reflect.Field;
 import com.netcracker.cloud.context.propagation.core.ContextManager;
 
 @SpringBootTest
@@ -66,14 +65,16 @@ class RequestPropagationTest{
 
     @BeforeEach
     void setUp() {
-        reinitializeRegistry();
         System.clearProperty("headers.blocked");
+        HeaderPropagationConfiguration.resetCache();
+        ContextManager.reinitialize();
         mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(preAuthnFilter, postAuthnFilter).build();
     }
 
     @AfterEach
     void tearDown() {
-        reinitializeRegistry();
+        HeaderPropagationConfiguration.resetCache();
+        ContextManager.reinitialize();
     }
 
     private void sendRequest(String path) throws Exception {
@@ -106,14 +107,20 @@ class RequestPropagationTest{
         sendRequest("/test");
     }
 
-    private static void reinitializeRegistry() {
-        try {
-            Field f = ContextManager.class.getDeclaredField("registry");
-            f.setAccessible(true);
-            ((Map) f.get(null)).clear();
-            ContextManager.init();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    @Test
+    void testXRequestIdStillPropagatesWhenAddedToBlockedList() throws Exception {
+        System.setProperty("headers.blocked", X_REQUEST_ID_NAME);
+        HeaderPropagationConfiguration.resetCache();
+        ContextManager.reinitialize();
+
+        MockRestServiceServer mockServer = MockRestServiceServer.bindTo(restTemplate).build();
+        mockServer.expect(requestTo("/chain_request"))
+                .andExpect(header(HttpHeaders.ACCEPT_LANGUAGE, ACCEPT_LANGUAGE_VALUE))
+                // X-Request-Id is non-blockable and must still be propagated.
+                .andExpect(header(X_REQUEST_ID_NAME, X_REQUEST_ID_VALUE))
+                .andExpect(header(CUSTOM_NAME, CUSTOM_VALUE))
+                .andRespond(withSuccess());
+
+        sendRequest("/test");
     }
 }

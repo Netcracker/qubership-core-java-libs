@@ -209,4 +209,10 @@ public class ContextManager {
         sortedContextProviders.sort(Comparator.comparingInt(ContextProvider::initLevel));
     }
 
+    public static void reinitialize() {
+        registry.clear();
+        sortedContextProviders.clear();
+        init();
+    }
+
 }

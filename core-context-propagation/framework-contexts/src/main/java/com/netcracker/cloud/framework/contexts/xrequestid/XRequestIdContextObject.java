@@ -5,11 +5,9 @@ import com.netcracker.cloud.context.propagation.core.contextdata.OutgoingContext
 import com.netcracker.cloud.context.propagation.core.contexts.ResponsePropagatableContext;
 import com.netcracker.cloud.context.propagation.core.contexts.SerializableContext;
 import com.netcracker.cloud.context.propagation.core.contexts.SerializableDataContext;
-import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import java.util.Collections;
 import org.slf4j.LoggerFactory;
 
 import java.security.SecureRandom;
@@ -49,9 +47,7 @@ public class XRequestIdContextObject implements SerializableContext,
 
     @Override
     public void serialize(OutgoingContextData outgoingContextData) {
-        if (!HeaderPropagationConfiguration.isBlacklisted(X_REQUEST_ID)) {
             outgoingContextData.set(X_REQUEST_ID, requestId);
-        }
     }
 
     public String getRequestId() {
@@ -60,16 +56,11 @@ public class XRequestIdContextObject implements SerializableContext,
 
     @Override
     public void propagate(OutgoingContextData outgoingContextData) {
-        if (!HeaderPropagationConfiguration.isBlacklisted(X_REQUEST_ID)) {
             outgoingContextData.set(X_REQUEST_ID, requestId);
-        }
     }
 
     @Override
     public Map<String, Object> getSerializableContextData() {
-        if (HeaderPropagationConfiguration.isBlacklisted(X_REQUEST_ID)) {
-            return Collections.emptyMap();
-        }
         return Map.of(X_REQUEST_ID, requestId);
     }
 }

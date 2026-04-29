@@ -143,8 +143,7 @@ Access:
 
 ##### X-Channel-Request-Id
 
-Propagates and allows to get `X-Channel-Request-Id` value. If an incoming request does not contain the `X-Channel-Request-Id`
-header then a random value is generated. This context is **blocked by default** and will not be propagated to outgoing requests.
+Propagates and allows to get `X-Channel-Request-Id` value. If an incoming request does not contain the `X-Channel-Request-Id` header then a random value is not generated and uses stub "-". This context is **blocked by default** and will not be propagated to outgoing requests.
 
 **Default behavior:** `X-Channel-Request-Id` is NOT propagated to outgoing responses.
 
@@ -165,6 +164,15 @@ HEADERS_BLOCKED=
 ```text
 headers.blocked=
 ```
+
+**`headers.blocked` rules and limitations**
+
+- Source priority: system property `headers.blocked` overrides environment variable `HEADERS_BLOCKED`.
+- Default when not configured at all: `X-Channel-Request-Id` is blocked.
+- Explicit empty value (`headers.blocked=` / `HEADERS_BLOCKED=`): blacklist is empty (nothing is blocked).
+- Explicit non-empty value with valid headers (for example `headers.blocked=Some-Header`): only listed headers are blocked.
+- `X-Request-Id` is non-blockable: if it is listed in `headers.blocked`/`HEADERS_BLOCKED`, it is ignored.
+- If configured value contains only non-blockable entries (for example only `X-Request-Id`), default block is applied and `X-Channel-Request-Id` remains blocked.
 
 **MDC Integration:** 
 The `X-Channel-Request-Id` is automatically integrated with SLF4J's Mapped Diagnostic Context (MDC) for seamless logging.

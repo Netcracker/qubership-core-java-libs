@@ -31,18 +31,8 @@ public class XChannelRequestIdContextObject implements SerializableContext,
         if (contextData != null && contextData.get(X_CHANNEL_REQUEST_ID) != null) {
             this.channelRequestId = (String) contextData.get(X_CHANNEL_REQUEST_ID);
         } else {
-            // TODO: verify the design: should we generate channelRequestId if it is not passed in contextData?
-            //this.channelRequestId = generateChannelRequestId();
-            this.channelRequestId = "";
-            log.debug("Generated new channel-request-id: {}", channelRequestId);
+            this.channelRequestId = "-";
         }
-    }
-
-    @NotNull
-    private String generateChannelRequestId() {
-        String channelRequestId;
-        channelRequestId = System.currentTimeMillis() + "." + random.nextDouble();
-        return channelRequestId;
     }
 
     public XChannelRequestIdContextObject(String channelRequestId) {
@@ -69,7 +59,7 @@ public class XChannelRequestIdContextObject implements SerializableContext,
 
     @Override
     public Map<String, Object> getSerializableContextData() {
-        if (HeaderPropagationConfiguration.isExplicitlyBlacklisted(X_CHANNEL_REQUEST_ID)) {
+        if (HeaderPropagationConfiguration.isBlacklisted(X_CHANNEL_REQUEST_ID)) {
             return Collections.emptyMap();
         }
         return Map.of(X_CHANNEL_REQUEST_ID, channelRequestId);

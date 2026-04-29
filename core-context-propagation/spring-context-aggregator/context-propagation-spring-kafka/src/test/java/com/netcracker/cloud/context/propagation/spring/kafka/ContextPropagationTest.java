@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.context.propagation.spring.kafka.annotation.EnableKafkaContextPropagation;
+import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
 import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
 import com.netcracker.cloud.headerstracking.filters.context.AllowedHeadersContext;
 import com.netcracker.cloud.headerstracking.filters.context.ChannelRequestIdContext;
@@ -61,6 +62,7 @@ public class ContextPropagationTest {
     static void setup() {
         System.setProperty("headers.allowed", CUSTOM_HEADER.toLowerCase());
         System.clearProperty("headers.blocked");
+		HeaderPropagationConfiguration.resetCache();
     }
 
     @BeforeEach
@@ -72,6 +74,7 @@ public class ContextPropagationTest {
     @AfterEach
     void afterEach() {
         System.clearProperty("headers.blocked");
+		HeaderPropagationConfiguration.resetCache();
     }
 
 	@AfterAll
