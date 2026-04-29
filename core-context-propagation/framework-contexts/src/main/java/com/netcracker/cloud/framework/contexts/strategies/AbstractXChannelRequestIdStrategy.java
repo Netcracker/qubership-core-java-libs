@@ -14,9 +14,6 @@ public abstract class AbstractXChannelRequestIdStrategy extends AbstractStrategy
 
     public static final String MDC_CHANNEL_REQUEST_ID_KEY = "x_channel_request_id";
 
-    private static final IncomingContextData nullContextData = null;
-    private static final XChannelRequestIdContextObject DEFAULT_VALUE = new XChannelRequestIdContextObject(nullContextData);
-
     @Override
     public void clear() {
         getStrategy().clear();
@@ -43,6 +40,6 @@ public abstract class AbstractXChannelRequestIdStrategy extends AbstractStrategy
 
     @Override
     protected Supplier<XChannelRequestIdContextObject> defaultObjectSupplier() {
-        return () -> DEFAULT_VALUE;
+        return () -> new XChannelRequestIdContextObject((IncomingContextData) null);
     }
 }

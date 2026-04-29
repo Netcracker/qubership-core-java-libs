@@ -5,6 +5,7 @@ import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPreAu
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 import jakarta.annotation.PostConstruct;
 
@@ -28,6 +29,8 @@ public class SpringContextProviderConfiguration {
     @PostConstruct
     public void init() {
         System.setProperty("headers.allowed", allowedHeaders);
-        System.setProperty("headers.blocked", blockedHeaders);
+        if (StringUtils.hasText(blockedHeaders)) {
+            System.setProperty("headers.blocked", blockedHeaders);
+        }
     }
 }
