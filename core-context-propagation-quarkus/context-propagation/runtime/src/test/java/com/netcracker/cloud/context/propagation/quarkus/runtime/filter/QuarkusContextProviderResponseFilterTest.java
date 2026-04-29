@@ -1,12 +1,14 @@
 package com.netcracker.cloud.context.propagation.quarkus.runtime.filter;
 
 import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
 import com.netcracker.cloud.headerstracking.filters.context.ChannelRequestIdContext;
 import com.netcracker.cloud.headerstracking.filters.context.RequestIdContext;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.core.MultivaluedMap;
 import org.jboss.resteasy.reactive.common.util.QuarkusMultivaluedHashMap;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,15 @@ class QuarkusContextProviderResponseFilterTest {
     static void init() {
         ContextManager.clearAll();
         System.setProperty("headers.blocked", "");
+        HeaderPropagationConfiguration.resetCache();
+        ContextManager.reinitialize();
+    }
+
+    @AfterAll
+    static void cleanup() {
+        System.clearProperty("headers.blocked");
+        HeaderPropagationConfiguration.resetCache();
+        ContextManager.reinitialize();
     }
 
     @Test
