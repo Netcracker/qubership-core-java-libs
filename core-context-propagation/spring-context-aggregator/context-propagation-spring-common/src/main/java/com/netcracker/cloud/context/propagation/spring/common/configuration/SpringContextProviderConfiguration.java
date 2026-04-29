@@ -2,10 +2,12 @@ package com.netcracker.cloud.context.propagation.spring.common.configuration;
 
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
+import org.springframework.core.env.Environment;
 
 import jakarta.annotation.PostConstruct;
 
@@ -20,6 +22,9 @@ public class SpringContextProviderConfiguration {
         return new SpringPreAuthnContextProviderFilter();
     }
 
+    @Autowired
+    private Environment environment;
+
     @Value("${headers.allowed:}")
     private String allowedHeaders;
 
@@ -29,8 +34,8 @@ public class SpringContextProviderConfiguration {
     @PostConstruct
     public void init() {
         System.setProperty("headers.allowed", allowedHeaders);
-        if (StringUtils.hasText(blockedHeaders)) {
-            System.setProperty("headers.blocked", blockedHeaders);
+        if (environment.containsProperty("headers.blocked")) {
+            System.setProperty("headers.blocked", blockedHeaders); // запишет даже ""
         }
     }
 }

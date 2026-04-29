@@ -6,6 +6,7 @@ import com.netcracker.cloud.framework.contexts.xversion.XVersionContextObject;
 import com.netcracker.cloud.framework.contexts.xversion.XVersionProvider;
 import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
 import com.netcracker.cloud.maas.client.context.kafka.KafkaContextPropagation.HeadersAdapter;
+import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
 import com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextObject;
 import com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextProvider;
 
@@ -17,8 +18,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import java.lang.reflect.Field;
 
 import static com.netcracker.cloud.framework.contexts.acceptlanguage.AcceptLanguageProvider.ACCEPT_LANGUAGE;
 import static com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextObject.X_CHANNEL_REQUEST_ID;
@@ -91,7 +90,8 @@ public class KafkaContextPropagationTest {
 
 	@Test
 	void testDumpDoesNotContainXChannelRequestIdByDefault() {
-		reinitializeRegistry();
+		HeaderPropagationConfiguration.resetCache();
+		ContextManager.reinitialize();
 
 		restoreContext(Collections.singletonList(
 				new KafkaHeader(X_CHANNEL_REQUEST_ID, "ch-456".getBytes())));
@@ -105,7 +105,9 @@ public class KafkaContextPropagationTest {
 	@Test
 	void testDumpContainsXChannelRequestIdWhenNotBlocked() {
 		System.setProperty("headers.blocked", "");
-		reinitializeRegistry();
+		HeaderPropagationConfiguration.resetCache();
+		ContextManager.reinitialize();
+
 		try {
 			restoreContext(Collections.singletonList(
 					new KafkaHeader(X_CHANNEL_REQUEST_ID, "ch-456".getBytes())));
@@ -116,7 +118,8 @@ public class KafkaContextPropagationTest {
 			assertEquals("ch-456", dumped.get(X_CHANNEL_REQUEST_ID));
 		} finally {
 			System.clearProperty("headers.blocked");
-			reinitializeRegistry();
+			HeaderPropagationConfiguration.resetCache();
+			ContextManager.reinitialize();
 		}
 	}
 
@@ -151,16 +154,4 @@ public class KafkaContextPropagationTest {
 			return value;
 		}
 	}
-
-    private static void reinitializeRegistry() {
-        try {
-            Field f = ContextManager.class.getDeclaredField("registry");
-            f.setAccessible(true);
-            ((Map) f.get(null)).clear();
-            ContextManager.init();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 }
