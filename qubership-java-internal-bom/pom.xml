@@ -41,7 +41,6 @@
 
         <!-- Annotations -->
         <jetbrains-annotations.version>26.0.2</jetbrains-annotations.version>
-        <jsr305.version>3.0.2</jsr305.version>
 
         <!-- HTTP clients -->
         <okhttp3.version>4.12.0</okhttp3.version>
@@ -186,11 +185,6 @@
                 <groupId>org.jetbrains</groupId>
                 <artifactId>annotations</artifactId>
                 <version>${jetbrains-annotations.version}</version>
-            </dependency>
-            <dependency> <!-- todo vlla: candidate ro remove from generic bom -->
-                <groupId>com.google.code.findbugs</groupId>
-                <artifactId>jsr305</artifactId>
-                <version>${jsr305.version}</version>
             </dependency>
 
             <!-- ===== HTTP clients ===== -->
