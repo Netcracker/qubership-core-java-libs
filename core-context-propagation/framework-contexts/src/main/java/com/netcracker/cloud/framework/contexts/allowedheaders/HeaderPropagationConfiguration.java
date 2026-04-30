@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public final class HeaderPropagationConfiguration {
@@ -13,7 +14,7 @@ public final class HeaderPropagationConfiguration {
     public static final String DEFAULT_BLOCKED_HEADER = "X-Channel-Request-Id";
     public static final String NON_BLOCKABLE_HEADER = "X-Request-Id";
 
-    private static volatile CachedHeaders cachedHeaders = null;
+    private static final AtomicReference<CachedHeaders> cachedHeaders = new AtomicReference<>(null);
 
     private static final class CachedHeaders {
         final List<String> list;
@@ -32,13 +33,14 @@ public final class HeaderPropagationConfiguration {
     }
 
     private static CachedHeaders getOrInit() {
-        CachedHeaders local = cachedHeaders;
+        CachedHeaders local = cachedHeaders.get();
         if (local == null) {
             synchronized (HeaderPropagationConfiguration.class) {
-                if (cachedHeaders == null) {
-                    cachedHeaders = new CachedHeaders(readBlockedHeaders());
+                local = cachedHeaders.get();
+                if (local == null) {
+                    local = new CachedHeaders(readBlockedHeaders());
+                    cachedHeaders.set(local);
                 }
-                local = cachedHeaders;
             }
         }
         return local;
@@ -49,7 +51,7 @@ public final class HeaderPropagationConfiguration {
     }
 
     public static synchronized void resetCache() {
-        cachedHeaders = null;
+        cachedHeaders.set(null);
     }
 
     public static boolean isBlacklisted(String headerName) {
