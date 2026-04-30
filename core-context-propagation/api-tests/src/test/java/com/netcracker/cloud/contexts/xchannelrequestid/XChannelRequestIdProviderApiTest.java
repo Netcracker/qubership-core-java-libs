@@ -41,7 +41,7 @@ class XChannelRequestIdProviderApiTest {
         XChannelRequestIdContextProvider xChannelRequestIdContextProvider = new XChannelRequestIdContextProvider();
         XChannelRequestIdContextObject xChannelRequestIdContextObject = xChannelRequestIdContextProvider.provide(null);
 
-        assertNotNull(xChannelRequestIdContextObject.getChannelRequestId());
+        assertEquals("-", xChannelRequestIdContextObject.getChannelRequestId());
     }
 
     @Test
@@ -60,6 +60,6 @@ class XChannelRequestIdProviderApiTest {
         };
         XChannelRequestIdContextObject xChannelRequestIdContextObject = xChannelRequestIdContextProvider.provide(incomingContextData);
 
-        assertNotNull(xChannelRequestIdContextObject.getChannelRequestId());
+        assertEquals("-", xChannelRequestIdContextObject.getChannelRequestId());
     }
 }
