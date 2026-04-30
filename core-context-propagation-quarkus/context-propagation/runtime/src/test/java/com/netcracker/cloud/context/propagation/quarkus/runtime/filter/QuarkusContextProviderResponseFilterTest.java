@@ -6,7 +6,6 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.core.MultivaluedMap;
 import org.jboss.resteasy.reactive.common.util.QuarkusMultivaluedHashMap;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -21,29 +20,26 @@ import static org.mockito.Mockito.mock;
 class QuarkusContextProviderResponseFilterTest {
     @BeforeAll
     static void init() {
-        ContextManager.reinitialize();
-    }
-
-    @AfterAll
-    static void cleanup() {
-        ContextManager.reinitialize();
+        ContextManager.clearAll();
     }
 
     @Test
-    void testResponseFilterShouldPropagateRequestIds() throws IOException {
+    public void testMdcContextMustBeClearedOnResponseFilter() throws IOException {
         String requestId = "123";
         RequestIdContext.set(requestId);
-    
+
         Assertions.assertEquals(requestId, RequestIdContext.get());
-    
+
         ContainerRequestContext containerRequestContext = mock(ContainerRequestContext.class);
+
         ContainerResponseContext containerResponseContext = mock(ContainerResponseContext.class);
         MultivaluedMap<String, Object> containerResponseHeaders = new QuarkusMultivaluedHashMap<>();
-        Mockito.when(containerResponseContext.getHeaders()).thenReturn(containerResponseHeaders);
-    
+        Mockito.when(containerResponseContext.getHeaders())
+                .thenReturn(containerResponseHeaders);
+
         QuarkusContextProviderResponseFilter quarkusFilter = new QuarkusContextProviderResponseFilter();
         quarkusFilter.filter(containerRequestContext, containerResponseContext);
-    
+
         String xRequestId = "X-Request-Id";
         assertTrue(containerResponseHeaders.containsKey(xRequestId));
         assertEquals(requestId, containerResponseHeaders.getFirst(xRequestId));
