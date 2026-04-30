@@ -26,6 +26,7 @@
         <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
         <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
 
+        <kafka-clients.version>4.2.0</kafka-clients.version>
         <cloud-core.maas-client.version>12.2.0-SNAPSHOT</cloud-core.maas-client.version>
     </properties>
 
@@ -54,6 +55,11 @@
                 <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>kafka-blue-green-consumer</artifactId>
                 <version>${cloud-core.maas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>${kafka-clients.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
