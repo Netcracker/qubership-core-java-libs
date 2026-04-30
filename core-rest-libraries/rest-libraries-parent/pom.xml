@@ -32,15 +32,13 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- The custom BOM rest-third-party is kept as is for backward compatibility,
-            but all library modules have been migrated to the centralized internal BOMs -->
-            <!--dependency>
+            <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>rest-third-party</artifactId>
                 <version>${project.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
-            </dependency-->
+            </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>microservice-restclient-api</artifactId>

@@ -10,18 +10,6 @@
 
     <artifactId>log-manager-common</artifactId>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.netcracker.cloud</groupId>
-                <artifactId>qubership-java-internal-bom</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <properties>
         <jboss.version>3.2.1.Final</jboss.version>
         <mockito-inline.version>5.2.0</mockito-inline.version>
