@@ -23,7 +23,6 @@
         <java.version>21</java.version>
         <mongodb.version>5.6.4</mongodb.version>
         <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
-        <mongo.test.server.version>1.47.0</mongo.test.server.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../mongo-evolution-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -78,7 +77,6 @@
         <dependency>
             <groupId>de.bwaldvogel</groupId>
             <artifactId>mongo-java-server</artifactId>
-            <version>${mongo.test.server.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

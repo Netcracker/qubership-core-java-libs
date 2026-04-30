@@ -15,8 +15,6 @@
 
     <properties>
         <powermock.version>2.0.9</powermock.version>
-        <postgresql.driver.version>42.7.10</postgresql.driver.version>
-        <mongodb.version>5.6.4</mongodb.version>
         <arangodb.driver.version>7.26.0</arangodb.driver.version>
         <arangodb.spring.data.version>5.0.0</arangodb.spring.data.version>
         <java.driver.core.version>4.19.2</java.driver.core.version>
@@ -93,11 +91,6 @@
                 <artifactId>httpcore5</artifactId>
                 <version>5.3.6</version>
             </dependency>
-            <dependency> <!-- todo vlla: generic bom candidate -->
-                <groupId>org.postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>${postgresql.driver.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
@@ -108,11 +101,6 @@
                 <artifactId>flyway-database-postgresql</artifactId>
                 <version>${flyway.version}</version>
             </dependency>
-            <dependency> <!-- todo vlla: generic bom candidate -->
-                <groupId>org.mongodb</groupId>
-                <artifactId>mongodb-driver-sync</artifactId>
-                <version>${mongodb.version}</version>
-            </dependency>
             <dependency>
                 <groupId>com.arangodb</groupId>
                 <artifactId>arangodb-java-driver</artifactId>
@@ -122,11 +110,6 @@
                 <groupId>com.arangodb</groupId>
                 <artifactId>arangodb-spring-data</artifactId>
                 <version>${arangodb.spring.data.version}</version>
-            </dependency>
-            <dependency> <!-- todo vlla: generic bom candidate -->
-                <groupId>io.micrometer</groupId>
-                <artifactId>micrometer-core</artifactId>
-                <version>1.16.4</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.cassandra</groupId>
@@ -158,12 +141,6 @@
                 <artifactId>shedlock-provider-cassandra</artifactId>
                 <version>${shedlock.version}</version>
             </dependency>
-            <dependency> <!-- todo vlla: generic bom candidate -->
-                <groupId>jakarta.servlet</groupId>
-                <artifactId>jakarta.servlet-api</artifactId>
-                <version>6.1.0</version>
-                <scope>test</scope>
-            </dependency>
             <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
@@ -175,12 +152,6 @@
                 <version>3.9.12</version>
             </dependency>
 
-            <dependency> <!-- todo vlla: generic bom candidate -->
-                <groupId>de.bwaldvogel</groupId>
-                <artifactId>mongo-java-server</artifactId>
-                <version>1.47.0</version>
-                <scope>test</scope>
-            </dependency>
             <dependency>
                 <groupId>org.cassandraunit</groupId>
                 <artifactId>cassandra-unit-spring</artifactId>
