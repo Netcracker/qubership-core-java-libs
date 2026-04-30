@@ -13,27 +13,50 @@ public final class HeaderPropagationConfiguration {
     public static final String DEFAULT_BLOCKED_HEADER = "X-Channel-Request-Id";
     public static final String NON_BLOCKABLE_HEADER = "X-Request-Id";
 
-    private static volatile List<String> cachedBlockedHeaders = null;
-    private static volatile Set<String> cachedBlockedHeadersLowerSet = null;
+    private static volatile CachedHeaders cachedHeaders = null;
+
+    private static final class CachedHeaders {
+        final List<String> list;
+        final Set<String> lowerSet;
+
+        CachedHeaders(List<String> list) {
+            this.list = list;
+            this.lowerSet = list.stream()
+                    .filter(h -> h != null && !h.isBlank())
+                    .map(h -> h.toLowerCase(Locale.ROOT))
+                    .collect(Collectors.toUnmodifiableSet());
+        }
+    }
 
     private HeaderPropagationConfiguration() {
     }
 
-    public static List<String> blockedHeaders() {
-        if (cachedBlockedHeaders == null) {
+    private static CachedHeaders getOrInit() {
+        CachedHeaders local = cachedHeaders;
+        if (local == null) {
             synchronized (HeaderPropagationConfiguration.class) {
-                if (cachedBlockedHeaders == null) {
-                    cachedBlockedHeaders = readBlockedHeaders();
-                    cachedBlockedHeadersLowerSet = toLowerCaseSet(cachedBlockedHeaders);
+                if (cachedHeaders == null) {
+                    cachedHeaders = new CachedHeaders(readBlockedHeaders());
                 }
+                local = cachedHeaders;
             }
         }
-        return cachedBlockedHeaders;
+        return local;
     }
 
-    public static void resetCache() {
-        cachedBlockedHeaders = null;
-        cachedBlockedHeadersLowerSet = null;
+    public static List<String> blockedHeaders() {
+        return getOrInit().list;
+    }
+
+    public static synchronized void resetCache() {
+        cachedHeaders = null;
+    }
+
+    public static boolean isBlacklisted(String headerName) {
+        if (headerName == null || headerName.isBlank()) {
+            return false;
+        }
+        return getOrInit().lowerSet.contains(headerName.toLowerCase(Locale.ROOT));
     }
 
     private static List<String> readBlockedHeaders() {
@@ -51,31 +74,12 @@ public final class HeaderPropagationConfiguration {
             return anySourceSpecified ? Collections.emptyList() : List.of(DEFAULT_BLOCKED_HEADER);
         }
 
-        List<String> configuredBlockedHeaders = Arrays.stream(blockedHeaders.split(","))
+        List<String> configured = Arrays.stream(blockedHeaders.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .filter(s -> !s.equalsIgnoreCase(NON_BLOCKABLE_HEADER))
                 .toList();
 
-        // Keep default behavior: X-Channel-Request-Id remains blocked unless user explicitly sets empty list.
-        return configuredBlockedHeaders.isEmpty() ? List.of(DEFAULT_BLOCKED_HEADER) : configuredBlockedHeaders;
-    }
-
-    public static boolean isBlacklisted(String headerName) {
-        if (headerName == null || headerName.isBlank()) {
-            return false;
-        }
-        blockedHeaders();
-        return cachedBlockedHeadersLowerSet.contains(headerName.toLowerCase(Locale.ROOT));
-    }
-
-    private static Set<String> toLowerCaseSet(List<String> headers) {
-        if (headers == null || headers.isEmpty()) {
-            return Collections.emptySet();
-        }
-        return headers.stream()
-                .filter(h -> h != null && !h.isBlank())
-                .map(h -> h.toLowerCase(Locale.ROOT))
-                .collect(Collectors.toUnmodifiableSet());
+        return configured.isEmpty() ? List.of(DEFAULT_BLOCKED_HEADER) : configured;
     }
 }
