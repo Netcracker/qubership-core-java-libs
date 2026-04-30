@@ -26,7 +26,7 @@ class XChannelRequestIdContextObjectApiTest {
     @Test
     void testDefaultXChannelRequestId() {
         XChannelRequestIdContextObject xChannelRequestIdContextObject = new XChannelRequestIdContextObject((IncomingContextData) null);
-        assertNotNull(xChannelRequestIdContextObject.getChannelRequestId());
+        assertEquals("-", xChannelRequestIdContextObject.getChannelRequestId());
     }
 
     @Test
