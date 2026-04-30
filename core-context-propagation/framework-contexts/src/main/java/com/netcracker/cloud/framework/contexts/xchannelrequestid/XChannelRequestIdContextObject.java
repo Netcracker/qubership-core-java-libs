@@ -30,7 +30,7 @@ public class XChannelRequestIdContextObject implements SerializableContext,
     }
 
     public XChannelRequestIdContextObject(String channelRequestId) {
-        this.channelRequestId = channelRequestId;
+        this.channelRequestId = channelRequestId != null ? channelRequestId : "-";
     }
 
     @Override
