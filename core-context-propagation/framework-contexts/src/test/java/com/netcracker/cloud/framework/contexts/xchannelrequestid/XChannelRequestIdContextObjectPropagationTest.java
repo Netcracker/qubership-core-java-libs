@@ -65,7 +65,7 @@ class XChannelRequestIdContextObjectPropagationTest extends AbstractContextTestW
         ContextManager.set(X_CHANNEL_REQUEST_ID, xChannelRequestIdContextObject);
         ContextDataResponse responseContextData = new ContextDataResponse();
         RequestContextPropagation.setResponsePropagatableData(responseContextData);
-        Assertions.assertNull(responseContextData.getResponseHeaders().get(X_CHANNEL_REQUEST_ID));
+        Assertions.assertEquals("-", responseContextData.getResponseHeaders().get(X_CHANNEL_REQUEST_ID));
     }
 
     @Test
@@ -76,7 +76,7 @@ class XChannelRequestIdContextObjectPropagationTest extends AbstractContextTestW
             RequestContextPropagation.initRequestContext(new ContextDataRequest()); // filter
             ContextDataResponse responseContextData = new ContextDataResponse();
             RequestContextPropagation.setResponsePropagatableData(responseContextData);
-            Assertions.assertNull(responseContextData.getResponseHeaders().get(X_CHANNEL_REQUEST_ID));
+            Assertions.assertEquals("-", responseContextData.getResponseHeaders().get(X_CHANNEL_REQUEST_ID));
 
             Map<String, Map<String, Object>> serializableContextData = ContextManager.getSerializableContextData();
             Assertions.assertTrue(serializableContextData.getOrDefault(X_CHANNEL_REQUEST_ID_CONTEXT_NAME, Collections.emptyMap()).isEmpty());

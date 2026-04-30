@@ -50,7 +50,7 @@ public final class HeaderPropagationConfiguration {
         return getOrInit().list;
     }
 
-    public static synchronized void resetCache() {
+    public static void resetCache() {
         cachedHeaders.set(null);
     }
 

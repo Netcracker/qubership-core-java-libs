@@ -1,8 +1,6 @@
 package com.netcracker.cloud.context.propagation.quarkus.runtime.filter;
 
 import com.netcracker.cloud.context.propagation.core.ContextManager;
-import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
-import com.netcracker.cloud.headerstracking.filters.context.ChannelRequestIdContext;
 import com.netcracker.cloud.headerstracking.filters.context.RequestIdContext;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
@@ -23,45 +21,31 @@ import static org.mockito.Mockito.mock;
 class QuarkusContextProviderResponseFilterTest {
     @BeforeAll
     static void init() {
-        ContextManager.clearAll();
-        System.setProperty("headers.blocked", "");
-        HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
     }
 
     @AfterAll
     static void cleanup() {
-        System.clearProperty("headers.blocked");
-        HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
     }
 
     @Test
     void testResponseFilterShouldPropagateRequestIds() throws IOException {
         String requestId = "123";
-        String channelRequestId = "channel-456";
         RequestIdContext.set(requestId);
-        ChannelRequestIdContext.set(channelRequestId);
-
+    
         Assertions.assertEquals(requestId, RequestIdContext.get());
-        Assertions.assertEquals(channelRequestId, ChannelRequestIdContext.get());
-
+    
         ContainerRequestContext containerRequestContext = mock(ContainerRequestContext.class);
-
         ContainerResponseContext containerResponseContext = mock(ContainerResponseContext.class);
         MultivaluedMap<String, Object> containerResponseHeaders = new QuarkusMultivaluedHashMap<>();
-        Mockito.when(containerResponseContext.getHeaders())
-                .thenReturn(containerResponseHeaders);
-
+        Mockito.when(containerResponseContext.getHeaders()).thenReturn(containerResponseHeaders);
+    
         QuarkusContextProviderResponseFilter quarkusFilter = new QuarkusContextProviderResponseFilter();
         quarkusFilter.filter(containerRequestContext, containerResponseContext);
-
+    
         String xRequestId = "X-Request-Id";
         assertTrue(containerResponseHeaders.containsKey(xRequestId));
         assertEquals(requestId, containerResponseHeaders.getFirst(xRequestId));
-
-        String xChannelRequestId = "X-Channel-Request-Id";
-        assertTrue(containerResponseHeaders.containsKey(xChannelRequestId));
-        assertEquals(channelRequestId, containerResponseHeaders.getFirst(xChannelRequestId));
     }
 }

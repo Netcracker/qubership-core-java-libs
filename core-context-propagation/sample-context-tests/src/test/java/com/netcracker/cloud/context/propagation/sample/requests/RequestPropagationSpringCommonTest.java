@@ -37,6 +37,6 @@ class RequestPropagationSpringCommonTest {
     void testRequestPropagation() throws Exception {
         mockMvc.perform(get("/spring/common/test/requestId"))
                 .andExpect(header().exists("X-Request-Id"))
-                .andExpect(header().doesNotExist("X-Channel-Request-Id"));
+                .andExpect(header().exists("X-Channel-Request-Id"));
     }
 }

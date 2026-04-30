@@ -46,9 +46,7 @@ public class XChannelRequestIdContextObject implements SerializableContext,
 
     @Override
     public void propagate(OutgoingContextData outgoingContextData) {
-        if (!HeaderPropagationConfiguration.isBlacklisted(X_CHANNEL_REQUEST_ID)) {
-            outgoingContextData.set(X_CHANNEL_REQUEST_ID, channelRequestId);
-        }
+        outgoingContextData.set(X_CHANNEL_REQUEST_ID, channelRequestId);
     }
 
     @Override
