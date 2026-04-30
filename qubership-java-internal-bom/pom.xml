@@ -72,7 +72,6 @@
         <awaitility.version>4.3.0</awaitility.version>
 
         <!-- Messaging -->
-        <kafka.version>4.2.0</kafka.version>
         <rabbitmq.version>5.28.0</rabbitmq.version>
         <rabbitmq-mock.version>1.2.0</rabbitmq-mock.version>
 
@@ -278,16 +277,6 @@
             </dependency>
 
             <!-- ===== Messaging ===== -->
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-clients</artifactId>
-                <version>${kafka.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-streams</artifactId>
-                <version>${kafka.version}</version>
-            </dependency>
             <dependency>
                 <groupId>com.rabbitmq</groupId>
                 <artifactId>amqp-client</artifactId>
