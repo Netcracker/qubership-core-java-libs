@@ -11,8 +11,11 @@ import java.util.stream.Collectors;
 public final class HeaderPropagationConfiguration {
     public static final String HEADERS_BLOCKED_PROPERTY = "headers.blocked";
     public static final String HEADERS_BLOCKED_ENV = "HEADERS_BLOCKED";
-    public static final String DEFAULT_BLOCKED_HEADER = "X-Channel-Request-Id";
-    public static final String NON_BLOCKABLE_HEADER = "X-Request-Id";
+    public static final List<String> DEFAULT_BLOCKED_HEADERS = 
+    List.of("X-Channel-Request-Id");
+
+    public static final List<String> NON_BLOCKABLE_HEADERS = 
+        List.of("X-Request-Id");
 
     private static final AtomicReference<CachedHeaders> cachedHeaders = new AtomicReference<>(null);
 
@@ -73,15 +76,16 @@ public final class HeaderPropagationConfiguration {
         boolean anySourceSpecified = propertySpecified || envSpecified;
 
         if (blockedHeaders == null || blockedHeaders.isBlank()) {
-            return anySourceSpecified ? Collections.emptyList() : List.of(DEFAULT_BLOCKED_HEADER);
+            return anySourceSpecified ? Collections.emptyList() : DEFAULT_BLOCKED_HEADERS;
         }
-
+        
         List<String> configured = Arrays.stream(blockedHeaders.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
-                .filter(s -> !s.equalsIgnoreCase(NON_BLOCKABLE_HEADER))
+                .filter(s -> NON_BLOCKABLE_HEADERS.stream()
+                        .noneMatch(s::equalsIgnoreCase))
                 .toList();
-
-        return configured.isEmpty() ? List.of(DEFAULT_BLOCKED_HEADER) : configured;
+        
+        return configured.isEmpty() ? DEFAULT_BLOCKED_HEADERS : configured;
     }
 }

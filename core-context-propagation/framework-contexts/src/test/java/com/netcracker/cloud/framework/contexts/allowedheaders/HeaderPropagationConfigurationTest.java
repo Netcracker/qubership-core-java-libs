@@ -81,8 +81,7 @@ class HeaderPropagationConfigurationTest {
 
         Assertions.assertFalse(HeaderPropagationConfiguration.isBlacklisted("X-Request-Id"));
         Assertions.assertTrue(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"));
-        Assertions.assertEquals(
-                java.util.List.of(HeaderPropagationConfiguration.DEFAULT_BLOCKED_HEADER),
+        Assertions.assertEquals(HeaderPropagationConfiguration.DEFAULT_BLOCKED_HEADERS,
                 HeaderPropagationConfiguration.blockedHeaders());
     }
 

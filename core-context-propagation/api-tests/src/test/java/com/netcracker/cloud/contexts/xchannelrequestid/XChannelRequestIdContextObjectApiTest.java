@@ -54,7 +54,7 @@ class XChannelRequestIdContextObjectApiTest {
     
         assertEquals(xChannelRequestIdIncomingContextData.get("X-Channel-Request-Id"), xChannelRequestIdContextObject.getChannelRequestId());
     
-        // No data, defalt placeholder "-"
+        // No data, default placeholder "-"
         RequestContextPropagation.initRequestContext(null);
         xChannelRequestIdContextObject = ContextManager.get(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME);
     
