@@ -49,12 +49,12 @@ import static org.junit.jupiter.api.Assertions.fail;
 @EnableRabbitContextPropagation
 @SpringBootTest
 public class PropagationTest {
-	final static Logger log = LoggerFactory.getLogger(PropagationTest.class);
-	final static SystemLauncher systemLauncher = new SystemLauncher();
-	final static int port = getFreePort();
-	final static URI cnnUri = URI.create("amqp://localhost:" + port);
-	final static AtomicReference<CountDownLatch> awaitLatch = new AtomicReference<>();
-	final static AtomicReference<Map<String, Object>> receivedHeaders = new AtomicReference<>();
+	static final Logger log = LoggerFactory.getLogger(PropagationTest.class);
+	static final SystemLauncher systemLauncher = new SystemLauncher();
+	static final int port = getFreePort();
+	static final URI cnnUri = URI.create("amqp://localhost:" + port);
+	static final AtomicReference<CountDownLatch> awaitLatch = new AtomicReference<>();
+	static final AtomicReference<Map<String, Object>> receivedHeaders = new AtomicReference<>();
 
 	private static final String CUSTOM_HEADER = "X-Custom-Header-1";
 	private static final String CUSTOM_HEADER_VALUE = "case-insensitive-test-value";

@@ -9,6 +9,9 @@ import static com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannel
 
 public class ChannelRequestIdContext {
 
+    private ChannelRequestIdContext() {
+    }
+    
     public static String get() {
         XChannelRequestIdContextObject xChannelRequestIdContextObject = ContextManager.get(X_CHANNEL_REQUEST_ID);
         return xChannelRequestIdContextObject.getChannelRequestId();

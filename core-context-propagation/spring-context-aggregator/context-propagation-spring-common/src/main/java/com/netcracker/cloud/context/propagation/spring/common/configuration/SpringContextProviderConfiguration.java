@@ -22,6 +22,7 @@ public class SpringContextProviderConfiguration {
         return new SpringPreAuthnContextProviderFilter();
     }
 
+    @SuppressWarnings("java:S3305")
     @Autowired
     private Environment environment;
 

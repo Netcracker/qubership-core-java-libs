@@ -6,6 +6,8 @@ import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.impl.headers.HeadersMultiMap;
 import io.vertx.ext.web.RoutingContext;
+
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -19,8 +21,13 @@ class QuarkusPreAuthnContextProviderHandlerXChannelRequestIdTest {
         ContextManager.clearAll();
     }
 
+    @AfterAll
+    static void tearDown() {
+        ContextManager.reinitialize();
+    }
+
     @Test
-    public void testDoFilterWithXChannelRequestIdHeader() {
+    void testDoFilterWithXChannelRequestIdHeader() {
         RoutingContext routingContext = mock(RoutingContext.class);
         HttpServerRequest httpServerRequest = mock(HttpServerRequest.class);
         when(routingContext.request()).thenReturn(httpServerRequest);

@@ -62,5 +62,4 @@ class XChannelRequestIdProviderApiTest {
 
         assertNotNull(xChannelRequestIdContextObject.getChannelRequestId());
     }
-
 }

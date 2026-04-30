@@ -8,7 +8,6 @@ import com.netcracker.cloud.context.propagation.core.contexts.ResponsePropagatab
 import com.netcracker.cloud.context.propagation.core.contexts.SerializableContext;
 import com.netcracker.cloud.context.propagation.core.contexts.SerializableDataContext;
 import com.netcracker.cloud.context.propagation.core.contexts.common.RequestContextObject;
-import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;

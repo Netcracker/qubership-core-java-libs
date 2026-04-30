@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 public class QuarkusXChannelRequestStrategyImpl extends AbstractXChannelRequestIdStrategy {
     private final Strategy<XChannelRequestIdContextObject> strategy;
 
+    @SuppressWarnings("deprecation")
     public QuarkusXChannelRequestStrategyImpl(Supplier<XChannelRequestIdContextObject> defaultContextObject) {
         strategy = new RestEasyDefaultStrategy<>(XChannelRequestIdContextObject.class, defaultContextObject);
     }

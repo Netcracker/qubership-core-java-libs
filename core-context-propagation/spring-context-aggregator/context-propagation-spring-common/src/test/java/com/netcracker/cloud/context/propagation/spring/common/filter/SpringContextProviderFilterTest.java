@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static com.netcracker.cloud.context.propagation.core.ContextManager.getSafe;
 import static jakarta.ws.rs.core.HttpHeaders.ACCEPT_LANGUAGE;
 import static org.mockito.Mockito.*;
 

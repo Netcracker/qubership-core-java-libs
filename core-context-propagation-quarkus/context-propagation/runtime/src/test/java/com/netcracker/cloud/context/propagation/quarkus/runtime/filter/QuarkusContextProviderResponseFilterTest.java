@@ -37,7 +37,7 @@ class QuarkusContextProviderResponseFilterTest {
     }
 
     @Test
-    public void testResponseFilterShouldPropagateRequestIds() throws IOException {
+    void testResponseFilterShouldPropagateRequestIds() throws IOException {
         String requestId = "123";
         String channelRequestId = "channel-456";
         RequestIdContext.set(requestId);

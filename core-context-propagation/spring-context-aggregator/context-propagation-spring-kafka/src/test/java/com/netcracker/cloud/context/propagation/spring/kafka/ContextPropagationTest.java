@@ -84,7 +84,7 @@ public class ContextPropagationTest {
 
 	@Test
 	@Timeout(30)
-    public void testContextPropagationBlocksXChannelRequestIdByDefault() throws Exception {
+    void testContextPropagationBlocksXChannelRequestIdByDefault() throws Exception {
         ChannelRequestIdContext.set(X_CHANNEL_REQUEST_ID_VALUE);
         AcceptLanguageContext.set(TEST_LANG);
         AllowedHeadersContext.set(Map.of(CUSTOM_HEADER, CUSTOM_HEADER_VALUE));

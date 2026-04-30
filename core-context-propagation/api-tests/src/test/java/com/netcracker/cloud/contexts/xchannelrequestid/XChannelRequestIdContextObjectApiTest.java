@@ -46,18 +46,18 @@ class XChannelRequestIdContextObjectApiTest {
 
     @Test
     void testGetXChannelRequestIdFromContextManager() {
+        // data from context
         ContextManager.register(Collections.singletonList(new XChannelRequestIdContextProvider()));
         IncomingContextData xChannelRequestIdIncomingContextData = IncomingContextDataFactory.getXChannelRequestIdIncomingContextData();
         RequestContextPropagation.initRequestContext(xChannelRequestIdIncomingContextData);
-        XChannelRequestIdContextObject xChannelRequestIdContextObject = ContextManager.get(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME); // API
-
+        XChannelRequestIdContextObject xChannelRequestIdContextObject = ContextManager.get(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME);
+    
         assertEquals(xChannelRequestIdIncomingContextData.get("X-Channel-Request-Id"), xChannelRequestIdContextObject.getChannelRequestId());
-
+    
+        // No data, defalt placeholder "-"
         RequestContextPropagation.initRequestContext(null);
-        xChannelRequestIdContextObject = ContextManager.get(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME); // API
-
-        assertNotNull(xChannelRequestIdContextObject.getChannelRequestId());
-        assertNotEquals(xChannelRequestIdIncomingContextData.get("X-Channel-Request-Id"), xChannelRequestIdContextObject.getChannelRequestId());
-
+        xChannelRequestIdContextObject = ContextManager.get(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME);
+    
+        assertEquals("-", xChannelRequestIdContextObject.getChannelRequestId());
     }
 }
