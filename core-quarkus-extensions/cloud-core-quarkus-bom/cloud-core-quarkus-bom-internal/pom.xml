@@ -22,20 +22,20 @@
         <freemarker.version>2.3.34</freemarker.version>
 
         <!-- Align various dependencies that are not really part of the bom-->
-        <findbugs.version>3.0.2</findbugs.version>
         <jsoup.version>1.22.2</jsoup.version>
         <wagon-provider-api.version>3.5.3</wagon-provider-api.version>
-
-        <!-- need to be updated together-->
-        <okhttp.version>4.12.0</okhttp.version>
-        <okio.version>3.17.0</okio.version>
-
-        <!--Test-->
-        <mockito.version>5.21.0</mockito.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>qubership-quarkus-internal-bom</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- Qubership -->
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
@@ -99,18 +99,6 @@
                 <version>${cloud-core.dbaas-client.version}</version>
             </dependency>
             <!-- Dev tools -->
-            <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>3.20.0</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-devtools-common</artifactId>
-                <version>${quarkus.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
@@ -118,16 +106,6 @@
             </dependency>
 
             <!-- Miscellaneous -->
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-rest-client</artifactId>
-                <version>${quarkus.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.code.findbugs</groupId>
-                <artifactId>jsr305</artifactId>
-                <version>${findbugs.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
@@ -137,46 +115,6 @@
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-provider-api</artifactId>
                 <version>${wagon-provider-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.squareup.okhttp3</groupId>
-                <artifactId>okhttp</artifactId>
-                <version>${okhttp.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.squareup.okio</groupId>
-                <artifactId>okio</artifactId>
-                <version>${okio.version}</version>
-            </dependency>
-            <!--Remove after upgrading to Quarkus v3-->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>2.0.17</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>33.5.0-jre</version>
-            </dependency>
-            <!--Test-->
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>${mockito.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-core</artifactId>
-                <version>3.27.7</version>
-                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

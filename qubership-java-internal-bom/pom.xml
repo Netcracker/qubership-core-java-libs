@@ -188,7 +188,7 @@
                 <artifactId>annotations</artifactId>
                 <version>${jetbrains-annotations.version}</version>
             </dependency>
-            <dependency>
+            <dependency> <!-- todo vlla: candidate ro remove from generic bom -->
                 <groupId>com.google.code.findbugs</groupId>
                 <artifactId>jsr305</artifactId>
                 <version>${jsr305.version}</version>
