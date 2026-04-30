@@ -2,6 +2,7 @@ package com.netcracker.core.scheduler.po;
 
 import com.netcracker.core.scheduler.po.model.pojo.ProcessInstanceImpl;
 import com.netcracker.core.scheduler.po.model.pojo.TaskInstanceImpl;
+import com.netcracker.core.scheduler.po.repository.ContextRepository;
 import com.netcracker.core.scheduler.po.repository.TaskInstanceRepository;
 import com.netcracker.core.scheduler.po.task.NamedTask;
 import com.netcracker.core.scheduler.po.task.templates.AbstractProcessTask;
@@ -13,11 +14,13 @@ public class ProcessDefinition {
     final String id;
     final String name;
     private final Map<NamedTask, List<NamedTask>> graph;
+    private final Map<NamedTask, Map<String, Object>> taskContexts;
 
     public ProcessDefinition(String name) {
         this.name = name;
         this.id = UUID.randomUUID().toString();
-        graph = new HashMap<>();
+        this.graph = new HashMap<>();
+        this.taskContexts = new HashMap<>();
     }
 
     @SafeVarargs
@@ -31,7 +34,6 @@ public class ProcessDefinition {
         return this;
     }
 
-
     public ProcessDefinition addDepend(Class<? extends AbstractProcessTask> task, Class<? extends AbstractProcessTask> dependOn) {
         return addDepend(new NamedTask(task.getName(), task.getName()), dependOn.getName());
     }
@@ -43,17 +45,38 @@ public class ProcessDefinition {
         return this;
     }
 
+    public ProcessDefinition addTaskContext(NamedTask task, Map<String, Object> context) {
+        taskContexts.put(task, context);
+        return this;
+    }
+
     public ProcessInstanceImpl createInstance() {
         ProcessInstanceImpl instance = new ProcessInstanceImpl(name, UUID.randomUUID().toString(), id);
         TaskInstanceRepository taskInstanceRepository = ProcessOrchestrator.getInstance().getTaskInstanceRepository();
-        taskInstanceRepository.addTaskInstancesBulk(graph.entrySet().stream()
-                .map(task -> {
-                    TaskInstanceImpl taskInstance = new TaskInstanceImpl(UUID.randomUUID().toString(), task.getKey().getTaskName(), task.getKey().getTaskClass(), instance.getId());
-                    taskInstance.setTimeout(task.getKey().getSyncTimeOut());
-                    taskInstance.setAsyncTimeout(task.getKey().getAsyncTimeout());
-                    taskInstance.setDependsOn(task.getValue());
+        ContextRepository contextRepository = ProcessOrchestrator.getInstance().getContextRepository();
+
+        List<DataContext> contexts = new ArrayList<>();
+        List<TaskInstanceImpl> tasks = graph.entrySet().stream()
+                .map(entry -> {
+                    NamedTask namedTask = entry.getKey();
+                    Long syncTimeOut = namedTask.getSyncTimeOut();
+                    Long asyncTimeout = namedTask.getAsyncTimeout();
+                    TaskInstanceImpl taskInstance = new TaskInstanceImpl(UUID.randomUUID().toString(), namedTask.getTaskName(), namedTask.getTaskClass(), instance.getId());
+                    taskInstance.setDependsOn(entry.getValue());
+
+                    DataContext taskContext = ProcessOrchestrator.getInstance().createDataContext(taskInstance.getId(),
+                            dataContext -> TaskInstanceImpl.fillNewContext(dataContext, syncTimeOut, asyncTimeout));
+                    Map<String, Object> customContext = ProcessDefinition.this.taskContexts.get(namedTask);
+                    if (customContext != null) {
+                        taskContext.putAll(customContext);
+                    }
+                    contexts.add(taskContext);
                     return taskInstance;
-                }).toList());
+                }).toList();
+
+        contextRepository.addContextsBulk(contexts);
+        taskInstanceRepository.addTaskInstancesBulk(tasks);
+
         return instance;
     }
 }

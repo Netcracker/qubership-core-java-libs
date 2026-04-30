@@ -2,17 +2,13 @@ package com.netcracker.core.scheduler.po;
 
 
 import com.github.kagkarlsson.scheduler.Scheduler;
-import com.zaxxer.hikari.HikariDataSource;
-import lombok.SneakyThrows;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import com.netcracker.core.scheduler.SchedulerConfig;
 import com.netcracker.core.scheduler.helpers.MyTestObject;
 import com.netcracker.core.scheduler.helpers.SchedulerUtils;
 import com.netcracker.core.scheduler.po.model.pojo.ProcessInstanceImpl;
 import com.netcracker.core.scheduler.po.model.pojo.TaskInstanceImpl;
+import com.netcracker.core.scheduler.po.repository.ContextRepository;
+import com.netcracker.core.scheduler.po.repository.ProcessInstanceRepository;
 import com.netcracker.core.scheduler.po.repository.TaskInstanceRepository;
 import com.netcracker.core.scheduler.po.samples.DummyAsyncProcess;
 import com.netcracker.core.scheduler.po.samples.DymmyProcess;
@@ -20,6 +16,12 @@ import com.netcracker.core.scheduler.po.samples.FailedDymmyProcess;
 import com.netcracker.core.scheduler.po.samples.tasks.*;
 import com.netcracker.core.scheduler.po.task.NamedTask;
 import com.netcracker.core.scheduler.po.task.TaskState;
+import com.zaxxer.hikari.HikariDataSource;
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
@@ -28,6 +30,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.function.Function;
 
 import static org.awaitility.Awaitility.await;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.*;
 
 
 class SchedulerTest {
@@ -102,6 +107,38 @@ class SchedulerTest {
         process = orchestrator.getProcessInstance(process.getId());
         Assertions.assertTrue(process.getTasks().stream().allMatch(t -> t.getState().equals(TaskState.COMPLETED)));
         orchestrator.stop();
+    }
+
+    @Test
+    void testPO_processCreation_onlyBulkCalls() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        ProcessOrchestrator mockPO = null;
+        try {
+            ContextRepository contextRepositoryMock = mock(ContextRepository.class);
+            ProcessInstanceRepository processInstanceRepositoryMock = mock(ProcessInstanceRepository.class);
+            TaskInstanceRepository taskInstanceRepositoryMock = mock(TaskInstanceRepository.class);
+            mockPO = new ProcessOrchestrator(dataSource, 1, ProcessOrchestrator.getTasks(),
+                    contextRepositoryMock, processInstanceRepositoryMock, taskInstanceRepositoryMock);
+
+            ProcessDefinition pr = new ProcessDefinition("pr");
+            pr.addTask(new NamedTask("class", "name1"));
+            pr.addTask(new NamedTask("class", "name2"), "name1");
+
+            mockPO.createProcess(pr);
+
+            verify(taskInstanceRepositoryMock, times(1))
+                    .addTaskInstancesBulk(argThat(tasksList -> tasksList.size() == 2));
+            verify(taskInstanceRepositoryMock, times(0)).getTaskInstance(any());
+            verify(taskInstanceRepositoryMock, times(0)).putTaskInstance(any());
+
+            verify(contextRepositoryMock, times(1))
+                    .addContextsBulk(argThat(contextsList -> contextsList.size() == 2));
+            verify(contextRepositoryMock, times(0)).getContext(any());
+            verify(contextRepositoryMock, times(0)).putContext(any());
+        } finally {
+            if (mockPO != null) {
+                mockPO.stop();
+            }
+        }
     }
 
     @Test
