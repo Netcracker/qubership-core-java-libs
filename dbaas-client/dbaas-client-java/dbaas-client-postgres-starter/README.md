@@ -146,6 +146,28 @@ To set pg-extensions to service based database settings, you need to set next pr
 dbaas.api.postgres.service.database-settings.pg-extensions=some-value1,some-value2
 ```
 
+#### DataSource parameters
+
+Default dbaas-client DataSource uses com.zaxxer.hikari.HikariDataSource implementation.
+
+You can configure all options from
+https://github.com/brettwooldridge/HikariCP?tab=readme-ov-file#gear-configuration-knobs-baby using next syntax:
+
+```
+dbaas.postgres.datasource:
+  minimumIdle: 300000
+  autoCommit: true
+  maximumPoolSize: 10
+  connectionTimeout: 10000
+...
+```
+
+To change DataSource implementation use "dbaas.postgres.dataSourceType" property where the value must be a fully
+qualified class name.
+
+You can configure your custom dataSourceType by specifying any option from dataSourceType's class (option name derives
+from setter method declared in the class) prefixed with "dbaas.postgres.datasource" prefix.
+
 ### Access to several databases
 To be able to connect multiple PostgreSQL databases to one microservice, you need to follow these steps:
 1. To connect to another service database, you need to add the next bean in configuration class:

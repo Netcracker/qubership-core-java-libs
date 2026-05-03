@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>cloud-core-quarkus-bom-parent</artifactId>
-        <version>9.2.0-SNAPSHOT</version>
+        <version>10.0.0-SNAPSHOT</version>
         <relativePath>../cloud-core-quarkus-bom-parent/pom.xml</relativePath>
     </parent>
     <artifactId>cloud-core-quarkus-bom-internal</artifactId>
@@ -22,7 +22,7 @@
 
         <!-- Align various dependencies that are not really part of the bom-->
         <findbugs.version>3.0.2</findbugs.version>
-        <jsoup.version>1.22.1</jsoup.version>
+        <jsoup.version>1.22.2</jsoup.version>
         <wagon-provider-api.version>3.5.3</wagon-provider-api.version>
 
         <!-- need to be updated together-->
@@ -175,12 +175,6 @@
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
                 <version>3.27.7</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>consul</artifactId>
-                <version>1.21.4</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

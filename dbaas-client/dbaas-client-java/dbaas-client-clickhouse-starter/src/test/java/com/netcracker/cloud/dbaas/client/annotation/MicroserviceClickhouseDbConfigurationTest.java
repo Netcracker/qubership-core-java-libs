@@ -18,8 +18,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import javax.sql.DataSource;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static com.netcracker.cloud.dbaas.client.DbaasConst.SCOPE;
 import static com.netcracker.cloud.dbaas.client.DbaasConst.SERVICE;
 import static com.netcracker.cloud.dbaas.client.config.DbaasClickhouseConfiguration.SERVICE_CLICKHOUSE_DATASOURCE;

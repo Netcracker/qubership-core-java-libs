@@ -155,6 +155,11 @@ public class DbaaSMongoClient implements MongoClient {
     }
 
     @Override
+    public void appendMetadata(MongoDriverInformation mongoDriverInformation) {
+        getMongoClient().appendMetadata(mongoDriverInformation);
+    }
+
+    @Override
     public ClusterDescription getClusterDescription() {
         return getMongoClient().getClusterDescription();
     }

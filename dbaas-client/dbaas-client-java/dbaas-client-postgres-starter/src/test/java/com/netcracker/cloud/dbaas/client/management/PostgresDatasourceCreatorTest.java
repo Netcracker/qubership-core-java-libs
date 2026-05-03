@@ -22,7 +22,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import static com.netcracker.cloud.dbaas.client.DbaasConst.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;

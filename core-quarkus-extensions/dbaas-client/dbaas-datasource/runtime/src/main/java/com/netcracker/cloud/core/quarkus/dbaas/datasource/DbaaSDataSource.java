@@ -109,6 +109,12 @@ public class DbaaSDataSource implements AgroalDataSource {
 
     @SneakyThrows
     @Override
+    public Connection getReadOnlyConnection() throws SQLException {
+        return withPasswordCheck(() -> getDatasource().getReadOnlyConnection());
+    }
+
+    @SneakyThrows
+    @Override
     public Connection getConnection() throws SQLException {
         return withPasswordCheck(() -> getDatasource().getConnection());
     }

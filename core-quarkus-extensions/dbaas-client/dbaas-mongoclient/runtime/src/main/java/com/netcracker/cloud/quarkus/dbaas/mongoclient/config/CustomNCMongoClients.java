@@ -8,7 +8,7 @@ import io.quarkus.mongodb.reactive.ReactiveMongoClient;
 import io.quarkus.mongodb.runtime.MongoClientCustomizer;
 import io.quarkus.mongodb.runtime.MongoClientSupport;
 import io.quarkus.mongodb.runtime.MongoClients;
-import io.quarkus.mongodb.runtime.MongodbConfig;
+import io.quarkus.mongodb.runtime.MongoConfig;
 import io.quarkus.tls.TlsConfigurationRegistry;
 import io.vertx.core.Vertx;
 import jakarta.annotation.Priority;
@@ -24,7 +24,7 @@ import org.bson.codecs.pojo.PropertyCodecProvider;
 @Priority(1)
 public class CustomNCMongoClients extends MongoClients {
 
-    public CustomNCMongoClients(MongodbConfig mongodbConfig,
+    public CustomNCMongoClients(MongoConfig mongodbConfig,
                                 MongoClientSupport mongoClientSupport,
                                 Instance<CodecProvider> codecProviders,
                                 TlsConfigurationRegistry tlsConfigurationRegistry,
@@ -36,12 +36,10 @@ public class CustomNCMongoClients extends MongoClients {
         super(mongodbConfig, mongoClientSupport, codecProviders, tlsConfigurationRegistry, propertyCodecProviders, commandListeners, reactiveContextProviders, customizers, vertx);
     }
 
-    @Override
     public MongoClient createMongoClient(String clientName) throws MongoException {
         return null;
     }
 
-    @Override
     public ReactiveMongoClient createReactiveMongoClient(String clientName) throws MongoException {
         return null;
     }

@@ -1,8 +1,8 @@
 package com.netcracker.cloud.dbaas.client;
 
 import lombok.extern.slf4j.Slf4j;
-import org.testcontainers.clickhouse.ClickHouseContainer;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 
 @Slf4j
 public class ClickhouseTestContainer extends GenericContainer<ClickhouseTestContainer> {
@@ -12,18 +12,20 @@ public class ClickhouseTestContainer extends GenericContainer<ClickhouseTestCont
     public static final String CLICKHOUSE_ADMIN_DB = "admin";
     public static final int CLICKHOUSE_PORT = 8123;
 
-    private static ClickHouseContainer container;
+    private static GenericContainer<?> container;
 
     private ClickhouseTestContainer() {
         super(IMAGE_VERSION);
     }
 
-    public static ClickHouseContainer getInstance() {
+    public static GenericContainer<?> getInstance() {
         if (container == null) {
-            container = new ClickHouseContainer(IMAGE_VERSION)
-                    .withUsername(CLICKHOUSE_ADMIN_USERNAME)
-                    .withPassword(CLICKHOUSE_ADMIN_PWD)
-                    .withDatabaseName(CLICKHOUSE_ADMIN_DB);
+            container = new GenericContainer<>(IMAGE_VERSION)
+                    .withEnv("CLICKHOUSE_USER", CLICKHOUSE_ADMIN_USERNAME)
+                    .withEnv("CLICKHOUSE_PASSWORD", CLICKHOUSE_ADMIN_PWD)
+                    .withEnv("CLICKHOUSE_DB", CLICKHOUSE_ADMIN_DB)
+                    .withExposedPorts(CLICKHOUSE_PORT)
+                    .waitingFor(Wait.forHttp("/ping").forPort(CLICKHOUSE_PORT).forStatusCode(200));
         }
         return container;
     }

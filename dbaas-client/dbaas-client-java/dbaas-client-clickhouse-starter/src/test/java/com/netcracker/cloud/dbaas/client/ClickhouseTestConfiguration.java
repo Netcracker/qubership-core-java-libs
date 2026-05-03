@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.testcontainers.clickhouse.ClickHouseContainer;
+import org.testcontainers.containers.GenericContainer;
 
 import java.util.HashMap;
 import java.util.SortedMap;
@@ -30,7 +30,7 @@ class ClickhouseTestConfiguration {
 
     @Autowired
     @Qualifier("clickhouseContainer")
-    ClickHouseContainer container;
+    GenericContainer<?> container;
 
     @Bean
     @Primary
@@ -61,8 +61,8 @@ class ClickhouseTestConfiguration {
 
         String address = "jdbc:clickhouse://" + container.getHost() + ":" + container.getMappedPort(CLICKHOUSE_PORT) + "/" + CLICKHOUSE_ADMIN_DB;
         ClickhouseConnection connection = new ClickhouseConnection(address,
-                container.getUsername(),
-                container.getPassword(),
+                CLICKHOUSE_ADMIN_USERNAME,
+                CLICKHOUSE_ADMIN_PWD,
                 ADMIN_ROLE);
         connection.setPort((int)(Math.random()*container.getMappedPort(CLICKHOUSE_PORT)));
         database.setConnectionProperties(connection);

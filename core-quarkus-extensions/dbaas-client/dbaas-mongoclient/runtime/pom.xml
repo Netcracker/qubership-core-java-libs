@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.netcracker.cloud.quarkus</groupId>
     <artifactId>dbaas-mongo-client-parent</artifactId>
-      <version>9.2.0-SNAPSHOT</version>
+      <version>10.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -46,11 +46,6 @@
       <groupId>com.netcracker.cloud</groupId>
       <artifactId>dbaas-client-light</artifactId>
       <exclusions>
-        <!--1.16.10 version of lombok is used, while in another dependencies - 1.18.10-->
-        <exclusion>
-          <groupId>org.projectlombok</groupId>
-          <artifactId>lombok</artifactId>
-        </exclusion>
         <!--avoid usage cause other sl4j libraries are used (jboss)-->
         <exclusion>
           <groupId>ch.qos.logback</groupId>
@@ -71,18 +66,16 @@
       <artifactId>quarkus-mongodb-client</artifactId>
     </dependency>
 
-      <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-junit5</artifactId>
-          <scope>test</scope>
-      </dependency>
-
-      <dependency>
-          <groupId>org.mockito</groupId>
-          <artifactId>mockito-core</artifactId>
-          <version>${mockito.version}</version>
-          <scope>test</scope>
-      </dependency>
+    <dependency>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-junit</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.checkerframework</groupId>
       <artifactId>checker-qual</artifactId>
@@ -90,8 +83,7 @@
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
-      <artifactId>mongodb</artifactId>
-      <version>1.21.4</version>
+      <artifactId>testcontainers-mongodb</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
