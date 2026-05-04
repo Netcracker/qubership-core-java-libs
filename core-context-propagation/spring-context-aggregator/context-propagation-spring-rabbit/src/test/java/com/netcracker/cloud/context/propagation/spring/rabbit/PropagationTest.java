@@ -2,14 +2,18 @@ package com.netcracker.cloud.context.propagation.spring.rabbit;
 
 import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.context.propagation.spring.rabbit.annotation.EnableRabbitContextPropagation;
+import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
 import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
 import com.netcracker.cloud.headerstracking.filters.context.AllowedHeadersContext;
+import com.netcracker.cloud.headerstracking.filters.context.ChannelRequestIdContext;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import jakarta.ws.rs.core.HttpHeaders;
 import org.apache.qpid.server.SystemLauncher;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.slf4j.Logger;
@@ -35,22 +39,29 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @EnableRabbit
 @EnableRabbitContextPropagation
 @SpringBootTest
 public class PropagationTest {
-	final static Logger log = LoggerFactory.getLogger(PropagationTest.class);
-	final static SystemLauncher systemLauncher = new SystemLauncher();
-	final static int port = getFreePort();
-	final static URI cnnUri = URI.create("amqp://localhost:" + port);
-	final static CountDownLatch awaitLatch = new CountDownLatch(1);
+	static final Logger log = LoggerFactory.getLogger(PropagationTest.class);
+	static final SystemLauncher systemLauncher = new SystemLauncher();
+	static final int port = getFreePort();
+	static final URI cnnUri = URI.create("amqp://localhost:" + port);
+	static final AtomicReference<CountDownLatch> awaitLatch = new AtomicReference<>();
+	static final AtomicReference<Map<String, Object>> receivedHeaders = new AtomicReference<>();
 
 	private static final String CUSTOM_HEADER = "X-Custom-Header-1";
 	private static final String CUSTOM_HEADER_VALUE = "case-insensitive-test-value";
+	private static final String ANOTHER_HEADER = "X-Custom-Header-2";
+	private static final String ANOTHER_HEADER_VALUE = "blocked-value";
+	private static final String X_CHANNEL_REQUEST_ID_NAME = "X-Channel-Request-Id";
+	private static final String X_CHANNEL_REQUEST_ID_VALUE = "456";
 
 	@Autowired
 	RabbitTemplate template;
@@ -76,6 +87,7 @@ public class PropagationTest {
 			channel.queueBind("orders", "orders", "invoice");
 		}
 		System.setProperty("headers.allowed", CUSTOM_HEADER.toLowerCase());
+		System.clearProperty("headers.blocked");
 	}
 
     @AfterAll
@@ -83,17 +95,68 @@ public class PropagationTest {
         System.clearProperty("headers.allowed");
     }
 
+    @BeforeEach
+    void beforeEach() {
+        awaitLatch.set(new CountDownLatch(1));
+        receivedHeaders.set(null);
+    }
+
+    @AfterEach
+    void afterEach() {
+        System.clearProperty("headers.blocked");
+		HeaderPropagationConfiguration.resetCache();
+    }
+
 	@Test
 	@Timeout(value = 20, unit = TimeUnit.SECONDS)
-	public void test() throws InterruptedException {
+	public void testXChannelRequestIdBlockedByDefault() throws InterruptedException {
 		AcceptLanguageContext.set("ZULU");
 		AllowedHeadersContext.set(Map.of(CUSTOM_HEADER, CUSTOM_HEADER_VALUE));
+		ChannelRequestIdContext.set(X_CHANNEL_REQUEST_ID_VALUE);
 		template.convertAndSend("orders", "invoice", "rye wheat");
 		ContextManager.clearAll();
 
-		if (!awaitLatch.await(10, TimeUnit.SECONDS)) {
+		if (!awaitLatch.get().await(10, TimeUnit.SECONDS)) {
 			fail("Message listener failed or message doesn't even arrived in 10 seconds");
 		}
+
+        assertNull(getHeaderIgnoreCase(receivedHeaders.get(), X_CHANNEL_REQUEST_ID_NAME));
+	}
+
+    @Test
+    @Timeout(value = 20, unit = TimeUnit.SECONDS)
+    public void testXChannelRequestIdAllowedWhenHeadersBlockedEmpty() throws InterruptedException {
+        System.setProperty("headers.blocked", "");
+        AcceptLanguageContext.set("ZULU");
+        AllowedHeadersContext.set(Map.of(CUSTOM_HEADER, CUSTOM_HEADER_VALUE));
+        ChannelRequestIdContext.set(X_CHANNEL_REQUEST_ID_VALUE);
+        template.convertAndSend("orders", "invoice", "rye wheat");
+        ContextManager.clearAll();
+
+        if (!awaitLatch.get().await(10, TimeUnit.SECONDS)) {
+            fail("Message listener failed or message doesn't even arrived in 10 seconds");
+        }
+
+        assertEquals(X_CHANNEL_REQUEST_ID_VALUE, getHeaderIgnoreCase(receivedHeaders.get(), X_CHANNEL_REQUEST_ID_NAME));
+    }
+
+	@Test
+	@Timeout(value = 20, unit = TimeUnit.SECONDS)
+	public void testCustomHeaderBlockedWhenConfiguredByProperty() throws InterruptedException {
+		System.setProperty("headers.blocked", ANOTHER_HEADER);
+		AcceptLanguageContext.set("ZULU");
+		AllowedHeadersContext.set(Map.of(
+				CUSTOM_HEADER, CUSTOM_HEADER_VALUE,
+				ANOTHER_HEADER, ANOTHER_HEADER_VALUE));
+		template.convertAndSend("orders", "invoice", "rye wheat");
+		ContextManager.clearAll();
+
+		if (!awaitLatch.get().await(10, TimeUnit.SECONDS)) {
+			fail("Message listener failed or message doesn't even arrived in 10 seconds");
+		}
+
+		assertNull(getHeaderIgnoreCase(receivedHeaders.get(), ANOTHER_HEADER));
+		assertEquals(CUSTOM_HEADER_VALUE, getHeaderIgnoreCase(receivedHeaders.get(), CUSTOM_HEADER));
 	}
 
 
@@ -137,8 +200,17 @@ public class PropagationTest {
 					get(CUSTOM_HEADER.toLowerCase()));
 
 			// finish test
-			awaitLatch.countDown();
+			receivedHeaders.set(headers);
+			awaitLatch.get().countDown();
 		}
+	}
+
+	private static Object getHeaderIgnoreCase(Map<String, Object> headers, String name) {
+		return headers.entrySet().stream()
+				.filter(entry -> entry.getKey().equalsIgnoreCase(name))
+				.map(Map.Entry::getValue)
+				.findFirst()
+				.orElse(null);
 	}
 
 	static int getFreePort() {

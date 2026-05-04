@@ -4,6 +4,7 @@
 | allowed-headers          |                 +     | +                        |
 | api version              |                 -     | +                        |
 | request-id               |                 +     | +                        |
+| x-channel-request-id     | "-" due to blacklist  | +                        |
 | x-version                |                 +     | +                        |
 | x-version-name           |                 +     | +                        |
 | x-nc-client-ip           |                 +     | +                        |

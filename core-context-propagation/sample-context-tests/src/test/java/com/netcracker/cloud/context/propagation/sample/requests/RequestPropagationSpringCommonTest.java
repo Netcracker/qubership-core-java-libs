@@ -30,11 +30,13 @@ class RequestPropagationSpringCommonTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilter(filter).build();
+        System.clearProperty("headers.blocked");  
     }
 
     @Test
     void testRequestPropagation() throws Exception {
         mockMvc.perform(get("/spring/common/test/requestId"))
-                .andExpect(header().exists("X-Request-Id"));
+                .andExpect(header().exists("X-Request-Id"))
+                .andExpect(header().exists("X-Channel-Request-Id"));
     }
 }

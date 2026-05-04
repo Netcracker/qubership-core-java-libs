@@ -1,10 +1,11 @@
 package com.netcracker.cloud.context.propagation.sample.requests;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
 import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
@@ -27,8 +28,6 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-import com.netcracker.cloud.context.propagation.core.ContextManager;
-
 @SpringBootTest
 @ContextConfiguration(classes = {
         TestController.class, RequestPropagationTestConfig.class})
@@ -37,7 +36,7 @@ import com.netcracker.cloud.context.propagation.core.ContextManager;
         "headers.blocked=",
         "cloud-core.context-propagation.url=/test_url/v111/test"
 })
-class RequestPropagationTest {
+class RequestPropagationXChannelRequestIdAllowedTest {
     @Autowired
     protected WebApplicationContext context;
 
@@ -62,18 +61,26 @@ class RequestPropagationTest {
     @Autowired
     RestTemplate restTemplate;
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void beforeAll() {
+        System.setProperty("headers.allowed", "custom-header");
+        System.setProperty("headers.blocked", "");
+        HeaderPropagationConfiguration.resetCache();
+        ContextManager.reinitialize();
+    }
+
+    @AfterAll
+    static void afterAll() {
+        System.clearProperty("headers.allowed");
         System.clearProperty("headers.blocked");
         HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
-        mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(preAuthnFilter, postAuthnFilter).build();
     }
 
-    @AfterEach
-    void tearDown() {
-        HeaderPropagationConfiguration.resetCache();
-        ContextManager.reinitialize();
+    @BeforeEach
+    void setUp() {
+        System.setProperty("headers.allowed", "custom-header");
+        mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(preAuthnFilter, postAuthnFilter).build();
     }
 
     private void sendRequest(String path) throws Exception {
@@ -87,36 +94,13 @@ class RequestPropagationTest {
         mockMvc.perform(requestBuilder);
     }
 
-    /*
-    Test idea: to imitate three microservices. First service send request with some headers (with values for all our
-    contexts) to the second. The second service contains restTemplate with filter and interceptor and resend incoming
-    request to "/chain_request" endpoint. Third service collects this request and checks that all expected propagated
-    headers are present.
-     */
     @Test
-    void testRequestPropagation() throws Exception {
+    void testRequestPropagationAllowsXChannelRequestIdWhenBlockedHeadersEmpty() throws Exception {
         MockRestServiceServer mockServer = MockRestServiceServer.bindTo(restTemplate).build();
         mockServer.expect(requestTo("/chain_request"))
                 .andExpect(header(HttpHeaders.ACCEPT_LANGUAGE, ACCEPT_LANGUAGE_VALUE))
                 .andExpect(header(X_REQUEST_ID_NAME, X_REQUEST_ID_VALUE))
-                .andExpect(request -> assertNull(request.getHeaders().getFirst(X_CHANNEL_REQUEST_ID_NAME)))
-                .andExpect(header(CUSTOM_NAME, CUSTOM_VALUE))
-                .andRespond(withSuccess());
-
-        sendRequest("/test");
-    }
-
-    @Test
-    void testXRequestIdStillPropagatesWhenAddedToBlockedList() throws Exception {
-        System.setProperty("headers.blocked", X_REQUEST_ID_NAME);
-        HeaderPropagationConfiguration.resetCache();
-        ContextManager.reinitialize();
-
-        MockRestServiceServer mockServer = MockRestServiceServer.bindTo(restTemplate).build();
-        mockServer.expect(requestTo("/chain_request"))
-                .andExpect(header(HttpHeaders.ACCEPT_LANGUAGE, ACCEPT_LANGUAGE_VALUE))
-                // X-Request-Id is non-blockable and must still be propagated.
-                .andExpect(header(X_REQUEST_ID_NAME, X_REQUEST_ID_VALUE))
+                .andExpect(header(X_CHANNEL_REQUEST_ID_NAME, X_CHANNEL_REQUEST_ID_VALUE))
                 .andExpect(header(CUSTOM_NAME, CUSTOM_VALUE))
                 .andRespond(withSuccess());
 

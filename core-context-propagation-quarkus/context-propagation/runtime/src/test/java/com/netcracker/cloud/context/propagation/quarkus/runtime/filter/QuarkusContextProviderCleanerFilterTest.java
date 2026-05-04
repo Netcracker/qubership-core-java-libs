@@ -18,7 +18,7 @@ class QuarkusContextProviderCleanerFilterTest {
     }
 
     @Test
-    public void testMdcContextMustBeClearedOnResponseFilter() throws IOException {
+    void testMdcContextMustBeClearedOnResponseFilter() throws IOException {
         String requestId = "test-request-id-value";
         RequestIdContext.set(requestId);
 
