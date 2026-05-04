@@ -2,13 +2,11 @@ package com.netcracker.cloud.security.core.utils.k8s;
 
 import com.netcracker.cloud.security.core.utils.k8s.impl.M2MInterceptor;
 import com.netcracker.cloud.security.core.utils.k8s.impl.UrlCache;
-import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
-import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -39,7 +37,6 @@ public final class M2MClientFactory {
 
     private static OkHttpClient getClient(M2MInterceptor interceptor) {
         return new OkHttpClient.Builder()
-                .sslSocketFactory(TlsUtils.getSslContext().getSocketFactory(), TlsUtils.getTrustManager())
                 .addInterceptor(interceptor)
                 .build();
     }

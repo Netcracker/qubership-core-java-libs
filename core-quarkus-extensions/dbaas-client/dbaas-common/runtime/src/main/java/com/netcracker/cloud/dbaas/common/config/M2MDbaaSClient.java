@@ -10,6 +10,7 @@ import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
 import com.netcracker.cloud.quarkus.security.auth.M2MManager;
 import com.netcracker.cloud.security.core.auth.Token;
 import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
+import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 
 import java.util.Optional;
 
@@ -28,13 +29,10 @@ public class M2MDbaaSClient {
 
     public DbaasClient build() {
         String url = config.dbaasAgentUrl().orElse(DEFAULT_DBAAS_AGENT_ADDRESS);
-        OkHttpClient httpClient = new OkHttpClient.Builder()
+        OkHttpClient httpClient = M2MClientFactory.getDBaaSClient(() -> M2MManager.getInstance().getToken().getTokenValue()).newBuilder()
                 .addInterceptor(chain -> {
                     Request original = chain.request();
-                    Token token = M2MManager.getInstance().getToken();
-                    String credentials = token.getTokenType() + " " + token.getTokenValue();
-                    Request.Builder requestBuilder = original.newBuilder()
-                            .addHeader("Authorization", credentials);
+                    Request.Builder requestBuilder = original.newBuilder();
                     Optional<TenantContextObject> tenantContextData = ContextManager.getSafe(TENANT_CONTEXT_NAME);
                     if (tenantContextData.isPresent() && tenantContextData.get().getTenant() != null) {
                         requestBuilder.addHeader("tenant", tenantContextData.get().getTenant());

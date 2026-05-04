@@ -6,8 +6,10 @@ import com.netcracker.cloud.restclient.webclient.MicroserviceWebClient;
 import com.netcracker.cloud.security.core.auth.M2MManager;
 import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
+import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.WebClient;
+import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -26,14 +28,10 @@ public class WebClientConfigServerConfigDataLocationResolver extends AbstractCus
     }
 
     private WebClient createM2MWebClient() {
-        WebClient.Builder builder = WebClient.builder();
-        if (hasM2M(configurableBootstrapContext)) {
-            builder.filter(
-                    (request, next) ->
-                            next.exchange(ClientRequest.from(request).
-                                    header(AUTHORIZATION, "Bearer " + getM2MToken(configurableBootstrapContext)).build())
-            );
-        }
+        var client = M2MClientFactory.getM2MClient(() -> getM2MToken(configurableBootstrapContext));
+        ClientHttpConnector connector = new OkHttp3ClientHttpRequestFactory(client);
+        WebClient.Builder builder = WebClient.builder()
+                .clientConnector(connector);
         return builder.build();
     }
 
