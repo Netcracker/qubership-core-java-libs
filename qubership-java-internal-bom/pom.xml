@@ -87,6 +87,7 @@
         <mockserver.version>5.15.0</mockserver.version>
         <mongo-java-server.version>1.47.0</mongo-java-server.version>
         <hibernate-validator.version>8.0.3.Final</hibernate-validator.version>
+        <docker-java.version>3.7.1</docker-java.version>
     </properties>
 
     <dependencyManagement>
@@ -349,6 +350,56 @@
                 <artifactId>mongo-java-server</artifactId>
                 <version>${mongo-java-server.version}</version>
                 <scope>test</scope>
+            </dependency>
+
+            <!-- ===== Testcontainers ===== -->
+            <!-- We must explicitly specify these versions because they are critical for Testcontainers.
+            Spring and Quarkus BOMs often bring in different versions, so we will explicitly pin the versions
+            that are compatible with the Testcontainers version defined by `testcontainers.version`. -->
+            <dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java-api</artifactId>
+                <version>${docker-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java-core</artifactId>
+                <version>${docker-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java-transport-httpclient5</artifactId>
+                <version>${docker-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java-transport-jersey</artifactId>
+                <version>${docker-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java-transport-netty</artifactId>
+                <version>${docker-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java-transport-okhttp</artifactId>
+                <version>${docker-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java-transport-zerodep</artifactId>
+                <version>${docker-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java-transport</artifactId>
+                <version>${docker-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java</artifactId>
+                <version>${docker-java.version}</version>
             </dependency>
 
         </dependencies>
