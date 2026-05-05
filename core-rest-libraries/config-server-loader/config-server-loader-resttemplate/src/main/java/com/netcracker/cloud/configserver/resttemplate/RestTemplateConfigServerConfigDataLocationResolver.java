@@ -1,5 +1,6 @@
 package com.netcracker.cloud.configserver.resttemplate;
 
+import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
@@ -39,19 +41,17 @@ public class RestTemplateConfigServerConfigDataLocationResolver extends Abstract
         RestTemplate template = new RestTemplate();
         SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(Timeout.ofMilliseconds(readTimeout)).build();
 
-        final PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = PoolingHttpClientConnectionManagerBuilder.create()
-                .setDefaultSocketConfig(socketConfig)
-                .build();
-        HttpClient httpClient = HttpClients.custom().setConnectionManager(poolingHttpClientConnectionManager).build();
-
-        template.setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
         if (hasM2M(configurableBootstrapContext)) {
-            template.setInterceptors(Collections.singletonList((request, body, execution) -> {
-                request.getHeaders().setBearerAuth(getM2MToken(configurableBootstrapContext));
-                return execution.execute(request, body);
-            }));
-        }
+            var client = M2MClientFactory.getM2mHttpClient(() -> getM2MToken(configurableBootstrapContext));
+            template.setRequestFactory(new JdkClientHttpRequestFactory(client));
+        } else {
+            final PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+                    .setDefaultSocketConfig(socketConfig)
+                    .build();
+            HttpClient httpClient = HttpClients.custom().setConnectionManager(poolingHttpClientConnectionManager).build();
 
+            template.setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
+        }
         return template;
     }
 
