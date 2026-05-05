@@ -5,6 +5,7 @@ import com.netcracker.cloud.routesregistration.common.gateway.route.*;
 import com.netcracker.cloud.routesregistration.common.gateway.route.rest.RegistrationRequestFactory;
 import com.netcracker.cloud.routesregistration.common.gateway.route.transformation.RouteTransformer;
 import com.netcracker.cloud.security.core.auth.Token;
+import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
 import io.quarkus.arc.Unremovable;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
@@ -86,6 +87,7 @@ public class RouteRegistrationConfig {
         return M2MClientFactory.getM2MClient(() -> M2MManager.getInstance().getToken().getTokenValue())
                 .newBuilder()
                 .retryOnConnectionFailure(true)
+                .sslSocketFactory(TlsUtils.getSslContext().getSocketFactory(), TlsUtils.getTrustManager())
                 .build();
     }
 

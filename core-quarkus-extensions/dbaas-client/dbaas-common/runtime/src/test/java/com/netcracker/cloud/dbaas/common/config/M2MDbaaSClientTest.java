@@ -29,7 +29,7 @@ class M2MDbaaSClientTest {
         clientField.setAccessible(true);
         OkHttpClient clientValue = (OkHttpClient) clientField.get(client);
         assertNotNull(client);
-        assertEquals(2, clientValue.interceptors().size());
+        assertEquals(3, clientValue.interceptors().size());
     }
 }
 
