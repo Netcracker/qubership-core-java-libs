@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public final class M2MInterceptor implements Interceptor {
@@ -37,7 +38,7 @@ public final class M2MInterceptor implements Interceptor {
 
     private static Request buildRequest(Request original, URI targetUrl, String authHeader) {
         return original.newBuilder()
-                .url(HttpUrl.get(targetUrl))
+                .url(Objects.requireNonNull(HttpUrl.get(targetUrl)))
                 .header("Authorization", authHeader)
                 .build();
     }
