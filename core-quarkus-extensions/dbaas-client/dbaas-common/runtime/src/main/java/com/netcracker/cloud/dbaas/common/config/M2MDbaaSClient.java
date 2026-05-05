@@ -8,7 +8,6 @@ import com.netcracker.cloud.dbaas.client.DbaaSClientOkHttpImpl;
 import com.netcracker.cloud.dbaas.client.DbaasClient;
 import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
 import com.netcracker.cloud.quarkus.security.auth.M2MManager;
-import com.netcracker.cloud.security.core.auth.Token;
 import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
 import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 
@@ -29,7 +28,7 @@ public class M2MDbaaSClient {
 
     public DbaasClient build() {
         String url = config.dbaasAgentUrl().orElse(DEFAULT_DBAAS_AGENT_ADDRESS);
-        OkHttpClient httpClient = M2MClientFactory.getDBaaSClient(() -> M2MManager.getInstance().getToken().getTokenValue()).newBuilder()
+        OkHttpClient httpClient = M2MClientFactory.getDbaasOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue()).newBuilder()
                 .addInterceptor(chain -> {
                     Request original = chain.request();
                     Request.Builder requestBuilder = original.newBuilder();

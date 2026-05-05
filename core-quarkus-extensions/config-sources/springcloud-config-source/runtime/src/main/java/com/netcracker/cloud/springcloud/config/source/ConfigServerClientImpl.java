@@ -36,7 +36,7 @@ public class ConfigServerClientImpl implements ConfigServerClient {
     private URL url;
 
     public ConfigServerClientImpl(String csUrl) throws MalformedURLException {
-        client = M2MClientFactory.getM2MClient(() -> M2MManager.getInstance().getToken().getTokenValue())
+        client = M2MClientFactory.getM2mOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue())
                 .newBuilder()
                 .connectionSpecs(Collections.singletonList(
                         csUrl.startsWith("https") ? ConnectionSpec.COMPATIBLE_TLS : ConnectionSpec.CLEARTEXT)
