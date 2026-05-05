@@ -32,13 +32,6 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.netcracker.cloud</groupId>
-                <artifactId>qubership-quarkus-internal-bom</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>consul-client-deployment</artifactId>
                 <version>${cloud-core.core-quarkus-extensions.version}</version>
@@ -48,13 +41,13 @@
                 <artifactId>consul-client</artifactId>
                 <version>${cloud-core.core-quarkus-extensions.version}</version>
             </dependency>
-            <!--dependency>
+            <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>cloud-core-quarkus-bom-internal</artifactId>
                 <version>${cloud-core.core-quarkus-extensions.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
-            </dependency-->
+            </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>cloud-core-quarkus-bom-publish</artifactId>

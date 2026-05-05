@@ -14,7 +14,7 @@
     <properties>
         <!-- Qubership -->
         <cloud-core.core-context-propagation.version>8.2.0-SNAPSHOT</cloud-core.core-context-propagation.version>
-        <cloud-core.core-context-propagation-quarkus.version>9.1.0-SNAPSHOT</cloud-core.core-context-propagation-quarkus.version>
+        <!--cloud-core.core-context-propagation-quarkus.version>9.1.0-SNAPSHOT</cloud-core.core-context-propagation-quarkus.version-->
         <cloud-core.dbaas-client.version>9.1.0-SNAPSHOT</cloud-core.dbaas-client.version>
         <cloud-core.core-utils.version>3.1.0-SNAPSHOT</cloud-core.core-utils.version>
 

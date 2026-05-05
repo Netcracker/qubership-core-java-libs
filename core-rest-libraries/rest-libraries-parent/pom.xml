@@ -39,7 +39,7 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
-            <dependency>
+            <dependency> <!-- todo vlla: check, are really needed? -->
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>microservice-restclient-api</artifactId>
                 <version>${cloud-core.core-restclient.version}</version>
