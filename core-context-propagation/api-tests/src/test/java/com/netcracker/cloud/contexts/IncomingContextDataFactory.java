@@ -33,6 +33,10 @@ public class IncomingContextDataFactory {
         return new IncomingContextDataImpl(xVersionData());
     }
 
+    public static IncomingContextData getXChannelRequestIdIncomingContextData() {
+        return new IncomingContextDataImpl(xChannelRequestIdData());
+    }
+
     private static class IncomingContextDataImpl implements IncomingContextData {
         private Map<String, Object> contextData;
 
@@ -91,6 +95,12 @@ public class IncomingContextDataFactory {
     private static Map<String, Object> xVersionData() {
         Map<String, Object> requestData = new HashMap<>();
         requestData.put("X-Version", "2");
+        return requestData;
+    }
+
+    private static Map<String, Object> xChannelRequestIdData() {
+        Map<String, Object> requestData = new HashMap<>();
+        requestData.put("X-Channel-Request-Id", UUID.randomUUID().toString());
         return requestData;
     }
 }

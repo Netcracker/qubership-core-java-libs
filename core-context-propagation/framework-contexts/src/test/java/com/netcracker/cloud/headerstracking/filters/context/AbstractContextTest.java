@@ -3,8 +3,9 @@ package com.netcracker.cloud.headerstracking.filters.context;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
+import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
 import com.netcracker.cloud.framework.contexts.data.ContextDataRequest;
-import com.netcracker.cloud.framework.contexts.helper.ContextPropagationTestUtils;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
 
 public abstract class AbstractContextTest {
     public static final String CUSTOM_HEADER = "Custom-header-1";
@@ -12,7 +13,8 @@ public abstract class AbstractContextTest {
     @BeforeEach
     void setup() {
         System.setProperty("headers.allowed", CUSTOM_HEADER);
-        ContextPropagationTestUtils.reinitializeRegistry();
+        HeaderPropagationConfiguration.resetCache();
+        ContextManager.reinitialize();
         RequestContextPropagation.initRequestContext(new ContextDataRequest());
     }
 
