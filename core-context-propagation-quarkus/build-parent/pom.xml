@@ -41,7 +41,7 @@
         <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
         <jacoco.plugin.version>0.8.7</jacoco.plugin.version>
         <jandex-maven-plugin.version>3.5.3</jandex-maven-plugin.version>
-        <cloud-core.core-context-propagation.version>8.1.0-SNAPSHOT</cloud-core.core-context-propagation.version>
+        <cloud-core.core-context-propagation.version>8.2.0-SNAPSHOT</cloud-core.core-context-propagation.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../report-aggregate/target/site/jacoco-aggregate/jacoco.xml
