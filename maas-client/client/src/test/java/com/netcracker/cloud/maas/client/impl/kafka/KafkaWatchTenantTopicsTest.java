@@ -59,7 +59,7 @@ public class KafkaWatchTenantTopicsTest {
 
 			KafkaMaaSClientImpl client = new KafkaMaaSClientImpl(
 					httpClient,
-					() -> new TenantManagerConnectorImpl(tmMock.getUrl(), httpClient),
+					() -> new TenantManagerConnectorImpl(tmMock.getUrl(), HttpClient.getM2mClient(() -> "faketoken")),
 					new ApiUrlProvider(serverApiVersion, agentUrl));
 
 			BlockingQueue<List<TopicAddress>> events = new LinkedBlockingDeque<>();
@@ -139,7 +139,7 @@ public class KafkaWatchTenantTopicsTest {
 			HttpClient httpClient = HttpClient.getMaasClient(() -> "faketoken");
 			KafkaMaaSClientImpl client = new KafkaMaaSClientImpl(
 					httpClient,
-					() -> new TenantManagerConnectorImpl(tmMock.getUrl(), httpClient),
+					() -> new TenantManagerConnectorImpl(tmMock.getUrl(), HttpClient.getM2mClient(() -> "faketoken")),
 					new ApiUrlProvider(new ServerApiVersion(httpClient, agentUrl), agentUrl));
 
 			BlockingQueue<List<TopicAddress>> events = new LinkedBlockingDeque<>();
