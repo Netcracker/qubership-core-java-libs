@@ -2,6 +2,7 @@ package com.netcracker.cloud.maas.client.impl.apiversion;
 
 import com.netcracker.cloud.maas.client.Utils;
 import com.netcracker.cloud.maas.client.impl.http.HttpClient;
+import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockserver.integration.ClientAndServer;
@@ -50,7 +51,8 @@ class ServerApiVersionTest {
                         .withBody(Utils.readResourceAsString("api-version." + version + ".json"))
         );
 
-        var httpClient = new HttpClient(() -> "faketoken");
+        System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, "http://localhost:" + mockServer.getPort());
+        var httpClient = HttpClient.getMaasClient(() -> "faketoken");
         return new ServerApiVersion(httpClient, "http://localhost:" + mockServer.getPort());
     }
 }
