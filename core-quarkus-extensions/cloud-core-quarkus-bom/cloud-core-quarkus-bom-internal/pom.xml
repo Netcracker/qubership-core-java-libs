@@ -17,6 +17,9 @@
         <!--cloud-core.core-context-propagation-quarkus.version>9.1.0-SNAPSHOT</cloud-core.core-context-propagation-quarkus.version-->
         <cloud-core.dbaas-client.version>9.1.0-SNAPSHOT</cloud-core.dbaas-client.version>
         <cloud-core.core-utils.version>3.1.0-SNAPSHOT</cloud-core.core-utils.version>
+        <cloud-core.core-rest-libraries.version>7.2.0-SNAPSHOT</cloud-core.core-rest-libraries.version>
+        <cloud-core.maas-client.version>12.2.0-SNAPSHOT</cloud-core.maas-client.version>
+        <cloud-core.core-error-handling.version>4.2.0-SNAPSHOT</cloud-core.core-error-handling.version>
 
         <!-- Dev tools -->
         <freemarker.version>2.3.34</freemarker.version>
@@ -98,6 +101,42 @@
                 <artifactId>dbaas-client-cassandra-migration</artifactId>
                 <version>${cloud-core.dbaas-client.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>route-registration-common</artifactId>
+                <version>${cloud-core.core-rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>rest-api-deprecation-switcher-common</artifactId>
+                <version>${cloud-core.core-rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>log-manager-common</artifactId>
+                <version>${cloud-core.core-rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>consul-config-provider-common</artifactId>
+                <version>${cloud-core.core-rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
+                <artifactId>kafka-context-propagation</artifactId>
+                <version>${cloud-core.maas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
+                <artifactId>maas-client</artifactId>
+                <version>${cloud-core.maas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>core-error-handling-rest</artifactId>
+                <version>${cloud-core.core-error-handling.version}</version>
+            </dependency>
+
             <!-- Dev tools -->
             <dependency>
                 <groupId>org.freemarker</groupId>

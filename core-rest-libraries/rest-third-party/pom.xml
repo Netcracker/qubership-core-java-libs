@@ -15,6 +15,8 @@
     <properties>
         <cloud-core.core-restclient.version>7.1.0-SNAPSHOT</cloud-core.core-restclient.version>
         <cloud-core.core-context-propagation.version>8.2.0-SNAPSHOT</cloud-core.core-context-propagation.version>
+        <cloud-core.core-error-handling.version>4.2.0-SNAPSHOT</cloud-core.core-error-handling.version>
+
         <org.powermock.version>2.0.9</org.powermock.version>
         <jsr305.version>3.0.2</jsr305.version>
     </properties>
@@ -63,6 +65,12 @@
                 <artifactId>context-propagation-spring-webclient</artifactId>
                 <version>${cloud-core.core-context-propagation.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>core-error-handling-rest</artifactId>
+                <version>${cloud-core.core-error-handling.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.powermock</groupId>
                 <artifactId>powermock-reflect</artifactId>

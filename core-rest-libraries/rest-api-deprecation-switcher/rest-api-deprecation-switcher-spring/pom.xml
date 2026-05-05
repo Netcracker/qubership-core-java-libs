@@ -20,7 +20,6 @@
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
             <artifactId>core-error-handling-rest</artifactId>
-            <version>${cloud-core.core-error-handling.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

@@ -35,15 +35,6 @@
         <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
         <jacoco.plugin.version>0.8.7</jacoco.plugin.version>
         <jandex-maven-plugin.version>3.5.3</jandex-maven-plugin.version>
-
-        <!-- Qubership -->
-        <!--cloud-core.core-context-propagation.version>8.1.0-SNAPSHOT</cloud-core.core-context-propagation.version-->
-        <!--cloud-core.core-context-propagation-quarkus.version>9.0.0-SNAPSHOT</cloud-core.core-context-propagation-quarkus.version-->
-        <!--cloud-core.dbaas-client.version>9.1.0-SNAPSHOT</cloud-core.dbaas-client.version-->
-        <!--cloud-core.core-utils.version>3.1.0-SNAPSHOT</cloud-core.core-utils.version-->
-        <cloud-core.core-rest-libraries.version>7.2.0-SNAPSHOT</cloud-core.core-rest-libraries.version><!-- todo vlla: to bom?-->
-        <cloud-core.maas-client.version>12.2.0-SNAPSHOT</cloud-core.maas-client.version><!-- todo vlla: to bom?-->
-        <cloud-core.core-error-handling.version>4.2.0-SNAPSHOT</cloud-core.core-error-handling.version><!-- todo vlla: to bom?-->
     </properties>
 
     <profiles>

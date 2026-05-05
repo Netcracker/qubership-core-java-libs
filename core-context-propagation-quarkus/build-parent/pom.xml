@@ -41,7 +41,6 @@
         <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
         <jacoco.plugin.version>0.8.7</jacoco.plugin.version>
         <jandex-maven-plugin.version>3.5.3</jandex-maven-plugin.version>
-        <cloud-core.core-context-propagation.version>8.2.0-SNAPSHOT</cloud-core.core-context-propagation.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../report-aggregate/target/site/jacoco-aggregate/jacoco.xml
@@ -77,17 +76,6 @@
                 <version>${project.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
-            </dependency>
-            <!--Qubership-->
-            <dependency>
-                <groupId>com.netcracker.cloud</groupId>
-                <artifactId>context-propagation-core</artifactId>
-                <version>${cloud-core.core-context-propagation.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.netcracker.cloud</groupId>
-                <artifactId>framework-contexts</artifactId>
-                <version>${cloud-core.core-context-propagation.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
