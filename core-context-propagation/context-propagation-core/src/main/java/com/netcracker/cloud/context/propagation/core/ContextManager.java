@@ -4,6 +4,7 @@ import com.netcracker.cloud.context.propagation.core.contextdata.DeserializedInc
 import com.netcracker.cloud.context.propagation.core.contexts.SerializableDataContext;
 
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -207,6 +208,21 @@ public class ContextManager {
     private static void sortByInitLevel(Collection<ContextProvider<?>> providers) {
         sortedContextProviders = new ArrayList<>(providers);
         sortedContextProviders.sort(Comparator.comparingInt(ContextProvider::initLevel));
+    }
+
+    /**
+     * Reinitializes the context provider registry by clearing all registered providers
+     * and reloading them from the classpath.
+     *
+     * <p><b>WARNING:</b> This method is intended for testing purposes only.
+     * Do not call it in production code as it clears all registered context providers
+     * and may cause unexpected behavior in a running application.
+     */
+    @VisibleForTesting
+    public static void reinitialize() {
+        registry.clear();
+        sortedContextProviders.clear();
+        init();
     }
 
 }

@@ -1,10 +1,14 @@
 package com.netcracker.cloud.context.propagation.sample.requests;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+
+import static org.junit.jupiter.api.Assertions.assertNull;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
+import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
@@ -23,11 +27,14 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+
 @SpringBootTest
 @ContextConfiguration(classes = {
         TestController.class, RequestPropagationTestConfig.class})
 @TestPropertySource(properties = {
         "headers.allowed=custom-header",
+        "headers.blocked=",
         "cloud-core.context-propagation.url=/test_url/v111/test"
 })
 class RequestPropagationTest {
@@ -42,11 +49,13 @@ class RequestPropagationTest {
     private MockMvc mockMvc;
 
     public static String X_REQUEST_ID_NAME = "x-request-id";
+    public static String X_CHANNEL_REQUEST_ID_NAME = "x-channel-request-id";
     public static String X_VERSION_NAME = "x-version";
     public static String CUSTOM_NAME = "custom-header";
 
     public static String ACCEPT_LANGUAGE_VALUE = "ru";
     public static String X_REQUEST_ID_VALUE = "123";
+    public static String X_CHANNEL_REQUEST_ID_VALUE = "456";
     public static String X_VERSION_VALUE = "v123";
     public static String CUSTOM_VALUE = "value";
 
@@ -55,13 +64,23 @@ class RequestPropagationTest {
 
     @BeforeEach
     void setUp() {
+        System.clearProperty("headers.blocked");
+        HeaderPropagationConfiguration.resetCache();
+        ContextManager.reinitialize();
         mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(preAuthnFilter, postAuthnFilter).build();
+    }
+
+    @AfterEach
+    void tearDown() {
+        HeaderPropagationConfiguration.resetCache();
+        ContextManager.reinitialize();
     }
 
     private void sendRequest(String path) throws Exception {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get(path)
                 .header(X_REQUEST_ID_NAME, X_REQUEST_ID_VALUE)
+                .header(X_CHANNEL_REQUEST_ID_NAME, X_CHANNEL_REQUEST_ID_VALUE)
                 .header(ACCEPT_LANGUAGE, ACCEPT_LANGUAGE_VALUE)
                 .header(X_VERSION_NAME, X_VERSION_VALUE)
                 .header(CUSTOM_NAME, CUSTOM_VALUE);
@@ -75,11 +94,28 @@ class RequestPropagationTest {
     headers are present.
      */
     @Test
-    @Disabled
     void testRequestPropagation() throws Exception {
         MockRestServiceServer mockServer = MockRestServiceServer.bindTo(restTemplate).build();
         mockServer.expect(requestTo("/chain_request"))
                 .andExpect(header(HttpHeaders.ACCEPT_LANGUAGE, ACCEPT_LANGUAGE_VALUE))
+                .andExpect(header(X_REQUEST_ID_NAME, X_REQUEST_ID_VALUE))
+                .andExpect(request -> assertNull(request.getHeaders().getFirst(X_CHANNEL_REQUEST_ID_NAME)))
+                .andExpect(header(CUSTOM_NAME, CUSTOM_VALUE))
+                .andRespond(withSuccess());
+
+        sendRequest("/test");
+    }
+
+    @Test
+    void testXRequestIdStillPropagatesWhenAddedToBlockedList() throws Exception {
+        System.setProperty("headers.blocked", X_REQUEST_ID_NAME);
+        HeaderPropagationConfiguration.resetCache();
+        ContextManager.reinitialize();
+
+        MockRestServiceServer mockServer = MockRestServiceServer.bindTo(restTemplate).build();
+        mockServer.expect(requestTo("/chain_request"))
+                .andExpect(header(HttpHeaders.ACCEPT_LANGUAGE, ACCEPT_LANGUAGE_VALUE))
+                // X-Request-Id is non-blockable and must still be propagated.
                 .andExpect(header(X_REQUEST_ID_NAME, X_REQUEST_ID_VALUE))
                 .andExpect(header(CUSTOM_NAME, CUSTOM_VALUE))
                 .andRespond(withSuccess());

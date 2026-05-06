@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud.maas.client</groupId>
     <artifactId>maas-client-parent</artifactId>
-    <version>12.0.6-SNAPSHOT</version>
+    <version>12.0.7-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -19,9 +19,9 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <cloud-core.context-propagation.version>8.0.7</cloud-core.context-propagation.version>
+        <cloud-core.context-propagation.version>8.0.8</cloud-core.context-propagation.version>
         <testcontainers.version>1.21.4</testcontainers.version>
-        <blue-green-monitor.version>2.0.7</blue-green-monitor.version>
+        <blue-green-monitor.version>2.0.8</blue-green-monitor.version>
 
         <kafka.version>4.2.0</kafka.version>
         <jackson.core.version>2.21.2</jackson.core.version>

@@ -15,4 +15,10 @@ public interface HeadersAllowedConfig {
      */
     @WithName("headers.allowed")
     Optional<String> allowedHeaders();
+
+    /**
+     * Blocked headers for context propagation. X-Channel-Request-Id is blocked by default.
+     */
+    @WithName("headers.blocked")
+    Optional<String> blockedHeaders();
 }
