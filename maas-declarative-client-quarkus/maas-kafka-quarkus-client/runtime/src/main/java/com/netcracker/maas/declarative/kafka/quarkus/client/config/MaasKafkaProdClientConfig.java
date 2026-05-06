@@ -21,7 +21,7 @@ public class MaasKafkaProdClientConfig {
     @Singleton
     @Produces
     KafkaMaaSClient kafkaMaaSClient(MaasKafkaProps props, M2MManager m2mManager) {
-        HttpClient httpClient = new HttpClient(() -> m2mManager.getToken().getTokenValue());
+        HttpClient httpClient = HttpClient.getM2mClient(() -> m2mManager.getToken().getTokenValue());
         return new KafkaMaaSClientImpl(
                 httpClient,
                 () -> new TenantManagerConnectorImpl(httpClient),
@@ -41,7 +41,7 @@ public class MaasKafkaProdClientConfig {
     @Produces
     @DefaultBean
     InternalTenantService internalTenantService(M2MManager m2mManager) {
-        HttpClient httpClient = new HttpClient(() -> m2mManager.getToken().getTokenValue());
+        HttpClient httpClient = HttpClient.getM2mClient(() -> m2mManager.getToken().getTokenValue());
         TenantManagerConnectorImpl tenantManagerConnector = new TenantManagerConnectorImpl(httpClient);
         return new InternalTenantServiceImpl(tenantManagerConnector);
     }
