@@ -3,6 +3,7 @@ package com.netcracker.cloud.security.core.utils.k8s.impl;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.ProxySelector;
@@ -58,11 +59,11 @@ public final class M2MHttpClient extends HttpClient {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return send(request, responseBodyHandler);
-            } catch (IOException | InterruptedException e) {
-                if (e instanceof InterruptedException) {
-                    Thread.currentThread().interrupt();
-                }
-                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException("Request was interrupted", e);
+            } catch (IOException e) {
+                throw new UncheckedIOException("IO error during request execution", e);
             }
         }, executor().orElse(Runnable::run));
     }

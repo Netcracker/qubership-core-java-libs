@@ -128,9 +128,8 @@ class M2MInterceptorTest {
         when(k8sSupplier.get()).thenReturn("");
         when(fallbackSupplier.get()).thenReturn("");
 
-        assertThrows(IllegalStateException.class, () -> {
-            client.newCall(buildRequest()).execute();
-        });
+        var call = client.newCall(buildRequest());
+        assertThrows(IllegalStateException.class, call::execute);
     }
 
     private Request buildRequest() {

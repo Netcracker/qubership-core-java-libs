@@ -118,7 +118,9 @@ class M2MHttpClientTest {
         when(k8sSupplier.get()).thenReturn("");
         when(fallbackSupplier.get()).thenReturn("");
 
-        assertThrows(IllegalStateException.class, () -> client.send(buildRequest(), HttpResponse.BodyHandlers.ofString()));
+        var req = buildRequest();
+        var respHandler = HttpResponse.BodyHandlers.ofString();
+        assertThrows(IllegalStateException.class, () -> client.send(req, respHandler));
     }
 
     @Test

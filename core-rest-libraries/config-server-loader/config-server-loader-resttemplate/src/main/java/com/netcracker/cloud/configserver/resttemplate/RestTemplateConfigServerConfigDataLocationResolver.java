@@ -18,8 +18,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-
 public class RestTemplateConfigServerConfigDataLocationResolver extends AbstractCustomConfigServerConfigDataLocationResolver {
 
     @Value("${connection.readTimeout:60000}")

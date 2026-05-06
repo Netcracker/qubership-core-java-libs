@@ -1,15 +1,15 @@
 package com.netcracker.cloud.dbaas.common.config;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.dbaas.client.DbaaSClientOkHttpImpl;
 import com.netcracker.cloud.dbaas.client.DbaasClient;
 import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
 import com.netcracker.cloud.quarkus.security.auth.M2MManager;
-import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
 import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
+import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
+import jakarta.enterprise.context.ApplicationScoped;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 import java.util.Optional;
 
@@ -18,9 +18,9 @@ import static com.netcracker.cloud.framework.contexts.tenant.BaseTenantProvider.
 
 @ApplicationScoped
 public class M2MDbaaSClient {
-    private DbaasClientConfig config;
     private static final int MAX_RETRIES = 3;
     private static final long INITIAL_RETRY_DELAY = 500;
+    private final DbaasClientConfig config;
 
     public M2MDbaaSClient(DbaasClientConfig config) {
         this.config = config;
@@ -28,8 +28,12 @@ public class M2MDbaaSClient {
 
     public DbaasClient build() {
         String url = config.dbaasAgentUrl().orElse(DEFAULT_DBAAS_AGENT_ADDRESS);
+
         System.setProperty(M2MClientFactory.DBAAS_AGENT_URL_PROP, url);
-        OkHttpClient httpClient = M2MClientFactory.getDbaasOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue()).newBuilder()
+        OkHttpClient httpClient = M2MClientFactory.getDbaasOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue());
+        System.clearProperty(M2MClientFactory.DBAAS_AGENT_URL_PROP);
+
+        httpClient = httpClient.newBuilder()
                 .addInterceptor(chain -> {
                     Request original = chain.request();
                     Request.Builder requestBuilder = original.newBuilder();
