@@ -36,7 +36,7 @@ public class DbaasClientConfiguration {
                                    @Qualifier("dbaasRestClient") MicroserviceRestClient dbaasRestClient,
                                    @Qualifier("dbaasClientAwaitAsyncDbCreationRetryTemplate") RetryTemplate dbaasClientAwaitAsyncDbCreationRetryTemplate,
                                    SpringDbaasApiProperties apiProperties) {
-        DbaasClientImpl dbaasClient = new DbaasClientImpl(dbaasRestClient, retryTemplate, dbaasClientAwaitAsyncDbCreationRetryTemplate, apiProperties.getAddress());
+        DbaasClientImpl dbaasClient = new DbaasClientImpl(dbaasRestClient, retryTemplate, dbaasClientAwaitAsyncDbCreationRetryTemplate, apiProperties.getAddress().get());
         log.debug("Created dbaasClient bean {}", dbaasClient);
         return dbaasClient;
     }
@@ -78,4 +78,3 @@ public class DbaasClientConfiguration {
         return new DbaasClassifierFactory(msInfoProvider);
     }
 }
-

@@ -1,3 +1,7 @@
 spring:
   main:
     allow-bean-definition-overriding: true
+
+api:
+  dbaas:
+    address: http://ms-name.namespace:8080
