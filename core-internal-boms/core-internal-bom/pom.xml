@@ -4,11 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.netcracker.cloud</groupId>
-    <artifactId>qubership-java-internal-bom</artifactId>
+    <artifactId>core-internal-bom</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>qubership-java-internal-bom</name>
     <description>Internal BOM for pure-Java modules: common 3rd-party dependency versions for use inside the monorepo</description>
 
     <licenses>

@@ -34,7 +34,7 @@
         <dependencies>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
-                <artifactId>qubership-spring-internal-bom</artifactId>
+                <artifactId>core-spring-internal-bom</artifactId>
                 <version>${qubership-spring-internal-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>

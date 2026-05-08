@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.netcracker.cloud</groupId>
-    <artifactId>qubership-spring-internal-bom</artifactId>
+    <artifactId>core-quarkus-internal-bom</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -17,9 +17,7 @@
     </licenses>
 
     <properties>
-        <spring-boot.version>4.0.5</spring-boot.version>
-        <spring-cloud.version>2025.1.1</spring-cloud.version>
-        <springdoc.version>3.0.3</springdoc.version>
+        <quarkus.version>3.33.1</quarkus.version>
         <qubership-java-internal-bom.version>1.0.0-SNAPSHOT</qubership-java-internal-bom.version>
     </properties>
 
@@ -27,46 +25,18 @@
         <dependencies>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
-                <artifactId>qubership-java-internal-bom</artifactId>
+                <artifactId>core-internal-bom</artifactId>
                 <version>${qubership-java-internal-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
 
             <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springdoc</groupId>
-                <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
-                <version>${springdoc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springdoc</groupId>
-                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-                <version>${springdoc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springdoc</groupId>
-                <artifactId>springdoc-openapi-starter-webflux-api</artifactId>
-                <version>${springdoc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springdoc</groupId>
-                <artifactId>springdoc-openapi-starter-common</artifactId>
-                <version>${springdoc.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

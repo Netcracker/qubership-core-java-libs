@@ -12,9 +12,7 @@
     <name>Monorepo Aggregator</name>
 
     <modules>
-        <module>qubership-java-internal-bom</module>
-        <module>qubership-spring-internal-bom</module>
-        <module>qubership-quarkus-internal-bom</module>
+        <module>core-internal-boms</module>
         <module>core-utils</module>
         <module>core-error-handling</module>
         <module>core-process-orchestrator</module>
@@ -38,6 +36,7 @@
         <module>maas-client-quarkus</module>
         <module>core-springboot-starter</module>
         <module>maas-declarative-client-quarkus</module>
+        <module>core-internal-boms</module>
     </modules>
 
     <licenses>
@@ -62,9 +61,5 @@
             <url>https://maven.pkg.github.com/Netcracker/qubership-core-java-libs</url>
         </repository>
     </distributionManagement>
-
-
-
-
 </project>
 
