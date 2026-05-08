@@ -16,10 +16,13 @@ import static org.mockito.Mockito.when;
 class M2MDbaaSClientTest {
     private M2MDbaaSClient m2MDbaaSClient;
     private static final String DB_AGENT_URL  = "http://dbaas-agent:8080";
+    private static final String DB_AGGREGATOR_URL  = "http://dbaas-aggregator:8080";
+
     @BeforeEach
     void setUp() {
         DbaasClientConfig config = mock(DbaasClientConfig.class);
         when(config.dbaasAgentUrl()).thenReturn(Optional.of(DB_AGENT_URL));
+        when(config.dbaasUrl()).thenReturn(Optional.of(DB_AGGREGATOR_URL));
         m2MDbaaSClient = new M2MDbaaSClient(config);
     }
     @Test
@@ -32,5 +35,3 @@ class M2MDbaaSClientTest {
         assertEquals(3, clientValue.interceptors().size());
     }
 }
-
-

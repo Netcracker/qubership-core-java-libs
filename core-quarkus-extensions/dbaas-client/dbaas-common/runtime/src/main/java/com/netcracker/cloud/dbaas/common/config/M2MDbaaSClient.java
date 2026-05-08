@@ -27,9 +27,10 @@ public class M2MDbaaSClient {
     }
 
     public DbaasClient build() {
-        String url = config.dbaasAgentUrl().orElse(DEFAULT_DBAAS_AGENT_ADDRESS);
+        String dbaasUrl = config.dbaasUrl().get();
+        String dbaasAgentUrl = config.dbaasAgentUrl().orElse(DEFAULT_DBAAS_AGENT_ADDRESS);
 
-        System.setProperty(M2MClientFactory.DBAAS_AGENT_URL_PROP, url);
+        System.setProperty(M2MClientFactory.DBAAS_AGENT_URL_PROP, dbaasAgentUrl);
         OkHttpClient httpClient = M2MClientFactory.getDbaasOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue());
         System.clearProperty(M2MClientFactory.DBAAS_AGENT_URL_PROP);
 
@@ -46,6 +47,6 @@ public class M2MDbaaSClient {
                 .addInterceptor(new RetryInterceptor(MAX_RETRIES, INITIAL_RETRY_DELAY))
                 .sslSocketFactory(TlsUtils.getSslContext().getSocketFactory(), TlsUtils.getTrustManager())
                 .build();
-        return new DbaaSClientOkHttpImpl(url, httpClient);
+        return new DbaaSClientOkHttpImpl(dbaasUrl, httpClient);
     }
 }
