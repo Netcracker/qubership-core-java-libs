@@ -3,6 +3,8 @@ package com.netcracker.cloud.maas.client.impl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.NoSuchElementException;
+
 import static com.netcracker.cloud.maas.client.Utils.withProp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -12,7 +14,7 @@ class EnvTest {
     @Test
     void testApiUrl() {
         withProp(Env.PROP_API_URL, null, () ->
-                assertEquals("http://maas-agent:8080", Env.apiUrl())
+                assertThrows(NoSuchElementException.class, Env::apiUrl)
         );
     }
 
