@@ -10,11 +10,14 @@ import com.netcracker.core.scheduler.po.repository.mapper.ContextResultMapper;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Objects;
 
 public class ContextRepositoryImpl extends AbstractRepository implements ContextRepository {
 
     private final Serializer serializer;
+    private final String insertQuery;
 
 
     public ContextRepositoryImpl(DataSource dataSource) {
@@ -24,6 +27,7 @@ public class ContextRepositoryImpl extends AbstractRepository implements Context
     public ContextRepositoryImpl(DataSource dataSource, Serializer serializer) {
         super(dataSource, "po_context");
         this.serializer = serializer;
+        this.insertQuery = "insert into " + tableName + " (id,context_data,version) values(?,?,?)";
     }
 
     @Override
@@ -47,16 +51,7 @@ public class ContextRepositoryImpl extends AbstractRepository implements Context
                 (ResultSetMapper<Integer>) resultSet -> resultSet.next() ? resultSet.getInt("version") : null
         );
         if (version == null) {
-            jdbcRunner.execute(
-                    "insert into " +
-                            tableName +
-                            " (id,context_data,version) values(?,?,?)"
-                    , (PreparedStatement p) -> {
-                        p.setString(1, context.getId());
-                        p.setObject(2, serializer.serialize(context));
-                        p.setInt(3, context.getVersion());
-                    }
-            );
+            jdbcRunner.execute(insertQuery, (PreparedStatement p) -> assignParameters(context, p));
             context.setDirty(false);
         } else if (Objects.equals(context.getVersion(), version)) {
             context.setVersion(version + 1);
@@ -76,5 +71,16 @@ public class ContextRepositoryImpl extends AbstractRepository implements Context
         } else throw new
 
                 VersionMismatchException("Current version are less than saved");
+    }
+
+    @Override
+    public void addContextsBulk(List<DataContext> contexts) {
+        jdbcRunner.executeBatch(insertQuery, contexts, this::assignParameters);
+    }
+
+    private void assignParameters(DataContext context, PreparedStatement p) throws SQLException {
+        p.setString(1, context.getId());
+        p.setObject(2, serializer.serialize(context));
+        p.setInt(3, context.getVersion());
     }
 }
