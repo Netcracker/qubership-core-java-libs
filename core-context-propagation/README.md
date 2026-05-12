@@ -49,13 +49,14 @@ Framework provides contexts for propagating the following data:
 * [Any custom headers](#allowed-headers);
 * [API version](#api-version);
 * [X-Request-Id](#x-request-id);
+* [X-Channel-Request-Id](#x-channel-request-id);
 * [X-Version](#x-version);
 * [X-Version-Name](#x-version-name);
 * [X-Nc-Client-Ip](#x-nc-client-ip)
 * [Business-Process-Id](#business-process-id)
 * [Originating-Bi-Id](#originating-bi-id)
 
-##### How to use
+### How to use
 
 1) Add the framework-contexts dependency:
 
@@ -79,7 +80,7 @@ request and `resttemplate` is used as restclient. Also you can use the library i
 * [Spring kafka-context-propagation](#spring-kafka-context-propagation) If you need to continuously propagate contexts through Kafka messaging.
 * [Spring rabbimq-context-propagation](#spring-rabbitmq-context-propagation) If you need to continuously propagate contexts through RabbitMQ messaging.
 
-##### Accept-Language
+#### Accept-Language
 
 Accept-Language context allows propagating 'Accept-Language' headers from one microservice to another. To get context
 value, you should call:
@@ -91,7 +92,7 @@ Access:
         String acceptLanguage=acceptLanguageContextObject.getAcceptedLanguages();
 ```
 
-##### Allowed headers
+#### Allowed headers
 
 Allows propagating any specified headers. To set a list of headers you should put either
 `HEADERS_ALLOWED` environment or set the `headers.allowed` property. Property has more precedence than env.
@@ -115,7 +116,7 @@ headers.allowed=myheader1,myheader2,...
 
 Otherwise, you need to take care that this parameter is in System#property or environment.
 
-##### API version
+#### API version
 
 This context retrieves API version from an incoming request URL and stores it.
 
@@ -128,7 +129,7 @@ Access:
 
 If request URL does not contain API version then the context contains default value `v1`.
 
-##### X-Request-Id
+#### X-Request-Id
 
 Propagates and allows to get `X-Request-Id` value. If an incoming request does not contains the `X-Request-Id`
 header then a random value is generated.
@@ -140,7 +141,61 @@ Access:
         String xRequestId=xRequestIdContextObject.getRequestId();
 ```
 
-##### X-Version
+#### X-Channel-Request-Id
+
+Propagates and allows to get `X-Channel-Request-Id` value. If an incoming request does not contain the `X-Channel-Request-Id` header then a random value is not generated and the value defaults to placeholder "-". This context is **blocked by default** and will not be propagated to outgoing requests.
+
+**Default behavior:** `X-Channel-Request-Id` is NOT propagated to outgoing responses.
+
+**Enabling propagation:** To allow `X-Channel-Request-Id` to be propagated to outgoing requests, remove it from the
+blacklist using one of the following methods:
+
+1. **Via environment variable:**
+```text
+HEADERS_BLOCKED=
+```
+
+2. **Via system property:**
+```text
+-Dheaders.blocked=
+```
+
+3. **Via application.properties (Spring):**
+```text
+headers.blocked=
+```
+
+**`headers.blocked` rules and limitations**
+
+- Source priority: system property `headers.blocked` overrides environment variable `HEADERS_BLOCKED`.
+- Default when not configured at all: `X-Channel-Request-Id` is blocked.
+- Explicit empty value (`headers.blocked=` / `HEADERS_BLOCKED=`): blacklist is empty (nothing is blocked).
+- Explicit non-empty value with valid headers (for example `headers.blocked=Some-Header`): only listed headers are blocked.
+- `X-Request-Id` is non-blockable: if it is listed in `headers.blocked`/`HEADERS_BLOCKED`, it is ignored.
+- If configured value contains only non-blockable entries (for example only `X-Request-Id`), default block is applied and `X-Channel-Request-Id` remains blocked.
+
+**MDC Integration:** 
+The `X-Channel-Request-Id` is automatically integrated with SLF4J's Mapped Diagnostic Context (MDC) for seamless logging.
+
+- **Key:** `x_channel_request_id`
+- **Value:** The channel request ID value, or empty if not set
+
+
+**Access:**
+
+```java
+        XChannelRequestIdContextObject xChannelRequestIdContextObject=ContextManager.get(X_CHANNEL_REQUEST_ID);
+        String xChannelRequestId=xChannelRequestIdContextObject.getChannelRequestId();
+```
+
+**Set:**
+
+```java
+        XChannelRequestIdContextObject xChannelRequestIdContextObject = new XChannelRequestIdContextObject(...);
+        ContextManager.set(X_CHANNEL_REQUEST_ID, xChannelRequestIdContextObject);
+```
+
+#### X-Version
 
 Propagates and allows to get `X-Version` header.
 
@@ -153,7 +208,7 @@ Access:
 
 Please note that the context is only initialized in the presence of an incoming request with the `X-Version` header
 
-##### X-Version-Name
+#### X-Version-Name
 
 Propagates and allows to get `X-Version-Name` header.
 
@@ -169,7 +224,7 @@ Set:
         XVersionNameContext.set(someXVersionName);
 ```
 
-##### X-Nc-Client-Ip
+#### X-Nc-Client-Ip
 
 Propagates and allows to get `X-Nc-Client-Ip` header.
 As init value can accept `X-Forwarded-For` header value.
@@ -186,7 +241,7 @@ Set:
         ClientIPContext.set(someClientIp);
 ```
 
-##### Business-Request-Id
+#### Business-Request-Id
 
 Propagates and allows to get `Business-Process-Id` header.
 Value of header shouldn't be empty. If header is empty and value not set, propagation won't work.
@@ -203,7 +258,7 @@ Set:
         BusinessProcessIdContext.set(someID);
 ```
 
-##### originating-request-id
+#### originating-request-id
 
 Propagates and allows to get `originating-bi-id` header.
 If header is not set, propagation won't work.
@@ -470,7 +525,7 @@ This method produces a set of header names that are used for propagation by init
 The library allows to handle incoming requests and fill registered contexts. The library contains only filter and is
 suitable for terminated microservice(which accept a request but does not send)
 
-#### How to use
+### How to use
 
 1) Add the dependency:
 

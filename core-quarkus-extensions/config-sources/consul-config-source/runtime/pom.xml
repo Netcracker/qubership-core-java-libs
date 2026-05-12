@@ -44,12 +44,10 @@
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
             <artifactId>consul-config-provider-common</artifactId>
-            <version>${cloud-core.core-rest-libraries.version}</version>
         </dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>2.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

@@ -13,29 +13,32 @@
 
     <properties>
         <!-- Qubership -->
-        <cloud-core.core-context-propagation.version>8.1.0-SNAPSHOT</cloud-core.core-context-propagation.version>
-        <cloud-core.core-context-propagation-quarkus.version>9.0.0-SNAPSHOT</cloud-core.core-context-propagation-quarkus.version>
+        <cloud-core.core-context-propagation.version>8.2.0-SNAPSHOT</cloud-core.core-context-propagation.version>
+        <!--cloud-core.core-context-propagation-quarkus.version>9.1.0-SNAPSHOT</cloud-core.core-context-propagation-quarkus.version-->
         <cloud-core.dbaas-client.version>9.1.0-SNAPSHOT</cloud-core.dbaas-client.version>
         <cloud-core.core-utils.version>3.1.0-SNAPSHOT</cloud-core.core-utils.version>
+        <cloud-core.core-rest-libraries.version>7.2.0-SNAPSHOT</cloud-core.core-rest-libraries.version>
+        <cloud-core.maas-client.version>12.2.0-SNAPSHOT</cloud-core.maas-client.version>
+        <cloud-core.core-error-handling.version>4.2.0-SNAPSHOT</cloud-core.core-error-handling.version>
 
         <!-- Dev tools -->
         <freemarker.version>2.3.34</freemarker.version>
 
         <!-- Align various dependencies that are not really part of the bom-->
-        <findbugs.version>3.0.2</findbugs.version>
         <jsoup.version>1.22.2</jsoup.version>
         <wagon-provider-api.version>3.5.3</wagon-provider-api.version>
-
-        <!-- need to be updated together-->
-        <okhttp.version>4.12.0</okhttp.version>
-        <okio.version>3.17.0</okio.version>
-
-        <!--Test-->
-        <mockito.version>5.21.0</mockito.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>core-quarkus-internal-bom</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- Qubership -->
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
@@ -98,19 +101,43 @@
                 <artifactId>dbaas-client-cassandra-migration</artifactId>
                 <version>${cloud-core.dbaas-client.version}</version>
             </dependency>
-            <!-- Dev tools -->
-            <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>3.20.0</version>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>route-registration-common</artifactId>
+                <version>${cloud-core.core-rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>rest-api-deprecation-switcher-common</artifactId>
+                <version>${cloud-core.core-rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>log-manager-common</artifactId>
+                <version>${cloud-core.core-rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>consul-config-provider-common</artifactId>
+                <version>${cloud-core.core-rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
+                <artifactId>kafka-context-propagation</artifactId>
+                <version>${cloud-core.maas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
+                <artifactId>maas-client</artifactId>
+                <version>${cloud-core.maas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>core-error-handling-rest</artifactId>
+                <version>${cloud-core.core-error-handling.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-devtools-common</artifactId>
-                <version>${quarkus.version}</version>
-            </dependency>
+            <!-- Dev tools -->
             <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
@@ -118,16 +145,6 @@
             </dependency>
 
             <!-- Miscellaneous -->
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-rest-client</artifactId>
-                <version>${quarkus.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.code.findbugs</groupId>
-                <artifactId>jsr305</artifactId>
-                <version>${findbugs.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
@@ -137,46 +154,6 @@
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-provider-api</artifactId>
                 <version>${wagon-provider-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.squareup.okhttp3</groupId>
-                <artifactId>okhttp</artifactId>
-                <version>${okhttp.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.squareup.okio</groupId>
-                <artifactId>okio</artifactId>
-                <version>${okio.version}</version>
-            </dependency>
-            <!--Remove after upgrading to Quarkus v3-->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>2.0.17</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>33.5.0-jre</version>
-            </dependency>
-            <!--Test-->
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>${mockito.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-core</artifactId>
-                <version>3.27.7</version>
-                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

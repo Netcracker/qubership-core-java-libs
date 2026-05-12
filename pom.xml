@@ -12,6 +12,7 @@
     <name>Monorepo Aggregator</name>
 
     <modules>
+        <module>core-internal-boms</module>
         <module>core-utils</module>
         <module>core-error-handling</module>
         <module>core-process-orchestrator</module>
@@ -59,7 +60,6 @@
             <url>https://maven.pkg.github.com/Netcracker/qubership-core-java-libs</url>
         </repository>
     </distributionManagement>
-
-
 </project>
+
 

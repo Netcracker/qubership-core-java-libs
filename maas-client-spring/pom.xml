@@ -19,9 +19,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-boot.version>4.0.5</spring-boot.version>
-        <spring-cloud.version>2025.1.1</spring-cloud.version>
-        <cloud-core.maas-client.version>12.1.0-SNAPSHOT</cloud-core.maas-client.version>
+        <cloud-core.maas-client.version>12.2.0-SNAPSHOT</cloud-core.maas-client.version>
         <cloud-core.core-utils.version>3.1.0-SNAPSHOT</cloud-core.core-utils.version>
         <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
         <sonar.coverage.jacoco.xmlReportPaths>
@@ -46,25 +44,16 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
                 <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>maas-client-bom</artifactId>
                 <version>${cloud-core.maas-client.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>core-spring-internal-bom</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

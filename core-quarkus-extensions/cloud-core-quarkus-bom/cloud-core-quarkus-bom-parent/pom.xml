@@ -12,6 +12,6 @@
     <packaging>pom</packaging>
 
     <properties>
-        <cloud-core.core-context-propagation-quarkus.version>9.0.0-SNAPSHOT</cloud-core.core-context-propagation-quarkus.version>
+        <cloud-core.core-context-propagation-quarkus.version>9.1.0-SNAPSHOT</cloud-core.core-context-propagation-quarkus.version>
     </properties>
 </project>

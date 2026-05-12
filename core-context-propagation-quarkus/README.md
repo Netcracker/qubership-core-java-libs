@@ -52,11 +52,12 @@ Framework provides contexts for propagating the following data:
 * [Any custom headers](#allowed-headers);
 * [API version](#api-version);
 * [X-Request-Id](#x-request-id);
+* [X-Channel-Request-Id](#x-channel-request-id);
 * [X-Version](#x-version);
 * [X-Nc-Client-Ip](#x-nc-client-ip)
 * [Business-Request-Id](#business-request-id)
 
-## How to use
+### How to use
 
 1) Add the framework-contexts dependency:
     ```xml
@@ -67,7 +68,7 @@ Framework provides contexts for propagating the following data:
     </dependency>
     ```
 
-### Accept-Language
+#### Accept-Language
 
 Accept-Language context allows propagating 'Accept-Language' headers from one microservice to another. To get context
 value, you should call:
@@ -79,7 +80,7 @@ AcceptLanguageContextObject acceptLanguageContextObject = ContextManager.get(ACC
 String acceptLanguage = acceptLanguageContextObject.getAcceptedLanguages();
 ```
 
-### Allowed headers
+#### Allowed headers
 
 Allows propagating any specified headers. To set a list of headers you should put either
 `HEADERS_ALLOWED` environment or set the `headers.allowed` property. Property has more precedence than env.
@@ -100,7 +101,7 @@ headers.allowed=myheader1,myheader2,...
 
 Otherwise, you need to take care that this parameter is in System#property or environment.
 
-### API version
+#### API version
 
 This context retrieves API version from an incoming request URL and stores it.
 
@@ -113,7 +114,7 @@ String apiVersion = apiVersionContextObject.getVersion();
 
 If request URL does not contain API version then the context contains default value `v1`.
 
-### X-Request-Id
+#### X-Request-Id
 
 Propagates and allows to get `X-Request-Id` value. If an incoming request does not contains the `X-Request-Id`
 header then a random value is generated.
@@ -125,7 +126,50 @@ XRequestIdContextObject xRequestIdContextObject = ContextManager.get(X_REQUEST_I
 String xRequestId = xRequestIdContextObject.getRequestId();
 ```
 
-### X-Version
+#### X-Channel-Request-Id
+
+Propagates and allows to get `X-Channel-Request-Id` value. If an incoming request does not contain the `X-Channel-Request-Id` header then a random value is not generated and the value defaults to placeholder "-". This context is **blocked by default** and will not be propagated to outgoing requests.
+
+**Default behavior:** `X-Channel-Request-Id` is NOT propagated to outgoing responses.
+
+**Enabling propagation:** To allow `X-Channel-Request-Id` to be propagated to outgoing requests, remove it from the
+blacklist using one of the following methods:
+
+1. **Via environment variable:**
+```text
+HEADERS_BLOCKED=
+```
+
+2. **Via system property:**
+```text
+-Dheaders.blocked=
+```
+
+3. **Via application.properties (Quarkus):**
+```properties
+headers.blocked=
+```
+
+**`headers.blocked` rules and limitations**
+
+- Source priority: system property `headers.blocked` overrides environment variable `HEADERS_BLOCKED`.
+- Default when not configured at all: `X-Channel-Request-Id` is blocked.
+- Explicit empty value (`headers.blocked=` / `HEADERS_BLOCKED=`): blacklist is empty (nothing is blocked).
+- Explicit non-empty value with valid headers (for example `headers.blocked=Some-Header`): only listed headers are blocked.
+- `X-Request-Id` is non-blockable: if it is listed in `headers.blocked`/`HEADERS_BLOCKED`, it is ignored.
+- If configured value contains only non-blockable entries (for example only `X-Request-Id`), default block is applied and `X-Channel-Request-Id` remains blocked.
+
+**MDC Integration:** The channel request ID is automatically stored in MDC under the key `x_channel_request_id` for use in 
+logging. 
+
+Access:
+
+```java
+XChannelRequestIdContextObject xChannelRequestIdContextObject = ContextManager.get(X_CHANNEL_REQUEST_ID);
+String xChannelRequestId = xChannelRequestIdContextObject.getChannelRequestId();
+```
+
+#### X-Version
 
 Propagates and allows to get `X-Version` header.
 
@@ -136,7 +180,7 @@ XVersionContextObject xVersionContextObject = ContextManager.get(XVersionProvide
 String xVersion = xVersionContextObject.getXVersion();
 ```
 
-##### X-Version-Name
+#### X-Version-Name
 
 Propagates and allows to get `X-Version-Name` header.
 
@@ -152,7 +196,7 @@ Set:
         XVersionNameContext.set(someXVersionName);
 ```
 
-### X-Nc-Client-Ip
+#### X-Nc-Client-Ip
 
 Propagates and allows to get `X-Nc-Client-Ip` header.
 As init value can accept `X-Forwarded-For` header value.
@@ -169,7 +213,7 @@ Set:
 ClientIPContext.set(someClientIp);
 ```
 
-### Business-Request-Id
+#### Business-Request-Id
 
 Propagates and allows to get `Business-Request-Id` header.
 Value of header shouldn't be empty. If header is empty and value not set, propagation won't work.

@@ -44,6 +44,11 @@
             <artifactId>spring-rabbit</artifactId>
         </dependency>
         <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
@@ -67,12 +72,7 @@
         <dependency>
             <groupId>com.github.fridujo</groupId>
             <artifactId>rabbitmq-mock</artifactId>
-            <version>1.2.0</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
         </dependency>
     </dependencies>
 

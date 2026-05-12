@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.netcracker.cloud.maas.client</groupId>
         <artifactId>maas-client-parent</artifactId>
-        <version>12.1.0-SNAPSHOT</version>
+        <version>12.2.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -16,7 +16,6 @@
         <dependency>
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
-            <version>5.28.0</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -26,12 +25,10 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.17</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.44</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -41,13 +38,11 @@
         <dependency>
             <groupId>com.github.fridujo</groupId>
             <artifactId>rabbitmq-mock</artifactId>
-            <version>1.2.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.32</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
