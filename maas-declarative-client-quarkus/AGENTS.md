@@ -22,4 +22,4 @@ mvn verify
 
 ## Notes
 
-- Quarkus version: 3.33.1.
+- CDI (Arc) producers only — no Spring annotations.

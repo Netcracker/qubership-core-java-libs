@@ -13,8 +13,8 @@ Watches Consul KV for blue/green deployment state changes and provides lock mana
 ## Build
 
 ```bash
-mvn verify                  # requires Docker (Testcontainers + real Consul)
-mvn verify -DskipTests      # skip integration tests when Docker is unavailable
+mvn verify -B -ntp -q                  # requires Docker (Testcontainers + real Consul)
+mvn verify -B -ntp -q -DskipTests      # skip integration tests when Docker is unavailable
 ```
 
 ## Key Concepts

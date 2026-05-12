@@ -27,4 +27,4 @@ mvn generate-sources        # rebuild Jandex index after adding a new provider
 
 ## Notes
 
-- Quarkus version: 3.33.1. CDI (Arc) producers only — no Spring annotations.
+- CDI (Arc) producers only — no Spring annotations.

@@ -29,9 +29,9 @@ mvn verify
 
 ## Extension Guide
 
-- New extension → create sub-module, register it in `cloud-core-quarkus-bom/pom.xml` so consumers can import without specifying a version.
+- New extension → create sub-module, register it in `cloud-core-quarkus-bom/cloud-core-quarkus-bom-publish/pom.xml` so consumers can import without specifying a version.
 - CDI (Arc) producers only — no Spring annotations.
 
 ## Notes
 
-- Quarkus version: 3.33.1.
+- Quarkus version: see `quarkus.platform.version` property in `pom.xml`.
