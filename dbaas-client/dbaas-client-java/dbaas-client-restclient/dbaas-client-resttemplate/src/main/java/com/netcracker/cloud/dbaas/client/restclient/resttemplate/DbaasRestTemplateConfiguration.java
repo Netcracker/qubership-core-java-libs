@@ -5,11 +5,10 @@ import com.netcracker.cloud.restclient.resttemplate.MicroserviceRestTemplate;
 import com.netcracker.cloud.restlegacy.resttemplate.configuration.annotation.EnableFrameworkRestTemplate;
 import com.netcracker.cloud.security.core.auth.M2MManager;
 import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
@@ -19,6 +18,6 @@ public class DbaasRestTemplateConfiguration {
     @Bean("dbaasRestClient")
     public MicroserviceRestClient dbaasRestClient(M2MManager m2MManager){
         var client = M2MClientFactory.getDbaasHttpClient(() -> m2MManager.getToken().getTokenValue());
-        return new MicroserviceRestTemplate(new RestTemplate(new HttpComponentsClientHttpRequestFactory(client)));
+        return new MicroserviceRestTemplate(new RestTemplate(new JdkClientHttpRequestFactory(client)));
     }
 }
