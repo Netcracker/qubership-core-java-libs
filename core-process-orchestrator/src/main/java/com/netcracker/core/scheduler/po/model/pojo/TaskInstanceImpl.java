@@ -12,6 +12,8 @@ import java.util.Objects;
 
 
 public class TaskInstanceImpl {
+    private static final String TIMEOUT_CONTEXT_FIELD_NAME = "_TAKS_TIME_OUT_";
+    private static final String ASYNC_TIMEOUT_CONTEXT_FIELD_NAME = "_TAKS_ASYNC_TIME_OUT_";
 
     private boolean isDirty;
     private DataContext context = null;
@@ -47,6 +49,14 @@ public class TaskInstanceImpl {
         endTimeField = String.format("endDate-%s", id);
     }
 
+    public static void fillNewContext(DataContext context, Long timeout, Long asyncTimeout) {
+        if (timeout != null) {
+            context.put(TIMEOUT_CONTEXT_FIELD_NAME, timeout);
+        }
+        if (asyncTimeout != null) {
+            context.put(ASYNC_TIMEOUT_CONTEXT_FIELD_NAME, asyncTimeout);
+        }
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -137,20 +147,20 @@ public class TaskInstanceImpl {
     }
 
     public void setTimeout(Long timeout) {
-        getContext().apply((DataContext c) -> c.put("_TAKS_TIME_OUT_", timeout));
+        getContext().apply((DataContext c) -> c.put(TIMEOUT_CONTEXT_FIELD_NAME, timeout));
     }
 
     public Long getTimeout() {
-        Object val = getContext().get("_TAKS_TIME_OUT_");
+        Object val = getContext().get(TIMEOUT_CONTEXT_FIELD_NAME);
         return val == null ? 0 : (Long) val;
     }
 
-    public void setAsyncTimeout(Long timeout) {
-        getContext().apply((DataContext c) -> c.put("_TAKS_ASYNC_TIME_OUT_", timeout));
+    public void setAsyncTimeout(Long asyncTimeout) {
+        getContext().apply((DataContext c) -> c.put(ASYNC_TIMEOUT_CONTEXT_FIELD_NAME, asyncTimeout));
     }
 
     public Long getAsyncTimeout() {
-        Object val = getContext().get("_TAKS_ASYNC_TIME_OUT_");
+        Object val = getContext().get(ASYNC_TIMEOUT_CONTEXT_FIELD_NAME);
         return val == null ? 0 : (Long) val;
     }
     /**/

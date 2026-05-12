@@ -20,7 +20,6 @@
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
             <artifactId>core-error-handling-rest</artifactId>
-            <version>${cloud-core.core-error-handling.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -45,7 +44,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.21.2</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -76,7 +74,6 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>6.0.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

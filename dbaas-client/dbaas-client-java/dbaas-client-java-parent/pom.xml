@@ -11,7 +11,6 @@
     <artifactId>dbaas-client-java-parent</artifactId>
     <packaging>pom</packaging>
     <properties>
-        <slf4j-api.version>2.0.17</slf4j-api.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../dbaas-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -42,7 +41,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j-api.version}</version>
         </dependency>
         <!-- Test config -->
 

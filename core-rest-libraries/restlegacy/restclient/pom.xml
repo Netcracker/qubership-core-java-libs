@@ -56,6 +56,7 @@
             <artifactId>spring-tx</artifactId>
         </dependency>
         <dependency>
+            <!-- todo vlla: Why is a BOM dependency used without the `import` scope? -->
             <groupId>com.fasterxml.jackson</groupId>
             <artifactId>jackson-bom</artifactId>
             <version>2.21.2</version>
@@ -88,8 +89,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <!--todo vlla: test scope?-->
             <groupId>org.powermock</groupId>
             <artifactId>powermock-reflect</artifactId>
+            <version>2.0.9</version>
         </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
@@ -101,6 +104,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <!--todo vlla: this is old group id. Should we migrate to dev.failsafe:failsafe and add it to bom?-->
             <groupId>net.jodah</groupId>
             <artifactId>failsafe</artifactId>
             <version>2.4.4</version>

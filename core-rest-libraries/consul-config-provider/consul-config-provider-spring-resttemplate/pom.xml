@@ -23,13 +23,12 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter</artifactId>
-            <version>5.0.1</version>
         </dependency>
-
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
             <artifactId>microservice-restclient-resttemplate</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>

@@ -12,8 +12,6 @@
     <artifactId>dbaas-client-test</artifactId>
 
     <properties>
-        <junit.version>5.11.4</junit.version>
-
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>

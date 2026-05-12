@@ -15,32 +15,31 @@
 
     <properties>
         <powermock.version>2.0.9</powermock.version>
-        <spring.version>7.0.6</spring.version>
-        <spring.boot.version>4.0.5</spring.boot.version>
-        <postgresql.driver.version>42.7.10</postgresql.driver.version>
-        <spring.data.mongodb.version>5.0.4</spring.data.mongodb.version>
-        <mongodb.version>5.6.4</mongodb.version>
         <arangodb.driver.version>7.26.0</arangodb.driver.version>
         <arangodb.spring.data.version>5.0.0</arangodb.spring.data.version>
         <java.driver.core.version>4.19.2</java.driver.core.version>
         <jedis.client.version>7.0.0</jedis.client.version>
-        <spring.data.version>4.0.4</spring.data.version>
-        <jackson-bom.version>2.21.2</jackson-bom.version>
-        <jakarta-annotation.version>3.0.0</jakarta-annotation.version>
         <flyway.version>11.20.3</flyway.version>
         <shedlock.version>7.7.0</shedlock.version>
-        <hibernate.version>7.2.7.Final</hibernate.version>
-        <testcontainers.version>2.0.4</testcontainers.version>
+        <qubership-spring-internal-bom.version>1.0.0-SNAPSHOT</qubership-spring-internal-bom.version>
 
         <!--Qubership's libs-->
         <cloud-core.core-rest-libraries.version>7.2.0-SNAPSHOT</cloud-core.core-rest-libraries.version>
         <cloud-core.core-restclient.version>7.1.0-SNAPSHOT</cloud-core.core-restclient.version>
-        <cloud-core.core-context-propagation.version>8.1.0-SNAPSHOT</cloud-core.core-context-propagation.version>
+        <cloud-core.core-context-propagation.version>8.2.0-SNAPSHOT</cloud-core.core-context-propagation.version>
         <cloud-core.core-utils.version>3.1.0-SNAPSHOT</cloud-core.core-utils.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>core-spring-internal-bom</artifactId>
+                <version>${qubership-spring-internal-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>dbaas-client-bom</artifactId>
@@ -83,42 +82,14 @@
 
             <!--Third-party libs  -->
             <dependency>
-                <groupId>com.fasterxml.jackson</groupId>
-                <artifactId>jackson-bom</artifactId>
-                <version>${jackson-bom.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.annotation</groupId>
-                <artifactId>jakarta.annotation-api</artifactId>
-                <version>${jakarta-annotation.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jetbrains</groupId>
-                <artifactId>annotations</artifactId>
-                <version>26.0.2</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-dbcp2</artifactId>
                 <version>2.13.0</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.httpcomponents.client5</groupId>
-                <artifactId>httpclient5</artifactId>
-                <version>5.5.2</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.httpcomponents.core5</groupId>
                 <artifactId>httpcore5</artifactId>
                 <version>5.3.6</version>
-            </dependency>
-            <dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>${postgresql.driver.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.flywaydb</groupId>
@@ -131,22 +102,6 @@
                 <version>${flyway.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-mongodb</artifactId>
-                <version>${spring.data.mongodb.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.mongodb</groupId>
-                        <artifactId>mongodb-driver-core</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.mongodb</groupId>
-                <artifactId>mongodb-driver-sync</artifactId>
-                <version>${mongodb.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.arangodb</groupId>
                 <artifactId>arangodb-java-driver</artifactId>
                 <version>${arangodb.driver.version}</version>
@@ -155,85 +110,6 @@
                 <groupId>com.arangodb</groupId>
                 <artifactId>arangodb-spring-data</artifactId>
                 <version>${arangodb.spring.data.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>1.5.32</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-core</artifactId>
-                <version>1.5.32</version>
-            </dependency>
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>1.18.44</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-autoconfigure</artifactId>
-                <version>${spring.boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-actuator</artifactId>
-                <version>${spring.boot.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-expression</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-web</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-beans</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.retry</groupId>
-                <artifactId>spring-retry</artifactId>
-                <version>2.0.12</version>
-            </dependency>
-            <dependency>
-                <groupId>com.squareup.okhttp3</groupId>
-                <artifactId>okhttp</artifactId>
-                <version>4.12.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>2.13.2</version>
-            </dependency>
-            <dependency>
-                <groupId>io.micrometer</groupId>
-                <artifactId>micrometer-core</artifactId>
-                <version>1.16.4</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.cassandra</groupId>
@@ -256,11 +132,6 @@
                 <version>${jedis.client.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-redis</artifactId>
-                <version>${spring.data.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>net.javacrumbs.shedlock</groupId>
                 <artifactId>shedlock-core</artifactId>
                 <version>${shedlock.version}</version>
@@ -269,33 +140,6 @@
                 <groupId>net.javacrumbs.shedlock</groupId>
                 <artifactId>shedlock-provider-cassandra</artifactId>
                 <version>${shedlock.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>2.21.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>33.5.0-jre</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.servlet</groupId>
-                <artifactId>jakarta.servlet-api</artifactId>
-                <version>6.1.0</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-collections4</artifactId>
-                <version>4.5.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>3.20.0</version>
             </dependency>
             <dependency>
                 <groupId>org.freemarker</groupId>
@@ -308,56 +152,6 @@
                 <version>3.9.12</version>
             </dependency>
 
-            <!-- Test dependencies -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-test</artifactId>
-                <version>${spring.boot.version}</version>
-                <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-test</artifactId>
-                <version>${spring.boot.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>de.bwaldvogel</groupId>
-                <artifactId>mongo-java-server</artifactId>
-                <version>1.47.0</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit</groupId>
-                <artifactId>junit-bom</artifactId>
-                <version>6.0.3</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-core</artifactId>
-                <version>3.27.7</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-junit-jupiter</artifactId>
-                <version>5.21.0</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>5.21.0</version>
-                <scope>test</scope>
-            </dependency>
             <dependency>
                 <groupId>org.cassandraunit</groupId>
                 <artifactId>cassandra-unit-spring</artifactId>
@@ -374,57 +168,19 @@
                 </exclusions>
                 <scope>test</scope>
             </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-test</artifactId>
-                <version>${spring.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc</artifactId>
-                <version>${spring.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>testcontainers-bom</artifactId>
-                <version>${testcontainers.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-jpa</artifactId>
-                <version>${spring.data.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.hibernate.orm</groupId>
-                <artifactId>hibernate-core</artifactId>
-                <version>${hibernate.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate.orm</groupId>
-                <artifactId>hibernate-processor</artifactId>
-                <version>${hibernate.version}</version>
-                <scope>test</scope>
-            </dependency>
 
             <!--Integration tests-->
-            <dependency>
+            <dependency> <!-- todo vlla: not necessary dependency? -->
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-netty-shaded</artifactId>
                 <version>${io.grpc.version}</version>
             </dependency>
-            <dependency>
+            <dependency> <!-- todo vlla: not necessary dependency? -->
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-protobuf</artifactId>
                 <version>${io.grpc.version}</version>
             </dependency>
-            <dependency>
+            <dependency> <!-- todo vlla: not necessary dependency? -->
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-stub</artifactId>
                 <version>${io.grpc.version}</version>

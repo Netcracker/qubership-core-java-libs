@@ -31,14 +31,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Quarkus Extensions Dependencies are coming from quarkus-bom-deployment (that also imports quarkus-bom) -->
-            <dependency>
-                <groupId>io.quarkus.platform</groupId>
-                <artifactId>quarkus-bom</artifactId>
-                <version>${quarkus.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>consul-client-deployment</artifactId>

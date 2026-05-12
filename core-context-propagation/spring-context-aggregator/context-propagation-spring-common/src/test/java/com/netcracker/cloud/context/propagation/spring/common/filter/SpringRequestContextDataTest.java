@@ -33,21 +33,4 @@ class SpringRequestContextDataTest {
         assertEquals(xVersionValue, headers.get(xVersion).get(0));
 
     }
-
-
-    public static class EnumerationImpl<T> implements Enumeration<T> {
-        private final Iterator<T> iterator;
-
-        public EnumerationImpl(Iterator<T> iterator) {
-            this.iterator = iterator;
-        }
-
-        public boolean hasMoreElements() {
-            return this.iterator.hasNext();
-        }
-
-        public T nextElement() {
-            return this.iterator.next();
-        }
-    }
 }

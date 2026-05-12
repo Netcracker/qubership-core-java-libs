@@ -7,9 +7,14 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.context.propagation.spring.kafka.annotation.EnableKafkaContextPropagation;
+import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
 import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
 import com.netcracker.cloud.headerstracking.filters.context.AllowedHeadersContext;
+import com.netcracker.cloud.headerstracking.filters.context.ChannelRequestIdContext;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +35,11 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest
 @EmbeddedKafka // start embedded kafka instance
@@ -42,16 +50,32 @@ public class ContextPropagationTest {
 	private static final String TEST_LANG = "ZULU";
 	private static final String CUSTOM_HEADER = "X-Custom-Header-1";
 	private static final String CUSTOM_HEADER_VALUE = "case-insensitive-test-value";
-	private static final CompletableFuture<ConsumerRecord<Integer, String>> consumed = new CompletableFuture<>();
-	private static final CountingInterceptor interceptor = new CountingInterceptor();
+    private static final String X_CHANNEL_REQUEST_ID_NAME = "X-Channel-Request-Id";
+    private static final String X_CHANNEL_REQUEST_ID_VALUE = "456";
+    private static final AtomicReference<CompletableFuture<ConsumerRecord<Integer, String>>> consumed = new AtomicReference<>();
+    private static final CountingInterceptor interceptor = new CountingInterceptor();
 
-	@Autowired
-	private KafkaTemplate<Integer, String> producer;
+    @Autowired
+    private KafkaTemplate<Integer, String> producer;
 
-	@BeforeAll
-	static void setup() {
-		System.setProperty("headers.allowed", CUSTOM_HEADER.toLowerCase());
-	}
+    @BeforeAll
+    static void setup() {
+        System.setProperty("headers.allowed", CUSTOM_HEADER.toLowerCase());
+        System.clearProperty("headers.blocked");
+		HeaderPropagationConfiguration.resetCache();
+    }
+
+    @BeforeEach
+    void beforeEach() {
+        consumed.set(new CompletableFuture<>());
+        interceptor.countProcessed.set(0);
+    }
+
+    @AfterEach
+    void afterEach() {
+        System.clearProperty("headers.blocked");
+		HeaderPropagationConfiguration.resetCache();
+    }
 
 	@AfterAll
 	static void tearDown() {
@@ -60,16 +84,34 @@ public class ContextPropagationTest {
 
 	@Test
 	@Timeout(30)
-	public void testContextPropagation() throws Exception {
-		AcceptLanguageContext.set(TEST_LANG);
-		AllowedHeadersContext.set(Map.of(CUSTOM_HEADER, CUSTOM_HEADER_VALUE));
-		producer.send("orders", 1, "value" + 1);
-		producer.flush();
+    void testContextPropagationBlocksXChannelRequestIdByDefault() throws Exception {
+        ChannelRequestIdContext.set(X_CHANNEL_REQUEST_ID_VALUE);
+        AcceptLanguageContext.set(TEST_LANG);
+        AllowedHeadersContext.set(Map.of(CUSTOM_HEADER, CUSTOM_HEADER_VALUE));
+        producer.send("orders", 1, "value" + 1);
+        producer.flush();
+        ContextManager.clearAll();
 
-		ConsumerRecord<Integer, String> message = consumed.get(5, TimeUnit.SECONDS);
-		// additionally also check header, just in case
-		assertEquals(TEST_LANG, new String(message.headers().lastHeader(HttpHeaders.ACCEPT_LANGUAGE).value()));
-		assertEquals(CUSTOM_HEADER_VALUE, new String(message.headers().lastHeader(CUSTOM_HEADER).value()));
+        ConsumerRecord<Integer, String> message = consumed.get().get(5, TimeUnit.SECONDS);
+        assertNull(message.headers().lastHeader(X_CHANNEL_REQUEST_ID_NAME));
+        assertEquals(TEST_LANG, new String(message.headers().lastHeader(HttpHeaders.ACCEPT_LANGUAGE).value()));
+        assertEquals(CUSTOM_HEADER_VALUE, new String(message.headers().lastHeader(CUSTOM_HEADER).value()));
+    }
+
+    @Test
+    @Timeout(30)
+    public void testContextPropagationAllowsXChannelRequestIdWhenHeadersBlockedEmpty() throws Exception {
+        System.setProperty("headers.blocked", "");
+        ChannelRequestIdContext.set(X_CHANNEL_REQUEST_ID_VALUE);
+        AcceptLanguageContext.set(TEST_LANG);
+        AllowedHeadersContext.set(Map.of(CUSTOM_HEADER, CUSTOM_HEADER_VALUE));
+        producer.send("orders", 1, "value" + 1);
+        producer.flush();
+        ContextManager.clearAll();
+
+        ConsumerRecord<Integer, String> message = consumed.get().get(5, TimeUnit.SECONDS);
+        assertNotNull(message.headers().lastHeader(X_CHANNEL_REQUEST_ID_NAME));
+        assertEquals(X_CHANNEL_REQUEST_ID_VALUE, new String(message.headers().lastHeader(X_CHANNEL_REQUEST_ID_NAME).value()));
 	}
 
 	@Component
@@ -82,9 +124,9 @@ public class ContextPropagationTest {
 			System.out.println("Received: " + message + ", context language: " + AcceptLanguageContext.get());
 			if (TEST_LANG.equals(AcceptLanguageContext.get()) &&
 					CUSTOM_HEADER_VALUE.equals(customHeaders.get(CUSTOM_HEADER.toLowerCase()))) {
-				consumed.complete(message);
+				consumed.get().complete(message);
 			} else {
-				consumed.completeExceptionally(new AssertionError("Test failed: Context not properly restored"));
+				consumed.get().completeExceptionally(new AssertionError("Test failed: Context not properly restored"));
 			}
 		}
 	}

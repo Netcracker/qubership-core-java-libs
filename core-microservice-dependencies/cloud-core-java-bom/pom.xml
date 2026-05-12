@@ -25,9 +25,9 @@
         <cloud-core.core-rest-libraries.version>7.2.0-SNAPSHOT</cloud-core.core-rest-libraries.version>
         <cloud-core.dbaas-client.version>9.1.0-SNAPSHOT</cloud-core.dbaas-client.version>
         <cloud-core.core-microservice-framework-extensions.version>7.1.0-SNAPSHOT</cloud-core.core-microservice-framework-extensions.version>
-        <cloud-core.core-context-propagation.version>8.1.0-SNAPSHOT</cloud-core.core-context-propagation.version>
-        <cloud-core.maas-client.version>12.1.0-SNAPSHOT</cloud-core.maas-client.version>
-        <cloud-core.core-error-handling.version>4.1.0-SNAPSHOT</cloud-core.core-error-handling.version>
+        <cloud-core.core-context-propagation.version>8.2.0-SNAPSHOT</cloud-core.core-context-propagation.version>
+        <cloud-core.maas-client.version>12.2.0-SNAPSHOT</cloud-core.maas-client.version>
+        <cloud-core.core-error-handling.version>4.2.0-SNAPSHOT</cloud-core.core-error-handling.version>
     </properties>
 
     <dependencyManagement>

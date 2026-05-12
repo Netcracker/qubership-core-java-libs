@@ -32,10 +32,7 @@
         <jandex.version>3.5.3</jandex.version>
         <curator.version>5.1.0</curator.version>
 
-        <assertj-core.version>3.27.7</assertj-core.version>
-
         <cloud-core.maas-declarative-client-commons.version>6.1.0-SNAPSHOT</cloud-core.maas-declarative-client-commons.version>
-        <kafka-clients.version>4.2.0</kafka-clients.version>
         <cloud-core.maas-declarative-client-quarkus.version>11.0.0-SNAPSHOT</cloud-core.maas-declarative-client-quarkus.version>
         <cloud-core.core-blue-green-state-monitor-quarkus.version>4.0.0-SNAPSHOT</cloud-core.core-blue-green-state-monitor-quarkus.version>
         <cloud-core.core-utils.version>3.1.0-SNAPSHOT</cloud-core.core-utils.version>
@@ -53,9 +50,9 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-bom</artifactId>
-                <version>${quarkus.platform.version}</version>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>core-quarkus-internal-bom</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -65,11 +62,6 @@
                 <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>maas-declarative-kafka-client</artifactId>
                 <version>${cloud-core.maas-declarative-client-commons.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-clients</artifactId>
-                <version>${kafka-clients.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
@@ -87,15 +79,6 @@
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>blue-green-state-monitor-quarkus</artifactId>
                 <version>${cloud-core.core-blue-green-state-monitor-quarkus.version}</version>
-            </dependency>
-
-
-            <!-- test -->
-            <dependency>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-core</artifactId>
-                <version>${assertj-core.version}</version>
-                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
