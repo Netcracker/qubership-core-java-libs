@@ -14,7 +14,7 @@ class EnvTest {
     @Test
     void testApiUrl() {
         withProp(Env.PROP_API_URL, null, () ->
-                assertThrows(NoSuchElementException.class, Env::apiUrl)
+                assertEquals("http://maas-agent:8080", Env.apiUrl())
         );
     }
 

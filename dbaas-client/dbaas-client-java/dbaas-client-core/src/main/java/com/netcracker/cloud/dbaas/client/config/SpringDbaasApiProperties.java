@@ -8,8 +8,15 @@ import java.util.Optional;
 
 @Getter
 public class SpringDbaasApiProperties {
+    private static final String DEFAULT_DBAAS_AGENT_URL = "http://dbaas-agent:8080";
+
+    @Getter(AccessLevel.NONE)
+    @Value("${dbaas.api.address:#{null}}")
+    private Optional<String> dbaasAgentAddress;
+
+    @Getter(AccessLevel.NONE)
     @Value("${api.dbaas.address:#{null}}")
-    private Optional<String> address;
+    private Optional<String> dbaasAddress;
 
     @Value("${dbaas.api.retry.default.template.maxAttempts:10}")
     private int dbaasDefaultRetryMaxAttempts;
@@ -19,4 +26,8 @@ public class SpringDbaasApiProperties {
 
     @Value("${dbaas.api.retry.async.template.timeout.seconds:1200}")
     private int dbaasAsyncRetryTimeoutInS;
+
+    public String getAddress() {
+        return dbaasAddress.orElse(dbaasAgentAddress.orElse(DEFAULT_DBAAS_AGENT_URL));
+    }
 }

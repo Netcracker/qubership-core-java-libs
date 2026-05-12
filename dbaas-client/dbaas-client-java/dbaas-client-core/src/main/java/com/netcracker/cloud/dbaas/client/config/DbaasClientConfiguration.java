@@ -36,7 +36,7 @@ public class DbaasClientConfiguration {
                                    @Qualifier("dbaasRestClient") MicroserviceRestClient dbaasRestClient,
                                    @Qualifier("dbaasClientAwaitAsyncDbCreationRetryTemplate") RetryTemplate dbaasClientAwaitAsyncDbCreationRetryTemplate,
                                    SpringDbaasApiProperties apiProperties) {
-        DbaasClientImpl dbaasClient = new DbaasClientImpl(dbaasRestClient, retryTemplate, dbaasClientAwaitAsyncDbCreationRetryTemplate, apiProperties.getAddress().get());
+        DbaasClientImpl dbaasClient = new DbaasClientImpl(dbaasRestClient, retryTemplate, dbaasClientAwaitAsyncDbCreationRetryTemplate, apiProperties.getAddress());
         log.debug("Created dbaasClient bean {}", dbaasClient);
         return dbaasClient;
     }

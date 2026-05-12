@@ -27,6 +27,7 @@ public class Env {
     public static final String PROP_CLOUD_NAMESPACE = "cloud.microservice.namespace";
     public static final String PROP_NAMESPACE = "maas.client.classifier.namespace"; //todo deprecated - delete in the next major release
     public static final String PROP_ORIGIN_NAMESPACE = "origin_namespace"; //todo change to 'origin.namespace'
+    public static final String PROP_MAAS_AGENT_URL = "maas.client.api.url";
     public static final String PROP_API_URL = "maas.internal.address";
     public static final String PROP_API_AUTH = "maas.client.api.auth";
     public static final String PROP_TENANT_MANAGER_URL = "maas.client.tenant-manager.url";
@@ -36,7 +37,10 @@ public class Env {
     public static String apiUrl() {
         return stringProperty(PROP_API_URL)
                 .map(Env::normalizeUrl)
-                .get();
+                .orElse(stringProperty(PROP_MAAS_AGENT_URL)
+                        .map(Env::normalizeUrl)
+                        .orElse(addr2http("maas-agent"))
+                );
     }
 
     public static String apiAuth() {
