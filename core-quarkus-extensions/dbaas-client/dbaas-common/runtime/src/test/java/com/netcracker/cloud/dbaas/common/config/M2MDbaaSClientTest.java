@@ -20,10 +20,14 @@ class M2MDbaaSClientTest {
 
     @BeforeEach
     void setUp() {
-        DbaasClientConfig config = mock(DbaasClientConfig.class);
-        when(config.dbaasAgentUrl()).thenReturn(Optional.of(DB_AGENT_URL));
-        when(config.dbaasUrl()).thenReturn(Optional.of(DB_AGGREGATOR_URL));
-        m2MDbaaSClient = new M2MDbaaSClient(config);
+        SecurityConfig securityConfig = mock(SecurityConfig.class);
+        when(securityConfig.k8sEnabled()).thenReturn(true);
+
+        DbaasClientConfig dbaasConfig = mock(DbaasClientConfig.class);
+        when(dbaasConfig.dbaasAgentUrl()).thenReturn(Optional.of(DB_AGENT_URL));
+        when(dbaasConfig.dbaasUrl()).thenReturn(Optional.of(DB_AGGREGATOR_URL));
+
+        m2MDbaaSClient = new M2MDbaaSClient(securityConfig, dbaasConfig);
     }
     @Test
     void testBuild() throws NoSuchFieldException, IllegalAccessException {

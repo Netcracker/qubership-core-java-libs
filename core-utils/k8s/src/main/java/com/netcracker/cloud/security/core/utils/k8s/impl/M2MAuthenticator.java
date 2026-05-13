@@ -11,7 +11,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static com.netcracker.cloud.security.core.utils.k8s.impl.UrlCache.calculateCacheKey;
-import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
 @Slf4j
 public final class M2MAuthenticator {
@@ -33,6 +32,7 @@ public final class M2MAuthenticator {
         T send(URI url, String authHeader) throws IOException;
     }
 
+    private final boolean k8sEnabled;
     private final UrlCache urlCache;
     private final Supplier<String> fallbackAuthHeaderSupplier;
     private final Supplier<String> k8sAuthHeaderSupplier;
@@ -43,6 +43,7 @@ public final class M2MAuthenticator {
     }
 
     public M2MAuthenticator(UrlCache urlCache, Supplier<String> fallbackAuthHeaderSupplier, Supplier<String> k8sAuthHeaderSupplier, String fallbackBaseUrl) {
+        this.k8sEnabled = Boolean.parseBoolean(System.getenv().get("SECURITY_M2M_KUBERNETES_ENABLED"));
         this.urlCache = urlCache;
         this.fallbackAuthHeaderSupplier = fallbackAuthHeaderSupplier;
         this.k8sAuthHeaderSupplier = k8sAuthHeaderSupplier;
@@ -58,7 +59,7 @@ public final class M2MAuthenticator {
 
         final String cacheKey = calculateCacheKey(requestUrl);
 
-        if (!urlCache.containsKey(cacheKey)) {
+        if (k8sEnabled && !urlCache.containsKey(cacheKey)) {
             try {
                 String k8sHeader = k8sAuthHeaderSupplier.get();
                 validateAuthHeader(k8sHeader);
@@ -69,11 +70,12 @@ public final class M2MAuthenticator {
                 closeResponse.accept(response);
                 return doFallback(requestUrl, sender, isSuccessful, KUBERNETES_TOKEN_UNAUTHORIZED_ERROR, cacheKey);
             } catch (IllegalStateException | IllegalArgumentException ex) {
+                log.warn("failed to get or invalid auth header", ex);
                 return doFallback(requestUrl, sender, isSuccessful, KUBERNETES_TOKEN_ACQUISITION_ERROR, cacheKey);
             }
         }
 
-        URI targetUrl = resolveTargetUrl(requestUrl);
+        URI targetUrl = k8sEnabled ? resolveTargetUrl(requestUrl) : requestUrl;
         String authHeader = fallbackAuthHeaderSupplier.get();
         validateAuthHeader(authHeader);
         return sender.send(targetUrl, authHeader);
@@ -85,14 +87,14 @@ public final class M2MAuthenticator {
             Predicate<T> isSuccessful,
             String reason,
             String cacheKey) throws IOException {
-
         URI targetUrl = resolveTargetUrl(requestUrl);
+        log.debug("Failed to establish m2m connection to {}\n falling back to keycloak token: {}", targetUrl, reason);
+
         String authHeader = fallbackAuthHeaderSupplier.get();
         validateAuthHeader(authHeader);
         T response = sender.send(targetUrl, authHeader);
         if (isSuccessful.test(response)) {
             urlCache.store(cacheKey);
-            log.warn("Failed to establish m2m connection to {}\n{}", targetUrl, reason);
         }
         return response;
     }

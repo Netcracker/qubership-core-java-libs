@@ -8,6 +8,7 @@ import com.netcracker.cloud.quarkus.security.auth.M2MManager;
 import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
 import jakarta.enterprise.context.ApplicationScoped;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
@@ -16,20 +17,30 @@ import java.util.Optional;
 import static com.netcracker.cloud.dbaas.common.config.DbaasClientConfig.DEFAULT_DBAAS_AGENT_ADDRESS;
 import static com.netcracker.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
+@Slf4j
 @ApplicationScoped
 public class M2MDbaaSClient {
     private static final int MAX_RETRIES = 3;
     private static final long INITIAL_RETRY_DELAY = 500;
-    private final DbaasClientConfig config;
 
-    public M2MDbaaSClient(DbaasClientConfig config) {
-        this.config = config;
+    private final SecurityConfig securityConfig;
+    private final DbaasClientConfig dbaasConfig;
+
+    public M2MDbaaSClient(SecurityConfig securityConfig, DbaasClientConfig dbaasConfig) {
+        this.securityConfig = securityConfig;
+        this.dbaasConfig = dbaasConfig;
     }
 
     public DbaasClient build() {
-        String dbaasAgentUrl = config.dbaasAgentUrl().orElse(DEFAULT_DBAAS_AGENT_ADDRESS);
-        // if dbaas url is not available use dbaas-agent
-        String dbaasUrl = config.dbaasUrl().orElse(dbaasAgentUrl);
+        String dbaasAgentUrl = dbaasConfig.dbaasAgentUrl().orElse(DEFAULT_DBAAS_AGENT_ADDRESS);
+
+        String dbaasUrl = dbaasAgentUrl;
+        if(securityConfig.k8sEnabled()) {
+            if(dbaasConfig.dbaasUrl().isEmpty()) {
+                log.warn("DBaaS address is not available, falling back to dbaas-agent. Specify 'api.dbaas.address' property to DBaaS url");
+            }
+            dbaasUrl = dbaasConfig.dbaasUrl().orElse(dbaasAgentUrl);
+        }
 
         System.setProperty(M2MClientFactory.DBAAS_AGENT_URL_PROP, dbaasAgentUrl);
         OkHttpClient httpClient = M2MClientFactory.getDbaasOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue());
