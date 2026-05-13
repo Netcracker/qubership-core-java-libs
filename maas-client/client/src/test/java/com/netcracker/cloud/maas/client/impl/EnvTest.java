@@ -11,23 +11,36 @@ import static uk.org.webcompere.systemstubs.SystemStubs.withEnvironmentVariable;
 class EnvTest {
     @Test
     void testApiUrl() {
-        withProp(Env.PROP_API_URL, null, () ->
+        withProp(Env.PROP_MAAS_AGENT_URL, null, () ->
                 assertEquals("http://maas-agent:8080", Env.apiUrl())
         );
     }
 
     @Test
     void testApiUrlOverride() {
-        withProp(Env.PROP_API_URL, "http://localhost:8080/", () ->
+        withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:8080/", () ->
                 assertEquals("http://localhost:8080", Env.apiUrl())
         );
     }
 
     @Test
     void testApiUrlWrongOverride() {
-        withProp(Env.PROP_API_URL, "localhost:8080", () ->
-                assertThrows(IllegalArgumentException.class, () -> Env.apiUrl())
+        withProp(Env.PROP_MAAS_AGENT_URL, "localhost:8080", () ->
+                assertThrows(IllegalArgumentException.class, Env::apiUrl)
         );
+    }
+
+    @Test
+    void testApiUrlK8sEnabled() throws Exception {
+        withEnvironmentVariable(Env.ENV_K8S_ENABLED, "true")
+                .execute(() -> {
+                    withProp(Env.PROP_MAAS_AGENT_URL, null, () ->
+                            assertEquals("http://maas-agent:8080", Env.apiUrl())
+                    );
+                    withProp(Env.PROP_MAAS_URL,  "http://localhost:8080/", () ->
+                            assertEquals(  "http://localhost:8080", Env.apiUrl())
+                    );
+                });
     }
 
     @Test

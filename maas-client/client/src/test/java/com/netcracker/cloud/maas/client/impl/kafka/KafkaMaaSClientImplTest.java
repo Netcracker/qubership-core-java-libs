@@ -547,7 +547,7 @@ class KafkaMaaSClientImplTest {
     @Test
     void testWatchTopicCreate(ClientAndServer mockServer) throws InterruptedException {
         withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
-            withProp(Env.PROP_API_URL, "http://localhost:" + mockServer.getPort(), () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
 
                 HttpRequest req = request().withMethod("POST").withPath("/api/v2/kafka/topic/watch-create");
                 ExpectationResponseCallback respWithError = httpRequest -> {
@@ -582,7 +582,7 @@ class KafkaMaaSClientImplTest {
     @Test
     void testTopicDeleteSuccess(ClientAndServer mockServer) throws Exception {
         withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
-            withProp(Env.PROP_API_URL, "http://localhost:" + mockServer.getPort(), () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
 
                 mockServer.when(
                         request().withMethod("DELETE").withPath("/api/v2/kafka/topic"), Times.once()
@@ -605,7 +605,7 @@ class KafkaMaaSClientImplTest {
     @Test
     void testTopicDeleteError(ClientAndServer mockServer) throws Exception {
         withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
-            withProp(Env.PROP_API_URL, "http://localhost:" + mockServer.getPort(), () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
 
                 mockServer.when(
                         request().withMethod("DELETE").withPath("/api/v2/kafka/topic"),
