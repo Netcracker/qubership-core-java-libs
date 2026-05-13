@@ -34,6 +34,8 @@ class M2MInterceptorTest {
     @BeforeEach
     @SuppressWarnings("unchecked")
     void beforeEach() {
+        System.setProperty("security.m2m.kubernetes.enabled", "true");
+
         wireMockServer = new WireMockServer(0);
         wireMockServer.start();
         WireMock.configureFor("localhost", wireMockServer.port());
@@ -56,6 +58,7 @@ class M2MInterceptorTest {
     @AfterEach
     void afterEach() {
         wireMockServer.stop();
+        System.clearProperty("security.m2m.kubernetes.enabled");
     }
 
     @Test

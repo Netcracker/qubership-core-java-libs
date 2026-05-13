@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -43,7 +44,12 @@ public final class M2MAuthenticator {
     }
 
     public M2MAuthenticator(UrlCache urlCache, Supplier<String> fallbackAuthHeaderSupplier, Supplier<String> k8sAuthHeaderSupplier, String fallbackBaseUrl) {
-        this.k8sEnabled = Boolean.parseBoolean(System.getenv().get("SECURITY_M2M_KUBERNETES_ENABLED"));
+        String k8sEnabledProp = System.getProperty("security.m2m.kubernetes.enabled");
+        if (k8sEnabledProp == null) {
+            k8sEnabledProp = System.getenv("SECURITY_M2M_KUBERNETES_ENABLED");
+        }
+
+        this.k8sEnabled = Boolean.parseBoolean(k8sEnabledProp);
         this.urlCache = urlCache;
         this.fallbackAuthHeaderSupplier = fallbackAuthHeaderSupplier;
         this.k8sAuthHeaderSupplier = k8sAuthHeaderSupplier;
