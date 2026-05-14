@@ -4,7 +4,7 @@
 
     <artifactId>maas-client-spring-parent</artifactId>
     <groupId>com.netcracker.cloud.maas.client</groupId>
-    <version>9.0.10-SNAPSHOT</version>
+    <version>9.0.10-rest-client-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
