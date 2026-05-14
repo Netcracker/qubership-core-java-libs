@@ -145,7 +145,7 @@ Access:
 
 Propagates and allows to get `X-Channel-Request-Id` value. If an incoming request does not contain the `X-Channel-Request-Id` header then a random value is not generated and the value defaults to placeholder "-". This context is **blocked by default** and will not be propagated to outgoing requests.
 
-**Default behavior:** `X-Channel-Request-Id` is NOT propagated to outgoing responses.
+**Default behavior:** `X-Channel-Request-Id` is NOT propagated to outgoing requests.
 
 **Enabling propagation:** To allow `X-Channel-Request-Id` to be propagated to outgoing requests, remove it from the
 blacklist using one of the following methods:
