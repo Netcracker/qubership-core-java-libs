@@ -143,7 +143,7 @@ HEADERS_BLOCKED=
 
 2. **Via application.properties (Quarkus):**
 ```properties
-quarkus.headers.blocked
+quarkus.headers.blocked=
 ```
 
 **`quarkus.headers.blocked` rules and limitations**
