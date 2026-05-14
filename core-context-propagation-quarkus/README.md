@@ -29,6 +29,7 @@ Design overview: [context-propagation diagram](./design.png)
     - [Allowed headers](#allowed-headers)
     - [API version](#api-version)
     - [X-Request-Id](#x-request-id)
+    - [X-Channel-Request-Id](#x-channel-request-id)
     - [X-Version](#x-version)
     - [X-Version-Name](#x-version-name)
     - [X-Nc-Client-Ip](#x-nc-client-ip)
@@ -83,7 +84,7 @@ String acceptLanguage = acceptLanguageContextObject.getAcceptedLanguages();
 #### Allowed headers
 
 Allows propagating any specified headers. To set a list of headers you should put either
-`HEADERS_ALLOWED` environment or set the `headers.allowed` property. Property has more precedence than env.
+`HEADERS_ALLOWED` environment or set the `quarkus.headers.allowed` property. Property has more precedence than env.
 
 Access:
 
@@ -93,10 +94,10 @@ Map<String, Object> allowedHeaders = allowedHeadersContextObject.getHeaders();
 ```
 
 You just need to specify a list of headers in `application.properties`
-in the `headers.allowed` property. For example:
+in the `quarkus.headers.allowed` property. For example:
 
 ```properties
-headers.allowed=myheader1,myheader2,...
+quarkus.headers.allowed=myheader1,myheader2,...
 ```
 
 Otherwise, you need to take care that this parameter is in System#property or environment.
@@ -130,7 +131,7 @@ String xRequestId = xRequestIdContextObject.getRequestId();
 
 Propagates and allows to get `X-Channel-Request-Id` value. If an incoming request does not contain the `X-Channel-Request-Id` header then a random value is not generated and the value defaults to placeholder "-". This context is **blocked by default** and will not be propagated to outgoing requests.
 
-**Default behavior:** `X-Channel-Request-Id` is NOT propagated to outgoing responses.
+**Default behavior:** `X-Channel-Request-Id` is NOT propagated to outgoing requests.
 
 **Enabling propagation:** To allow `X-Channel-Request-Id` to be propagated to outgoing requests, remove it from the
 blacklist using one of the following methods:
@@ -140,23 +141,18 @@ blacklist using one of the following methods:
 HEADERS_BLOCKED=
 ```
 
-2. **Via system property:**
-```text
--Dheaders.blocked=
-```
-
-3. **Via application.properties (Quarkus):**
+2. **Via application.properties (Quarkus):**
 ```properties
-headers.blocked=
+quarkus.headers.blocked=
 ```
 
-**`headers.blocked` rules and limitations**
+**`quarkus.headers.blocked` rules and limitations**
 
-- Source priority: system property `headers.blocked` overrides environment variable `HEADERS_BLOCKED`.
+- Source priority: system property `quarkus.headers.blocked` overrides environment variable `HEADERS_BLOCKED`.
 - Default when not configured at all: `X-Channel-Request-Id` is blocked.
-- Explicit empty value (`headers.blocked=` / `HEADERS_BLOCKED=`): blacklist is empty (nothing is blocked).
-- Explicit non-empty value with valid headers (for example `headers.blocked=Some-Header`): only listed headers are blocked.
-- `X-Request-Id` is non-blockable: if it is listed in `headers.blocked`/`HEADERS_BLOCKED`, it is ignored.
+- Explicit empty value (`quarkus.headers.blocked=` / `HEADERS_BLOCKED=`): blacklist is empty (nothing is blocked).
+- Explicit non-empty value with valid headers (for example `quarkus.headers.blocked=Some-Header`): only listed headers are blocked.
+- `X-Request-Id` is non-blockable: if it is listed in `quarkus.headers.blocked`/`HEADERS_BLOCKED`, it is ignored.
 - If configured value contains only non-blockable entries (for example only `X-Request-Id`), default block is applied and `X-Channel-Request-Id` remains blocked.
 
 **MDC Integration:** The channel request ID is automatically stored in MDC under the key `x_channel_request_id` for use in 
