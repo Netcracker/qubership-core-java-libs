@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -546,7 +547,7 @@ class KafkaMaaSClientImplTest {
     @Test
     void testWatchTopicCreate(ClientAndServer mockServer) throws InterruptedException {
         withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
-            withProp(Env.PROP_API_URL, "http://localhost:" + mockServer.getPort(), () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
 
                 HttpRequest req = request().withMethod("POST").withPath("/api/v2/kafka/topic/watch-create");
                 ExpectationResponseCallback respWithError = httpRequest -> {
@@ -581,7 +582,7 @@ class KafkaMaaSClientImplTest {
     @Test
     void testTopicDeleteSuccess(ClientAndServer mockServer) throws Exception {
         withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
-            withProp(Env.PROP_API_URL, "http://localhost:" + mockServer.getPort(), () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
 
                 mockServer.when(
                         request().withMethod("DELETE").withPath("/api/v2/kafka/topic"), Times.once()
@@ -604,7 +605,7 @@ class KafkaMaaSClientImplTest {
     @Test
     void testTopicDeleteError(ClientAndServer mockServer) throws Exception {
         withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
-            withProp(Env.PROP_API_URL, "http://localhost:" + mockServer.getPort(), () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
 
                 mockServer.when(
                         request().withMethod("DELETE").withPath("/api/v2/kafka/topic"),
@@ -764,7 +765,8 @@ class KafkaMaaSClientImplTest {
     }
 
     private KafkaMaaSClientImpl createKafkaClient(String agentUrl) {
-        var httpClient = new HttpClient(() -> "faketoken");
+        System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, agentUrl);
+        var httpClient = HttpClient.getMaasClient(() -> "faketoken");
         var serverApiVersion = new ServerApiVersion(httpClient, agentUrl);
 
         return new KafkaMaaSClientImpl(

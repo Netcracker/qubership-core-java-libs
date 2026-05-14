@@ -1,40 +1,55 @@
 package com.netcracker.cloud.dbaas.common.config;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.dbaas.client.DbaaSClientOkHttpImpl;
 import com.netcracker.cloud.dbaas.client.DbaasClient;
 import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
 import com.netcracker.cloud.quarkus.security.auth.M2MManager;
-import com.netcracker.cloud.security.core.auth.Token;
+import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
+import jakarta.enterprise.context.ApplicationScoped;
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 import java.util.Optional;
 
 import static com.netcracker.cloud.dbaas.common.config.DbaasClientConfig.DEFAULT_DBAAS_AGENT_ADDRESS;
 import static com.netcracker.cloud.framework.contexts.tenant.BaseTenantProvider.TENANT_CONTEXT_NAME;
 
+@Slf4j
 @ApplicationScoped
 public class M2MDbaaSClient {
-    private DbaasClientConfig config;
     private static final int MAX_RETRIES = 3;
     private static final long INITIAL_RETRY_DELAY = 500;
 
-    public M2MDbaaSClient(DbaasClientConfig config) {
-        this.config = config;
+    private final SecurityConfig securityConfig;
+    private final DbaasClientConfig dbaasConfig;
+
+    public M2MDbaaSClient(SecurityConfig securityConfig, DbaasClientConfig dbaasConfig) {
+        this.securityConfig = securityConfig;
+        this.dbaasConfig = dbaasConfig;
     }
 
     public DbaasClient build() {
-        String url = config.dbaasAgentUrl().orElse(DEFAULT_DBAAS_AGENT_ADDRESS);
-        OkHttpClient httpClient = new OkHttpClient.Builder()
+        String dbaasAgentUrl = dbaasConfig.dbaasAgentUrl().orElse(DEFAULT_DBAAS_AGENT_ADDRESS);
+
+        String dbaasUrl = dbaasAgentUrl;
+        if(securityConfig.k8sEnabled()) {
+            if(dbaasConfig.dbaasUrl().isEmpty()) {
+                log.warn("DBaaS address is not available, falling back to dbaas-agent. Specify 'api.dbaas.address' property to DBaaS url");
+            }
+            dbaasUrl = dbaasConfig.dbaasUrl().orElse(dbaasAgentUrl);
+        }
+
+        System.setProperty(M2MClientFactory.DBAAS_AGENT_URL_PROP, dbaasAgentUrl);
+        OkHttpClient httpClient = M2MClientFactory.getDbaasOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue());
+        System.clearProperty(M2MClientFactory.DBAAS_AGENT_URL_PROP);
+
+        httpClient = httpClient.newBuilder()
                 .addInterceptor(chain -> {
                     Request original = chain.request();
-                    Token token = M2MManager.getInstance().getToken();
-                    String credentials = token.getTokenType() + " " + token.getTokenValue();
-                    Request.Builder requestBuilder = original.newBuilder()
-                            .addHeader("Authorization", credentials);
+                    Request.Builder requestBuilder = original.newBuilder();
                     Optional<TenantContextObject> tenantContextData = ContextManager.getSafe(TENANT_CONTEXT_NAME);
                     if (tenantContextData.isPresent() && tenantContextData.get().getTenant() != null) {
                         requestBuilder.addHeader("tenant", tenantContextData.get().getTenant());
@@ -44,6 +59,6 @@ public class M2MDbaaSClient {
                 .addInterceptor(new RetryInterceptor(MAX_RETRIES, INITIAL_RETRY_DELAY))
                 .sslSocketFactory(TlsUtils.getSslContext().getSocketFactory(), TlsUtils.getTrustManager())
                 .build();
-        return new DbaaSClientOkHttpImpl(url, httpClient);
+        return new DbaaSClientOkHttpImpl(dbaasUrl, httpClient);
     }
 }

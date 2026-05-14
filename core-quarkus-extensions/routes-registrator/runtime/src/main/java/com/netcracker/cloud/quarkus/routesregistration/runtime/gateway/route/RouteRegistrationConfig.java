@@ -4,7 +4,7 @@ import com.netcracker.cloud.quarkus.security.auth.M2MManager;
 import com.netcracker.cloud.routesregistration.common.gateway.route.*;
 import com.netcracker.cloud.routesregistration.common.gateway.route.rest.RegistrationRequestFactory;
 import com.netcracker.cloud.routesregistration.common.gateway.route.transformation.RouteTransformer;
-import com.netcracker.cloud.security.core.auth.Token;
+import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
 import io.quarkus.arc.Unremovable;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
@@ -12,8 +12,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Named;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 
 import java.util.Optional;
 
@@ -82,16 +82,10 @@ public class RouteRegistrationConfig {
     @Produces
     @Named(CONTROL_PLANE_HTTP_CLIENT)
     OkHttpClient controlPlaneHttpClient() {
-        return new OkHttpClient.Builder()
-                .addInterceptor(chain -> {
-                    Token token = M2MManager.getInstance().getToken();
-                    Request original = chain.request();
-                    Request request = original.newBuilder()
-                            .addHeader("Authorization", token.getTokenType() + " " + token.getTokenValue())
-                            .build();
-                    return chain.proceed(request);
-                })
+        return M2MClientFactory.getM2mOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue())
+                .newBuilder()
                 .retryOnConnectionFailure(true)
+                .sslSocketFactory(TlsUtils.getSslContext().getSocketFactory(), TlsUtils.getTrustManager())
                 .build();
     }
 

@@ -4,12 +4,12 @@ import com.netcracker.cloud.configserver.common.configuration.AbstractCustomConf
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import com.netcracker.cloud.restclient.webclient.MicroserviceWebClient;
 import com.netcracker.cloud.security.core.auth.M2MManager;
+import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
-import org.springframework.web.reactive.function.client.ClientRequest;
+import org.springframework.http.client.reactive.JdkClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import java.net.http.HttpClient;
 
 public class WebClientConfigServerConfigDataLocationResolver extends AbstractCustomConfigServerConfigDataLocationResolver {
 
@@ -26,13 +26,10 @@ public class WebClientConfigServerConfigDataLocationResolver extends AbstractCus
     }
 
     private WebClient createM2MWebClient() {
-        WebClient.Builder builder = WebClient.builder();
+        var builder =  WebClient.builder();
         if (hasM2M(configurableBootstrapContext)) {
-            builder.filter(
-                    (request, next) ->
-                            next.exchange(ClientRequest.from(request).
-                                    header(AUTHORIZATION, "Bearer " + getM2MToken(configurableBootstrapContext)).build())
-            );
+            HttpClient client = M2MClientFactory.getM2mHttpClient(() -> getM2MToken(configurableBootstrapContext));
+            builder.clientConnector(new JdkClientHttpConnector(client));
         }
         return builder.build();
     }

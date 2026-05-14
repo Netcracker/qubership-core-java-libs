@@ -59,6 +59,11 @@
             <artifactId>slf4j-api</artifactId>
             <version>2.0.17</version>
         </dependency>
+        <dependency>
+            <groupId>com.netcracker.cloud.security.core.utils</groupId>
+            <artifactId>k8s-utils</artifactId>
+            <version>3.0.7-rest-client-SNAPSHOT</version>
+        </dependency>
 
         <!-- test deps -->
         <dependency>
