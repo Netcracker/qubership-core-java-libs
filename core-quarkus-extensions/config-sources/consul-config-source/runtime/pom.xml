@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>consul-config-source-parent</artifactId>
-        <version>10.0.0-SNAPSHOT</version>
+        <version>10.0.0-rest-client-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

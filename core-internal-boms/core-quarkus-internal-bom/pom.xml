@@ -5,7 +5,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>core-quarkus-internal-bom</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0-rest-client-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -18,7 +18,7 @@
 
     <properties>
         <quarkus.version>3.33.1</quarkus.version>
-        <qubership-java-internal-bom.version>1.0.0-SNAPSHOT</qubership-java-internal-bom.version>
+        <qubership-java-internal-bom.version>1.0.0-rest-client-SNAPSHOT</qubership-java-internal-bom.version>
     </properties>
 
     <dependencyManagement>
