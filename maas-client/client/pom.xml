@@ -10,7 +10,6 @@
     </parent>
 
     <artifactId>maas-client</artifactId>
-    <version>12.2.0-rest-client-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <dependencies>
