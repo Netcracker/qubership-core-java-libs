@@ -6,9 +6,10 @@ import com.netcracker.cloud.restclient.webclient.MicroserviceWebClient;
 import com.netcracker.cloud.security.core.auth.M2MManager;
 import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import com.netcracker.cloud.smartclient.config.annotation.EnableFrameworkWebClient;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.reactive.JdkClientHttpConnector;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -24,7 +25,7 @@ public class DbaasWebClientConfiguration {
     public MicroserviceRestClient dbaasRestClient(M2MManager m2MManager) {
         var client = M2MClientFactory.getDbaasHttpClient(() -> m2MManager.getToken().getTokenValue());
         WebClient customizedWebClient = WebClient.builder()
-                .clientConnector(new JdkClientHttpConnector(client))
+                .clientConnector(new ReactorClientHttpConnector(client))
                 .filters(new DisableHttpTraceFilterConsumer())
                 .codecs(clientCodecsConfigurer -> clientCodecsConfigurer.defaultCodecs()
                         .configureDefaultCodec(o -> {
