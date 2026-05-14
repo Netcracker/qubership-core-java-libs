@@ -84,7 +84,7 @@ String acceptLanguage = acceptLanguageContextObject.getAcceptedLanguages();
 #### Allowed headers
 
 Allows propagating any specified headers. To set a list of headers you should put either
-`HEADERS_ALLOWED` environment or set the `headers.allowed` property. Property has more precedence than env.
+`HEADERS_ALLOWED` environment or set the `quarkus.headers.allowed` property. Property has more precedence than env.
 
 Access:
 
@@ -94,10 +94,10 @@ Map<String, Object> allowedHeaders = allowedHeadersContextObject.getHeaders();
 ```
 
 You just need to specify a list of headers in `application.properties`
-in the `headers.allowed` property. For example:
+in the `quarkus.headers.allowed` property. For example:
 
 ```properties
-headers.allowed=myheader1,myheader2,...
+quarkus.headers.allowed=myheader1,myheader2,...
 ```
 
 Otherwise, you need to take care that this parameter is in System#property or environment.
