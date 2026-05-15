@@ -69,23 +69,29 @@ public final class HeaderPropagationConfiguration {
         String envValue = System.getenv(HEADERS_BLOCKED_ENV);
         boolean envSpecified = envValue != null;
 
-        String blockedHeaders = propertySpecified
+        // No source set at all → fall back to the built-in default.
+        if (!propertySpecified && !envSpecified) {
+            return DEFAULT_BLOCKED_HEADERS;
+        }
+
+        // Property wins over env when both are set.
+        String raw = propertySpecified
                 ? System.getProperty(HEADERS_BLOCKED_PROPERTY)
                 : envValue;
 
-        boolean anySourceSpecified = propertySpecified || envSpecified;
-
-        if (blockedHeaders == null || blockedHeaders.isBlank()) {
-            return anySourceSpecified ? Collections.emptyList() : DEFAULT_BLOCKED_HEADERS;
+        // Source is set but empty/blank → explicit "erase the default".
+        if (raw == null || raw.isBlank()) {
+            return Collections.emptyList();
         }
-        
-        List<String> configured = Arrays.stream(blockedHeaders.split(","))
+
+        // Source is set with a value → parse, trim, drop non-blockable entries.
+        // If everything filters out, we still respect the user's explicit override
+        // and return an empty list — we do NOT silently restore the default.
+        return Arrays.stream(raw.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .filter(s -> NON_BLOCKABLE_HEADERS.stream()
                         .noneMatch(s::equalsIgnoreCase))
                 .toList();
-        
-        return configured.isEmpty() ? DEFAULT_BLOCKED_HEADERS : configured;
     }
 }

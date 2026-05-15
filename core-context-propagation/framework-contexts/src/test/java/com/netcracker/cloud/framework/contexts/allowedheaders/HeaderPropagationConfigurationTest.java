@@ -67,31 +67,51 @@ class HeaderPropagationConfigurationTest {
 
     @Test
     void shouldNotBlacklistXChannelRequestIdWhenOtherHeadersExplicitlyBlocked() {
+        // The property is explicitly set to a non-blockable header; the default
+        // blocked list must NOT silently kick in.
         System.setProperty(HeaderPropagationConfiguration.HEADERS_BLOCKED_PROPERTY, "X-Request-Id");
         HeaderPropagationConfiguration.resetCache();
 
         Assertions.assertFalse(HeaderPropagationConfiguration.isBlacklisted("X-Request-Id"));
-        Assertions.assertTrue(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"));
+        Assertions.assertFalse(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"));
     }
 
     @Test
-    void shouldApplyDefaultBlacklistWhenOnlyNonBlockableHeadersConfigured() {
+    void shouldReturnEmptyListWhenOnlyNonBlockableHeadersConfigured() {
         System.setProperty(HeaderPropagationConfiguration.HEADERS_BLOCKED_PROPERTY, "X-Request-Id, x-request-id");
         HeaderPropagationConfiguration.resetCache();
 
         Assertions.assertFalse(HeaderPropagationConfiguration.isBlacklisted("X-Request-Id"));
-        Assertions.assertTrue(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"));
-        Assertions.assertEquals(HeaderPropagationConfiguration.DEFAULT_BLOCKED_HEADERS,
-                HeaderPropagationConfiguration.blockedHeaders());
+        Assertions.assertFalse(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"));
+        Assertions.assertTrue(HeaderPropagationConfiguration.blockedHeaders().isEmpty());
     }
 
     @Test
-    void shouldBlacklistHeaderByEnvWhenPropertyNotSet() throws Exception {
+    void shouldReadEnvWhenPropertyNotSet() throws Exception {
+        // Env value is read when no system property is set. The configured value
+        // is only X-Request-Id (non-blockable), so the resulting list must be empty —
+        // we deliberately do NOT fall back to the default blocked list here.
         environmentVariables.set(HeaderPropagationConfiguration.HEADERS_BLOCKED_ENV, "X-Request-Id");
         try {
             HeaderPropagationConfiguration.resetCache();
             Assertions.assertFalse(HeaderPropagationConfiguration.isBlacklisted("X-Request-Id"));
-            Assertions.assertTrue(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"));
+            Assertions.assertFalse(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"));
+            Assertions.assertTrue(HeaderPropagationConfiguration.blockedHeaders().isEmpty());
+        } finally {
+            environmentVariables.remove(HeaderPropagationConfiguration.HEADERS_BLOCKED_ENV);
+            HeaderPropagationConfiguration.resetCache();
+        }
+    }
+
+    @Test
+    void shouldBlacklistHeaderByEnvWhenPropertyNotSet() throws Exception {
+        // Sanity check that env-sourced configuration actually drives the blocked list
+        // when the system property is absent.
+        environmentVariables.set(HeaderPropagationConfiguration.HEADERS_BLOCKED_ENV, "Custom-Header");
+        try {
+            HeaderPropagationConfiguration.resetCache();
+            Assertions.assertTrue(HeaderPropagationConfiguration.isBlacklisted("Custom-Header"));
+            Assertions.assertFalse(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"));
         } finally {
             environmentVariables.remove(HeaderPropagationConfiguration.HEADERS_BLOCKED_ENV);
             HeaderPropagationConfiguration.resetCache();

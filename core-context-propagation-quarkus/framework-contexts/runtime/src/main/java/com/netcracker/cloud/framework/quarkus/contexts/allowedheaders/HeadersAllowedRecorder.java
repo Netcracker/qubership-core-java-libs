@@ -9,6 +9,9 @@ public class HeadersAllowedRecorder {
     public void setAllowedHeadersToSystemProperty() {
         HeadersAllowedConfig allowedConfig = Arc.container().instance(HeadersAllowedConfig.class).get();
         allowedConfig.allowedHeaders().ifPresent(allowedHeaders -> System.setProperty("headers.allowed", allowedHeaders));
-        allowedConfig.blockedHeaders().ifPresent(blockedHeaders -> System.setProperty("headers.blocked", blockedHeaders));
+
+        if (allowedConfig.isBlockedHeadersSet()) {
+            System.setProperty("headers.blocked", allowedConfig.blockedHeaders());
+        }
     }
 }
