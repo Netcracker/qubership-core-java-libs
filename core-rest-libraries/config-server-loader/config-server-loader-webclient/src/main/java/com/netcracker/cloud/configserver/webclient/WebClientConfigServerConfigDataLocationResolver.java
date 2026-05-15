@@ -2,6 +2,7 @@ package com.netcracker.cloud.configserver.webclient;
 
 import com.netcracker.cloud.configserver.common.configuration.AbstractCustomConfigServerConfigDataLocationResolver;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.restclient.okhttp.MicroserviceOkHttpRestClient;
 import com.netcracker.cloud.restclient.webclient.MicroserviceWebClient;
 import com.netcracker.cloud.security.core.auth.M2MManager;
 import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
@@ -22,16 +23,16 @@ public class WebClientConfigServerConfigDataLocationResolver extends AbstractCus
 
     @Override
     public MicroserviceRestClient getMicroserviceRestClient() {
-        return new MicroserviceWebClient(createM2MWebClient());
+        if (hasM2M(configurableBootstrapContext)) {
+            var client = M2MClientFactory.getM2mOkHttpClient(() -> getM2MToken(configurableBootstrapContext));
+            return new MicroserviceOkHttpRestClient(client);
+        }
+        return createM2MWebClient();
     }
 
-    private WebClient createM2MWebClient() {
+    private MicroserviceRestClient createM2MWebClient() {
         var builder =  WebClient.builder();
-        if (hasM2M(configurableBootstrapContext)) {
-            HttpClient client = M2MClientFactory.getM2mHttpClient(() -> getM2MToken(configurableBootstrapContext));
-            builder.clientConnector(new JdkClientHttpConnector(client));
-        }
-        return builder.build();
+        return new MicroserviceWebClient(builder.build());
     }
 
     private String getM2MToken(ConfigurableBootstrapContext configurableBootstrapContext) {

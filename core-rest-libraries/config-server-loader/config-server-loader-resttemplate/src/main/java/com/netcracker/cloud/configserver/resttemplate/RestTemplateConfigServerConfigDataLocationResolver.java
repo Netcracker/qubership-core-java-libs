@@ -1,5 +1,6 @@
 package com.netcracker.cloud.configserver.resttemplate;
 
+import com.netcracker.cloud.restclient.okhttp.MicroserviceOkHttpRestClient;
 import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -32,25 +33,24 @@ public class RestTemplateConfigServerConfigDataLocationResolver extends Abstract
 
     @Override
     public MicroserviceRestClient getMicroserviceRestClient() {
-        return new MicroserviceRestTemplate(createM2MRestTemplate());
+        if (hasM2M(configurableBootstrapContext)) {
+            var client = M2MClientFactory.getM2mOkHttpClient(() -> getM2MToken(configurableBootstrapContext));
+            return new MicroserviceOkHttpRestClient(client);
+        }
+        return createM2MRestTemplate();
     }
 
-    private RestTemplate createM2MRestTemplate() {
+    private MicroserviceRestClient createM2MRestTemplate() {
         RestTemplate template = new RestTemplate();
         SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(Timeout.ofMilliseconds(readTimeout)).build();
 
-        if (hasM2M(configurableBootstrapContext)) {
-            var client = M2MClientFactory.getM2mHttpClient(() -> getM2MToken(configurableBootstrapContext));
-            template.setRequestFactory(new JdkClientHttpRequestFactory(client));
-        } else {
-            final PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = PoolingHttpClientConnectionManagerBuilder.create()
-                    .setDefaultSocketConfig(socketConfig)
-                    .build();
-            HttpClient httpClient = HttpClients.custom().setConnectionManager(poolingHttpClientConnectionManager).build();
+        final PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+                .setDefaultSocketConfig(socketConfig)
+                .build();
+        HttpClient httpClient = HttpClients.custom().setConnectionManager(poolingHttpClientConnectionManager).build();
 
-            template.setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
-        }
-        return template;
+        template.setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
+        return new MicroserviceRestTemplate(template);
     }
 
     private String getM2MToken(ConfigurableBootstrapContext configurableBootstrapContext) {

@@ -22,6 +22,7 @@
         <module>microservice-restclient-test-utils</module>
         <module>microservice-restclient-webclient</module>
         <module>microservice-restclient-resttemplate</module>
+        <module>microservice-restclient-okhttp</module>
         <module>microservice-restclient-report-aggregate</module>
     </modules>
 

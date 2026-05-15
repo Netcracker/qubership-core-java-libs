@@ -1,14 +1,11 @@
 package com.netcracker.cloud.security.core.utils.k8s;
 
-import com.netcracker.cloud.security.core.utils.k8s.impl.M2MAuthenticator;
-import com.netcracker.cloud.security.core.utils.k8s.impl.M2MHttpClient;
 import com.netcracker.cloud.security.core.utils.k8s.impl.M2MInterceptor;
 import com.netcracker.cloud.security.core.utils.k8s.impl.UrlCache;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import okhttp3.OkHttpClient;
 
-import java.net.http.HttpClient;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -32,20 +29,6 @@ public final class M2MClientFactory {
         return getAgentOkHttpClient(keycloakTokenSupplier, Optional.ofNullable(System.getProperty(MAAS_AGENT_URL_PROP)).orElse("http://maas-agent:8080"));
     }
 
-    public static HttpClient getM2mHttpClient(Supplier<String> keycloakTokenSupplier) {
-        return buildHttpClient(new M2MAuthenticator(new UrlCache(), getBearerAuthHeaderSupplier(keycloakTokenSupplier), k8sAuthHeaderSupplier));
-    }
-
-    public static HttpClient getDbaasHttpClient(Supplier<String> keycloakTokenSupplier) {
-        String agentUrl = Optional.ofNullable(System.getProperty(DBAAS_AGENT_URL_PROP)).orElse("http://dbaas-agent:8080");
-        return buildHttpClient(new M2MAuthenticator(new UrlCache(), getBearerAuthHeaderSupplier(keycloakTokenSupplier), k8sAuthHeaderSupplier, agentUrl));
-    }
-
-    public static HttpClient getMaasHttpClient(Supplier<String> keycloakTokenSupplier) {
-        String agentUrl = Optional.ofNullable(System.getProperty(MAAS_AGENT_URL_PROP)).orElse("http://maas-agent:8080");
-        return buildHttpClient(new M2MAuthenticator(new UrlCache(), getBearerAuthHeaderSupplier(keycloakTokenSupplier), k8sAuthHeaderSupplier, agentUrl));
-    }
-
     private static OkHttpClient getAgentOkHttpClient(Supplier<String> keycloakTokenSupplier, String agentUrl) {
         return getOkHttpClient(new M2MInterceptor(new UrlCache(), getBearerAuthHeaderSupplier(keycloakTokenSupplier), k8sAuthHeaderSupplier, agentUrl));
     }
@@ -54,10 +37,6 @@ public final class M2MClientFactory {
         return new OkHttpClient.Builder()
                 .addInterceptor(interceptor)
                 .build();
-    }
-
-    private static HttpClient buildHttpClient(M2MAuthenticator authenticator) {
-        return new M2MHttpClient(HttpClient.newHttpClient(), authenticator);
     }
 
     private static Supplier<String> getBearerAuthHeaderSupplier(Supplier<String> tokenSupplier) {

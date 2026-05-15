@@ -82,7 +82,7 @@ public class RouteRegistrationConfig {
     @Produces
     @Named(CONTROL_PLANE_HTTP_CLIENT)
     OkHttpClient controlPlaneHttpClient() {
-        return M2MClientFactory.getM2mOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue())
+        return M2MClientFactory.getM2MClient(() -> M2MManager.getInstance().getToken().getTokenValue())
                 .newBuilder()
                 .retryOnConnectionFailure(true)
                 .sslSocketFactory(TlsUtils.getSslContext().getSocketFactory(), TlsUtils.getTrustManager())
