@@ -171,8 +171,8 @@ headers.blocked=
 - Default when not configured at all: `X-Channel-Request-Id` is blocked.
 - Explicit empty value (`headers.blocked=` / `HEADERS_BLOCKED=`): blacklist is empty (nothing is blocked).
 - Explicit non-empty value with valid headers (for example `headers.blocked=Some-Header`): only listed headers are blocked.
-- `X-Request-Id` is non-blockable: if it is listed in `headers.blocked`/`HEADERS_BLOCKED`, it is ignored.
-- If configured value contains only non-blockable entries (for example only `X-Request-Id`), default block is applied and `X-Channel-Request-Id` remains blocked.
+- `X-Request-Id` is non-blockable: if it is listed in `headers.blocked`/`HEADERS_BLOCKED`, it is silently dropped from the configured list.
+- If the configured value contains only non-blockable entries (for example only `X-Request-Id`), the resulting blocked list is **empty** — the default is **not** restored. Any explicit configuration (even one that effectively blocks nothing) is treated as the user's deliberate override of the default.
 
 **MDC Integration:** 
 The `X-Channel-Request-Id` is automatically integrated with SLF4J's Mapped Diagnostic Context (MDC) for seamless logging.

@@ -6,7 +6,11 @@ import io.quarkus.runtime.annotations.Recorder;
 public class HeadersAllowedRecorder {
 
     public void setAllowedHeadersToSystemProperty(HeadersAllowedConfig allowedConfig) {
-        allowedConfig.allowedHeaders().ifPresent(allowedHeaders -> System.setProperty("headers.allowed", allowedHeaders));
-        allowedConfig.blockedHeaders().ifPresent(blockedHeaders -> System.setProperty("headers.blocked", blockedHeaders));
+        allowedConfig.allowedHeaders()
+                .ifPresent(allowedHeaders -> System.setProperty("headers.allowed", allowedHeaders));
+
+        if (allowedConfig.isBlockedHeadersSet()) {
+            System.setProperty("headers.blocked", allowedConfig.blockedHeaders());
+        }
     }
 }

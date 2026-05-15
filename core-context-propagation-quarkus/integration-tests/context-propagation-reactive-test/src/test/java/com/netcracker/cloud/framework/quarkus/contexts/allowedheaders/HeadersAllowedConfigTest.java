@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
 class HeadersAllowedConfigTest {
+
     @Inject
     HeadersAllowedConfig headersAllowedConfig;
 
@@ -21,5 +22,11 @@ class HeadersAllowedConfigTest {
         assertEquals("test-quarkus.headers.allowed", value.get());
     }
 
+    @Test
+    void shouldReadHeadersBlockedAsExplicitlyEmpty() {
+        assertTrue(headersAllowedConfig.isBlockedHeadersSet(),
+                "quarkus.headers.blocked must be considered explicitly set");
+        assertEquals("", headersAllowedConfig.blockedHeaders(),
+                "quarkus.headers.blocked must be preserved as an empty string");
+    }
 }
-
