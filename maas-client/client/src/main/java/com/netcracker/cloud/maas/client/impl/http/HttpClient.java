@@ -12,11 +12,11 @@ public class HttpClient {
     private final OkHttpClient httpClient;
 
     public static HttpClient getM2mClient(Supplier<String> tokenSupplier) {
-        return new HttpClient(M2MClientFactory.getM2MClient(tokenSupplier));
+        return new HttpClient(M2MClientFactory.getM2mOkHttpClient(tokenSupplier));
     }
 
     public static HttpClient getMaasClient(Supplier<String> tokenSupplier) {
-        return new HttpClient(M2MClientFactory.getMaasClient(tokenSupplier));
+        return new HttpClient(M2MClientFactory.getMaasOkHttpClient(tokenSupplier));
     }
 
     private HttpClient(OkHttpClient client) {

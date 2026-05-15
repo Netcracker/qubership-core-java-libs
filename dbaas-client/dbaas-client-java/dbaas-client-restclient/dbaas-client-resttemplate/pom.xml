@@ -36,6 +36,11 @@
             <artifactId>k8s-utils</artifactId>
             <version>3.0.7-rest-client-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.netcracker.cloud</groupId>
+            <artifactId>microservice-restclient-okhttp</artifactId>
+            <version>7.0.9-rest-client-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>
