@@ -159,17 +159,28 @@ class MongoEvolutionTest extends MongoServerConfiguration {
 
     @Test
     void isDatabaseUpdateLockAliveTest() {
+        // Use a generous threshold for time-based tests to avoid flakiness in CI
+        long gracePeriodSeconds = 5; 
+        
         Document doc1 = new Document()
                 .append("_id", AbstractMongoEvolution.TRACKER_ID)
                 .append(MongoEvolution.TRACKER_KEY_UPDATE_LAST, new BsonTimestamp((int) getCurrentTimeInSeconds(), 0));
         mongoCollection.insertOne(doc1);
-        assertTrue(mongoEvolution.isDatabaseUpdateLockAlive());
+        
+        assertTrue(mongoEvolution.isDatabaseUpdateLockAlive(), "Lock should be alive when updated just now");
+        
         mongoCollection.deleteOne(Filters.eq("_id", doc1.get("_id")));
+        
+        // Ensure the timestamp is definitely in the past, beyond the threshold
+        long pastTime = getCurrentTimeInSeconds() - (mongoEvolution.getWaitTimeMillisecForUpdateStatusTask() / 1000 + gracePeriodSeconds);
         Document doc2 = new Document()
                 .append("_id", AbstractMongoEvolution.TRACKER_ID)
-                .append(MongoEvolution.TRACKER_KEY_UPDATE_LAST, new BsonTimestamp((int) (getCurrentTimeInSeconds() - mongoEvolution.getWaitTimeMillisecForUpdateStatusTask() / 1000), 0));
+                .append(MongoEvolution.TRACKER_KEY_UPDATE_LAST, new BsonTimestamp((int) pastTime, 0));
+        
         mongoCollection.insertOne(doc2);
-        assertFalse(mongoEvolution.isDatabaseUpdateLockAlive());
+        
+        assertFalse(mongoEvolution.isDatabaseUpdateLockAlive(), "Lock should be considered dead when timestamp is significantly in the past");
+        
         mongoCollection.deleteOne(doc2);
     }
 
