@@ -163,6 +163,7 @@ class SpringMongoEvolutionTest {
     @Test
     void isDatabaseUpdateLockAliveTest() {
         Document doc1 = new Document()
+                .append("_id", AbstractMongoEvolution.TRACKER_ID)
                 .append(SpringMongoEvolution.TRACKER_KEY_UPDATE_LAST, new BsonTimestamp((int) getCurrentTimeInSeconds(), 0));
         mongoCollection.insertOne(doc1);
         assertTrue(springMongoEvolution.isDatabaseUpdateLockAlive());
@@ -170,10 +171,11 @@ class SpringMongoEvolutionTest {
         mongoCollection.deleteOne(Filters.eq("_id", doc1.get("_id")));
 
         Document doc2 = new Document()
+                .append("_id", AbstractMongoEvolution.TRACKER_ID)
                 .append(SpringMongoEvolution.TRACKER_KEY_UPDATE_LAST, new BsonTimestamp((int) (getCurrentTimeInSeconds() - springMongoEvolution.getWaitTimeMillisecForUpdateStatusTask() / 1000), 0));
         mongoCollection.insertOne(doc2);
         assertFalse(springMongoEvolution.isDatabaseUpdateLockAlive());
-        mongoCollection.deleteOne(doc2);
+        mongoCollection.deleteOne(Filters.eq("_id", doc2.get("_id")));
     }
 
     @Test

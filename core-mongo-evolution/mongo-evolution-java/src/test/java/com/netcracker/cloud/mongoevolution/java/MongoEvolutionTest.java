@@ -1,5 +1,6 @@
 package com.netcracker.cloud.mongoevolution.java;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import org.bson.BsonTimestamp;
@@ -159,11 +160,13 @@ class MongoEvolutionTest extends MongoServerConfiguration {
     @Test
     void isDatabaseUpdateLockAliveTest() {
         Document doc1 = new Document()
+                .append("_id", AbstractMongoEvolution.TRACKER_ID)
                 .append(MongoEvolution.TRACKER_KEY_UPDATE_LAST, new BsonTimestamp((int) getCurrentTimeInSeconds(), 0));
         mongoCollection.insertOne(doc1);
         assertTrue(mongoEvolution.isDatabaseUpdateLockAlive());
         mongoCollection.deleteOne(Filters.eq("_id", doc1.get("_id")));
         Document doc2 = new Document()
+                .append("_id", AbstractMongoEvolution.TRACKER_ID)
                 .append(MongoEvolution.TRACKER_KEY_UPDATE_LAST, new BsonTimestamp((int) (getCurrentTimeInSeconds() - mongoEvolution.getWaitTimeMillisecForUpdateStatusTask() / 1000), 0));
         mongoCollection.insertOne(doc2);
         assertFalse(mongoEvolution.isDatabaseUpdateLockAlive());
@@ -204,12 +207,14 @@ class MongoEvolutionTest extends MongoServerConfiguration {
 
     @Test
     void updateFieldWithMongoCurrentDateTest() {
-        Document dtest = new Document().append("TestField1", "Test Field 1").append("TestimeField", getCurrentTimeInSeconds() - 8);
+        Document dtest = new Document()
+                .append("_id", AbstractMongoEvolution.TRACKER_ID)
+                .append("TestField1", "Test Field 1").append("TestimeField", getCurrentTimeInSeconds() - 8);
         mongoCollection.insertOne(dtest);
         long before = getCurrentTimeInSeconds();
-        MongoEvolution.updateFieldWithMongoCurrentDate(mongoCollection, "TestimeField", null);
+        MongoEvolution.updateFieldWithMongoCurrentDate(mongoCollection, "TestimeField", new BasicDBObject("_id", AbstractMongoEvolution.TRACKER_ID));
         long after = getCurrentTimeInSeconds();
-        long updtime = ((BsonTimestamp) mongoCollection.find().first().get("TestimeField")).getTime();
+        long updtime = ((BsonTimestamp) mongoCollection.find(Filters.eq("_id", AbstractMongoEvolution.TRACKER_ID)).first().get("TestimeField")).getTime();
         assertTrue((updtime >= before && updtime <= after));
     }
 
