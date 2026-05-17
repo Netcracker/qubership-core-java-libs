@@ -3,7 +3,7 @@
     <parent>
         <artifactId>config-server-loader</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>7.1.5-SNAPSHOT</version>
+        <version>7.1.5-rest-client-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -17,6 +17,11 @@
         </dependency>
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
+            <artifactId>microservice-restclient-okhttp</artifactId>
+            <version>7.0.9-rest-client-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.netcracker.cloud</groupId>
             <artifactId>config-server-loader-common</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -24,6 +29,11 @@
             <groupId>com.netcracker.cloud</groupId>
             <artifactId>rest-security-adapters</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.netcracker.cloud.security.core.utils</groupId>
+            <artifactId>k8s-utils</artifactId>
+            <version>3.0.7-rest-client-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

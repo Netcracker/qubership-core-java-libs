@@ -3,7 +3,7 @@
     <parent>
         <artifactId>dbaas-client-restclient</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>9.0.9-SNAPSHOT</version>
+        <version>9.0.10-rest-client-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -30,6 +30,16 @@
         <dependency>
             <groupId>com.netcracker.cloud.security.core.utils</groupId>
             <artifactId>tls-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netcracker.cloud.security.core.utils</groupId>
+            <artifactId>k8s-utils</artifactId>
+            <version>3.0.7-rest-client-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.netcracker.cloud</groupId>
+            <artifactId>microservice-restclient-okhttp</artifactId>
+            <version>7.0.9-rest-client-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

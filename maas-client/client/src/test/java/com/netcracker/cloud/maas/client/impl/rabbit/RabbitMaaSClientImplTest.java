@@ -7,6 +7,7 @@ import com.netcracker.cloud.maas.client.impl.ApiUrlProvider;
 import com.netcracker.cloud.maas.client.impl.Env;
 import com.netcracker.cloud.maas.client.impl.apiversion.ServerApiVersion;
 import com.netcracker.cloud.maas.client.impl.http.HttpClient;
+import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -217,7 +218,8 @@ class RabbitMaaSClientImplTest {
     }
 
     private RabbitMaaSClientImpl createRabbitClient(String agentUrl) {
-        var httpClient = new HttpClient(() -> "faketoken");
+        System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, agentUrl);
+        var httpClient = HttpClient.getMaasClient(() -> "faketoken");
         var serverApiVersion = new ServerApiVersion(httpClient, agentUrl);
 
         return new RabbitMaaSClientImpl(httpClient, new ApiUrlProvider(serverApiVersion, agentUrl));

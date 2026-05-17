@@ -2,6 +2,7 @@ package com.netcracker.cloud.maas.client.impl.http;
 
 import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
 import com.netcracker.cloud.maas.client.impl.Env;
+import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
@@ -10,16 +11,21 @@ import java.util.function.Supplier;
 public class HttpClient {
     private final OkHttpClient httpClient;
 
-    public HttpClient(Supplier<String> tokenSupplier) {
-        this.httpClient = new OkHttpClient.Builder()
+    public static HttpClient getM2mClient(Supplier<String> tokenSupplier) {
+        return new HttpClient(M2MClientFactory.getM2mOkHttpClient(tokenSupplier));
+    }
+
+    public static HttpClient getMaasClient(Supplier<String> tokenSupplier) {
+        return new HttpClient(M2MClientFactory.getMaasOkHttpClient(tokenSupplier));
+    }
+
+    private HttpClient(OkHttpClient client) {
+        this.httpClient = client.newBuilder()
                 .addInterceptor(chain -> {
                     Request.Builder reqBuilder = chain.request().newBuilder();
 
                     // dump context
                     RequestContextPropagation.populateResponse((key, value) -> reqBuilder.header(key, String.valueOf(value)));
-
-                    // add authorization token
-                    reqBuilder.header("Authorization", Env.apiAuth() + " " + tokenSupplier.get());
                     Env.namespaceOpt().ifPresent(ns -> reqBuilder.header("X-Origin-Namespace", ns));
 
                     // process request

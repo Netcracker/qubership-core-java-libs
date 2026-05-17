@@ -5,7 +5,7 @@
 	<packaging>pom</packaging>
 	<artifactId>maas-client-quarkus-parent</artifactId>
 	<groupId>com.netcracker.cloud.quarkus</groupId>
-	<version>10.0.7-SNAPSHOT</version>
+	<version>10.0.7-rest-client-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -32,8 +32,7 @@
 		<quarkus.version>3.27.3</quarkus.version>
 		<quarkus.core.extention.version>9.1.4</quarkus.core.extention.version>
 
-		<cloud-core.maas-client.version>12.0.6</cloud-core.maas-client.version>
-
+		<cloud-core.maas-client.version>12.0.7-rest-client-SNAPSHOT</cloud-core.maas-client.version>
 		<surefire-plugin.version>3.5.5</surefire-plugin.version>
 		<lombok.version>1.18.26</lombok.version>
 		<!--Qubership -->

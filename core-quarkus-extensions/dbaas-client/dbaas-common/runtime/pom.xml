@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.netcracker.cloud.quarkus</groupId>
     <artifactId>dbaas-common-parent</artifactId>
-      <version>9.1.5-SNAPSHOT</version>
+      <version>9.1.5-rest-client-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -68,6 +68,12 @@
       <groupId>com.netcracker.cloud.security.core.utils</groupId>
       <artifactId>tls-utils</artifactId>
     </dependency>
+    <dependency>
+        <groupId>com.netcracker.cloud.security.core.utils</groupId>
+        <artifactId>k8s-utils</artifactId>
+        <version>3.0.7-rest-client-SNAPSHOT</version>
+    </dependency>
+
     <!--Test-->
     <dependency>
       <groupId>io.quarkus</groupId>
