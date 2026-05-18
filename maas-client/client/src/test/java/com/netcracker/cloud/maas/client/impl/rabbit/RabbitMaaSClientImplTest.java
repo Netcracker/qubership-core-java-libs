@@ -147,6 +147,8 @@ class RabbitMaaSClientImplTest {
         assertEquals("scott", vhost.getUsername());
         assertEquals("tiger", vhost.getPassword());
         assertEquals("http://rabbit-cluster:15672/api", vhost.getApiUrl());
+
+        System.clearProperty(Env.PROP_NAMESPACE, "core-dev");
     }
 
     @Test

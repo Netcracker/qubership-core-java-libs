@@ -768,6 +768,7 @@ class KafkaMaaSClientImplTest {
         System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, agentUrl);
         var httpClient = HttpClient.getMaasClient(() -> "faketoken");
         var serverApiVersion = new ServerApiVersion(httpClient, agentUrl);
+        System.clearProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, agentUrl);
 
         return new KafkaMaaSClientImpl(
                 httpClient,

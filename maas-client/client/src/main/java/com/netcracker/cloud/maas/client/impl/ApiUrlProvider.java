@@ -9,11 +9,11 @@ import java.time.Duration;
 public class ApiUrlProvider {
     @Getter
     private final ServerApiVersion serverApiVersion;
-    private final String maasUrl;
+    private final String maasAgentUrl;
 
-    public ApiUrlProvider(ServerApiVersion serverApiVersion, String maasUrl) {
+    public ApiUrlProvider(ServerApiVersion serverApiVersion, String maasAgentUrl) {
         this.serverApiVersion = serverApiVersion;
-        this.maasUrl = maasUrl;
+        this.maasAgentUrl = maasAgentUrl;
     }
 
     public String getKafkaTopicUrl(OnTopicExists onTopicExists) {
@@ -37,7 +37,7 @@ public class ApiUrlProvider {
     }
 
     public String getKafkaTopicWatchCreateUrl(Duration timeout) {
-        return String.format("%s/api/v2/kafka/topic/watch-create?timeout=%ds", maasUrl, timeout.getSeconds());
+        return String.format("%s/api/v2/kafka/topic/watch-create?timeout=%ds", maasAgentUrl, timeout.getSeconds());
     }
 
     public String getKafkaTopicGetByClassifierUrl() {
@@ -63,8 +63,8 @@ public class ApiUrlProvider {
     private String getBaseUrl() {
         // from 2.16 maas api version v1 is deprecated and must be avoided
         if (serverApiVersion.isCompatible(2, 16)) {
-            return maasUrl + "/api/v2";
+            return maasAgentUrl + "/api/v2";
         }
-        return maasUrl + "/api/v1";
+        return maasAgentUrl + "/api/v1";
     }
 }

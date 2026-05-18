@@ -85,7 +85,6 @@ public class RouteRegistrationConfig {
         return M2MClientFactory.getM2mOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue())
                 .newBuilder()
                 .retryOnConnectionFailure(true)
-                .sslSocketFactory(TlsUtils.getSslContext().getSocketFactory(), TlsUtils.getTrustManager())
                 .build();
     }
 

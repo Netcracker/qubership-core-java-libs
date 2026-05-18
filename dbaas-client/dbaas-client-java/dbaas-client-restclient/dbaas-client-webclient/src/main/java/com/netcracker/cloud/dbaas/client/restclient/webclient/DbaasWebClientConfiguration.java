@@ -20,17 +20,8 @@ public class DbaasWebClientConfiguration {
 
     @Bean("dbaasRestClient")
     public MicroserviceRestClient dbaasRestClient(@Qualifier("m2mWebClient") WebClient webClient) {
-        WebClient customizedWebClient = webClient.mutate()
-                .filters(new DisableHttpTraceFilterConsumer())
-                .codecs(clientCodecsConfigurer -> clientCodecsConfigurer.defaultCodecs()
-                        .configureDefaultCodec(o -> {
-                            if (o instanceof Jackson2JsonDecoder decoder) {
-                                decoder.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                            }
-                        }))
-                .build();
-
-        return new MicroserviceWebClient(customizedWebClient);
+        var client = M2MClientFactory.getDbaasOkHttpClient(() -> m2MManager.getToken().getTokenValue());
+        return new MicroserviceOkHttpRestClient(client);
     }
 
     // If sleuth enabled, it tries to get db health from http filters. But dataSource can be not initialized yet.

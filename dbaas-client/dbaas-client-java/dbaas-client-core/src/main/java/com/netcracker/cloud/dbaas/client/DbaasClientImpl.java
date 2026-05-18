@@ -38,21 +38,21 @@ public class DbaasClientImpl implements DbaasClient {
     private final MicroserviceRestClient dbaasRestClient;
     private final RetryTemplate retryTemplate;
     private final RetryTemplate awaitAsyncDbCreationRetryTemplate;
-    private final String dbaasHost;
+    private final String dbaasAgentHost;
     private final ClassifierChecker classifierChecker;
     private static final String RECEIVED_RESPONSE = "Received response {}";
 
-    public DbaasClientImpl(MicroserviceRestClient dbaasRestClient, String dbaasHost) {
-        this(dbaasRestClient, null, dbaasHost);
+    public DbaasClientImpl(MicroserviceRestClient dbaasRestClient, String dbaasAgentHost) {
+        this(dbaasRestClient, null, dbaasAgentHost);
     }
 
-    public DbaasClientImpl(MicroserviceRestClient dbaasRestClient, RetryTemplate retryTemplate, String dbaasHost) {
-        this(dbaasRestClient, retryTemplate, null, dbaasHost);
+    public DbaasClientImpl(MicroserviceRestClient dbaasRestClient, RetryTemplate retryTemplate, String dbaasAgentHost) {
+        this(dbaasRestClient, retryTemplate, null, dbaasAgentHost);
     }
 
-    public DbaasClientImpl(MicroserviceRestClient dbaasRestClient, RetryTemplate retryTemplate, RetryTemplate awaitAsyncDbCreationRetryTemplate, String dbaasHost) {
+    public DbaasClientImpl(MicroserviceRestClient dbaasRestClient, RetryTemplate retryTemplate, RetryTemplate awaitAsyncDbCreationRetryTemplate, String dbaasAgentHost) {
         Objects.requireNonNull(dbaasRestClient);
-        Objects.requireNonNull(dbaasHost);
+        Objects.requireNonNull(dbaasAgentHost);
         if (retryTemplate == null) {
             retryTemplate = getDefaultRetryTemplate();
         }
@@ -61,7 +61,7 @@ public class DbaasClientImpl implements DbaasClient {
         }
         this.dbaasRestClient = dbaasRestClient;
         this.retryTemplate = retryTemplate;
-        this.dbaasHost = dbaasHost;
+        this.dbaasAgentHost = dbaasAgentHost;
         this.awaitAsyncDbCreationRetryTemplate = awaitAsyncDbCreationRetryTemplate;
         classifierChecker = new ClassifierChecker();
     }
@@ -88,7 +88,7 @@ public class DbaasClientImpl implements DbaasClient {
     @Nullable
     public PhysicalDatabases getPhysicalDatabases(String type)
             throws DbaasException, DbaasUnavailableException {
-        URI uri = new UriTemplate(dbaasHost + GET_PHYSICAL_DATABASES_TEMPLATE_ENDPOINT).expand(type);
+        URI uri = new UriTemplate(dbaasAgentHost + GET_PHYSICAL_DATABASES_TEMPLATE_ENDPOINT).expand(type);
         try {
             return this.retryTemplate.execute(
                     context -> getPhysicalDatabaseExecuteRequest(uri));
@@ -117,7 +117,7 @@ public class DbaasClientImpl implements DbaasClient {
         DatabaseCreateRequest dbCreateRequest = new DatabaseCreateRequest(classifier, type.getName(), databaseConfig);
         Class<? extends D> databaseClass = type.getDatabaseClass();
         try {
-            URI uri = new UriTemplate(dbaasHost + ASYNC_CREATE_DATABASE_TEMPLATE_ENDPOINT).expand(namespace);
+            URI uri = new UriTemplate(dbaasAgentHost + ASYNC_CREATE_DATABASE_TEMPLATE_ENDPOINT).expand(namespace);
             String uriString = uri.toString();
             return this.retryTemplate.execute(
                     context -> executeCreateDbRequest(uriString, dbCreateRequest, databaseClass)
@@ -161,7 +161,7 @@ public class DbaasClientImpl implements DbaasClient {
         HashMap<String, Object> params = new HashMap<>();
         params.put(NAMESPACE, namespace);
         params.put("type", type.getName());
-        URI uri = new UriTemplate(dbaasHost + GET_CONNECTION_TEMPLATE_ENDPOINT).expand(params);
+        URI uri = new UriTemplate(dbaasAgentHost + GET_CONNECTION_TEMPLATE_ENDPOINT).expand(params);
         try {
             return this.retryTemplate.execute(
                     context -> executeGetDatabaseRequest(uri, classifier, userRole, databaseClass)
@@ -203,7 +203,7 @@ public class DbaasClientImpl implements DbaasClient {
 
     public boolean isAvailable() {
         try {
-            URI isAvailableUri = URI.create(dbaasHost + HEALTH_ENDPOINT);
+            URI isAvailableUri = URI.create(dbaasAgentHost + HEALTH_ENDPOINT);
             log.debug("Sending isAvailable request to URI: {}", isAvailableUri);
             RestClientResponseEntity<Map> responseEntity = dbaasRestClient.doRequest(isAvailableUri,
                     HttpMethod.GET,
@@ -223,7 +223,7 @@ public class DbaasClientImpl implements DbaasClient {
         return "DbaasClientImpl{" +
                 "dbaasRestClient=" + dbaasRestClient +
                 ", retryTemplate=" + retryTemplate +
-                ", dbaasHost='" + dbaasHost + '\'' +
+                ", dbaasAgentHost='" + dbaasAgentHost + '\'' +
                 '}';
     }
 }
