@@ -1,12 +1,12 @@
 package com.netcracker.cloud.context.propagation.spring.common.configuration;
 
 import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -18,25 +18,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * empty value to the system property, which downstream code interprets as
  * "erase the default blocked list".
  */
-@SpringJUnitConfig(classes = SpringContextProviderConfiguration.class)
+@ExtendWith({HeaderPropagationStateReset.class, SpringExtension.class})
+@ContextConfiguration(classes = SpringContextProviderConfiguration.class)
 @TestPropertySource(properties = {
         "headers.allowed=custom-header",
         "headers.blocked="
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class SpringContextProviderConfigurationEmptyTest {
-
-    @BeforeAll
-    static void setup() {
-        System.clearProperty("headers.blocked");
-        HeaderPropagationConfiguration.resetCache();
-    }
-
-    @AfterAll
-    static void teardown() {
-        System.clearProperty("headers.blocked");
-        HeaderPropagationConfiguration.resetCache();
-    }
 
     @Test
     void shouldSetEmptySystemPropertyAndEraseDefaultBlockedList() {

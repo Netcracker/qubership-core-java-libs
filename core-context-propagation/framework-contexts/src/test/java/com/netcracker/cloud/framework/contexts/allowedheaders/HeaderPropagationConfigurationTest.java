@@ -87,7 +87,7 @@ class HeaderPropagationConfigurationTest {
     }
 
     @Test
-    void shouldReadEnvWhenPropertyNotSet() throws Exception {
+    void shouldReadEnvWhenPropertyNotSet() {
         // Env value is read when no system property is set. The configured value
         // is only X-Request-Id (non-blockable), so the resulting list must be empty —
         // we deliberately do NOT fall back to the default blocked list here.

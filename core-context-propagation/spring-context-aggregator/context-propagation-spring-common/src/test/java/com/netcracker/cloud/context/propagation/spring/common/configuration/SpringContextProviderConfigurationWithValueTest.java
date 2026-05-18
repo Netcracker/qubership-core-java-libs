@@ -1,12 +1,12 @@
 package com.netcracker.cloud.context.propagation.spring.common.configuration;
 
 import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -17,25 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Verifies that the listed header is blocked and the default's
  * {@code X-Channel-Request-Id} entry no longer applies.
  */
-@SpringJUnitConfig(classes = SpringContextProviderConfiguration.class)
+@ExtendWith({HeaderPropagationStateReset.class, SpringExtension.class})
+@ContextConfiguration(classes = SpringContextProviderConfiguration.class)
 @TestPropertySource(properties = {
         "headers.allowed=custom-header",
         "headers.blocked=Custom-Header"
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class SpringContextProviderConfigurationWithValueTest {
-
-    @BeforeAll
-    static void setup() {
-        System.clearProperty("headers.blocked");
-        HeaderPropagationConfiguration.resetCache();
-    }
-
-    @AfterAll
-    static void teardown() {
-        System.clearProperty("headers.blocked");
-        HeaderPropagationConfiguration.resetCache();
-    }
 
     @Test
     void shouldSetSystemPropertyAndBlockConfiguredHeader() {
