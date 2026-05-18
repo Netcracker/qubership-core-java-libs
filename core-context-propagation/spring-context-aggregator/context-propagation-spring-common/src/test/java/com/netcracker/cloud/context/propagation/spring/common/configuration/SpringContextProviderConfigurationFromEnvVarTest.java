@@ -1,8 +1,6 @@
 package com.netcracker.cloud.context.propagation.spring.common.configuration;
 
 import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.annotation.DirtiesContext;
@@ -28,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * so that the env var is set before Spring's {@code SystemEnvironmentPropertySource}
  * is consulted during context initialization.</p>
  */
-@ExtendWith({SystemStubsExtension.class, SpringExtension.class})
+@ExtendWith({HeaderPropagationStateReset.class, SystemStubsExtension.class, SpringExtension.class})
 @ContextConfiguration(classes = SpringContextProviderConfiguration.class)
 @TestPropertySource(properties = {
         // headers.blocked deliberately not declared here — it must come from the env var
@@ -39,18 +37,6 @@ class SpringContextProviderConfigurationFromEnvVarTest {
 
     @SystemStub
     static EnvironmentVariables envVars = new EnvironmentVariables("HEADERS_BLOCKED", "Custom-Header");
-
-    @BeforeAll
-    static void setup() {
-        System.clearProperty("headers.blocked");
-        HeaderPropagationConfiguration.resetCache();
-    }
-
-    @AfterAll
-    static void teardown() {
-        System.clearProperty("headers.blocked");
-        HeaderPropagationConfiguration.resetCache();
-    }
 
     @Test
     void shouldReadHeadersBlockedFromEnvVar() {
