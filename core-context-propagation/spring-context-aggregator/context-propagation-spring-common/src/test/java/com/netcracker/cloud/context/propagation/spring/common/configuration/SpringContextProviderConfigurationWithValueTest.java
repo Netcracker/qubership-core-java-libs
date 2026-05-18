@@ -12,30 +12,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Spring integration scenario: {@code headers.blocked} is set to a concrete blockable header.
- * Verifies that the listed header is blocked and the default's
- * {@code X-Channel-Request-Id} entry no longer applies.
- */
 @ExtendWith({HeaderPropagationStateReset.class, SpringExtension.class})
 @ContextConfiguration(classes = SpringContextProviderConfiguration.class)
 @TestPropertySource(properties = {
         "headers.allowed=custom-header",
-        "headers.blocked=Custom-Header"
+        "context.propagation.allow-blocked-headers=X-Channel-Request-Id"
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class SpringContextProviderConfigurationWithValueTest {
 
     @Test
-    void shouldSetSystemPropertyAndBlockConfiguredHeader() {
-        assertEquals("Custom-Header", System.getProperty("headers.blocked"));
+    void shouldExemptListedHeaderFromInternalBlocklist() {
+        assertEquals("X-Channel-Request-Id", System.getProperty("context.propagation.allow-blocked-headers"));
 
         HeaderPropagationConfiguration.resetCache();
-        assertTrue(HeaderPropagationConfiguration.isBlacklisted("Custom-Header"),
-                "configured header must be blocked");
-        assertTrue(HeaderPropagationConfiguration.isBlacklisted("custom-header"),
-                "blocking must be case-insensitive");
         assertFalse(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"),
-                "explicit configuration overrides the default blocked list");
+                "Exempted header must not be blocked");
+        assertTrue(HeaderPropagationConfiguration.blockedHeaders().isEmpty(),
+                "The only entry of the internal blocklist (X-Channel-Request-Id) must be removed");
     }
 }

@@ -69,20 +69,17 @@ class XChannelRequestIdContextObjectPropagationTest extends AbstractContextTestW
     }
 
     @Test
-    void testXChannelRequestIdPropagationIsBlockedWhenConfigured() {
-        System.setProperty(HeaderPropagationConfiguration.HEADERS_BLOCKED_PROPERTY, X_CHANNEL_REQUEST_ID);
+    void testXChannelRequestIdPropagationIsBlockedByInternalBlocklist() {
+        System.clearProperty(HeaderPropagationConfiguration.ALLOW_BLOCKED_PROPERTY);
         HeaderPropagationConfiguration.resetCache();
-        try {
-            RequestContextPropagation.initRequestContext(new ContextDataRequest()); // filter
-            ContextDataResponse responseContextData = new ContextDataResponse();
-            RequestContextPropagation.setResponsePropagatableData(responseContextData);
-            Assertions.assertEquals("-", responseContextData.getResponseHeaders().get(X_CHANNEL_REQUEST_ID));
 
-            Map<String, Map<String, Object>> serializableContextData = ContextManager.getSerializableContextData();
-            Assertions.assertTrue(serializableContextData.getOrDefault(X_CHANNEL_REQUEST_ID_CONTEXT_NAME, Collections.emptyMap()).isEmpty());
-        } finally {
-            System.clearProperty(HeaderPropagationConfiguration.HEADERS_BLOCKED_PROPERTY);
-        }
+        RequestContextPropagation.initRequestContext(new ContextDataRequest()); // filter
+        ContextDataResponse responseContextData = new ContextDataResponse();
+        RequestContextPropagation.setResponsePropagatableData(responseContextData);
+        Assertions.assertEquals("-", responseContextData.getResponseHeaders().get(X_CHANNEL_REQUEST_ID));
+
+        Map<String, Map<String, Object>> serializableContextData = ContextManager.getSerializableContextData();
+        Assertions.assertTrue(serializableContextData.getOrDefault(X_CHANNEL_REQUEST_ID_CONTEXT_NAME, Collections.emptyMap()).isEmpty());
     }
 
     @Test

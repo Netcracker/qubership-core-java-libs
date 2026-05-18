@@ -1,21 +1,43 @@
 package com.netcracker.cloud.framework.contexts.allowedheaders;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+/**
+ * Computes the effective set of headers that must not be propagated to outgoing requests.
+ *
+ * <h2>Model</h2>
+ * <ul>
+ *     <li>The framework owns an internal blocklist ({@link #INTERNAL_BLOCKED_HEADERS}). It is
+ *         hard-coded and cannot be changed from configuration. By default it blocks
+ *         {@code X-Channel-Request-Id}.</li>
+ *     <li>A user-facing system property {@value #ALLOW_BLOCKED_PROPERTY} carries a
+ *         comma-separated list of header names that should be exempted from the internal
+ *         blocklist (i.e. allowed to propagate). Names that are not in the internal
+ *         blocklist have no effect.</li>
+ * </ul>
+ *
+ * <h2>How the property is supplied</h2>
+ * The Quarkus extension copies {@code quarkus.context.propagation.allow-blocked-headers} into this system property
+ * at {@code RUNTIME_INIT}; the Spring configuration does the same for the Spring-style
+ * {@code context.propagation.allow-blocked-headers} property. In both cases standard env-to-property mapping
+ * applies, so a container ENV variable like {@code CONTEXT_PROPAGATION_ALLOW_BLOCKED_HEADERS=X-Channel-Request-Id}
+ * propagates all the way through to this class.
+ */
 public final class HeaderPropagationConfiguration {
-    public static final String HEADERS_BLOCKED_PROPERTY = "headers.blocked";
-    public static final String HEADERS_BLOCKED_ENV = "HEADERS_BLOCKED";
-    public static final List<String> DEFAULT_BLOCKED_HEADERS = 
-    List.of("X-Channel-Request-Id");
 
-    public static final List<String> NON_BLOCKABLE_HEADERS = 
-        List.of("X-Request-Id");
+    /** System property carrying exempted-from-blocklist header names, comma-separated. */
+    public static final String ALLOW_BLOCKED_PROPERTY = "context.propagation.allow-blocked-headers";
+
+    /**
+     * Hard-coded internal blocklist of headers that the framework refuses to propagate
+     * unless explicitly exempted via {@link #ALLOW_BLOCKED_PROPERTY}.
+     */
+    public static final List<String> INTERNAL_BLOCKED_HEADERS = List.of("X-Channel-Request-Id");
 
     private static final AtomicReference<CachedHeaders> cachedHeaders = new AtomicReference<>(null);
 
@@ -41,7 +63,7 @@ public final class HeaderPropagationConfiguration {
             synchronized (HeaderPropagationConfiguration.class) {
                 local = cachedHeaders.get();
                 if (local == null) {
-                    local = new CachedHeaders(readBlockedHeaders());
+                    local = new CachedHeaders(computeEffectiveBlocklist());
                     cachedHeaders.set(local);
                 }
             }
@@ -64,34 +86,25 @@ public final class HeaderPropagationConfiguration {
         return getOrInit().lowerSet.contains(headerName.toLowerCase(Locale.ROOT));
     }
 
-    private static List<String> readBlockedHeaders() {
-        boolean propertySpecified = System.getProperties().containsKey(HEADERS_BLOCKED_PROPERTY);
-        String envValue = System.getenv(HEADERS_BLOCKED_ENV);
-        boolean envSpecified = envValue != null;
-
-        // No source set at all → fall back to the built-in default.
-        if (!propertySpecified && !envSpecified) {
-            return DEFAULT_BLOCKED_HEADERS;
+    private static List<String> computeEffectiveBlocklist() {
+        Set<String> exemptions = readExemptions();
+        if (exemptions.isEmpty()) {
+            return INTERNAL_BLOCKED_HEADERS;
         }
+        return INTERNAL_BLOCKED_HEADERS.stream()
+                .filter(h -> !exemptions.contains(h.toLowerCase(Locale.ROOT)))
+                .toList();
+    }
 
-        // Property wins over env when both are set.
-        String raw = propertySpecified
-                ? System.getProperty(HEADERS_BLOCKED_PROPERTY)
-                : envValue;
-
-        // Source is set but empty/blank → explicit "erase the default".
+    private static Set<String> readExemptions() {
+        String raw = System.getProperty(ALLOW_BLOCKED_PROPERTY);
         if (raw == null || raw.isBlank()) {
-            return Collections.emptyList();
+            return Set.of();
         }
-
-        // Source is set with a value → parse, trim, drop non-blockable entries.
-        // If everything filters out, we still respect the user's explicit override
-        // and return an empty list — we do NOT silently restore the default.
         return Arrays.stream(raw.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
-                .filter(s -> NON_BLOCKABLE_HEADERS.stream()
-                        .noneMatch(s::equalsIgnoreCase))
-                .toList();
+                .map(s -> s.toLowerCase(Locale.ROOT))
+                .collect(Collectors.toUnmodifiableSet());
     }
 }

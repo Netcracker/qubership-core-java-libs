@@ -87,7 +87,7 @@ public class PropagationTest {
 			channel.queueBind("orders", "orders", "invoice");
 		}
 		System.setProperty("headers.allowed", CUSTOM_HEADER.toLowerCase());
-		System.clearProperty("headers.blocked");
+		System.clearProperty("context.propagation.allow-blocked-headers");
 	}
 
     @AfterAll
@@ -103,7 +103,7 @@ public class PropagationTest {
 
     @AfterEach
     void afterEach() {
-        System.clearProperty("headers.blocked");
+        System.clearProperty("context.propagation.allow-blocked-headers");
 		HeaderPropagationConfiguration.resetCache();
     }
 
@@ -125,8 +125,11 @@ public class PropagationTest {
 
     @Test
     @Timeout(value = 20, unit = TimeUnit.SECONDS)
-    public void testXChannelRequestIdAllowedWhenHeadersBlockedEmpty() throws InterruptedException {
-        System.setProperty("headers.blocked", "");
+    public void testXChannelRequestIdAllowedWhenExempted() throws InterruptedException {
+        // Exempt X-Channel-Request-Id from the internal blocklist — it must propagate.
+        System.setProperty("context.propagation.allow-blocked-headers", X_CHANNEL_REQUEST_ID_NAME);
+        HeaderPropagationConfiguration.resetCache();
+
         AcceptLanguageContext.set("ZULU");
         AllowedHeadersContext.set(Map.of(CUSTOM_HEADER, CUSTOM_HEADER_VALUE));
         ChannelRequestIdContext.set(X_CHANNEL_REQUEST_ID_VALUE);
@@ -142,12 +145,17 @@ public class PropagationTest {
 
 	@Test
 	@Timeout(value = 20, unit = TimeUnit.SECONDS)
-	public void testCustomHeaderBlockedWhenConfiguredByProperty() throws InterruptedException {
-		System.setProperty("headers.blocked", ANOTHER_HEADER);
+	public void testUnknownExemptionDoesNotAffectInternalBlocklist() throws InterruptedException {
+		// Listing a header that is NOT in the internal blocklist has no effect — the
+		// internal blocklist (containing X-Channel-Request-Id) still applies.
+		System.setProperty("context.propagation.allow-blocked-headers", ANOTHER_HEADER);
+		HeaderPropagationConfiguration.resetCache();
+
 		AcceptLanguageContext.set("ZULU");
 		AllowedHeadersContext.set(Map.of(
 				CUSTOM_HEADER, CUSTOM_HEADER_VALUE,
 				ANOTHER_HEADER, ANOTHER_HEADER_VALUE));
+		ChannelRequestIdContext.set(X_CHANNEL_REQUEST_ID_VALUE);
 		template.convertAndSend("orders", "invoice", "rye wheat");
 		ContextManager.clearAll();
 
@@ -155,8 +163,10 @@ public class PropagationTest {
 			fail("Message listener failed or message doesn't even arrived in 10 seconds");
 		}
 
-		assertNull(getHeaderIgnoreCase(receivedHeaders.get(), ANOTHER_HEADER));
+		assertNull(getHeaderIgnoreCase(receivedHeaders.get(), X_CHANNEL_REQUEST_ID_NAME),
+				"Internal blocklist must remain intact when no exemption matches it");
 		assertEquals(CUSTOM_HEADER_VALUE, getHeaderIgnoreCase(receivedHeaders.get(), CUSTOM_HEADER));
+		assertEquals(ANOTHER_HEADER_VALUE, getHeaderIgnoreCase(receivedHeaders.get(), ANOTHER_HEADER));
 	}
 
 

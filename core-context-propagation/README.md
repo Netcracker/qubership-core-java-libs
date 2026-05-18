@@ -147,32 +147,82 @@ Propagates and allows to get `X-Channel-Request-Id` value. If an incoming reques
 
 **Default behavior:** `X-Channel-Request-Id` is NOT propagated to outgoing requests.
 
-**Enabling propagation:** To allow `X-Channel-Request-Id` to be propagated to outgoing requests, remove it from the
-blacklist using one of the following methods:
+#### Internal blocklist
 
-1. **Via environment variable:**
-```text
-HEADERS_BLOCKED=
+The framework owns a hard-coded internal blocklist of headers that are not propagated to outgoing
+requests. It currently contains:
+
+- `X-Channel-Request-Id`
+
+The blocklist itself cannot be changed from configuration. The only externally visible knob is the
+`context.propagation.allow-blocked-headers` property, which lists header names that should be **exempted** from this
+blocklist (i.e. allowed to propagate).
+
+#### `context.propagation.allow-blocked-headers` property
+
+The property carries a comma-separated list of header names. Every name that matches an entry of
+the internal blocklist is removed from the effective blocklist. Names that are not in the
+internal blocklist have no effect.
+
+Examples:
+
+| Property value | Effect |
+|---|---|
+| not set / empty | Internal blocklist applies in full. `X-Channel-Request-Id` is not propagated. |
+| `X-Channel-Request-Id` | `X-Channel-Request-Id` is propagated to outgoing requests. |
+| `Some-Other-Header` | No effect — the header is not in the internal blocklist. |
+| `X-Channel-Request-Id, Some-Other-Header` | `X-Channel-Request-Id` is propagated; the second entry is ignored. |
+
+Comparison is case-insensitive. Whitespace around comma-separated entries is trimmed.
+
+#### How to set the property
+
+**Spring (`application.properties` / `application.yml`):**
+
+```properties
+context.propagation.allow-blocked-headers=X-Channel-Request-Id
 ```
 
-2. **Via system property:**
-```text
--Dheaders.blocked=
+```yaml
+context:
+  propagation:
+    allow-blocked-headers: X-Channel-Request-Id
 ```
 
-3. **Via application.properties (Spring):**
+**Via JVM system property:**
+
 ```text
-headers.blocked=
+-Dcontext.propagation.allow-blocked-headers=X-Channel-Request-Id
 ```
 
-**`headers.blocked` rules and limitations**
+**Via container ENV (recommended, Qubership pattern)**
 
-- Source priority: system property `headers.blocked` overrides environment variable `HEADERS_BLOCKED`.
-- Default when not configured at all: `X-Channel-Request-Id` is blocked.
-- Explicit empty value (`headers.blocked=` / `HEADERS_BLOCKED=`): blacklist is empty (nothing is blocked).
-- Explicit non-empty value with valid headers (for example `headers.blocked=Some-Header`): only listed headers are blocked.
-- `X-Request-Id` is non-blockable: if it is listed in `headers.blocked`/`HEADERS_BLOCKED`, it is silently dropped from the configured list.
-- If the configured value contains only non-blockable entries (for example only `X-Request-Id`), the resulting blocked list is **empty** — the default is **not** restored. Any explicit configuration (even one that effectively blocks nothing) is treated as the user's deliberate override of the default.
+In Qubership deployments configuration values are typically wired from container ENV variables
+through `application.yaml` placeholders. The full chain looks like this:
+
+1. The container declares an ENV variable, for example in the deployment manifest:
+
+   ```yaml
+   env:
+     - name: CONTEXT_PROPAGATION_ALLOW_BLOCKED_HEADERS
+       value: "X-Channel-Request-Id"
+   ```
+
+2. The application's `application.yaml` reads it via a `${VAR}` placeholder:
+
+   ```yaml
+   context:
+     propagation:
+       allow-blocked-headers: ${CONTEXT_PROPAGATION_ALLOW_BLOCKED_HEADERS:}
+   ```
+
+   The trailing `:` (empty default) lets the property gracefully fall through to "not set" when
+   the ENV variable is absent — the internal blocklist then applies in full.
+
+3. Spring's relaxed binding also recognises the ENV variable directly under the property name
+   `context.propagation.allow-blocked-headers` (i.e. without an explicit placeholder), so the same ENV variable works
+   even without the `application.yaml` indirection. The placeholder form is preferred because it
+   makes the dependency explicit in source control.
 
 **MDC Integration:** 
 The `X-Channel-Request-Id` is automatically integrated with SLF4J's Mapped Diagnostic Context (MDC) for seamless logging.

@@ -8,25 +8,27 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith({HeaderPropagationStateReset.class, SpringExtension.class})
 @ContextConfiguration(classes = SpringContextProviderConfiguration.class)
 @TestPropertySource(properties = {
-        // context.propagation.allow-blocked-headers intentionally absent
-        "headers.allowed=custom-header"
+        "headers.allowed=custom-header",
+        "context.propagation.allow-blocked-headers=Custom-Header, X-Some-Other-Header"
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-class SpringContextProviderConfigurationNotConfiguredTest {
+class SpringContextProviderConfigurationUnknownExemptionTest {
 
     @Test
-    void shouldNotTouchSystemPropertyAndKeepInternalBlocklist() {
-        assertNull(System.getProperty("context.propagation.allow-blocked-headers"),
-                "context.propagation.allow-blocked-headers must remain unset when no source configures it");
+    void shouldLeaveInternalBlocklistIntactWhenExemptionsDontMatch() {
+        assertEquals("Custom-Header, X-Some-Other-Header",
+                System.getProperty("context.propagation.allow-blocked-headers"));
 
         HeaderPropagationConfiguration.resetCache();
         assertTrue(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"),
-                "Internal blocklist must apply when no exemption is configured");
+                "Internal blocklist must remain intact when no exemption matches it");
+        assertEquals(HeaderPropagationConfiguration.INTERNAL_BLOCKED_HEADERS,
+                HeaderPropagationConfiguration.blockedHeaders());
     }
 }

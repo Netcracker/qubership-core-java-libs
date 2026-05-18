@@ -3,21 +3,14 @@ package com.netcracker.cloud.framework.quarkus.contexts.allowedheaders;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 import io.smallrye.config.ConfigMapping;
-import io.smallrye.config.WithConverter;
-import io.smallrye.config.WithDefault;
 import io.smallrye.config.WithName;
 
+import java.util.List;
 import java.util.Optional;
 
 @ConfigMapping(prefix = "quarkus")
 @ConfigRoot(phase = ConfigPhase.RUN_TIME)
 public interface HeadersAllowedConfig {
-
-    /**
-     * Sentinel value used to distinguish "property not set" from "property explicitly set to empty".
-     * Starts with a NUL character so users cannot accidentally type it.
-     */
-    String UNSET = "\0__unset__";
 
     /**
      * Allowed headers to propagate in contexts.
@@ -26,27 +19,29 @@ public interface HeadersAllowedConfig {
     Optional<String> allowedHeaders();
 
     /**
-     * Blocked headers for context propagation. X-Channel-Request-Id is blocked by default.
-     * <p>
-     * Three distinct states are supported:
+     * Headers that should be allowed to propagate even though they appear in the framework's
+     * internal blocklist. The blocklist itself is hard-coded and cannot be changed from
+     * configuration.
+     *
+     * <p>Semantics:
      * <ul>
-     *     <li>property not set — value equals {@link #UNSET}; the default blocked list applies.</li>
-     *     <li>property set to empty — value equals "" (empty string); the default is erased.</li>
-     *     <li>property set to a value — value is the raw configured string.</li>
+     *     <li>Property not set or empty: the internal blocklist is applied as-is. Any header
+     *         in the blocklist (for example {@code X-Channel-Request-Id}) is not propagated.</li>
+     *     <li>Property contains a comma-separated list of header names: each listed name is
+     *         removed from the effective blocklist and is allowed to propagate. Names that
+     *         are not in the internal blocklist have no effect.</li>
      * </ul>
-     * The custom {@link RawStringConverter} is required so that an empty value is preserved
-     * instead of being collapsed to {@code null} by SmallRye's default String converter.
+     *
+     * <p>Example {@code application.yaml} with a container ENV indirection:
+     * <pre>
+     * quarkus:
+     *   context:
+     *     propagation:
+     *       allow-blocked-headers: ${CONTEXT_PROPAGATION_ALLOW_BLOCKED_HEADERS:}
+     * </pre>
+     * The container then sets {@code CONTEXT_PROPAGATION_ALLOW_BLOCKED_HEADERS=X-Channel-Request-Id} when it needs
+     * that header to be propagated.
      */
-    @WithName("headers.blocked")
-    @WithConverter(RawStringConverter.class)
-    @WithDefault(UNSET)
-    String blockedHeaders();
-
-    /**
-     * @return {@code true} if the user explicitly configured {@code quarkus.headers.blocked}
-     *         (including to an empty value); {@code false} if the property was not set at all.
-     */
-    default boolean isBlockedHeadersSet() {
-        return !UNSET.equals(blockedHeaders());
-    }
+    @WithName("context.propagation.allow-blocked-headers")
+    Optional<List<String>> allowedHeadersFromBlocklist();
 }

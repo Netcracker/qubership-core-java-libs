@@ -4,9 +4,11 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 class HeadersAllowedConfigTest {
@@ -23,10 +25,12 @@ class HeadersAllowedConfigTest {
     }
 
     @Test
-    void shouldReadHeadersBlockedAsExplicitlyEmpty() {
-        assertTrue(headersAllowedConfig.isBlockedHeadersSet(),
-                "quarkus.headers.blocked must be considered explicitly set");
-        assertEquals("", headersAllowedConfig.blockedHeaders(),
-                "quarkus.headers.blocked must be preserved as an empty string");
+    void shouldReadAllowedHeadersFromBlocklist() {
+        Optional<List<String>> value = headersAllowedConfig.allowedHeadersFromBlocklist();
+
+        assertTrue(value.isPresent(),
+                "quarkus.context.propagation.allow-blocked-headers must be present when configured");
+        assertEquals(List.of("X-Channel-Request-Id"), value.get(),
+                "SmallRye must parse the comma-separated value into a list");
     }
 }

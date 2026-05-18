@@ -15,38 +15,27 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Spring integration scenario: {@code headers.blocked} is configured only via the
- * {@code HEADERS_BLOCKED} environment variable. Verifies that Spring's relaxed
- * binding picks up the env var as the {@code headers.blocked} property, that
- * {@link SpringContextProviderConfiguration#init()} propagates it to the system
- * property, and that the downstream blocked list reflects the env-sourced value.
- *
- * <p>{@link SystemStubsExtension} must be registered before {@link SpringExtension}
- * so that the env var is set before Spring's {@code SystemEnvironmentPropertySource}
- * is consulted during context initialization.</p>
- */
 @ExtendWith({HeaderPropagationStateReset.class, SystemStubsExtension.class, SpringExtension.class})
 @ContextConfiguration(classes = SpringContextProviderConfiguration.class)
 @TestPropertySource(properties = {
-        // headers.blocked deliberately not declared here — it must come from the env var
+        // context.propagation.allow-blocked-headers deliberately NOT declared here — it must come from the env var
         "headers.allowed=custom-header"
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class SpringContextProviderConfigurationFromEnvVarTest {
 
     @SystemStub
-    static EnvironmentVariables envVars = new EnvironmentVariables("HEADERS_BLOCKED", "Custom-Header");
+    static EnvironmentVariables envVars = new EnvironmentVariables("CONTEXT_PROPAGATION_ALLOW_BLOCKED_HEADERS", "X-Channel-Request-Id");
 
     @Test
-    void shouldReadHeadersBlockedFromEnvVar() {
-        assertEquals("Custom-Header", System.getProperty("headers.blocked"),
+    void shouldReadHeadersAllowBlockedFromEnvVar() {
+        assertEquals("X-Channel-Request-Id", System.getProperty("context.propagation.allow-blocked-headers"),
                 "Spring init() must propagate env-sourced value to the system property");
 
         HeaderPropagationConfiguration.resetCache();
-        assertTrue(HeaderPropagationConfiguration.isBlacklisted("Custom-Header"),
-                "env-sourced header must be blocked");
         assertFalse(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"),
-                "explicit env-sourced configuration overrides the default");
+                "Env-sourced exemption must take effect");
+        assertTrue(HeaderPropagationConfiguration.blockedHeaders().isEmpty(),
+                "The only entry of the internal blocklist must be removed by the exemption");
     }
 }

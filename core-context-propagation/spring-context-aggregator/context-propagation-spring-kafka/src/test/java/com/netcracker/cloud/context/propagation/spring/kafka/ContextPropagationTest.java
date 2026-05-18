@@ -61,7 +61,7 @@ public class ContextPropagationTest {
     @BeforeAll
     static void setup() {
         System.setProperty("headers.allowed", CUSTOM_HEADER.toLowerCase());
-        System.clearProperty("headers.blocked");
+        System.clearProperty("context.propagation.allow-blocked-headers");
 		HeaderPropagationConfiguration.resetCache();
     }
 
@@ -73,7 +73,7 @@ public class ContextPropagationTest {
 
     @AfterEach
     void afterEach() {
-        System.clearProperty("headers.blocked");
+        System.clearProperty("context.propagation.allow-blocked-headers");
 		HeaderPropagationConfiguration.resetCache();
     }
 
@@ -100,8 +100,10 @@ public class ContextPropagationTest {
 
     @Test
     @Timeout(30)
-    public void testContextPropagationAllowsXChannelRequestIdWhenHeadersBlockedEmpty() throws Exception {
-        System.setProperty("headers.blocked", "");
+    public void testContextPropagationAllowsXChannelRequestIdWhenExempted() throws Exception {
+        System.setProperty("context.propagation.allow-blocked-headers", X_CHANNEL_REQUEST_ID_NAME);
+        HeaderPropagationConfiguration.resetCache();
+
         ChannelRequestIdContext.set(X_CHANNEL_REQUEST_ID_VALUE);
         AcceptLanguageContext.set(TEST_LANG);
         AllowedHeadersContext.set(Map.of(CUSTOM_HEADER, CUSTOM_HEADER_VALUE));

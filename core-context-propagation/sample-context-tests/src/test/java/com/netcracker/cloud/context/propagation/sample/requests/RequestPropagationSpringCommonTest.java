@@ -30,7 +30,7 @@ class RequestPropagationSpringCommonTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilter(filter).build();
-        System.clearProperty("headers.blocked");  
+        System.clearProperty("context.propagation.allow-blocked-headers");
     }
 
     @Test
