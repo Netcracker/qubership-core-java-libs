@@ -33,6 +33,6 @@ class UrlCacheTest {
         key = calculateCacheKey("https://external-service:8080/api/v1/resource");
         assertEquals("external-service:8080", key);
 
-        assertThrows(RuntimeException.class, () -> calculateCacheKey("illegal characters here"));
+        assertThrows(IllegalArgumentException.class, () -> calculateCacheKey("illegal characters here"));
     }
 }

@@ -42,7 +42,7 @@ public class UrlCache {
         try {
             parsedURI = new URI(rawUrl);
         } catch (Exception ex) {
-            throw new RuntimeException("Failed during parsing of URL: ", ex); //NOSONAR
+            throw new IllegalArgumentException("Failed during parsing of URL: ", ex);
         }
         return calculateCacheKey(parsedURI);
     }
