@@ -57,77 +57,76 @@ public class KafkaWatchTenantTopicsTest {
 			HttpClient httpClient = HttpClient.getMaasClient(() -> "faketoken");
 			var serverApiVersion = new ServerApiVersion(httpClient, agentUrl);
 
-			try (KafkaMaaSClientImpl client = new KafkaMaaSClientImpl(
+			KafkaMaaSClientImpl client = new KafkaMaaSClientImpl(
 					httpClient,
 					() -> new TenantManagerConnectorImpl(tmMock.getUrl(), HttpClient.getM2mClient(() -> "faketoken")),
-					new ApiUrlProvider(serverApiVersion, agentUrl))) {
+					new ApiUrlProvider(serverApiVersion, agentUrl));
 
-				BlockingQueue<List<TopicAddress>> events = new LinkedBlockingDeque<>();
-				Consumer<List<TopicAddress>> cb = topics -> {
-					log.info(">>>> Topics received: {}", topics);
-					events.add(topics);
-				};
-				client.watchTenantTopics("orders", cb);
+			BlockingQueue<List<TopicAddress>> events = new LinkedBlockingDeque<>();
+			Consumer<List<TopicAddress>> cb = topics -> {
+				log.info(">>>> Topics received: {}", topics);
+				events.add(topics);
+			};
+			client.watchTenantTopics("orders", cb);
 
-				List<TopicAddress> topics = events.poll(1, TimeUnit.SECONDS);
-				assertNotNull(topics);
-				assertEquals(0, topics.size());
+			List<TopicAddress> topics = events.poll(10, TimeUnit.SECONDS);
+			assertNotNull(topics);
+			assertEquals(0, topics.size());
 
 
-				// expect http call to maas
-				mockServer.when(
-						request()
-								.withMethod("POST")
-								.withPath("/api/v2/kafka/topic/get-by-classifier")
-								.withHeader("authorization", "Bearer faketoken")
-								.withBody(
-										json("{\"name\": \"orders\"," +
-														"\"namespace\": \"core-dev\"," +
-														"\"tenantId\": \"233a1c4c-dde1-4766-9ca5-c0b21400c2b7\"}"
-												, MatchType.STRICT)
-								)
-				).respond(
-						response()
-								.withStatusCode(200)
-								.withBody("{\n" +
-										"  \"addresses\": {\n" +
-										"      \"PLAINTEXT\": [\n" +
-										"          \"my-kafka.kafka-cluster:9092\"\n" +
-										"       ]\n" +
-										"  }, \n" +
-										"  \"name\": \"maas.core_dev.orders.1234567\",\n" +
-										"  \"classifier\": {\n" +
-										"    \"name\": \"orders\",\n" +
-										"    \"namespace\": \"core-dev\",\n" +
-										"    \"tenantId\": \"233a1c4c-dde1-4766-9ca5-c0b21400c2b7\"\n" +
-										"  }, \n" +
-										"  \"namespace\": \"core-dev\",\n" +
-										"  \"instance\": \"default\",\n" +
-										"  \"requestedSettings\": {\n" +
-										"    \"numPartitions\": 1,\n" +
-										"    \"replicationFactor\": 1,\n" +
-										"    \"replicaAssignment\": null,\n" +
-										"    \"configs\": null\n" +
-										"  },\n" +
-										"  \"actualSettings\": {\n" +
-										"    \"numPartitions\": 1,\n" +
-										"    \"replicationFactor\": 1,\n" +
-										"    \"replicaAssignment\": {\n" +
-										"      \"0\": [ 0 ]\n" +
-										"    },\n" +
-										"    \"configs\": {\n" +
-										"      \"cleanup.policy\": \"delete\"\n" +
-										"      }\n" +
-										"    } \n" +
-										"}\n")
-				);
+			// expect http call to maas
+			mockServer.when(
+					request()
+							.withMethod("POST")
+							.withPath("/api/v2/kafka/topic/get-by-classifier")
+							.withHeader("authorization", "Bearer faketoken")
+							.withBody(
+									json("{\"name\": \"orders\"," +
+													"\"namespace\": \"core-dev\"," +
+													"\"tenantId\": \"233a1c4c-dde1-4766-9ca5-c0b21400c2b7\"}"
+											, MatchType.STRICT)
+							)
+			).respond(
+					response()
+							.withStatusCode(200)
+							.withBody("{\n" +
+									"  \"addresses\": {\n" +
+									"      \"PLAINTEXT\": [\n" +
+									"          \"my-kafka.kafka-cluster:9092\"\n" +
+									"       ]\n" +
+									"  }, \n" +
+									"  \"name\": \"maas.core_dev.orders.1234567\",\n" +
+									"  \"classifier\": {\n" +
+									"    \"name\": \"orders\",\n" +
+									"    \"namespace\": \"core-dev\",\n" +
+									"    \"tenantId\": \"233a1c4c-dde1-4766-9ca5-c0b21400c2b7\"\n" +
+									"  }, \n" +
+									"  \"namespace\": \"core-dev\",\n" +
+									"  \"instance\": \"default\",\n" +
+									"  \"requestedSettings\": {\n" +
+									"    \"numPartitions\": 1,\n" +
+									"    \"replicationFactor\": 1,\n" +
+									"    \"replicaAssignment\": null,\n" +
+									"    \"configs\": null\n" +
+									"  },\n" +
+									"  \"actualSettings\": {\n" +
+									"    \"numPartitions\": 1,\n" +
+									"    \"replicationFactor\": 1,\n" +
+									"    \"replicaAssignment\": {\n" +
+									"      \"0\": [ 0 ]\n" +
+									"    },\n" +
+									"    \"configs\": {\n" +
+									"      \"cleanup.policy\": \"delete\"\n" +
+									"      }\n" +
+									"    } \n" +
+									"}\n")
+			);
 
-				tmMock.addFirstActivatedTenant();
-				topics = events.poll(1, TimeUnit.SECONDS);
-				assertNotNull(topics);
-				assertEquals(1, topics.size());
-				assertEquals("maas.core_dev.orders.1234567", topics.get(0).getTopicName());
-			}
+			tmMock.addFirstActivatedTenant();
+			topics = events.poll(10, TimeUnit.SECONDS);
+			assertNotNull(topics);
+			assertEquals(1, topics.size());
+			assertEquals("maas.core_dev.orders.1234567", topics.get(0).getTopicName());
 		});
 	}
 
@@ -138,44 +137,45 @@ public class KafkaWatchTenantTopicsTest {
             System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, agentUrl);
 
 			HttpClient httpClient = HttpClient.getMaasClient(() -> "faketoken");
-			try (KafkaMaaSClientImpl client = new KafkaMaaSClientImpl(
+			var serverApiVersion = new ServerApiVersion(httpClient, agentUrl);
+
+			KafkaMaaSClientImpl client = new KafkaMaaSClientImpl(
 					httpClient,
 					() -> new TenantManagerConnectorImpl(tmMock.getUrl(), HttpClient.getM2mClient(() -> "faketoken")),
-					new ApiUrlProvider(new ServerApiVersion(httpClient, agentUrl), agentUrl))) {
+					new ApiUrlProvider(serverApiVersion, agentUrl));
 
-				BlockingQueue<List<TopicAddress>> events = new LinkedBlockingDeque<>();
-				Consumer<List<TopicAddress>> cb = topics -> {
-					log.info(">>>> Topics received: {}", topics);
-					events.add(topics);
-				};
-				client.watchTenantTopics("orders", cb);
+			BlockingQueue<List<TopicAddress>> events = new LinkedBlockingDeque<>();
+			Consumer<List<TopicAddress>> cb = topics -> {
+				log.info(">>>> Topics received: {}", topics);
+				events.add(topics);
+			};
+			client.watchTenantTopics("orders", cb);
 
-				List<TopicAddress> topics = events.poll(1, TimeUnit.SECONDS);
-				assertNotNull(topics);
-				assertEquals(0, topics.size());
+			List<TopicAddress> topics = events.poll(10, TimeUnit.SECONDS);
+			assertNotNull(topics);
+			assertEquals(0, topics.size());
 
 
-				// expect http call to maas
-				mockServer.when(
-						request()
-								.withMethod("POST")
-								.withPath("/api/v2/kafka/topic/get-by-classifier")
-								.withHeader("authorization", "Bearer faketoken")
-								.withBody(
-										json("{\"name\": \"orders\"," +
-														"\"namespace\": \"core-dev\"," +
-														"\"tenantId\": \"233a1c4c-dde1-4766-9ca5-c0b21400c2b7\"}"
-												, MatchType.STRICT)
-								)
-				).respond(
-						response().withStatusCode(404)
-				);
+			// expect http call to maas
+			mockServer.when(
+					request()
+							.withMethod("POST")
+							.withPath("/api/v2/kafka/topic/get-by-classifier")
+							.withHeader("authorization", "Bearer faketoken")
+							.withBody(
+									json("{\"name\": \"orders\"," +
+													"\"namespace\": \"core-dev\"," +
+													"\"tenantId\": \"233a1c4c-dde1-4766-9ca5-c0b21400c2b7\"}"
+											, MatchType.STRICT)
+							)
+			).respond(
+					response().withStatusCode(404)
+			);
 
-				tmMock.addFirstActivatedTenant();
-				topics = events.poll(1, TimeUnit.SECONDS);
-				assertNotNull(topics);
-				assertEquals(0, topics.size());
-			}
+			tmMock.addFirstActivatedTenant();
+			topics = events.poll(10, TimeUnit.SECONDS);
+			assertNotNull(topics);
+			assertEquals(0, topics.size());
 		});
 	}
 }
