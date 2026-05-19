@@ -2,7 +2,6 @@ package com.netcracker.cloud.microserviceframework.application;
 
 import com.netcracker.cloud.dbaas.client.DbaasClient;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
-import com.netcracker.cloud.restclient.resttemplate.MicroserviceRestTemplate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

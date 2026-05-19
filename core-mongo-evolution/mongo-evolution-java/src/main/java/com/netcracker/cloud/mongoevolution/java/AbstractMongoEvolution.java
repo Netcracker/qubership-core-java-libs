@@ -149,8 +149,6 @@ public class AbstractMongoEvolution {
             } finally {
                 throw new Exception("executeChangeLogUpdate Exception during update.", e);
             }
-        } catch (Throwable t) {
-            LOGGER.error("Error: ", t);
         } finally {
             updateStatusTask.cancel();
         }

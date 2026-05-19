@@ -103,7 +103,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
             List<TopicAddress> topics = tenantList.stream()
                     .map(tenant -> getTopic(new Classifier(name).tenantId(tenant.getExternalId())))
                     .flatMap(Optional::stream)
-                    .collect(Collectors.toList());
+                    .toList();
             callback.accept(topics);
         });
     }

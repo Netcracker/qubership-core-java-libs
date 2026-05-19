@@ -4,7 +4,6 @@ import com.netcracker.cloud.quarkus.security.auth.M2MManager;
 import com.netcracker.cloud.routesregistration.common.gateway.route.*;
 import com.netcracker.cloud.routesregistration.common.gateway.route.rest.RegistrationRequestFactory;
 import com.netcracker.cloud.routesregistration.common.gateway.route.transformation.RouteTransformer;
-import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
 import io.quarkus.arc.Unremovable;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
