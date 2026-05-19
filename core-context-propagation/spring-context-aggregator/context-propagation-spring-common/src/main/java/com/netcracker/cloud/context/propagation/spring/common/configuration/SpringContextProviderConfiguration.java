@@ -13,12 +13,14 @@ import jakarta.annotation.PostConstruct;
 
 @Configuration
 public class SpringContextProviderConfiguration {
+
     @Bean
-    public SpringPostAuthnContextProviderFilter springPostAuthnContextProviderFilter(){
+    public SpringPostAuthnContextProviderFilter springPostAuthnContextProviderFilter() {
         return new SpringPostAuthnContextProviderFilter();
     }
+
     @Bean
-    public SpringPreAuthnContextProviderFilter springPreAuthnContextProviderFilter(){
+    public SpringPreAuthnContextProviderFilter springPreAuthnContextProviderFilter() {
         return new SpringPreAuthnContextProviderFilter();
     }
 
@@ -29,14 +31,14 @@ public class SpringContextProviderConfiguration {
     @Value("${headers.allowed:}")
     private String allowedHeaders;
 
-    @Value("${headers.blocked:}")
-    private String blockedHeaders;
+    @Value("${context.propagation.allow-blocked-headers:}")
+    private String allowedFromBlocklist;
 
     @PostConstruct
     public void init() {
         System.setProperty("headers.allowed", allowedHeaders);
-        if (environment.containsProperty("headers.blocked")) {
-            System.setProperty("headers.blocked", blockedHeaders);
+        if (environment.containsProperty("context.propagation.allow-blocked-headers")) {
+            System.setProperty("context.propagation.allow-blocked-headers", allowedFromBlocklist);
         }
     }
 }

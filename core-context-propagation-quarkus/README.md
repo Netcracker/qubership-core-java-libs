@@ -133,27 +133,85 @@ Propagates and allows to get `X-Channel-Request-Id` value. If an incoming reques
 
 **Default behavior:** `X-Channel-Request-Id` is NOT propagated to outgoing requests.
 
-**Enabling propagation:** To allow `X-Channel-Request-Id` to be propagated to outgoing requests, remove it from the
-blacklist using one of the following methods:
+#### Internal blocklist
 
-1. **Via environment variable:**
-```text
-HEADERS_BLOCKED=
-```
+The framework owns a hard-coded internal blocklist of headers that are not propagated to outgoing
+requests. It currently contains:
 
-2. **Via application.properties (Quarkus):**
+- `X-Channel-Request-Id`
+
+The blocklist itself cannot be changed from configuration. The only externally visible knob is the
+`quarkus.context.propagation.allow-blocked-headers` property, which lists header names that should be **exempted** from
+this blocklist (i.e. allowed to propagate).
+
+#### `quarkus.context.propagation.allow-blocked-headers` property
+
+The property carries a comma-separated list of header names. Every name that matches an entry of
+the internal blocklist is removed from the effective blocklist. Names that are not in the
+internal blocklist have no effect.
+
+Examples:
+
+| Property value | Effect |
+|---|---|
+| not set / empty | Internal blocklist applies in full. `X-Channel-Request-Id` is not propagated. |
+| `X-Channel-Request-Id` | `X-Channel-Request-Id` is propagated to outgoing requests. |
+| `Some-Other-Header` | No effect — the header is not in the internal blocklist. |
+| `X-Channel-Request-Id, Some-Other-Header` | `X-Channel-Request-Id` is propagated; the second entry is ignored. |
+
+Comparison is case-insensitive. Whitespace around comma-separated entries is trimmed.
+
+#### How to set the property
+
+**Via `application.properties`:**
+
 ```properties
-quarkus.headers.blocked=
+quarkus.context.propagation.allow-blocked-headers=X-Channel-Request-Id
 ```
 
-**`quarkus.headers.blocked` rules and limitations**
+**Via `application.yaml`:**
 
-- Source priority: system property `quarkus.headers.blocked` overrides environment variable `HEADERS_BLOCKED`.
-- Default when not configured at all: `X-Channel-Request-Id` is blocked.
-- Explicit empty value (`quarkus.headers.blocked=` / `HEADERS_BLOCKED=`): blacklist is empty (nothing is blocked).
-- Explicit non-empty value with valid headers (for example `quarkus.headers.blocked=Some-Header`): only listed headers are blocked.
-- `X-Request-Id` is non-blockable: if it is listed in `quarkus.headers.blocked`/`HEADERS_BLOCKED`, it is ignored.
-- If configured value contains only non-blockable entries (for example only `X-Request-Id`), default block is applied and `X-Channel-Request-Id` remains blocked.
+```yaml
+quarkus:
+  context:
+    propagation:
+      allow-blocked-headers: X-Channel-Request-Id
+```
+
+**Via JVM system property:**
+
+```text
+-Dquarkus.context.propagation.allow-blocked-headers=X-Channel-Request-Id
+```
+
+**Sourcing the value from an environment variable**
+
+Instead of hard-coding the list of exempted headers in `application.properties` / `application.yaml`,
+the value can be sourced from an environment variable using a standard `${ENV_VAR:default}` placeholder.
+This way the file structure stays the same across environments and the actual list is controlled
+externally — through an ENV variable that is set somewhere outside Quarkus (a container manifest,
+a Helm chart, `systemd` unit, CI variable, local shell, etc.).
+
+```properties
+quarkus.context.propagation.allow-blocked-headers=${CONTEXT_PROPAGATION_ALLOW_BLOCKED_HEADERS:}
+```
+
+or, equivalently, in `application.yaml`:
+
+```yaml
+quarkus:
+  context:
+    propagation:
+      allow-blocked-headers: ${CONTEXT_PROPAGATION_ALLOW_BLOCKED_HEADERS:}
+```
+
+The trailing `:` (empty default) lets the property gracefully resolve to an empty value when the ENV
+variable is absent — under our model that is equivalent to "not configured" and the internal blocklist
+applies in full. Setting `CONTEXT_PROPAGATION_ALLOW_BLOCKED_HEADERS=X-Channel-Request-Id` in the runtime
+environment turns the exemption on without touching the YAML.
+
+The ENV variable name in the placeholder is just a contract between the application file and the runtime
+environment — it can be any name, as long as both sides agree.
 
 **MDC Integration:** The channel request ID is automatically stored in MDC under the key `x_channel_request_id` for use in 
 logging. 

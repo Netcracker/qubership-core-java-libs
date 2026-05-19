@@ -33,7 +33,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
         TestController.class, RequestPropagationTestConfig.class})
 @TestPropertySource(properties = {
         "headers.allowed=custom-header",
-        "headers.blocked=",
+        "context.propagation.allow-blocked-headers=X-Channel-Request-Id",
         "cloud-core.context-propagation.url=/test_url/v111/test"
 })
 class RequestPropagationXChannelRequestIdAllowedTest {
@@ -64,7 +64,7 @@ class RequestPropagationXChannelRequestIdAllowedTest {
     @BeforeAll
     static void beforeAll() {
         System.setProperty("headers.allowed", "custom-header");
-        System.setProperty("headers.blocked", "");
+        System.setProperty("context.propagation.allow-blocked-headers", "X-Channel-Request-Id");
         HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
     }
@@ -72,7 +72,7 @@ class RequestPropagationXChannelRequestIdAllowedTest {
     @AfterAll
     static void afterAll() {
         System.clearProperty("headers.allowed");
-        System.clearProperty("headers.blocked");
+        System.clearProperty("context.propagation.allow-blocked-headers");
         HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
     }

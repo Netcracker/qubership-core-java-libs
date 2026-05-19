@@ -103,8 +103,8 @@ public class KafkaContextPropagationTest {
 	}
 
 	@Test
-	void testDumpContainsXChannelRequestIdWhenNotBlocked() {
-		System.setProperty("headers.blocked", "");
+	void testDumpContainsXChannelRequestIdWhenExempted() {
+		System.setProperty("context.propagation.allow-blocked-headers", X_CHANNEL_REQUEST_ID);
 		HeaderPropagationConfiguration.resetCache();
 		ContextManager.reinitialize();
 
@@ -117,7 +117,7 @@ public class KafkaContextPropagationTest {
 
 			assertEquals("ch-456", dumped.get(X_CHANNEL_REQUEST_ID));
 		} finally {
-			System.clearProperty("headers.blocked");
+			System.clearProperty("context.propagation.allow-blocked-headers");
 			HeaderPropagationConfiguration.resetCache();
 			ContextManager.reinitialize();
 		}

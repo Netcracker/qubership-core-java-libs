@@ -31,7 +31,7 @@ import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationC
 @TestPropertySource(properties = {
         "headers.allowed=custom-header",
         "cloud-core.context-propagation.url=/test_url/v111/test"
-        // headers.blocked is not set, X-Channel-Request-Id blocked for outgoing requests
+        // context.propagation.allow-blocked-headers is not set, internal blocklist applies → X-Channel-Request-Id blocked for outgoing requests
 })
 class RequestPropagationXChannelRequestIdResponseTest {
 
@@ -55,14 +55,14 @@ class RequestPropagationXChannelRequestIdResponseTest {
 
     @BeforeAll
     static void beforeAll() {
-        System.clearProperty("headers.blocked");
+        System.clearProperty("context.propagation.allow-blocked-headers");
         HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
     }
 
     @AfterAll
     static void afterAll() {
-        System.clearProperty("headers.blocked");
+        System.clearProperty("context.propagation.allow-blocked-headers");
         HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
     }
