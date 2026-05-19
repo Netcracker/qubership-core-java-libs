@@ -49,6 +49,7 @@ public class KafkaMaaSClientApiTest {
 
         @Override
         public void close() {
+            throw new UnsupportedOperationException();
         }
     }
 }

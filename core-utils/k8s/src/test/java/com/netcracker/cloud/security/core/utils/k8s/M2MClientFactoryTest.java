@@ -27,7 +27,7 @@ class M2MClientFactoryTest {
         assertNotNull(client);
         M2MInterceptor interceptor = findM2mInterceptor(client);
         assertNotNull(interceptor);
-        
+
         assertNull(getFieldValue(interceptor, "fallbackBaseUrl"));
     }
 
@@ -36,11 +36,11 @@ class M2MClientFactoryTest {
         SystemPropertiesTestHelper.withProperty(Map.of(), () -> {
             // Ensure property is cleared
             System.clearProperty(M2MClientFactory.DBAAS_AGENT_URL_PROP);
-            
+
             OkHttpClient client = M2MClientFactory.getDbaasOkHttpClient(() -> "token");
             M2MInterceptor interceptor = findM2mInterceptor(client);
             assertNotNull(interceptor);
-            
+
             assertEquals(HttpUrl.get("http://dbaas-agent:8080"), getFieldValue(interceptor, "fallbackBaseUrl"));
         });
     }
@@ -52,7 +52,7 @@ class M2MClientFactoryTest {
             OkHttpClient client = M2MClientFactory.getDbaasOkHttpClient(() -> "token");
             M2MInterceptor interceptor = findM2mInterceptor(client);
             assertNotNull(interceptor);
-            
+
             assertEquals(HttpUrl.get(agentUrl), getFieldValue(interceptor, "fallbackBaseUrl"));
         });
     }
@@ -61,11 +61,11 @@ class M2MClientFactoryTest {
     void testGetMaasOkHttpClientDefault() throws Exception {
         SystemPropertiesTestHelper.withProperty(Map.of(), () -> {
             System.clearProperty(M2MClientFactory.MAAS_AGENT_URL_PROP);
-            
+
             OkHttpClient client = M2MClientFactory.getMaasOkHttpClient(() -> "token");
             M2MInterceptor interceptor = findM2mInterceptor(client);
             assertNotNull(interceptor);
-            
+
             assertEquals(HttpUrl.get("http://maas-agent:8080"), getFieldValue(interceptor, "fallbackBaseUrl"));
         });
     }
@@ -77,14 +77,14 @@ class M2MClientFactoryTest {
             OkHttpClient client = M2MClientFactory.getMaasOkHttpClient(() -> "token");
             M2MInterceptor interceptor = findM2mInterceptor(client);
             assertNotNull(interceptor);
-            
+
             assertEquals(HttpUrl.get(agentUrl), getFieldValue(interceptor, "fallbackBaseUrl"));
         });
     }
 
     private M2MInterceptor findM2mInterceptor(OkHttpClient client) {
         return (M2MInterceptor) client.interceptors().stream()
-                .filter(i -> i instanceof M2MInterceptor)
+                .filter(M2MInterceptor.class::isInstance)
                 .findFirst()
                 .orElse(null);
     }
