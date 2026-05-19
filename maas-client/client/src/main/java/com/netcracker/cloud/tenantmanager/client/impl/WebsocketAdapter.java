@@ -65,7 +65,7 @@ public class WebsocketAdapter implements AutoCloseable {
 		log.error("Socket connection was failed. Start reconnection attempt after timeout: {}", Env.tenantManagerReconnectTimeout());
 		release();
 
-		Timer t = new Timer();
+		Timer t = new Timer(true);
 		t.schedule(new TimerTask() {
 					@Override public void run() {
 						establishConnection();

@@ -42,4 +42,11 @@ public class MaaSAPIClientImpl implements MaaSAPIClient {
     public RabbitMaaSClient getRabbitClient() {
         return new RabbitMaaSClientImpl(restClient, apiProvider);
     }
+
+    @Override
+    public void close() throws Exception {
+        if (tenantManagerConnector.isInitialized()) {
+            tenantManagerConnector.get().close();
+        }
+    }
 }

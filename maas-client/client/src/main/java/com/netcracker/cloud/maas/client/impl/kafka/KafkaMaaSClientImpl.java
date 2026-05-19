@@ -220,4 +220,23 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
                 .map(TopicAddressImpl::new)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void close() {
+        if (watchThread.isInitialized()) {
+            watchThread.get().interrupt();
+            try {
+                watchThread.get().join(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        if (tenantManagerConnector.isInitialized()) {
+            try {
+                tenantManagerConnector.get().close();
+            } catch (Exception e) {
+                log.error("Error closing tenant manager connector", e);
+            }
+        }
+    }
 }

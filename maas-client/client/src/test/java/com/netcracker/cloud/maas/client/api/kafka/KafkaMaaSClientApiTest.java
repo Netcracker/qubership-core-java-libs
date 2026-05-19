@@ -46,5 +46,9 @@ public class KafkaMaaSClientApiTest {
         public TopicTemplate deleteTopicTemplate(String name) {
             return null;
         }
+
+        @Override
+        public void close() {
+        }
     }
 }

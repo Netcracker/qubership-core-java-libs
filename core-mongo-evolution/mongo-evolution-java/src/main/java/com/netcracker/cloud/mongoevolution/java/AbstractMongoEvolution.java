@@ -157,7 +157,7 @@ public class AbstractMongoEvolution {
     }
 
     private Timer startMongoDbUpdateStatusTask() {
-        Timer updateStatusTimer = new Timer();
+        Timer updateStatusTimer = new Timer(true);
         statusTask = new MongoDbUpdateStatusTask(updateStatusTimer, this, database);
         updateStatusTimer.schedule(statusTask,
                 delayTimeMillisecStatusTask, delayTimeMillisecStatusTask);
