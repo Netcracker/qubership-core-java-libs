@@ -148,7 +148,7 @@ class RabbitMaaSClientImplTest {
         assertEquals("tiger", vhost.getPassword());
         assertEquals("http://rabbit-cluster:15672/api", vhost.getApiUrl());
 
-        System.clearProperty(Env.PROP_NAMESPACE, "core-dev");
+        System.clearProperty(Env.PROP_NAMESPACE);
     }
 
     @Test
