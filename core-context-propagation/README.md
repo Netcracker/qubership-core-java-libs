@@ -147,29 +147,30 @@ Propagates and allows to get `X-Channel-Request-Id` value. If an incoming reques
 
 **Default behavior:** `X-Channel-Request-Id` is NOT propagated to outgoing requests.
 
-#### Internal blocklist
+#### Restricted contexts
 
-The framework owns a hard-coded internal blocklist of headers that are not propagated to outgoing
-requests. It currently contains:
+The framework owns a hard-coded list of restricted contexts — headers that are not propagated
+to outgoing requests by default. It currently contains:
 
 - `X-Channel-Request-Id`
 
-The blocklist itself cannot be changed from configuration. The only externally visible knob is the
-`context.propagation.allow-blocked-headers` property, which lists header names that should be **exempted** from this
-blocklist (i.e. allowed to propagate).
+The list itself cannot be changed from configuration. The only externally visible knob is the
+`context.propagation.headers.enable.optional` property, which names headers from that list that
+should be enabled for propagation.
 
-#### `context.propagation.allow-blocked-headers` property
+#### `context.propagation.headers.enable.optional` property
 
-The property carries a comma-separated list of header names. Every name that matches an entry of
-the internal blocklist is removed from the effective blocklist. Names that are not in the internal blocklist have no effect.
+The property carries a comma-separated list of header names. Every name that matches a restricted
+context is dropped from the effective restricted list (and thus becomes eligible for propagation).
+Names that are not in the restricted list have no effect.
 
 Examples:
 
 | Property value | Effect |
 |---|---|
-| not set / empty | Internal blocklist applies in full. `X-Channel-Request-Id` is not propagated. |
+| not set / empty | Restricted list applies in full. `X-Channel-Request-Id` is not propagated. |
 | `X-Channel-Request-Id` | `X-Channel-Request-Id` is propagated to outgoing requests. |
-| `Some-Other-Header` | No effect — the header is not in the internal blocklist. |
+| `Some-Other-Header` | No effect — the header is not in the restricted list. |
 | `X-Channel-Request-Id, Some-Other-Header` | `X-Channel-Request-Id` is propagated; the second entry is ignored. |
 
 Comparison is case-insensitive. Whitespace around comma-separated entries is trimmed.
@@ -179,31 +180,33 @@ Comparison is case-insensitive. Whitespace around comma-separated entries is tri
 **Spring (`application.properties` / `application.yml`):**
 
 ```properties
-context.propagation.allow-blocked-headers=X-Channel-Request-Id
+context.propagation.headers.enable.optional=X-Channel-Request-Id
 ```
 
 ```yaml
 context:
   propagation:
-    allow-blocked-headers: X-Channel-Request-Id
+    headers:
+      enable:
+        optional: X-Channel-Request-Id
 ```
 
 **Via JVM system property:**
 
 ```text
--Dcontext.propagation.allow-blocked-headers=X-Channel-Request-Id
+-Dcontext.propagation.headers.enable.optional=X-Channel-Request-Id
 ```
 
 **Sourcing the value from an environment variable**
 
-Instead of hard-coding the list of exempted headers in `application.properties` / `application.yml`,
+Instead of hard-coding the list of enabled headers in `application.properties` / `application.yml`,
 the value can be sourced from an environment variable using a standard `${ENV_VAR:default}` placeholder.
 This way the file structure stays the same across environments and the actual list is controlled
 externally — through an ENV variable that is set somewhere outside Spring (a container manifest,
 a Helm chart, `systemd` unit, CI variable, local shell, etc.).
 
 ```properties
-context.propagation.allow-blocked-headers=${CONTEXT_PROPAGATION_ALLOW_BLOCKED_HEADERS:}
+context.propagation.headers.enable.optional=${CONTEXT_PROPAGATION_HEADERS_ENABLE_OPTIONAL:}
 ```
 
 or, equivalently, in `application.yml`:
@@ -211,13 +214,15 @@ or, equivalently, in `application.yml`:
 ```yaml
 context:
   propagation:
-    allow-blocked-headers: ${CONTEXT_PROPAGATION_ALLOW_BLOCKED_HEADERS:}
+    headers:
+      enable:
+        optional: ${CONTEXT_PROPAGATION_HEADERS_ENABLE_OPTIONAL:}
 ```
 
 The trailing `:` (empty default) lets the property gracefully resolve to an empty value when the ENV
-variable is absent — under our model that is equivalent to "not configured" and the internal blocklist
-applies in full. Setting `CONTEXT_PROPAGATION_ALLOW_BLOCKED_HEADERS=X-Channel-Request-Id` in the runtime
-environment turns the exemption on without touching the YAML.
+variable is absent — under our model that is equivalent to "not configured" and the restricted list
+applies in full. Setting `CONTEXT_PROPAGATION_HEADERS_ENABLE_OPTIONAL=X-Channel-Request-Id` in the runtime
+environment enables that header for propagation without touching the YAML.
 
 The ENV variable name in the placeholder is just a contract between the application file and the runtime
 environment — it can be any name, as long as both sides agree.
@@ -850,12 +855,4 @@ List of supported libraries:
 `context-propagation-test-extensions` module provides Junit extension that can help running context tests from your IDE.
 It addresses the problem that maven plugins execution can be skipped when running tests directly from IDE. This leads to issue
 that jandex index isn't built and context defined in your module aren't loaded. `JandexContextLoaderExtension` Junit resolves
-this problem by building jandex index and loading contexts from it before tests are executed. You can add it to your tests using standard
-Junit annotation `@ExtendWith`:
-```
-@ExtendWith(JandexContextLoaderExtension.class)
-class SampleContextTest {
-    ...
-}
-```
-
+this problem by building jandex index and loading contexts from it before tests are executed. You can add it t

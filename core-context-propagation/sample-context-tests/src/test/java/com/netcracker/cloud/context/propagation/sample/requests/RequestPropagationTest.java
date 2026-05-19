@@ -7,7 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
-import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,8 +34,6 @@ import com.netcracker.cloud.context.propagation.core.ContextManager;
         TestController.class, RequestPropagationTestConfig.class})
 @TestPropertySource(properties = {
         "headers.allowed=custom-header",
-        // context.propagation.allow-blocked-headers deliberately not set — the internal blocklist applies and
-        // X-Channel-Request-Id should not propagate to outgoing requests.
         "cloud-core.context-propagation.url=/test_url/v111/test"
 })
 class RequestPropagationTest {
@@ -65,7 +63,7 @@ class RequestPropagationTest {
 
     @BeforeEach
     void setUp() {
-        System.clearProperty("context.propagation.allow-blocked-headers");
+        System.clearProperty("context.propagation.headers.enable.optional");
         HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
         mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(preAuthnFilter, postAuthnFilter).build();
@@ -109,7 +107,7 @@ class RequestPropagationTest {
 
     @Test
     void testXRequestIdNotAffectedByExemptionConfig() throws Exception {
-        System.setProperty("context.propagation.allow-blocked-headers", X_REQUEST_ID_NAME);
+        System.setProperty("context.propagation.headers.enable.optional", X_REQUEST_ID_NAME);
         HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
 

@@ -23,7 +23,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
-import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
 
 @SpringBootTest
 @ContextConfiguration(classes = {
@@ -31,7 +31,6 @@ import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationC
 @TestPropertySource(properties = {
         "headers.allowed=custom-header",
         "cloud-core.context-propagation.url=/test_url/v111/test"
-        // context.propagation.allow-blocked-headers is not set, internal blocklist applies → X-Channel-Request-Id blocked for outgoing requests
 })
 class RequestPropagationXChannelRequestIdResponseTest {
 
@@ -55,14 +54,14 @@ class RequestPropagationXChannelRequestIdResponseTest {
 
     @BeforeAll
     static void beforeAll() {
-        System.clearProperty("context.propagation.allow-blocked-headers");
+        System.clearProperty("context.propagation.headers.enable.optional");
         HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
     }
 
     @AfterAll
     static void afterAll() {
-        System.clearProperty("context.propagation.allow-blocked-headers");
+        System.clearProperty("context.propagation.headers.enable.optional");
         HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
     }
@@ -75,8 +74,6 @@ class RequestPropagationXChannelRequestIdResponseTest {
 
     @Test
     void testXChannelRequestIdReturnedInResponseEvenWhenBlockedForOutgoing() throws Exception {
-        // X-Channel-Request-Id blocked for outgoing requests
-        // but should be sent in response to client
         MockRestServiceServer mockServer = MockRestServiceServer.bindTo(restTemplate).build();
         mockServer.expect(requestTo("/chain_request"))
                 .andExpect(request -> assertNull(

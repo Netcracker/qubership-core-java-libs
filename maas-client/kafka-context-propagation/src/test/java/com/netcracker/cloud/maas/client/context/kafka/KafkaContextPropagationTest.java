@@ -6,7 +6,7 @@ import com.netcracker.cloud.framework.contexts.xversion.XVersionContextObject;
 import com.netcracker.cloud.framework.contexts.xversion.XVersionProvider;
 import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
 import com.netcracker.cloud.maas.client.context.kafka.KafkaContextPropagation.HeadersAdapter;
-import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
 import com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextObject;
 import com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextProvider;
 
@@ -104,7 +104,7 @@ public class KafkaContextPropagationTest {
 
 	@Test
 	void testDumpContainsXChannelRequestIdWhenExempted() {
-		System.setProperty("context.propagation.allow-blocked-headers", X_CHANNEL_REQUEST_ID);
+		System.setProperty("context.propagation.headers.enable.optional", X_CHANNEL_REQUEST_ID);
 		HeaderPropagationConfiguration.resetCache();
 		ContextManager.reinitialize();
 
@@ -117,7 +117,7 @@ public class KafkaContextPropagationTest {
 
 			assertEquals("ch-456", dumped.get(X_CHANNEL_REQUEST_ID));
 		} finally {
-			System.clearProperty("context.propagation.allow-blocked-headers");
+			System.clearProperty("context.propagation.headers.enable.optional");
 			HeaderPropagationConfiguration.resetCache();
 			ContextManager.reinitialize();
 		}

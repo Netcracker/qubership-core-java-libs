@@ -11,9 +11,5 @@ public class HeadersAllowedRecorder {
 
         allowedConfig.allowedHeaders()
                 .ifPresent(allowedHeaders -> System.setProperty("headers.allowed", allowedHeaders));
-
-        allowedConfig.allowedHeadersFromBlocklist()
-                .filter(list -> !list.isEmpty())
-                .ifPresent(list -> System.setProperty("context.propagation.allow-blocked-headers", String.join(",", list)));
     }
 }

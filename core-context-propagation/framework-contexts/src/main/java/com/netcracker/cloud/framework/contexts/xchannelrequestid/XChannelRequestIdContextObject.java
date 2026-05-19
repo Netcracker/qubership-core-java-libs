@@ -5,7 +5,7 @@ import com.netcracker.cloud.context.propagation.core.contextdata.OutgoingContext
 import com.netcracker.cloud.context.propagation.core.contexts.ResponsePropagatableContext;
 import com.netcracker.cloud.context.propagation.core.contexts.SerializableContext;
 import com.netcracker.cloud.context.propagation.core.contexts.SerializableDataContext;
-import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
+
 import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 
@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class XChannelRequestIdContextObject implements SerializableContext,
         ResponsePropagatableContext, SerializableDataContext {
-    public static final String X_CHANNEL_REQUEST_ID = "X-Channel-Request-Id";
+    public static final String X_CHANNEL_REQUEST_ID = XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME;
 
     private String channelRequestId;
 
@@ -35,7 +35,7 @@ public class XChannelRequestIdContextObject implements SerializableContext,
 
     @Override
     public void serialize(OutgoingContextData outgoingContextData) {
-        if (!HeaderPropagationConfiguration.isBlacklisted(X_CHANNEL_REQUEST_ID)) {
+        if (!HeaderPropagationConfiguration.isRestricted(X_CHANNEL_REQUEST_ID)) {
             outgoingContextData.set(X_CHANNEL_REQUEST_ID, channelRequestId);
         }
     }
@@ -51,7 +51,7 @@ public class XChannelRequestIdContextObject implements SerializableContext,
 
     @Override
     public Map<String, Object> getSerializableContextData() {
-        if (HeaderPropagationConfiguration.isBlacklisted(X_CHANNEL_REQUEST_ID)) {
+        if (HeaderPropagationConfiguration.isRestricted(X_CHANNEL_REQUEST_ID)) {
             return Collections.emptyMap();
         }
         return Map.of(X_CHANNEL_REQUEST_ID, channelRequestId);

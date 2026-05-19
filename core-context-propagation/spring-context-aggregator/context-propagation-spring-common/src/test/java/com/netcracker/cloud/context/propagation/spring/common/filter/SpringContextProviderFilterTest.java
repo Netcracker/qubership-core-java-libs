@@ -28,7 +28,6 @@ import static org.mockito.Mockito.*;
 
 class SpringContextProviderFilterTest {
     public static final String X_REQUEST_ID_CONTEXT_NAME = "X-Request-Id";
-    public static final String X_CHANNEL_REQUEST_ID_CONTEXT_NAME = "X-Channel-Request-Id";
 
     @BeforeEach
     void init() {
@@ -39,7 +38,7 @@ class SpringContextProviderFilterTest {
     void testDoFilterInternal() throws ServletException, IOException {
         HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
         when(httpServletRequest.getHeaderNames())
-                .thenReturn(new EnumerationImpl<>(Arrays.asList(ACCEPT_LANGUAGE, X_REQUEST_ID_CONTEXT_NAME, X_CHANNEL_REQUEST_ID_CONTEXT_NAME).iterator()));
+                .thenReturn(new EnumerationImpl<>(Arrays.asList(ACCEPT_LANGUAGE, X_REQUEST_ID_CONTEXT_NAME, XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME).iterator()));
 
         String acceptLanguageValue = "ru;en";
         when(httpServletRequest.getHeaders(ACCEPT_LANGUAGE))
@@ -52,9 +51,9 @@ class SpringContextProviderFilterTest {
                 .thenReturn(xRequestIdValue);
 
         String xChannelRequestIdValue = "456";
-        when(httpServletRequest.getHeaders(X_CHANNEL_REQUEST_ID_CONTEXT_NAME))
+        when(httpServletRequest.getHeaders(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME))
                 .thenReturn(new EnumerationImpl<>(Collections.singletonList(xChannelRequestIdValue).iterator()));
-        when(httpServletRequest.getHeader(X_CHANNEL_REQUEST_ID_CONTEXT_NAME))
+        when(httpServletRequest.getHeader(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME))
                 .thenReturn(xChannelRequestIdValue);
 
 

@@ -31,14 +31,14 @@ public class SpringContextProviderConfiguration {
     @Value("${headers.allowed:}")
     private String allowedHeaders;
 
-    @Value("${context.propagation.allow-blocked-headers:}")
-    private String allowedFromBlocklist;
+    @Value("${context.propagation.headers.enable.optional:}")
+    private String enableOptional;
 
     @PostConstruct
     public void init() {
         System.setProperty("headers.allowed", allowedHeaders);
-        if (environment.containsProperty("context.propagation.allow-blocked-headers")) {
-            System.setProperty("context.propagation.allow-blocked-headers", allowedFromBlocklist);
+        if (environment.containsProperty("context.propagation.headers.enable.optional")) {
+            System.setProperty("context.propagation.headers.enable.optional", enableOptional);
         }
     }
 }

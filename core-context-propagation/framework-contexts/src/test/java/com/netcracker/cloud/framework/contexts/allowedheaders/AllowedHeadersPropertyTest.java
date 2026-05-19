@@ -5,6 +5,8 @@ import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
 import com.netcracker.cloud.framework.contexts.data.ContextDataRequest;
 import com.netcracker.cloud.framework.contexts.data.ContextDataResponse;
 import com.netcracker.cloud.framework.contexts.helper.AbstractContextTestWithProperties;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
 import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
-import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
 import com.netcracker.cloud.framework.contexts.data.ContextDataRequest;
 import com.netcracker.cloud.framework.contexts.data.ContextDataResponse;
 import com.netcracker.cloud.framework.contexts.data.SimpleIncomingContextData;
@@ -20,10 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.netcracker.cloud.framework.contexts.data.ContextDataRequest.CUSTOM_HEADER;
-import static com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME;
 
 class XChannelRequestIdContextObjectPropagationTest extends AbstractContextTestWithProperties {
-    public static final String X_CHANNEL_REQUEST_ID = "X-Channel-Request-Id";
 
     static Map<String, String> properties = Map.of("headers.allowed", CUSTOM_HEADER);
 
@@ -40,55 +37,55 @@ class XChannelRequestIdContextObjectPropagationTest extends AbstractContextTestW
     @Test
     void getDefaultValue() {
         RequestContextPropagation.initRequestContext(new DefaultContextDataRequest()); // filter
-        Assertions.assertNotNull(ContextManager.get(X_CHANNEL_REQUEST_ID));
-        XChannelRequestIdContextObject xChannelRequestIdContextObject = ContextManager.get(X_CHANNEL_REQUEST_ID);
+        Assertions.assertNotNull(ContextManager.get(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME));
+        XChannelRequestIdContextObject xChannelRequestIdContextObject = ContextManager.get(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME);
         Assertions.assertNotNull(xChannelRequestIdContextObject.getChannelRequestId());
     }
 
     @Test
     void testXChannelRequestIdPropagation() {
         RequestContextPropagation.initRequestContext(new ContextDataRequest()); // filter
-        Assertions.assertNotNull(ContextManager.get(X_CHANNEL_REQUEST_ID));
-        XChannelRequestIdContextObject xChannelRequestIdContextObject = ContextManager.get(X_CHANNEL_REQUEST_ID);
+        Assertions.assertNotNull(ContextManager.get(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME));
+        XChannelRequestIdContextObject xChannelRequestIdContextObject = ContextManager.get(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME);
         Assertions.assertNotNull(xChannelRequestIdContextObject.getChannelRequestId());
-        ContextManager.set(X_CHANNEL_REQUEST_ID, xChannelRequestIdContextObject);
+        ContextManager.set(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME, xChannelRequestIdContextObject);
         ContextDataResponse responseContextData = new ContextDataResponse();
         RequestContextPropagation.populateResponse(responseContextData);
-        Assertions.assertNull(responseContextData.getResponseHeaders().get(X_CHANNEL_REQUEST_ID));
+        Assertions.assertNull(responseContextData.getResponseHeaders().get(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME));
     }
 
     @Test
     void testXChannelRequestIdPropagationWithResponsePropagatableData() {
         RequestContextPropagation.initRequestContext(new ContextDataRequest()); // filter
-        XChannelRequestIdContextObject xChannelRequestIdContextObject = ContextManager.get(X_CHANNEL_REQUEST_ID);
+        XChannelRequestIdContextObject xChannelRequestIdContextObject = ContextManager.get(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME);
         Assertions.assertNotNull(xChannelRequestIdContextObject.getChannelRequestId());
-        ContextManager.set(X_CHANNEL_REQUEST_ID, xChannelRequestIdContextObject);
+        ContextManager.set(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME, xChannelRequestIdContextObject);
         ContextDataResponse responseContextData = new ContextDataResponse();
         RequestContextPropagation.setResponsePropagatableData(responseContextData);
-        Assertions.assertEquals("-", responseContextData.getResponseHeaders().get(X_CHANNEL_REQUEST_ID));
+        Assertions.assertEquals("-", responseContextData.getResponseHeaders().get(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME));
     }
 
     @Test
-    void testXChannelRequestIdPropagationIsBlockedByInternalBlocklist() {
-        System.clearProperty(HeaderPropagationConfiguration.ALLOW_BLOCKED_PROPERTY);
+    void testXChannelRequestIdPropagationIsBlockedByRestrictedList() {
+        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
         HeaderPropagationConfiguration.resetCache();
 
         RequestContextPropagation.initRequestContext(new ContextDataRequest()); // filter
         ContextDataResponse responseContextData = new ContextDataResponse();
         RequestContextPropagation.setResponsePropagatableData(responseContextData);
-        Assertions.assertEquals("-", responseContextData.getResponseHeaders().get(X_CHANNEL_REQUEST_ID));
+        Assertions.assertEquals("-", responseContextData.getResponseHeaders().get(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME));
 
         Map<String, Map<String, Object>> serializableContextData = ContextManager.getSerializableContextData();
-        Assertions.assertTrue(serializableContextData.getOrDefault(X_CHANNEL_REQUEST_ID_CONTEXT_NAME, Collections.emptyMap()).isEmpty());
+        Assertions.assertTrue(serializableContextData.getOrDefault(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME, Collections.emptyMap()).isEmpty());
     }
 
     @Test
     void testXChannelRequestSerializableDataFromCxtManager() {
-        RequestContextPropagation.initRequestContext(new SimpleIncomingContextData(Map.of(X_CHANNEL_REQUEST_ID, "12345")));
+        RequestContextPropagation.initRequestContext(new SimpleIncomingContextData(Map.of(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME, "12345")));
 
         Map<String, Map<String, Object>> serializableContextData = ContextManager.getSerializableContextData();
 
-        Assertions.assertTrue(serializableContextData.containsKey(X_CHANNEL_REQUEST_ID_CONTEXT_NAME));
+        Assertions.assertTrue(serializableContextData.containsKey(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME));
     }
 
     @Test

@@ -3,8 +3,8 @@ package com.netcracker.cloud.headerstracking.filters.context;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
-import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
 import com.netcracker.cloud.framework.contexts.data.ContextDataRequest;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
 import com.netcracker.cloud.context.propagation.core.ContextManager;
 
 public abstract class AbstractContextTest {

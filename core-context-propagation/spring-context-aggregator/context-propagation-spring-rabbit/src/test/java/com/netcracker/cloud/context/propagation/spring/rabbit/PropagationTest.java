@@ -2,7 +2,7 @@ package com.netcracker.cloud.context.propagation.spring.rabbit;
 
 import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.context.propagation.spring.rabbit.annotation.EnableRabbitContextPropagation;
-import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
 import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
 import com.netcracker.cloud.headerstracking.filters.context.AllowedHeadersContext;
 import com.netcracker.cloud.headerstracking.filters.context.ChannelRequestIdContext;
@@ -87,7 +87,7 @@ public class PropagationTest {
 			channel.queueBind("orders", "orders", "invoice");
 		}
 		System.setProperty("headers.allowed", CUSTOM_HEADER.toLowerCase());
-		System.clearProperty("context.propagation.allow-blocked-headers");
+		System.clearProperty("context.propagation.headers.enable.optional");
 	}
 
     @AfterAll
@@ -103,7 +103,7 @@ public class PropagationTest {
 
     @AfterEach
     void afterEach() {
-        System.clearProperty("context.propagation.allow-blocked-headers");
+        System.clearProperty("context.propagation.headers.enable.optional");
 		HeaderPropagationConfiguration.resetCache();
     }
 
@@ -126,8 +126,7 @@ public class PropagationTest {
     @Test
     @Timeout(value = 20, unit = TimeUnit.SECONDS)
     public void testXChannelRequestIdAllowedWhenExempted() throws InterruptedException {
-        // Exempt X-Channel-Request-Id from the internal blocklist — it must propagate.
-        System.setProperty("context.propagation.allow-blocked-headers", X_CHANNEL_REQUEST_ID_NAME);
+        System.setProperty("context.propagation.headers.enable.optional", X_CHANNEL_REQUEST_ID_NAME);
         HeaderPropagationConfiguration.resetCache();
 
         AcceptLanguageContext.set("ZULU");
@@ -145,10 +144,8 @@ public class PropagationTest {
 
 	@Test
 	@Timeout(value = 20, unit = TimeUnit.SECONDS)
-	public void testUnknownExemptionDoesNotAffectInternalBlocklist() throws InterruptedException {
-		// Listing a header that is NOT in the internal blocklist has no effect — the
-		// internal blocklist (containing X-Channel-Request-Id) still applies.
-		System.setProperty("context.propagation.allow-blocked-headers", ANOTHER_HEADER);
+	public void testUnknownExemptionDoesNotAffectRestrictedList() throws InterruptedException {
+		System.setProperty("context.propagation.headers.enable.optional", ANOTHER_HEADER);
 		HeaderPropagationConfiguration.resetCache();
 
 		AcceptLanguageContext.set("ZULU");
@@ -164,7 +161,7 @@ public class PropagationTest {
 		}
 
 		assertNull(getHeaderIgnoreCase(receivedHeaders.get(), X_CHANNEL_REQUEST_ID_NAME),
-				"Internal blocklist must remain intact when no exemption matches it");
+				"Restricted list must remain intact when no entry matches it");
 		assertEquals(CUSTOM_HEADER_VALUE, getHeaderIgnoreCase(receivedHeaders.get(), CUSTOM_HEADER));
 		assertEquals(ANOTHER_HEADER_VALUE, getHeaderIgnoreCase(receivedHeaders.get(), ANOTHER_HEADER));
 	}

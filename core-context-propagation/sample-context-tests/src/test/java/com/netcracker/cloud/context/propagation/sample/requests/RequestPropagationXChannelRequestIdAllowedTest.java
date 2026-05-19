@@ -8,7 +8,8 @@ import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
-import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,7 +34,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
         TestController.class, RequestPropagationTestConfig.class})
 @TestPropertySource(properties = {
         "headers.allowed=custom-header",
-        "context.propagation.allow-blocked-headers=X-Channel-Request-Id",
+        "context.propagation.headers.enable.optional=X-Channel-Request-Id",
         "cloud-core.context-propagation.url=/test_url/v111/test"
 })
 class RequestPropagationXChannelRequestIdAllowedTest {
@@ -64,7 +65,7 @@ class RequestPropagationXChannelRequestIdAllowedTest {
     @BeforeAll
     static void beforeAll() {
         System.setProperty("headers.allowed", "custom-header");
-        System.setProperty("context.propagation.allow-blocked-headers", "X-Channel-Request-Id");
+        System.setProperty("context.propagation.headers.enable.optional", XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME);
         HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
     }
@@ -72,7 +73,7 @@ class RequestPropagationXChannelRequestIdAllowedTest {
     @AfterAll
     static void afterAll() {
         System.clearProperty("headers.allowed");
-        System.clearProperty("context.propagation.allow-blocked-headers");
+        System.clearProperty("context.propagation.headers.enable.optional");
         HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
     }

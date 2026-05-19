@@ -13,22 +13,29 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextObject.X_CHANNEL_REQUEST_ID;
 
+/**
+ * Spring integration scenario: {@code context.propagation.headers.enable.optional} contains only
+ * header names that are not part of the framework's restricted list. The configuration has no
+ * effect — the restricted list applies unchanged.
+ */
 @ExtendWith({HeaderPropagationStateReset.class, SpringExtension.class})
 @ContextConfiguration(classes = SpringContextProviderConfiguration.class)
 @TestPropertySource(properties = {
         "headers.allowed=custom-header",
-        "context.propagation.headers.enable.optional="
+        "context.propagation.headers.enable.optional=Custom-Header, X-Some-Other-Header"
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-class SpringContextProviderConfigurationEmptyTest {
+class SpringContextProviderConfigurationUnknownEntryTest {
 
     @Test
-    void shouldSetEmptySystemPropertyAndStillApplyRestrictedList() {
-        assertEquals("", System.getProperty("context.propagation.headers.enable.optional"),
-                "Spring init() must propagate explicit empty value to the system property");
+    void shouldLeaveRestrictedListIntactWhenEntriesDontMatch() {
+        assertEquals("Custom-Header, X-Some-Other-Header",
+                System.getProperty("context.propagation.headers.enable.optional"));
 
         HeaderPropagationConfiguration.resetCache();
         assertTrue(HeaderPropagationConfiguration.isRestricted(X_CHANNEL_REQUEST_ID),
-                "Restricted list must still apply when the enable.optional property is blank");
+                "Restricted list must remain intact when no entry matches it");
+        assertEquals(HeaderPropagationConfiguration.RESTRICTED_HEADERS,
+                HeaderPropagationConfiguration.restrictedHeaders());
     }
 }

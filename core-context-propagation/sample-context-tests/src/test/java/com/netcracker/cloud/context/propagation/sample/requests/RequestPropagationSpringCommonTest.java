@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.context.propagation.spring.common.annotation.EnableSpringContextProvider;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextProvider;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -30,13 +32,13 @@ class RequestPropagationSpringCommonTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilter(filter).build();
-        System.clearProperty("context.propagation.allow-blocked-headers");
+        System.clearProperty("context.propagation.headers.enable.optional");
     }
 
     @Test
     void testRequestPropagation() throws Exception {
         mockMvc.perform(get("/spring/common/test/requestId"))
                 .andExpect(header().exists("X-Request-Id"))
-                .andExpect(header().exists("X-Channel-Request-Id"));
+                .andExpect(header().exists(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME));
     }
 }

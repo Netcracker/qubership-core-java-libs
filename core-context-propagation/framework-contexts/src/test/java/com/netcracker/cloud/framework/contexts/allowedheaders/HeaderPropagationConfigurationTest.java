@@ -5,80 +5,84 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
+
+import static com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextObject.X_CHANNEL_REQUEST_ID;
+
 class HeaderPropagationConfigurationTest {
 
     @BeforeEach
     void setup() {
-        System.clearProperty(HeaderPropagationConfiguration.ALLOW_BLOCKED_PROPERTY);
+        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
         HeaderPropagationConfiguration.resetCache();
     }
 
     @AfterEach
     void cleanup() {
-        System.clearProperty(HeaderPropagationConfiguration.ALLOW_BLOCKED_PROPERTY);
+        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
         HeaderPropagationConfiguration.resetCache();
     }
 
     @Test
     void shouldBlockXChannelRequestIdByDefault() {
-        Assertions.assertTrue(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"));
-        Assertions.assertTrue(HeaderPropagationConfiguration.isBlacklisted("x-channel-request-id"));
-        Assertions.assertEquals(HeaderPropagationConfiguration.INTERNAL_BLOCKED_HEADERS,
-                HeaderPropagationConfiguration.blockedHeaders());
+        Assertions.assertTrue(HeaderPropagationConfiguration.isRestricted(X_CHANNEL_REQUEST_ID));
+        Assertions.assertTrue(HeaderPropagationConfiguration.isRestricted("x-channel-request-id"));
+        Assertions.assertEquals(HeaderPropagationConfiguration.RESTRICTED_HEADERS,
+                HeaderPropagationConfiguration.restrictedHeaders());
     }
 
     @Test
     void shouldNotBlockXChannelRequestIdWhenExempted() {
-        System.setProperty(HeaderPropagationConfiguration.ALLOW_BLOCKED_PROPERTY, "X-Channel-Request-Id");
+        System.setProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY, X_CHANNEL_REQUEST_ID);
         HeaderPropagationConfiguration.resetCache();
 
-        Assertions.assertFalse(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"));
-        Assertions.assertFalse(HeaderPropagationConfiguration.isBlacklisted("x-channel-request-id"));
-        Assertions.assertTrue(HeaderPropagationConfiguration.blockedHeaders().isEmpty());
+        Assertions.assertFalse(HeaderPropagationConfiguration.isRestricted(X_CHANNEL_REQUEST_ID));
+        Assertions.assertFalse(HeaderPropagationConfiguration.isRestricted("x-channel-request-id"));
+        Assertions.assertTrue(HeaderPropagationConfiguration.restrictedHeaders().isEmpty());
     }
 
     @Test
     void shouldApplyExemptionsCaseInsensitively() {
-        System.setProperty(HeaderPropagationConfiguration.ALLOW_BLOCKED_PROPERTY, "x-channel-request-id");
+        System.setProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY, "x-channel-request-id");
         HeaderPropagationConfiguration.resetCache();
 
-        Assertions.assertFalse(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"));
+        Assertions.assertFalse(HeaderPropagationConfiguration.isRestricted(X_CHANNEL_REQUEST_ID));
     }
 
     @Test
     void shouldIgnoreUnknownExemptionEntries() {
-        // Names that are not in the internal blocklist must not change anything.
-        System.setProperty(HeaderPropagationConfiguration.ALLOW_BLOCKED_PROPERTY, "Custom-Header, X-Request-Id");
+        // Names that are not in the restricted list must not change anything.
+        System.setProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY, "Custom-Header, X-Request-Id");
         HeaderPropagationConfiguration.resetCache();
 
-        Assertions.assertTrue(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"),
-                "Internal blocklist must remain unchanged when no exemption matches it");
-        Assertions.assertFalse(HeaderPropagationConfiguration.isBlacklisted("Custom-Header"));
-        Assertions.assertFalse(HeaderPropagationConfiguration.isBlacklisted("X-Request-Id"));
+        Assertions.assertTrue(HeaderPropagationConfiguration.isRestricted(X_CHANNEL_REQUEST_ID),
+                "Restricted list must remain unchanged when no entry matches it");
+        Assertions.assertFalse(HeaderPropagationConfiguration.isRestricted("Custom-Header"));
+        Assertions.assertFalse(HeaderPropagationConfiguration.isRestricted("X-Request-Id"));
     }
 
     @Test
     void shouldTreatEmptyExemptionPropertyAsNoExemption() {
-        System.setProperty(HeaderPropagationConfiguration.ALLOW_BLOCKED_PROPERTY, "");
+        System.setProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY, "");
         HeaderPropagationConfiguration.resetCache();
 
-        Assertions.assertTrue(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"));
-        Assertions.assertEquals(HeaderPropagationConfiguration.INTERNAL_BLOCKED_HEADERS,
-                HeaderPropagationConfiguration.blockedHeaders());
+        Assertions.assertTrue(HeaderPropagationConfiguration.isRestricted(X_CHANNEL_REQUEST_ID));
+        Assertions.assertEquals(HeaderPropagationConfiguration.RESTRICTED_HEADERS,
+                HeaderPropagationConfiguration.restrictedHeaders());
     }
 
     @Test
     void shouldTreatBlankAndCommaOnlyExemptionPropertyAsNoExemption() {
-        System.setProperty(HeaderPropagationConfiguration.ALLOW_BLOCKED_PROPERTY, " , ,, ");
+        System.setProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY, " , ,, ");
         HeaderPropagationConfiguration.resetCache();
 
-        Assertions.assertTrue(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"));
+        Assertions.assertTrue(HeaderPropagationConfiguration.isRestricted(X_CHANNEL_REQUEST_ID));
     }
 
     @Test
-    void isBlacklistedShouldReturnFalseForNullAndBlank() {
-        Assertions.assertFalse(HeaderPropagationConfiguration.isBlacklisted(null));
-        Assertions.assertFalse(HeaderPropagationConfiguration.isBlacklisted(""));
-        Assertions.assertFalse(HeaderPropagationConfiguration.isBlacklisted("   "));
+    void isRestrictedShouldReturnFalseForNullAndBlank() {
+        Assertions.assertFalse(HeaderPropagationConfiguration.isRestricted(null));
+        Assertions.assertFalse(HeaderPropagationConfiguration.isRestricted(""));
+        Assertions.assertFalse(HeaderPropagationConfiguration.isRestricted("   "));
     }
 }
