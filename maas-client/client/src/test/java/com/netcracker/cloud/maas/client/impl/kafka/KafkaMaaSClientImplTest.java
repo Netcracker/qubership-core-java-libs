@@ -764,6 +764,23 @@ class KafkaMaaSClientImplTest {
         assertEquals(1, result.size());
     }
 
+    @Test
+    void testClose(ClientAndServer mockServer) {
+        withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
+                mockServer.when(request().withPath("/api-version")).respond(response().withBody("{\"major\":2, \"minor\":8}"));
+
+                KafkaMaaSClientImpl client = createKafkaClient("http://localhost:" + mockServer.getPort());
+                client.watchTopicCreate("orders", addr -> {
+                });
+
+                // Watch thread should be started now
+                client.close();
+                // Watch thread should be interrupted and joined
+            });
+        });
+    }
+
     private KafkaMaaSClientImpl createKafkaClient(String agentUrl) {
         System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, agentUrl);
         var httpClient = HttpClient.getMaasClient(() -> "faketoken");
