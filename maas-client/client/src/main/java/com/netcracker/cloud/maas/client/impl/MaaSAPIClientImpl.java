@@ -20,14 +20,14 @@ public class MaaSAPIClientImpl implements MaaSAPIClient {
     private final ApiUrlProvider apiProvider;
 
     public MaaSAPIClientImpl(Supplier<String> tokenSupplier) {
-        this.restClient = new HttpClient(tokenSupplier);
+        this.restClient = HttpClient.getMaasClient(tokenSupplier);
         this.serverApiVersion = new ServerApiVersion(restClient, Env.apiUrl());
-        this.tenantManagerConnector = new Lazy<>(() -> new TenantManagerConnectorImpl(restClient));
+        this.tenantManagerConnector = new Lazy<>(() -> new TenantManagerConnectorImpl(HttpClient.getM2mClient(tokenSupplier)));
         this.apiProvider = new ApiUrlProvider(serverApiVersion, Env.apiUrl());
     }
 
     public MaaSAPIClientImpl(Supplier<String> tokenSupplier, TenantManagerConnector tenantManagerConnector, BlueGreenStatePublisher statePublisher) {
-        this.restClient = new HttpClient(tokenSupplier);
+        this.restClient = HttpClient.getMaasClient(tokenSupplier);
         this.serverApiVersion = new ServerApiVersion(restClient, Env.apiUrl());
         this.tenantManagerConnector = new Lazy<>(() -> tenantManagerConnector);
         this.apiProvider = new ApiUrlProvider(serverApiVersion, Env.apiUrl());

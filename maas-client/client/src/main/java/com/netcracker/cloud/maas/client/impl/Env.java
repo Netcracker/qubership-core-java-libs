@@ -23,20 +23,32 @@ public class Env {
     static final String ENV_CLOUD_NAMESPACE = "CLOUD_NAMESPACE";
     static final String ENV_ORIGIN_NAMESPACE = "ORIGIN_NAMESPACE";
     static final String ENV_MICROSERVICE_NAME = "MICROSERVICE_NAME";
+    static final String ENV_K8S_ENABLED = "SECURITY_M2M_KUBERNETES_ENABLED";
 
     public static final String PROP_CLOUD_NAMESPACE = "cloud.microservice.namespace";
     public static final String PROP_NAMESPACE = "maas.client.classifier.namespace"; //todo deprecated - delete in the next major release
     public static final String PROP_ORIGIN_NAMESPACE = "origin_namespace"; //todo change to 'origin.namespace'
-    public static final String PROP_API_URL = "maas.client.api.url";
+    public static final String PROP_MAAS_AGENT_URL = "maas.client.api.url";
+    public static final String PROP_MAAS_URL = "maas.internal.address";
     public static final String PROP_API_AUTH = "maas.client.api.auth";
     public static final String PROP_TENANT_MANAGER_URL = "maas.client.tenant-manager.url";
     public static final String PROP_TENANT_MANAGER_RECONNECT_TIMEOUT = "maas.client.tenant-manager.reconnect-timeout";
     public static final String PROP_HTTP_TIMEOUT = "maas.http.timeout";
 
     public static String apiUrl() {
-        return stringProperty(PROP_API_URL)
+        boolean k8sEnabled = Boolean.parseBoolean(System.getenv().get(ENV_K8S_ENABLED));
+        String maasAgentUrl = stringProperty(PROP_MAAS_AGENT_URL)
                 .map(Env::normalizeUrl)
                 .orElse(addr2http("maas-agent"));
+        if(!k8sEnabled) {
+            return maasAgentUrl;
+        }
+        return stringProperty(PROP_MAAS_URL)
+                .map(Env::normalizeUrl)
+                .orElseGet(() -> {
+                    log.warn("MaaS address is not available, falling back to maas-agent. Specify '{}'property to MaaS url", PROP_MAAS_URL);
+                    return maasAgentUrl;
+                });
     }
 
     public static String apiAuth() {

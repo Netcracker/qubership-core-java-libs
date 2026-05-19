@@ -58,7 +58,13 @@
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
     </dependency>
-    <!--TEst-->
+    <dependency>
+        <groupId>com.netcracker.cloud.security.core.utils</groupId>
+        <artifactId>k8s-utils</artifactId>
+        <version>3.1.0-SNAPSHOT</version>
+    </dependency>
+
+      <!--TEst-->
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>

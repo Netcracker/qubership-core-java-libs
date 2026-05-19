@@ -7,8 +7,12 @@ import org.springframework.boot.data.elasticsearch.autoconfigure.DataElasticsear
 import org.springframework.cloud.config.client.ConfigClientAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 
+import com.netcracker.cloud.security.common.DummyM2MManagerConfiguration;
+import org.springframework.context.annotation.Import;
+
 @Configuration
 @EnableServiceDbaasPostgresql
 @EnableAutoConfiguration(exclude = {DataElasticsearchAutoConfiguration.class, ConfigClientAutoConfiguration.class})
+@Import(DummyM2MManagerConfiguration.class)
 public class TestApplicationOnRestTemplate extends BaseApplicationOnRestTemplate {
 }

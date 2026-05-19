@@ -29,12 +29,12 @@ public class MaasKafkaProdClientConfig {
 
     @Bean
     HttpClient maasHttpClient(@Autowired M2MManager m2MManager) {
-        return new HttpClient(() -> m2MManager.getToken().getTokenValue());
+        return HttpClient.getMaasClient(() -> m2MManager.getToken().getTokenValue());
     }
 
     @Bean
-    TenantManagerConnector tenantManagerConnector(HttpClient httpClient) {
-        return new TenantManagerConnectorImpl(httpClient);
+    TenantManagerConnector tenantManagerConnector(@Autowired M2MManager m2MManager) {
+        return new TenantManagerConnectorImpl(HttpClient.getM2mClient(() -> m2MManager.getToken().getTokenValue()));
     }
 
     @Bean

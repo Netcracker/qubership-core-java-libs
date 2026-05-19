@@ -31,7 +31,7 @@ class TenantManagerConnectorImplTest {
     @Test
     public void testApi() throws Exception {
         BlockingQueue<List<Tenant>> events = new LinkedBlockingDeque<>();
-        try (TenantManagerConnectorImpl client = new TenantManagerConnectorImpl(tmMock.getUrl(), new HttpClient(() -> "faketoken"))) {
+        try (TenantManagerConnectorImpl client = new TenantManagerConnectorImpl(tmMock.getUrl(), HttpClient.getM2mClient(() -> "faketoken"))) {
             client.subscribe(events::add);
             List<Tenant> tenants = events.poll(1, TimeUnit.SECONDS);
             assertNotNull(tenants);
@@ -66,7 +66,7 @@ class TenantManagerConnectorImplTest {
     public void testReconnect() throws Exception {
         withProp(Env.PROP_TENANT_MANAGER_RECONNECT_TIMEOUT, "1", () -> {
             BlockingQueue<List<Tenant>> events = new LinkedBlockingDeque<>();
-            try (TenantManagerConnectorImpl client = new TenantManagerConnectorImpl(tmMock.getUrl(), new HttpClient(() -> "faketoken"))) {
+            try (TenantManagerConnectorImpl client = new TenantManagerConnectorImpl(tmMock.getUrl(), HttpClient.getM2mClient(() -> "faketoken"))) {
 
                 client.subscribe(events::add);
                 List<Tenant> tenants = events.poll(1, TimeUnit.SECONDS);
