@@ -27,7 +27,6 @@ public class AbstractMongoEvolution {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMongoEvolution.class);
 
     private static final long INITIAL_VERSION = 0;
-    public static final String TRACKER_ID = "singleton_evolution_tracker";
     public static final String TRACKER_COLLECTION = "_schema_evolution";
     public static final String TRACKER_KEY_UPDATE_START = "startTime";
     public static final String TRACKER_KEY_UPDATE_END = "endTime";
@@ -113,14 +112,14 @@ public class AbstractMongoEvolution {
                     /* insert current DB version at start */
                     boolean startUpdate = insertUpdateFlag(updatesTracker, currentVersion, true);
                     if (startUpdate) {
-                        updateFieldWithMongoCurrentDate(updatesTracker, TRACKER_KEY_UPDATE_START, new BasicDBObject("_id", TRACKER_ID));
-                        updateFieldWithMongoCurrentDate(updatesTracker, TRACKER_KEY_UPDATE_LAST, new BasicDBObject("_id", TRACKER_ID));
+                        updateFieldWithMongoCurrentDate(updatesTracker, TRACKER_KEY_UPDATE_START, null);
+                        updateFieldWithMongoCurrentDate(updatesTracker, TRACKER_KEY_UPDATE_LAST, null);
                         processor.applyChanges(currentVersion);
 
                         /* insert expected version at finish */
                         finishUpdate = insertUpdateFlag(updatesTracker, expectedVersion, false);
                         if (finishUpdate) {
-                            updateFieldWithMongoCurrentDate(updatesTracker, TRACKER_KEY_UPDATE_END, new BasicDBObject("_id", TRACKER_ID));
+                            updateFieldWithMongoCurrentDate(updatesTracker, TRACKER_KEY_UPDATE_END, null);
                         }
                     } else {
                         try {
@@ -178,7 +177,6 @@ public class AbstractMongoEvolution {
 
     public Document createTrackerCollectionRecord(long dateStart, long dateEnd, boolean in_progress, long version) {
         return new Document()
-                .append("_id", TRACKER_ID)
                 .append(TRACKER_KEY_UPDATE_START, dateStart)
                 .append(TRACKER_IN_PROGRESS, in_progress)
                 .append(TRACKER_KEY_UPDATE_END, dateEnd)
@@ -188,11 +186,8 @@ public class AbstractMongoEvolution {
 
     public boolean isDatabaseUpdateLockAlive() {
         MongoCollection<Document> updatesTracker = database.getCollection(TRACKER_COLLECTION);
-        Document doc = updatesTracker.find(Filters.eq("_id", TRACKER_ID)).first();
-        if (doc == null) {
-            return false;
-        }
-        long lastUpdateStatusTimeMillis = 1000L * (((BsonTimestamp) doc.get(TRACKER_KEY_UPDATE_LAST))
+        long lastUpdateStatusTimeMillis = 1000L * (((BsonTimestamp) updatesTracker.find().
+                first().get(TRACKER_KEY_UPDATE_LAST))
                 .getTime());
         long currentTimeMillis = currentTimeMillis();
         long millisecDiff = currentTimeMillis - lastUpdateStatusTimeMillis;
@@ -202,16 +197,19 @@ public class AbstractMongoEvolution {
     public boolean isUpdateInProgress() throws Exception {
         MongoCollection<Document> updatesTracker = database.getCollection(TRACKER_COLLECTION);
         try {
-            Document doc = updatesTracker.find(Filters.eq("_id", TRACKER_ID)).first();
-            if (doc == null) {
+            FindIterable<Document> docs = updatesTracker.find();
+            Document doc;
+            if (!docs.iterator().hasNext()) {
                 long currentTime = currentTimeMillis();
                 doc = createTrackerCollectionRecord(currentTime, currentTime, false, INITIAL_VERSION);
 
                 updatesTracker.createIndex(new Document(TRACKER_IN_PROGRESS, 1), new IndexOptions().unique(true));
                 updatesTracker.insertOne(doc);
 
-                updateFieldWithMongoCurrentDate(updatesTracker, TRACKER_KEY_UPDATE_START, new BasicDBObject("_id", TRACKER_ID));
-                updateFieldWithMongoCurrentDate(updatesTracker, TRACKER_KEY_UPDATE_END, new BasicDBObject("_id", TRACKER_ID));
+                updateFieldWithMongoCurrentDate(updatesTracker, TRACKER_KEY_UPDATE_START, null);
+                updateFieldWithMongoCurrentDate(updatesTracker, TRACKER_KEY_UPDATE_END, null);
+            } else {
+                doc = docs.first();
             }
 
             return (boolean) doc.get(TRACKER_IN_PROGRESS);
@@ -250,11 +248,7 @@ public class AbstractMongoEvolution {
                 newDoc.append(TRACKER_KEY_UPDATE_END, currentTime);
             }
 
-            Document previousDoc = collection.findOneAndUpdate(
-                    Filters.and(
-                            Filters.eq("_id", TRACKER_ID),
-                            Filters.eq(TRACKER_IN_PROGRESS, !updateInProgress)
-                    ),
+            Document previousDoc = collection.findOneAndUpdate(Filters.eq(TRACKER_IN_PROGRESS, !updateInProgress),
                     new Document("$set", newDoc));
 
             return (null == previousDoc) ? false : true;
@@ -274,7 +268,7 @@ public class AbstractMongoEvolution {
 
     public Long getDbCurrentVersion() {
         MongoCollection<Document> updatesTracker = database.getCollection(TRACKER_COLLECTION);
-        Document doc = updatesTracker.find(Filters.eq("_id", TRACKER_ID)).first();
+        Document doc = updatesTracker.find().first();
         return (Long) doc.get(TRACKER_CURRENT_VERSION);
     }
 }
