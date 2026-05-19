@@ -161,8 +161,7 @@ blocklist (i.e. allowed to propagate).
 #### `context.propagation.allow-blocked-headers` property
 
 The property carries a comma-separated list of header names. Every name that matches an entry of
-the internal blocklist is removed from the effective blocklist. Names that are not in the
-internal blocklist have no effect.
+the internal blocklist is removed from the effective blocklist. Names that are not in the internal blocklist have no effect.
 
 Examples:
 
@@ -195,34 +194,33 @@ context:
 -Dcontext.propagation.allow-blocked-headers=X-Channel-Request-Id
 ```
 
-**Via container ENV (recommended, Qubership pattern)**
+**Sourcing the value from an environment variable**
 
-In Qubership deployments configuration values are typically wired from container ENV variables
-through `application.yaml` placeholders. The full chain looks like this:
+Instead of hard-coding the list of exempted headers in `application.properties` / `application.yml`,
+the value can be sourced from an environment variable using a standard `${ENV_VAR:default}` placeholder.
+This way the file structure stays the same across environments and the actual list is controlled
+externally — through an ENV variable that is set somewhere outside Spring (a container manifest,
+a Helm chart, `systemd` unit, CI variable, local shell, etc.).
 
-1. The container declares an ENV variable, for example in the deployment manifest:
+```properties
+context.propagation.allow-blocked-headers=${CONTEXT_PROPAGATION_ALLOW_BLOCKED_HEADERS:}
+```
 
-   ```yaml
-   env:
-     - name: CONTEXT_PROPAGATION_ALLOW_BLOCKED_HEADERS
-       value: "X-Channel-Request-Id"
-   ```
+or, equivalently, in `application.yml`:
 
-2. The application's `application.yaml` reads it via a `${VAR}` placeholder:
+```yaml
+context:
+  propagation:
+    allow-blocked-headers: ${CONTEXT_PROPAGATION_ALLOW_BLOCKED_HEADERS:}
+```
 
-   ```yaml
-   context:
-     propagation:
-       allow-blocked-headers: ${CONTEXT_PROPAGATION_ALLOW_BLOCKED_HEADERS:}
-   ```
+The trailing `:` (empty default) lets the property gracefully resolve to an empty value when the ENV
+variable is absent — under our model that is equivalent to "not configured" and the internal blocklist
+applies in full. Setting `CONTEXT_PROPAGATION_ALLOW_BLOCKED_HEADERS=X-Channel-Request-Id` in the runtime
+environment turns the exemption on without touching the YAML.
 
-   The trailing `:` (empty default) lets the property gracefully fall through to "not set" when
-   the ENV variable is absent — the internal blocklist then applies in full.
-
-3. Spring's relaxed binding also recognises the ENV variable directly under the property name
-   `context.propagation.allow-blocked-headers` (i.e. without an explicit placeholder), so the same ENV variable works
-   even without the `application.yaml` indirection. The placeholder form is preferred because it
-   makes the dependency explicit in source control.
+The ENV variable name in the placeholder is just a contract between the application file and the runtime
+environment — it can be any name, as long as both sides agree.
 
 **MDC Integration:** 
 The `X-Channel-Request-Id` is automatically integrated with SLF4J's Mapped Diagnostic Context (MDC) for seamless logging.
