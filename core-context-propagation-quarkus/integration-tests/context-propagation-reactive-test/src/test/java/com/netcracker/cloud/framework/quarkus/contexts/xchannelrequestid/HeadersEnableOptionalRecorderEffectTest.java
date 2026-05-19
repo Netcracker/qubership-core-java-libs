@@ -1,4 +1,4 @@
-package com.netcracker.cloud.framework.quarkus.contexts.allowedheaders;
+package com.netcracker.cloud.framework.quarkus.contexts.xchannelrequestid;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;

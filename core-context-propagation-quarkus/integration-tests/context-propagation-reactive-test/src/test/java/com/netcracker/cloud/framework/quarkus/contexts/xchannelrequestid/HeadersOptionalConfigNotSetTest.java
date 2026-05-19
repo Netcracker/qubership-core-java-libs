@@ -1,4 +1,4 @@
-package com.netcracker.cloud.framework.quarkus.contexts.allowedheaders;
+package com.netcracker.cloud.framework.quarkus.contexts.xchannelrequestid;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.QuarkusTestProfile;
@@ -6,7 +6,6 @@ import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
-import com.netcracker.cloud.framework.quarkus.contexts.xchannelrequestid.HeadersOptionalConfig;
 
 import java.util.Map;
 
