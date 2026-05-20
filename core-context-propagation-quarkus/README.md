@@ -542,5 +542,6 @@ executorService.submit(contextPropagationCallable).get();
 
 Sometimes, you may use `CompletableFuture` class and this way it would be convenient to use `ContextPropagationSupplier` delegator. This class takes delegate and context snapshot.
 If you want to perform a task in a current context then you can perform the following code:
-
-`
+```java
+ContextPropagationSupplier contextPropagationSupplier = new ContextPropagationSupplier(ContextManager.createContextSnapshot(), delegate);
+```

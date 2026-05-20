@@ -109,7 +109,7 @@ public class PropagationTest {
 
 	@Test
 	@Timeout(value = 20, unit = TimeUnit.SECONDS)
-	public void testXChannelRequestIdBlockedByDefault() throws InterruptedException {
+	void testXChannelRequestIdBlockedByDefault() throws InterruptedException {
 		AcceptLanguageContext.set("ZULU");
 		AllowedHeadersContext.set(Map.of(CUSTOM_HEADER, CUSTOM_HEADER_VALUE));
 		ChannelRequestIdContext.set(X_CHANNEL_REQUEST_ID_VALUE);
@@ -125,7 +125,7 @@ public class PropagationTest {
 
     @Test
     @Timeout(value = 20, unit = TimeUnit.SECONDS)
-    public void testXChannelRequestIdAllowedWhenExempted() throws InterruptedException {
+    void testXChannelRequestIdAllowedWhenExempted() throws InterruptedException {
         System.setProperty("context.propagation.headers.enable.optional", X_CHANNEL_REQUEST_ID_NAME);
         HeaderPropagationConfiguration.resetCache();
 
@@ -144,7 +144,7 @@ public class PropagationTest {
 
 	@Test
 	@Timeout(value = 20, unit = TimeUnit.SECONDS)
-	public void testUnknownExemptionDoesNotAffectRestrictedList() throws InterruptedException {
+	void testUnknownExemptionDoesNotAffectRestrictedList() throws InterruptedException {
 		System.setProperty("context.propagation.headers.enable.optional", ANOTHER_HEADER);
 		HeaderPropagationConfiguration.resetCache();
 

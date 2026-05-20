@@ -855,4 +855,11 @@ List of supported libraries:
 `context-propagation-test-extensions` module provides Junit extension that can help running context tests from your IDE.
 It addresses the problem that maven plugins execution can be skipped when running tests directly from IDE. This leads to issue
 that jandex index isn't built and context defined in your module aren't loaded. `JandexContextLoaderExtension` Junit resolves
-this problem by building jandex index and loading contexts from it before tests are executed. You can add it t
+this problem by building jandex index and loading contexts from it before tests are executed. You can add it to your tests using standard
+Junit annotation `@ExtendWith`:
+```
+@ExtendWith(JandexContextLoaderExtension.class)
+class SampleContextTest {
+    ...
+}
+```
