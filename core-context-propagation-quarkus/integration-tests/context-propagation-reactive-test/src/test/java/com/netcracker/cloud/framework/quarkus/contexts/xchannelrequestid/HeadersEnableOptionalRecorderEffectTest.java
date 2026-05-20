@@ -31,9 +31,9 @@ class HeadersEnableOptionalRecorderEffectTest {
     @Test
     void shouldExposeEnableOptionalValueAsSystemProperty() {
         assertEquals(X_CHANNEL_REQUEST_ID,
-                System.getProperty("context.propagation.headers.enable.optional"),
-                "Recorder must propagate the quarkus.context.propagation.headers.enable.optional value " +
-                        "to the context.propagation.headers.enable.optional system property.");
+                System.getProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY),
+                String.format("Recorder must propagate the quarkus.%1$s value " +
+                        "to the %1$s system property.", HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY));
     }
 
     @Test

@@ -24,8 +24,9 @@ class SpringContextProviderConfigurationNotConfiguredTest {
 
     @Test
     void shouldNotTouchSystemPropertyAndKeepRestrictedList() {
-        assertNull(System.getProperty("context.propagation.headers.enable.optional"),
-                "context.propagation.headers.enable.optional must remain unset when no source configures it");
+        assertNull(System.getProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY),
+                String.format("System property %s must remain unset when no source configures it",
+                        HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY));
 
         HeaderPropagationConfiguration.resetCache();
         assertTrue(HeaderPropagationConfiguration.isRestricted(X_CHANNEL_REQUEST_ID),

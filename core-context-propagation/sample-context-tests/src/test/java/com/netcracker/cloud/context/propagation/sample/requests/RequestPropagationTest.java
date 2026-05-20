@@ -63,7 +63,7 @@ class RequestPropagationTest {
 
     @BeforeEach
     void setUp() {
-        System.clearProperty("context.propagation.headers.enable.optional");
+        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
         HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
         mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(preAuthnFilter, postAuthnFilter).build();
@@ -107,7 +107,7 @@ class RequestPropagationTest {
 
     @Test
     void testXRequestIdNotAffectedByExemptionConfig() throws Exception {
-        System.setProperty("context.propagation.headers.enable.optional", X_REQUEST_ID_NAME);
+        System.setProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY, X_REQUEST_ID_NAME);
         HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
 

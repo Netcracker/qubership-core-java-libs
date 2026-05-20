@@ -24,7 +24,7 @@ class SpringContextProviderConfigurationEmptyTest {
 
     @Test
     void shouldSetEmptySystemPropertyAndStillApplyRestrictedList() {
-        assertEquals("", System.getProperty("context.propagation.headers.enable.optional"),
+        assertEquals("", System.getProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY),
                 "Spring init() must propagate explicit empty value to the system property");
 
         HeaderPropagationConfiguration.resetCache();

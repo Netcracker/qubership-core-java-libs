@@ -4,6 +4,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +24,7 @@ class HeadersOptionalConfigTest {
         Optional<List<String>> value = headersOptionalConfig.enableOptional();
 
         assertTrue(value.isPresent(),
-                "quarkus.context.propagation.headers.enable.optional must be present when configured");
+                String.format("%s must be present when configured", HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY));
         assertEquals(List.of(X_CHANNEL_REQUEST_ID), value.get(),
                 "SmallRye must parse the comma-separated value into a list");
     }

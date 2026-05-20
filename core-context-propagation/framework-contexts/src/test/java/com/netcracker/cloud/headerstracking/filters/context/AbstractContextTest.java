@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
 import com.netcracker.cloud.framework.contexts.data.ContextDataRequest;
-import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
 import com.netcracker.cloud.context.propagation.core.ContextManager;
 
 public abstract class AbstractContextTest {
@@ -13,7 +12,6 @@ public abstract class AbstractContextTest {
     @BeforeEach
     void setup() {
         System.setProperty("headers.allowed", CUSTOM_HEADER);
-        HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
         RequestContextPropagation.initRequestContext(new ContextDataRequest());
     }

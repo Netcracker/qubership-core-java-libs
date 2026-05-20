@@ -54,14 +54,14 @@ class RequestPropagationXChannelRequestIdResponseTest {
 
     @BeforeAll
     static void beforeAll() {
-        System.clearProperty("context.propagation.headers.enable.optional");
+        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
         HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
     }
 
     @AfterAll
     static void afterAll() {
-        System.clearProperty("context.propagation.headers.enable.optional");
+        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
         HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
     }

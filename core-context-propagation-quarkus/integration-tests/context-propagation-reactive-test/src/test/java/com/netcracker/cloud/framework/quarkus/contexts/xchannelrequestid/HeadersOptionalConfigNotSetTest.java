@@ -6,6 +6,7 @@ import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
 
 import java.util.Map;
 
@@ -32,15 +33,15 @@ class HeadersOptionalConfigNotSetTest {
     @Test
     void shouldResolveToEmptyWhenNotConfigured() {
         assertFalse(headersOptionalConfig.enableOptional().isPresent(),
-                "quarkus.context.propagation.headers.enable.optional must resolve to Optional.empty() " +
-                        "when no value is configured");
+                String.format("%s must resolve to Optional.empty() " +
+                        "when no value is configured", HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY));
     }
 
     public static class NotSetProfile implements QuarkusTestProfile {
 
         @Override
         public Map<String, String> getConfigOverrides() {
-            return Map.of("quarkus.context.propagation.headers.enable.optional", "");
+            return Map.of(String.format("quarkus.%s", HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY), "");
         }
     }
 }

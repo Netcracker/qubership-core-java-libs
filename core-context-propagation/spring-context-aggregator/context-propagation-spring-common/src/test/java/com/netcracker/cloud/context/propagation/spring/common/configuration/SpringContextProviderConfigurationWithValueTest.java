@@ -25,7 +25,7 @@ class SpringContextProviderConfigurationWithValueTest {
 
     @Test
     void shouldExemptListedHeaderFromRestrictedList() {
-        assertEquals(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME, System.getProperty("context.propagation.headers.enable.optional"));
+        assertEquals(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME, System.getProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY));
 
         HeaderPropagationConfiguration.resetCache();
         assertFalse(HeaderPropagationConfiguration.isRestricted(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME),

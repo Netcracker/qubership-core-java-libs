@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.context.propagation.spring.common.annotation.EnableSpringContextProvider;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
 import com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ class RequestPropagationSpringCommonTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilter(filter).build();
-        System.clearProperty("context.propagation.headers.enable.optional");
+        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
     }
 
     @Test

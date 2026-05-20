@@ -87,12 +87,12 @@ public class PropagationTest {
 			channel.queueBind("orders", "orders", "invoice");
 		}
 		System.setProperty("headers.allowed", CUSTOM_HEADER.toLowerCase());
-		System.clearProperty("context.propagation.headers.enable.optional");
+		System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
 	}
 
     @AfterAll
     static void teardown() {
-        System.clearProperty("headers.allowed");
+        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
     }
 
     @BeforeEach
@@ -103,7 +103,7 @@ public class PropagationTest {
 
     @AfterEach
     void afterEach() {
-        System.clearProperty("context.propagation.headers.enable.optional");
+        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
 		HeaderPropagationConfiguration.resetCache();
     }
 
@@ -126,7 +126,7 @@ public class PropagationTest {
     @Test
     @Timeout(value = 20, unit = TimeUnit.SECONDS)
     void testXChannelRequestIdAllowedWhenExempted() throws InterruptedException {
-        System.setProperty("context.propagation.headers.enable.optional", X_CHANNEL_REQUEST_ID_NAME);
+        System.setProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY, X_CHANNEL_REQUEST_ID_NAME);
         HeaderPropagationConfiguration.resetCache();
 
         AcceptLanguageContext.set("ZULU");
@@ -145,7 +145,7 @@ public class PropagationTest {
 	@Test
 	@Timeout(value = 20, unit = TimeUnit.SECONDS)
 	void testUnknownExemptionDoesNotAffectRestrictedList() throws InterruptedException {
-		System.setProperty("context.propagation.headers.enable.optional", ANOTHER_HEADER);
+		System.setProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY, ANOTHER_HEADER);
 		HeaderPropagationConfiguration.resetCache();
 
 		AcceptLanguageContext.set("ZULU");

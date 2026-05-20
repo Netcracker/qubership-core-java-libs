@@ -104,7 +104,7 @@ public class KafkaContextPropagationTest {
 
 	@Test
 	void testDumpContainsXChannelRequestIdWhenExempted() {
-		System.setProperty("context.propagation.headers.enable.optional", X_CHANNEL_REQUEST_ID);
+		System.setProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY, X_CHANNEL_REQUEST_ID);
 		HeaderPropagationConfiguration.resetCache();
 		ContextManager.reinitialize();
 
@@ -117,7 +117,7 @@ public class KafkaContextPropagationTest {
 
 			assertEquals("ch-456", dumped.get(X_CHANNEL_REQUEST_ID));
 		} finally {
-			System.clearProperty("context.propagation.headers.enable.optional");
+			System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
 			HeaderPropagationConfiguration.resetCache();
 			ContextManager.reinitialize();
 		}

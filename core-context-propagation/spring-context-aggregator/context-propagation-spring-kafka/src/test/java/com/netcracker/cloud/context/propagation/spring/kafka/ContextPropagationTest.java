@@ -61,7 +61,7 @@ public class ContextPropagationTest {
     @BeforeAll
     static void setup() {
         System.setProperty("headers.allowed", CUSTOM_HEADER.toLowerCase());
-        System.clearProperty("context.propagation.headers.enable.optional");
+        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
 		HeaderPropagationConfiguration.resetCache();
     }
 
@@ -73,13 +73,13 @@ public class ContextPropagationTest {
 
     @AfterEach
     void afterEach() {
-        System.clearProperty("context.propagation.headers.enable.optional");
+        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
 		HeaderPropagationConfiguration.resetCache();
     }
 
 	@AfterAll
 	static void tearDown() {
-		System.clearProperty("headers.allowed");
+		System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class ContextPropagationTest {
     @Test
     @Timeout(30)
     public void testContextPropagationAllowsXChannelRequestIdWhenExempted() throws Exception {
-        System.setProperty("context.propagation.headers.enable.optional", XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME);
+        System.setProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY, XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME);
         HeaderPropagationConfiguration.resetCache();
 
         ChannelRequestIdContext.set(X_CHANNEL_REQUEST_ID_VALUE);

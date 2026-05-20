@@ -65,7 +65,7 @@ class RequestPropagationXChannelRequestIdAllowedTest {
     @BeforeAll
     static void beforeAll() {
         System.setProperty("headers.allowed", "custom-header");
-        System.setProperty("context.propagation.headers.enable.optional", XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME);
+        System.setProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY, XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME);
         HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
     }
@@ -73,7 +73,7 @@ class RequestPropagationXChannelRequestIdAllowedTest {
     @AfterAll
     static void afterAll() {
         System.clearProperty("headers.allowed");
-        System.clearProperty("context.propagation.headers.enable.optional");
+        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
         HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
     }
