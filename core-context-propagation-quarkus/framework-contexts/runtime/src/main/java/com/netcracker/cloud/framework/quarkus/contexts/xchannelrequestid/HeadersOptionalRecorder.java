@@ -14,10 +14,8 @@ import io.quarkus.runtime.annotations.Recorder;
 public class HeadersOptionalRecorder {
 
     public void setEnableOptionalToSystemProperty() {
-        HeadersOptionalConfig config = Arc.container().instance(HeadersOptionalConfig.class).get();
-
-        config.enableOptional()
-                .filter(list -> !list.isEmpty())
+        Arc.container().instance(HeadersOptionalConfig.class).get()
+                .enableOptional()
                 .ifPresent(list -> System.setProperty(
                         HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY,
                         String.join(",", list)));
