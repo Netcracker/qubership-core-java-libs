@@ -14,7 +14,7 @@
 
     <properties>
         <cloud-core.core-restclient.version>7.1.0-SNAPSHOT</cloud-core.core-restclient.version>
-        <cloud-core.core-context-propagation.version>8.2.0-SNAPSHOT</cloud-core.core-context-propagation.version>
+        <cloud-core.core-context-propagation.version>8.2.1-SNAPSHOT</cloud-core.core-context-propagation.version>
         <cloud-core.core-error-handling.version>4.2.0-SNAPSHOT</cloud-core.core-error-handling.version>
 
         <org.powermock.version>2.0.9</org.powermock.version>

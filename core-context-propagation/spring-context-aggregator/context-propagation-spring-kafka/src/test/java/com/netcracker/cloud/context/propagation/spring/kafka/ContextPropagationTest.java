@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.context.propagation.spring.kafka.annotation.EnableKafkaContextPropagation;
-import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextProvider;
 import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
 import com.netcracker.cloud.headerstracking.filters.context.AllowedHeadersContext;
 import com.netcracker.cloud.headerstracking.filters.context.ChannelRequestIdContext;
@@ -50,7 +51,6 @@ public class ContextPropagationTest {
 	private static final String TEST_LANG = "ZULU";
 	private static final String CUSTOM_HEADER = "X-Custom-Header-1";
 	private static final String CUSTOM_HEADER_VALUE = "case-insensitive-test-value";
-    private static final String X_CHANNEL_REQUEST_ID_NAME = "X-Channel-Request-Id";
     private static final String X_CHANNEL_REQUEST_ID_VALUE = "456";
     private static final AtomicReference<CompletableFuture<ConsumerRecord<Integer, String>>> consumed = new AtomicReference<>();
     private static final CountingInterceptor interceptor = new CountingInterceptor();
@@ -61,7 +61,7 @@ public class ContextPropagationTest {
     @BeforeAll
     static void setup() {
         System.setProperty("headers.allowed", CUSTOM_HEADER.toLowerCase());
-        System.clearProperty("headers.blocked");
+        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
 		HeaderPropagationConfiguration.resetCache();
     }
 
@@ -73,13 +73,13 @@ public class ContextPropagationTest {
 
     @AfterEach
     void afterEach() {
-        System.clearProperty("headers.blocked");
+        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
 		HeaderPropagationConfiguration.resetCache();
     }
 
 	@AfterAll
 	static void tearDown() {
-		System.clearProperty("headers.allowed");
+		System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
 	}
 
 	@Test
@@ -93,15 +93,17 @@ public class ContextPropagationTest {
         ContextManager.clearAll();
 
         ConsumerRecord<Integer, String> message = consumed.get().get(5, TimeUnit.SECONDS);
-        assertNull(message.headers().lastHeader(X_CHANNEL_REQUEST_ID_NAME));
+        assertNull(message.headers().lastHeader(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME));
         assertEquals(TEST_LANG, new String(message.headers().lastHeader(HttpHeaders.ACCEPT_LANGUAGE).value()));
         assertEquals(CUSTOM_HEADER_VALUE, new String(message.headers().lastHeader(CUSTOM_HEADER).value()));
     }
 
     @Test
     @Timeout(30)
-    public void testContextPropagationAllowsXChannelRequestIdWhenHeadersBlockedEmpty() throws Exception {
-        System.setProperty("headers.blocked", "");
+    public void testContextPropagationAllowsXChannelRequestIdWhenExempted() throws Exception {
+        System.setProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY, XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME);
+        HeaderPropagationConfiguration.resetCache();
+
         ChannelRequestIdContext.set(X_CHANNEL_REQUEST_ID_VALUE);
         AcceptLanguageContext.set(TEST_LANG);
         AllowedHeadersContext.set(Map.of(CUSTOM_HEADER, CUSTOM_HEADER_VALUE));
@@ -110,8 +112,8 @@ public class ContextPropagationTest {
         ContextManager.clearAll();
 
         ConsumerRecord<Integer, String> message = consumed.get().get(5, TimeUnit.SECONDS);
-        assertNotNull(message.headers().lastHeader(X_CHANNEL_REQUEST_ID_NAME));
-        assertEquals(X_CHANNEL_REQUEST_ID_VALUE, new String(message.headers().lastHeader(X_CHANNEL_REQUEST_ID_NAME).value()));
+        assertNotNull(message.headers().lastHeader(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME));
+        assertEquals(X_CHANNEL_REQUEST_ID_VALUE, new String(message.headers().lastHeader(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME).value()));
 	}
 
 	@Component

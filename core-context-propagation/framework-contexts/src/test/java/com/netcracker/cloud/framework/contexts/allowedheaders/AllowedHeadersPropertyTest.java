@@ -5,6 +5,7 @@ import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
 import com.netcracker.cloud.framework.contexts.data.ContextDataRequest;
 import com.netcracker.cloud.framework.contexts.data.ContextDataResponse;
 import com.netcracker.cloud.framework.contexts.helper.AbstractContextTestWithProperties;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,6 @@ class AllowedHeadersPropertyTest extends AbstractContextTestWithProperties {
     @BeforeAll
     static void setup() {
         System.clearProperty(HEADERS_PROPERTY);
-        HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
     }
 

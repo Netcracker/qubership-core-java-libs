@@ -1,6 +1,7 @@
 package com.netcracker.cloud.contexts;
 
 import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextProvider;
 
 import java.util.*;
 
@@ -100,7 +101,7 @@ public class IncomingContextDataFactory {
 
     private static Map<String, Object> xChannelRequestIdData() {
         Map<String, Object> requestData = new HashMap<>();
-        requestData.put("X-Channel-Request-Id", UUID.randomUUID().toString());
+        requestData.put(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME, UUID.randomUUID().toString());
         return requestData;
     }
 }
