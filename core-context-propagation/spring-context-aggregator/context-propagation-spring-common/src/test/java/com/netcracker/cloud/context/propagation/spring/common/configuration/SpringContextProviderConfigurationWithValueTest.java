@@ -1,6 +1,5 @@
 package com.netcracker.cloud.context.propagation.spring.common.configuration;
 
-import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.annotation.DirtiesContext;
@@ -8,34 +7,30 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextProvider;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Spring integration scenario: {@code headers.blocked} is set to a concrete blockable header.
- * Verifies that the listed header is blocked and the default's
- * {@code X-Channel-Request-Id} entry no longer applies.
- */
 @ExtendWith({HeaderPropagationStateReset.class, SpringExtension.class})
 @ContextConfiguration(classes = SpringContextProviderConfiguration.class)
 @TestPropertySource(properties = {
         "headers.allowed=custom-header",
-        "headers.blocked=Custom-Header"
+        "context.propagation.headers.enable.optional=X-Channel-Request-Id"
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class SpringContextProviderConfigurationWithValueTest {
 
     @Test
-    void shouldSetSystemPropertyAndBlockConfiguredHeader() {
-        assertEquals("Custom-Header", System.getProperty("headers.blocked"));
+    void shouldExemptListedHeaderFromRestrictedList() {
+        assertEquals(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME, System.getProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY));
 
         HeaderPropagationConfiguration.resetCache();
-        assertTrue(HeaderPropagationConfiguration.isBlacklisted("Custom-Header"),
-                "configured header must be blocked");
-        assertTrue(HeaderPropagationConfiguration.isBlacklisted("custom-header"),
-                "blocking must be case-insensitive");
-        assertFalse(HeaderPropagationConfiguration.isBlacklisted("X-Channel-Request-Id"),
-                "explicit configuration overrides the default blocked list");
+        assertFalse(HeaderPropagationConfiguration.isRestricted(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME),
+                "Exempted header must not be blocked");
+        assertTrue(HeaderPropagationConfiguration.restrictedHeaders().isEmpty(),
+                "Any entry of the restricted list must be removed");
     }
 }

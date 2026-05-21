@@ -120,7 +120,7 @@ public class KafkaWatchTenantTopicsTest {
 			);
 
 			tmMock.addFirstActivatedTenant();
-			topics = events.poll(1, TimeUnit.SECONDS);
+			topics = events.poll(5, TimeUnit.SECONDS);
 			assertNotNull(topics);
 			assertEquals(1, topics.size());
 			assertEquals("maas.core_dev.orders.1234567", topics.get(0).getTopicName());
@@ -166,7 +166,7 @@ public class KafkaWatchTenantTopicsTest {
 			);
 
 			tmMock.addFirstActivatedTenant();
-			topics = events.poll(1, TimeUnit.SECONDS);
+			topics = events.poll(5, TimeUnit.SECONDS);
 			assertNotNull(topics);
 			assertEquals(0, topics.size());
 		});

@@ -13,12 +13,14 @@ import jakarta.annotation.PostConstruct;
 
 @Configuration
 public class SpringContextProviderConfiguration {
+
     @Bean
-    public SpringPostAuthnContextProviderFilter springPostAuthnContextProviderFilter(){
+    public SpringPostAuthnContextProviderFilter springPostAuthnContextProviderFilter() {
         return new SpringPostAuthnContextProviderFilter();
     }
+
     @Bean
-    public SpringPreAuthnContextProviderFilter springPreAuthnContextProviderFilter(){
+    public SpringPreAuthnContextProviderFilter springPreAuthnContextProviderFilter() {
         return new SpringPreAuthnContextProviderFilter();
     }
 
@@ -26,17 +28,19 @@ public class SpringContextProviderConfiguration {
     @Autowired
     private Environment environment;
 
+    private static final String ENABLE_OPTIONAL_PROPERTY = "context.propagation.headers.enable.optional";
+ 
     @Value("${headers.allowed:}")
     private String allowedHeaders;
 
-    @Value("${headers.blocked:}")
-    private String blockedHeaders;
+    @Value("${" + ENABLE_OPTIONAL_PROPERTY + ":}")
+    private String enableOptional;
 
     @PostConstruct
     public void init() {
         System.setProperty("headers.allowed", allowedHeaders);
-        if (environment.containsProperty("headers.blocked")) {
-            System.setProperty("headers.blocked", blockedHeaders);
+        if (environment.containsProperty(ENABLE_OPTIONAL_PROPERTY)) {
+            System.setProperty(ENABLE_OPTIONAL_PROPERTY, enableOptional);
         }
     }
 }

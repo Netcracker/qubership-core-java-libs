@@ -9,27 +9,33 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextObject.X_CHANNEL_REQUEST_ID;
 
+/**
+ * Spring integration scenario: {@code context.propagation.headers.enable.optional} contains only
+ * header names that are not part of the framework's restricted list. The configuration has no
+ * effect — the restricted list applies unchanged.
+ */
 @ExtendWith({HeaderPropagationStateReset.class, SpringExtension.class})
 @ContextConfiguration(classes = SpringContextProviderConfiguration.class)
 @TestPropertySource(properties = {
-        // context.propagation.headers.enable.optional intentionally absent
-        "headers.allowed=custom-header"
+        "headers.allowed=custom-header",
+        "context.propagation.headers.enable.optional=Custom-Header, X-Some-Other-Header"
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-class SpringContextProviderConfigurationNotConfiguredTest {
+class SpringContextProviderConfigurationUnknownEntryTest {
 
     @Test
-    void shouldNotTouchSystemPropertyAndKeepRestrictedList() {
-        assertNull(System.getProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY),
-                String.format("System property %s must remain unset when no source configures it",
-                        HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY));
+    void shouldLeaveRestrictedListIntactWhenEntriesDontMatch() {
+        assertEquals("Custom-Header, X-Some-Other-Header",
+                System.getProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY));
 
         HeaderPropagationConfiguration.resetCache();
         assertTrue(HeaderPropagationConfiguration.isRestricted(X_CHANNEL_REQUEST_ID),
-                "Restricted list must apply when no value is configured");
+                "Restricted list must remain intact when no entry matches it");
+        assertEquals(HeaderPropagationConfiguration.RESTRICTED_HEADERS,
+                HeaderPropagationConfiguration.restrictedHeaders());
     }
 }

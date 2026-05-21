@@ -8,9 +8,5 @@ public class HeadersAllowedRecorder {
     public void setAllowedHeadersToSystemProperty(HeadersAllowedConfig allowedConfig) {
         allowedConfig.allowedHeaders()
                 .ifPresent(allowedHeaders -> System.setProperty("headers.allowed", allowedHeaders));
-
-        if (allowedConfig.isBlockedHeadersSet()) {
-            System.setProperty("headers.blocked", allowedConfig.blockedHeaders());
-        }
     }
 }

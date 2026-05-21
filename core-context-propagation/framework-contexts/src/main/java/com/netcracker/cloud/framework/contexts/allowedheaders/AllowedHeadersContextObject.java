@@ -8,6 +8,7 @@ import com.netcracker.cloud.context.propagation.core.contexts.ResponsePropagatab
 import com.netcracker.cloud.context.propagation.core.contexts.SerializableContext;
 import com.netcracker.cloud.context.propagation.core.contexts.SerializableDataContext;
 import com.netcracker.cloud.context.propagation.core.contexts.common.RequestContextObject;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -24,7 +25,7 @@ public class AllowedHeadersContextObject implements SerializableContext,
 
         if (contextData != null) {
             for (String headerName : this.allowedHeaders) {
-                if (!HeaderPropagationConfiguration.isBlacklisted(headerName) && contextData.get(headerName) != null) {
+                if (contextData.get(headerName) != null) {
                     headers.put(headerName, (String) contextData.get(headerName));
                 }
             }
@@ -41,9 +42,7 @@ public class AllowedHeadersContextObject implements SerializableContext,
         Map<String, String> filteredHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         if (headers != null) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
-                if (!HeaderPropagationConfiguration.isBlacklisted(entry.getKey())) {
-                    filteredHeaders.put(entry.getKey(), entry.getValue());
-                }
+                filteredHeaders.put(entry.getKey(), entry.getValue());
             }
         }
         return filteredHeaders;
@@ -52,9 +51,7 @@ public class AllowedHeadersContextObject implements SerializableContext,
     @Override
     public void serialize(OutgoingContextData outgoingContextData) {
         for (String headerName : headers.keySet()) {
-            if (!HeaderPropagationConfiguration.isBlacklisted(headerName)) {
-                outgoingContextData.set(headerName, headers.get(headerName));
-            }
+            outgoingContextData.set(headerName, headers.get(headerName));
         }
     }
 
@@ -67,7 +64,7 @@ public class AllowedHeadersContextObject implements SerializableContext,
         Map<String, List<String>> headersFromContext = ((RequestContextObject) ContextManager.get("request")).getHttpHeaders();
         Map<String, String> result = new HashMap<>();
         for (String headerName : headersFromContext.keySet()) {
-            if (allowedHeaders.contains(headerName) && !HeaderPropagationConfiguration.isBlacklisted(headerName)) {
+            if (allowedHeaders.contains(headerName)) {
                 result.put(headerName, headersFromContext.get(headerName).get(0));
             }
         }
@@ -77,9 +74,7 @@ public class AllowedHeadersContextObject implements SerializableContext,
     @Override
     public void propagate(OutgoingContextData outgoingContextData) {
         for (String headerName : headers.keySet()) {
-            if (!HeaderPropagationConfiguration.isBlacklisted(headerName)) {
-                outgoingContextData.set(headerName, headers.get(headerName));
-            }
+            outgoingContextData.set(headerName, headers.get(headerName));
         }
     }
 

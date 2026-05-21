@@ -2,6 +2,10 @@ package com.netcracker.cloud.quarkus.framework.contexts.deployment;
 
 import com.netcracker.cloud.framework.quarkus.contexts.allowedheaders.HeadersAllowedConfig;
 import com.netcracker.cloud.framework.quarkus.contexts.allowedheaders.HeadersAllowedRecorder;
+import com.netcracker.cloud.framework.quarkus.contexts.xchannelrequestid.HeadersOptionalConfig;
+import com.netcracker.cloud.framework.quarkus.contexts.xchannelrequestid.HeadersOptionalRecorder;
+
+import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
@@ -17,11 +21,24 @@ class FrameworkContextsQuarkusProcessor {
         return new FeatureBuildItem(FEATURE);
     }
 
+    @BuildStep
+    UnremovableBeanBuildItem unremovableBeans() {
+        return UnremovableBeanBuildItem.beanTypes(
+                HeadersAllowedConfig.class,
+                HeadersOptionalConfig.class);
+    }
+
     @Record(ExecutionTime.RUNTIME_INIT)
     @BuildStep
-    ServiceStartBuildItem fillSystemProperty(HeadersAllowedRecorder headersAllowedRecorder, HeadersAllowedConfig config) {
+    ServiceStartBuildItem fillAllowedHeadersSystemProperty(HeadersAllowedRecorder headersAllowedRecorder, HeadersAllowedConfig config) {
         headersAllowedRecorder.setAllowedHeadersToSystemProperty(config);
-
         return new ServiceStartBuildItem("allowedHeadersRecord");
+    }
+
+    @Record(ExecutionTime.RUNTIME_INIT)
+    @BuildStep
+    ServiceStartBuildItem fillOptionalHeadersSystemProperty(HeadersOptionalRecorder headersOptionalRecorder, HeadersOptionalConfig config) {
+        headersOptionalRecorder.setEnableOptionalToSystemProperty(config);
+        return new ServiceStartBuildItem("optionalHeadersRecord");
     }
 }
