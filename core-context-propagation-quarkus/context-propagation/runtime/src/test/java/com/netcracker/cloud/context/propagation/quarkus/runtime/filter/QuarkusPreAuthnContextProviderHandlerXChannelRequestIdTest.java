@@ -1,6 +1,7 @@
 package com.netcracker.cloud.context.propagation.quarkus.runtime.filter;
 
 import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextProvider;
 import com.netcracker.cloud.headerstracking.filters.context.ChannelRequestIdContext;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
@@ -32,7 +33,7 @@ class QuarkusPreAuthnContextProviderHandlerXChannelRequestIdTest {
         HttpServerRequest httpServerRequest = mock(HttpServerRequest.class);
         when(routingContext.request()).thenReturn(httpServerRequest);
 
-        String xChannelRequestId = "X-Channel-Request-Id";
+        String xChannelRequestId = XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME;
         String xChannelRequestIdValue = "channel-123";
 
         MultiMap multiMap = new HeadersMultiMap();

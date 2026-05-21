@@ -6,10 +6,12 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 class HeadersAllowedConfigTest {
+
     @Inject
     HeadersAllowedConfig headersAllowedConfig;
 
@@ -20,6 +22,4 @@ class HeadersAllowedConfigTest {
         assertTrue(value.isPresent(), "quarkus.headers.allowed must be present");
         assertEquals("test-quarkus.headers.allowed", value.get());
     }
-
 }
-

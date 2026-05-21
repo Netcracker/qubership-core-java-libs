@@ -15,7 +15,6 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 class XChannelRequestIdContextObjectApiTest {
 
     @BeforeEach
@@ -33,7 +32,7 @@ class XChannelRequestIdContextObjectApiTest {
     void testXChannelRequestIdFromIncomingContextData() {
         IncomingContextData xChannelRequestIdIncomingContextData = IncomingContextDataFactory.getXChannelRequestIdIncomingContextData();
         XChannelRequestIdContextObject xChannelRequestIdContextObject = new XChannelRequestIdContextObject(xChannelRequestIdIncomingContextData);
-        String expectedValue = (String) xChannelRequestIdIncomingContextData.get("X-Channel-Request-Id");
+        String expectedValue = (String) xChannelRequestIdIncomingContextData.get(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME);
         assertEquals(expectedValue, xChannelRequestIdContextObject.getChannelRequestId());
     }
 
@@ -52,7 +51,7 @@ class XChannelRequestIdContextObjectApiTest {
         RequestContextPropagation.initRequestContext(xChannelRequestIdIncomingContextData);
         XChannelRequestIdContextObject xChannelRequestIdContextObject = ContextManager.get(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME);
     
-        assertEquals(xChannelRequestIdIncomingContextData.get("X-Channel-Request-Id"), xChannelRequestIdContextObject.getChannelRequestId());
+        assertEquals(xChannelRequestIdIncomingContextData.get(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME), xChannelRequestIdContextObject.getChannelRequestId());
     
         // No data, default placeholder "-"
         RequestContextPropagation.initRequestContext(null);

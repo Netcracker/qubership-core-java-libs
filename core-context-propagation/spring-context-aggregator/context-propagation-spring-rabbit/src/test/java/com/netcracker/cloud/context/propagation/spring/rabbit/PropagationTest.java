@@ -2,7 +2,7 @@ package com.netcracker.cloud.context.propagation.spring.rabbit;
 
 import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.context.propagation.spring.rabbit.annotation.EnableRabbitContextPropagation;
-import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
 import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
 import com.netcracker.cloud.headerstracking.filters.context.AllowedHeadersContext;
 import com.netcracker.cloud.headerstracking.filters.context.ChannelRequestIdContext;
@@ -87,12 +87,12 @@ public class PropagationTest {
 			channel.queueBind("orders", "orders", "invoice");
 		}
 		System.setProperty("headers.allowed", CUSTOM_HEADER.toLowerCase());
-		System.clearProperty("headers.blocked");
+		System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
 	}
 
     @AfterAll
     static void teardown() {
-        System.clearProperty("headers.allowed");
+        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
     }
 
     @BeforeEach
@@ -103,13 +103,13 @@ public class PropagationTest {
 
     @AfterEach
     void afterEach() {
-        System.clearProperty("headers.blocked");
+        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
 		HeaderPropagationConfiguration.resetCache();
     }
 
 	@Test
 	@Timeout(value = 20, unit = TimeUnit.SECONDS)
-	public void testXChannelRequestIdBlockedByDefault() throws InterruptedException {
+	void testXChannelRequestIdBlockedByDefault() throws InterruptedException {
 		AcceptLanguageContext.set("ZULU");
 		AllowedHeadersContext.set(Map.of(CUSTOM_HEADER, CUSTOM_HEADER_VALUE));
 		ChannelRequestIdContext.set(X_CHANNEL_REQUEST_ID_VALUE);
@@ -125,8 +125,10 @@ public class PropagationTest {
 
     @Test
     @Timeout(value = 20, unit = TimeUnit.SECONDS)
-    public void testXChannelRequestIdAllowedWhenHeadersBlockedEmpty() throws InterruptedException {
-        System.setProperty("headers.blocked", "");
+    void testXChannelRequestIdAllowedWhenExempted() throws InterruptedException {
+        System.setProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY, X_CHANNEL_REQUEST_ID_NAME);
+        HeaderPropagationConfiguration.resetCache();
+
         AcceptLanguageContext.set("ZULU");
         AllowedHeadersContext.set(Map.of(CUSTOM_HEADER, CUSTOM_HEADER_VALUE));
         ChannelRequestIdContext.set(X_CHANNEL_REQUEST_ID_VALUE);
@@ -142,12 +144,15 @@ public class PropagationTest {
 
 	@Test
 	@Timeout(value = 20, unit = TimeUnit.SECONDS)
-	public void testCustomHeaderBlockedWhenConfiguredByProperty() throws InterruptedException {
-		System.setProperty("headers.blocked", ANOTHER_HEADER);
+	void testUnknownExemptionDoesNotAffectRestrictedList() throws InterruptedException {
+		System.setProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY, ANOTHER_HEADER);
+		HeaderPropagationConfiguration.resetCache();
+
 		AcceptLanguageContext.set("ZULU");
 		AllowedHeadersContext.set(Map.of(
 				CUSTOM_HEADER, CUSTOM_HEADER_VALUE,
 				ANOTHER_HEADER, ANOTHER_HEADER_VALUE));
+		ChannelRequestIdContext.set(X_CHANNEL_REQUEST_ID_VALUE);
 		template.convertAndSend("orders", "invoice", "rye wheat");
 		ContextManager.clearAll();
 
@@ -155,8 +160,10 @@ public class PropagationTest {
 			fail("Message listener failed or message doesn't even arrived in 10 seconds");
 		}
 
-		assertNull(getHeaderIgnoreCase(receivedHeaders.get(), ANOTHER_HEADER));
+		assertNull(getHeaderIgnoreCase(receivedHeaders.get(), X_CHANNEL_REQUEST_ID_NAME),
+				"Restricted list must remain intact when no entry matches it");
 		assertEquals(CUSTOM_HEADER_VALUE, getHeaderIgnoreCase(receivedHeaders.get(), CUSTOM_HEADER));
+		assertEquals(ANOTHER_HEADER_VALUE, getHeaderIgnoreCase(receivedHeaders.get(), ANOTHER_HEADER));
 	}
 
 

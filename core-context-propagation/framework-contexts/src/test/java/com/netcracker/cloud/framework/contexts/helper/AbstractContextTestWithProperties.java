@@ -3,7 +3,7 @@ package com.netcracker.cloud.framework.contexts.helper;
 import java.util.Map;
 
 import com.netcracker.cloud.context.propagation.core.ContextManager;
-import com.netcracker.cloud.framework.contexts.allowedheaders.HeaderPropagationConfiguration;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
 
 public abstract class AbstractContextTestWithProperties {
 
