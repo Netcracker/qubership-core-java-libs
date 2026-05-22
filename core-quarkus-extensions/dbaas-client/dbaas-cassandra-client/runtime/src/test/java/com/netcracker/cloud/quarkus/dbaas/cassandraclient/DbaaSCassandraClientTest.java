@@ -1,15 +1,24 @@
 package com.netcracker.cloud.quarkus.dbaas.cassandraclient;
 
+import com.datastax.oss.driver.api.core.AllNodesFailedException;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.session.Request;
 import com.datastax.oss.driver.api.core.type.reflect.GenericType;
 import com.netcracker.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
 import com.netcracker.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
+import com.netcracker.cloud.dbaas.client.cassandra.service.CassandraLogicalDbProvider;
+import com.netcracker.cloud.dbaas.client.entity.DbaasApiProperties;
+import com.netcracker.cloud.dbaas.client.management.DbaasDbClassifier;
 import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSClassifierBuilder;
+import com.netcracker.cloud.dbaas.common.config.DbaasApiPropertiesConfig;
+import com.netcracker.cloud.dbaas.common.postprocessor.PostConnectProcessorManager;
 import com.netcracker.cloud.quarkus.dbaas.cassandraclient.config.CassandraClientConfiguration;
 import com.netcracker.cloud.quarkus.dbaas.cassandraclient.config.properties.CassandraProperties;
 import com.netcracker.cloud.quarkus.dbaas.cassandraclient.config.properties.DbaaSCassandraDbCreationConfig;
 import com.netcracker.cloud.quarkus.dbaas.cassandraclient.service.CassandraClientCreation;
+import com.netcracker.cloud.quarkus.dbaas.cassandraclient.service.CqlSessionCreator;
+import com.netcracker.cloud.quarkus.dbaas.cassandraclient.service.impl.CassandraClientCreationImpl;
+import jakarta.enterprise.inject.Instance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,12 +28,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class DbaaSCassandraClientTest {
 
@@ -35,6 +43,7 @@ class DbaaSCassandraClientTest {
     @BeforeEach
     void prepareMocks() {
         dbaaSClassifierBuilder = mock(DbaaSClassifierBuilder.class);
+        when(dbaaSClassifierBuilder.build()).thenReturn(new DbaasDbClassifier(Map.of("scope", "service")));
         cqlSession = mock(CqlSession.class);
         CassandraDBConnection cassandraDBConnection = new CassandraDBConnection();
         cassandraDBConnection.setSession(cqlSession);
@@ -137,6 +146,45 @@ class DbaaSCassandraClientTest {
     }
 
     @Test
+    <R extends Request> void testExecuteEvictAndRetryOnAllNodesFailedException() {
+        CqlSession staleSession = mock(CqlSession.class);
+        CqlSession freshSession = mock(CqlSession.class);
+
+        when(staleSession.execute((R) any(), any())).thenThrow(AllNodesFailedException.class);
+
+        CqlSessionCreator cqlSessionCreator = mock(CqlSessionCreator.class);
+        when(cqlSessionCreator.createSession(any(CassandraDatabase.class)))
+                .thenReturn(staleSession)
+                .thenReturn(freshSession);
+
+        CassandraClientCreationImpl creationImpl = createCreationImpl(cqlSessionCreator);
+        DbaaSCassandraClient client = new DbaaSCassandraClient(dbaaSClassifierBuilder, creationImpl);
+
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> client.execute((R) null, null),
+                "Exception should lead to the old connection eviction and creation of a new one");
+
+        verify(freshSession, times(1)).execute((R) any(), any());
+    }
+
+    @Test
+    <R extends Request> void testExecuteAllNodesFailedExceptionPropagatesWhenRetryAlsoFails() {
+        // Both the original and retry session fail: exception must propagate to the caller.
+        CqlSession alwaysFailSession = mock(CqlSession.class);
+        when(alwaysFailSession.execute((R) any(), any()))
+                .thenThrow(AllNodesFailedException.class);
+
+        CqlSessionCreator cqlSessionCreator = mock(CqlSessionCreator.class);
+        when(cqlSessionCreator.createSession(any(CassandraDatabase.class)))
+                .thenReturn(alwaysFailSession);
+
+        CassandraClientCreationImpl realCreation = createCreationImpl(cqlSessionCreator);
+        DbaaSCassandraClient client = new DbaaSCassandraClient(dbaaSClassifierBuilder, realCreation);
+
+        org.junit.jupiter.api.Assertions.assertThrows(AllNodesFailedException.class,
+                () -> client.execute((R) null, null));
+    }
+
+    @Test
     void testCorrectBaseClassifierCreation() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         CassandraClientConfiguration cassandraClientConfiguration = new CassandraClientConfiguration();
         Method method = cassandraClientConfiguration.getClass().getDeclaredMethod("getInitialClassifierMap");
@@ -163,5 +211,31 @@ class DbaaSCassandraClientTest {
         classifeir.put("microserviceName", "test-microserviceName");
         classifeir.put("namespace", "test-namespace");
         assertEquals(classifeir, method.invoke(cassandraClientConfiguration));
+    }
+
+    private CassandraClientCreationImpl createCreationImpl(CqlSessionCreator cqlSessionCreator) {
+        CassandraProperties cassandraProperties = mock(CassandraProperties.class);
+        DbaaSCassandraDbCreationConfig creationConfig = mock(DbaaSCassandraDbCreationConfig.class);
+        when(creationConfig.getCassandraDbConfiguration(any())).thenReturn(null);
+        DbaasApiPropertiesConfig apiPropertiesConfig = mock(DbaasApiPropertiesConfig.class);
+        when(apiPropertiesConfig.getDbaaseApiProperties()).thenReturn(new DbaasApiProperties());
+        when(creationConfig.dbaasApiPropertiesConfig()).thenReturn(apiPropertiesConfig);
+        when(cassandraProperties.cassandraDbCreationConfig()).thenReturn(creationConfig);
+
+        CassandraLogicalDbProvider provider = mock(CassandraLogicalDbProvider.class);
+        when(provider.order()).thenReturn(0);
+        when(provider.provide(any(), any(), any())).thenAnswer(inv -> {
+            CassandraDBConnection conn = new CassandraDBConnection();
+            CassandraDatabase db = new CassandraDatabase();
+            db.setConnectionProperties(conn);
+            return db;
+        });
+        Instance<CassandraLogicalDbProvider> dbProviders = mock(Instance.class);
+        when(dbProviders.stream()).thenAnswer(inv -> Stream.of(provider));
+
+        PostConnectProcessorManager<CassandraDatabase> postConnectProcessorManager = mock(PostConnectProcessorManager.class);
+
+        return new CassandraClientCreationImpl("test-namespace", cassandraProperties,
+                dbProviders, cqlSessionCreator, postConnectProcessorManager);
     }
 }
