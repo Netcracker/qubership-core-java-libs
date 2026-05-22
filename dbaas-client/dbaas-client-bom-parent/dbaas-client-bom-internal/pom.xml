@@ -55,6 +55,11 @@
                 <version>${cloud-core.core-utils.version}</version>
             </dependency>
             <dependency>
+                <artifactId>k8s-utils</artifactId>
+                <groupId>com.netcracker.cloud.security.core.utils</groupId>
+                <version>${cloud-core.core-utils.version}</version>
+            </dependency>
+            <dependency>
                 <artifactId>framework-contexts</artifactId>
                 <groupId>com.netcracker.cloud</groupId>
                 <version>${cloud-core.core-context-propagation.version}</version>
