@@ -29,6 +29,7 @@ Design overview: [context-propagation diagram](./design.png)
     - [Allowed headers](#allowed-headers)
     - [API version](#api-version)
     - [X-Request-Id](#x-request-id)
+    - [X-Channel-Request-Id](#x-channel-request-id)
     - [X-Version](#x-version)
     - [X-Version-Name](#x-version-name)
     - [X-Nc-Client-Ip](#x-nc-client-ip)
@@ -83,7 +84,7 @@ String acceptLanguage = acceptLanguageContextObject.getAcceptedLanguages();
 #### Allowed headers
 
 Allows propagating any specified headers. To set a list of headers you should put either
-`HEADERS_ALLOWED` environment or set the `headers.allowed` property. Property has more precedence than env.
+`HEADERS_ALLOWED` environment or set the `quarkus.headers.allowed` property. Property has more precedence than env.
 
 Access:
 
@@ -93,10 +94,10 @@ Map<String, Object> allowedHeaders = allowedHeadersContextObject.getHeaders();
 ```
 
 You just need to specify a list of headers in `application.properties`
-in the `headers.allowed` property. For example:
+in the `quarkus.headers.allowed` property. For example:
 
 ```properties
-headers.allowed=myheader1,myheader2,...
+quarkus.headers.allowed=myheader1,myheader2,...
 ```
 
 Otherwise, you need to take care that this parameter is in System#property or environment.
@@ -130,34 +131,91 @@ String xRequestId = xRequestIdContextObject.getRequestId();
 
 Propagates and allows to get `X-Channel-Request-Id` value. If an incoming request does not contain the `X-Channel-Request-Id` header then a random value is not generated and the value defaults to placeholder "-". This context is **blocked by default** and will not be propagated to outgoing requests.
 
-**Default behavior:** `X-Channel-Request-Id` is NOT propagated to outgoing responses.
+**Default behavior:** `X-Channel-Request-Id` is NOT propagated to outgoing requests.
 
-**Enabling propagation:** To allow `X-Channel-Request-Id` to be propagated to outgoing requests, remove it from the
-blacklist using one of the following methods:
+#### Restricted contexts
 
-1. **Via environment variable:**
-```text
-HEADERS_BLOCKED=
-```
+The framework owns a hard-coded list of restricted contexts — headers that are not propagated
+to outgoing requests by default. It currently contains:
 
-2. **Via system property:**
-```text
--Dheaders.blocked=
-```
+- `X-Channel-Request-Id`
 
-3. **Via application.properties (Quarkus):**
+The list itself cannot be changed from configuration. The only externally visible knob is the
+`quarkus.context.propagation.headers.enable.optional` property, which names headers from that list
+that should be enabled for propagation.
+
+#### `quarkus.context.propagation.headers.enable.optional` property
+
+The property carries a comma-separated list of header names. Every name that matches a restricted
+context is dropped from the effective restricted list (and thus becomes eligible for propagation).
+Names that are not in the restricted list have no effect.
+
+Examples:
+
+| Property value | Effect |
+|---|---|
+| not set / empty | Restricted list applies in full. `X-Channel-Request-Id` is not propagated. |
+| `X-Channel-Request-Id` | `X-Channel-Request-Id` is propagated to outgoing requests. |
+| `Some-Other-Header` | No effect — the header is not in the restricted list. |
+| `X-Channel-Request-Id, Some-Other-Header` | `X-Channel-Request-Id` is propagated; the second entry is ignored. |
+
+Comparison is case-insensitive. Whitespace around comma-separated entries is trimmed.
+
+#### How to set the property
+
+**Via `application.properties`:**
+
 ```properties
-headers.blocked=
+quarkus.context.propagation.headers.enable.optional=X-Channel-Request-Id
 ```
 
-**`headers.blocked` rules and limitations**
+**Via `application.yaml`:**
 
-- Source priority: system property `headers.blocked` overrides environment variable `HEADERS_BLOCKED`.
-- Default when not configured at all: `X-Channel-Request-Id` is blocked.
-- Explicit empty value (`headers.blocked=` / `HEADERS_BLOCKED=`): blacklist is empty (nothing is blocked).
-- Explicit non-empty value with valid headers (for example `headers.blocked=Some-Header`): only listed headers are blocked.
-- `X-Request-Id` is non-blockable: if it is listed in `headers.blocked`/`HEADERS_BLOCKED`, it is ignored.
-- If configured value contains only non-blockable entries (for example only `X-Request-Id`), default block is applied and `X-Channel-Request-Id` remains blocked.
+```yaml
+quarkus:
+  context:
+    propagation:
+      headers:
+        enable:
+          optional: X-Channel-Request-Id
+```
+
+**Via JVM system property:**
+
+```text
+-Dquarkus.context.propagation.headers.enable.optional=X-Channel-Request-Id
+```
+
+**Sourcing the value from an environment variable**
+
+Instead of hard-coding the list of enabled headers in `application.properties` / `application.yaml`,
+the value can be sourced from an environment variable using a standard `${ENV_VAR:default}` placeholder.
+This way the file structure stays the same across environments and the actual list is controlled
+externally — through an ENV variable that is set somewhere outside Quarkus (a container manifest,
+a Helm chart, `systemd` unit, CI variable, local shell, etc.).
+
+```properties
+quarkus.context.propagation.headers.enable.optional=${CONTEXT_PROPAGATION_HEADERS_ENABLE_OPTIONAL:}
+```
+
+or, equivalently, in `application.yaml`:
+
+```yaml
+quarkus:
+  context:
+    propagation:
+      headers:
+        enable:
+          optional: ${CONTEXT_PROPAGATION_HEADERS_ENABLE_OPTIONAL:}
+```
+
+The trailing `:` (empty default) lets the property gracefully resolve to an empty value when the ENV
+variable is absent — under our model that is equivalent to "not configured" and the restricted list
+applies in full. Setting `CONTEXT_PROPAGATION_HEADERS_ENABLE_OPTIONAL=X-Channel-Request-Id` in the runtime
+environment enables that header for propagation without touching the YAML.
+
+The ENV variable name in the placeholder is just a contract between the application file and the runtime
+environment — it can be any name, as long as both sides agree.
 
 **MDC Integration:** The channel request ID is automatically stored in MDC under the key `x_channel_request_id` for use in 
 logging. 
@@ -484,8 +542,6 @@ executorService.submit(contextPropagationCallable).get();
 
 Sometimes, you may use `CompletableFuture` class and this way it would be convenient to use `ContextPropagationSupplier` delegator. This class takes delegate and context snapshot.
 If you want to perform a task in a current context then you can perform the following code:
-
 ```java
 ContextPropagationSupplier contextPropagationSupplier = new ContextPropagationSupplier(ContextManager.createContextSnapshot(), delegate);
 ```
-
