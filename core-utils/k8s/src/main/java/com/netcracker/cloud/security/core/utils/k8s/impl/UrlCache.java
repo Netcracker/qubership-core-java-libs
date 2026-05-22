@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class UrlCache {
-    private static final String INTERNAL_GATEWAY = "internal-gateway";
+    private static final String INTERNAL_GATEWAY = "internal-gateway-service";
     private static final int CACHE_SIZE = 400;
     private static final long CACHE_DURATION_SECONDS = TimeUnit.HOURS.toSeconds(5);
     private final Cache<String, Boolean> cache;
@@ -48,7 +48,7 @@ public class UrlCache {
     }
 
     public static String calculateCacheKey(final URI parsedURI) {
-        return parsedURI.getHost().contains(INTERNAL_GATEWAY)
+        return parsedURI.getHost().equals(INTERNAL_GATEWAY)
                 ? calculateCacheKeyForInternalGateway(parsedURI)
                 : parsedURI.getHost() + ":" + parsedURI.getPort();
     }
