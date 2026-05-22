@@ -25,7 +25,7 @@ public class UrlCache {
     public UrlCache(final int cacheSize, final long ttlSeconds) {
         this.cache = Caffeine.newBuilder()
                 .maximumSize(cacheSize)
-                .expireAfterAccess(ttlSeconds, TimeUnit.SECONDS)
+                .expireAfterWrite(ttlSeconds, TimeUnit.SECONDS)
                 .build();
     }
 
