@@ -21,6 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <cloud-core.core-context-propagation.version>8.2.1-SNAPSHOT</cloud-core.core-context-propagation.version>
         <cloud-core.core-blue-green-state-monitor.version>2.1.0-SNAPSHOT</cloud-core.core-blue-green-state-monitor.version>
+        <cloud-core.core-utils.version>3.1.0-SNAPSHOT</cloud-core.core-utils.version>
 
         <kafka.version>4.2.0</kafka.version>
 
@@ -68,6 +69,11 @@
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>framework-contexts</artifactId>
                 <version>${cloud-core.core-context-propagation.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>k8s-utils</artifactId>
+                <groupId>com.netcracker.cloud.security.core.utils</groupId>
+                <version>${cloud-core.core-utils.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
