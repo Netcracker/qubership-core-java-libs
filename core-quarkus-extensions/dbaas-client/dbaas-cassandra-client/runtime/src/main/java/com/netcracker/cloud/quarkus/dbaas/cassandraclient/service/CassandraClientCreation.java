@@ -5,4 +5,7 @@ import com.netcracker.cloud.dbaas.client.management.DbaasDbClassifier;
 
 public interface CassandraClientCreation {
     CassandraDatabase getOrCreateCassandraDatabase(DbaasDbClassifier classifier);
+
+    default void evictCassandraDatabase(DbaasDbClassifier classifier) {
+    }
 }

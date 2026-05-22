@@ -1,11 +1,6 @@
 package com.netcracker.cloud.quarkus.dbaas.cassandraclient.service.impl;
 
 import com.datastax.oss.driver.api.core.CqlSession;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import com.netcracker.cloud.dbaas.client.cassandra.entity.connection.CassandraDBConnection;
 import com.netcracker.cloud.dbaas.client.cassandra.entity.database.CassandraDatabase;
 import com.netcracker.cloud.dbaas.client.cassandra.service.CassandraLogicalDbProvider;
@@ -17,6 +12,11 @@ import com.netcracker.cloud.quarkus.dbaas.cassandraclient.config.properties.Cass
 import com.netcracker.cloud.quarkus.dbaas.cassandraclient.config.properties.CassandraProperties;
 import com.netcracker.cloud.quarkus.dbaas.cassandraclient.service.CassandraClientCreation;
 import com.netcracker.cloud.quarkus.dbaas.cassandraclient.service.CqlSessionCreator;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.Comparator;
 import java.util.List;
@@ -28,24 +28,45 @@ import java.util.stream.Collectors;
 @Slf4j
 @ApplicationScoped
 public class CassandraClientCreationImpl implements CassandraClientCreation {
-    @ConfigProperty(name = "cloud.microservice.namespace")
     String namespace;
-
-    @Inject
     CassandraProperties cassandraProperties;
-    @Inject
     Instance<CassandraLogicalDbProvider> dbProviders;
-    @Inject
     CqlSessionCreator cqlSessionCreator;
-    @Inject
     PostConnectProcessorManager<CassandraDatabase> postConnectProcessorManager;
 
     private final Map<DbaasDbClassifier, CassandraDatabase> cassandraDbMap = new ConcurrentHashMap<>();
+
+    @Inject
+    public CassandraClientCreationImpl(
+            @ConfigProperty(name = "cloud.microservice.namespace") String namespace,
+            CassandraProperties cassandraProperties,
+            Instance<CassandraLogicalDbProvider> dbProviders,
+            CqlSessionCreator cqlSessionCreator,
+            PostConnectProcessorManager<CassandraDatabase> postConnectProcessorManager) {
+        this.namespace = namespace;
+        this.cassandraProperties = cassandraProperties;
+        this.dbProviders = dbProviders;
+        this.cqlSessionCreator = cqlSessionCreator;
+        this.postConnectProcessorManager = postConnectProcessorManager;
+    }
 
     @Override
     public CassandraDatabase getOrCreateCassandraDatabase(DbaasDbClassifier classifier) {
         log.trace("Create new cassandra database for {}", classifier);
         return cassandraDbMap.computeIfAbsent(classifier, this::createCassandraDatabase);
+    }
+
+    @Override
+    public void evictCassandraDatabase(DbaasDbClassifier classifier) {
+        CassandraDatabase removed = cassandraDbMap.remove(classifier);
+        if (removed != null) {
+            log.info("Evicted cassandra database for classifier {}. Closing stale session.", classifier);
+            try {
+                removed.getConnectionProperties().close();
+            } catch (Exception e) {
+                log.warn("Failed to close stale cassandra session for classifier {}", classifier, e);
+            }
+        }
     }
 
     private CassandraDatabase createCassandraDatabase(DbaasDbClassifier dbaasDbClassifier) {
