@@ -6,6 +6,6 @@ class MaaSAPIClientImplTest {
     @Test
     void testConstructor() {
         // test that constructor runnable and doesn't throw any exception
-        new MaaSAPIClientImpl(() -> "faketoken").getRabbitClient();
+        new MaaSAPIClientImpl(() -> "faketoken", false).getRabbitClient();
     }
 }

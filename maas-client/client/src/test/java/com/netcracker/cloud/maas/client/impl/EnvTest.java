@@ -12,35 +12,32 @@ class EnvTest {
     @Test
     void testApiUrl() {
         withProp(Env.PROP_MAAS_AGENT_URL, null, () ->
-                assertEquals("http://maas-agent:8080", Env.apiUrl())
+                assertEquals("http://maas-agent:8080", Env.apiUrl(false))
         );
     }
 
     @Test
     void testApiUrlOverride() {
         withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:8080/", () ->
-                assertEquals("http://localhost:8080", Env.apiUrl())
+                assertEquals("http://localhost:8080", Env.apiUrl(false))
         );
     }
 
     @Test
     void testApiUrlWrongOverride() {
         withProp(Env.PROP_MAAS_AGENT_URL, "localhost:8080", () ->
-                assertThrows(IllegalArgumentException.class, Env::apiUrl)
+                assertThrows(IllegalArgumentException.class, () -> Env.apiUrl(false))
         );
     }
 
     @Test
     void testApiUrlK8sEnabled() throws Exception {
-        withEnvironmentVariable(Env.ENV_K8S_ENABLED, "true")
-                .execute(() -> {
-                    withProp(Env.PROP_MAAS_AGENT_URL, null, () ->
-                            assertEquals("http://maas-agent:8080", Env.apiUrl())
-                    );
-                    withProp(Env.PROP_MAAS_URL,  "http://localhost:8080/", () ->
-                            assertEquals(  "http://localhost:8080", Env.apiUrl())
-                    );
-                });
+        withProp(Env.PROP_MAAS_AGENT_URL, null, () ->
+                assertEquals("http://maas-agent:8080", Env.apiUrl(true))
+        );
+        withProp(Env.PROP_MAAS_URL,  "http://localhost:8080/", () ->
+                assertEquals(  "http://localhost:8080", Env.apiUrl(true))
+        );
     }
 
     @Test

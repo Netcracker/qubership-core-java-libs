@@ -41,6 +41,8 @@ public class RouteRegistrationConfig {
 
     private Optional<String> deploymentVersion;
 
+    private boolean k8sEnabled;
+
     public RouteRegistrationConfig(@ConfigProperty(name = "cloud.microservice.name") String microserviceName,
                                    @ConfigProperty(name = "cloud.microservice.namespace") String cloudNamespace,
                                    @ConfigProperty(name = "apigateway.control-plane.url") Optional<String> controlPlaneUrl,
@@ -48,7 +50,8 @@ public class RouteRegistrationConfig {
                                    @ConfigProperty(name = "quarkus.http.port", defaultValue = "8080") String microservicePort,
                                    @ConfigProperty(name = "apigateway.routes.registration.enabled", defaultValue = "true") Boolean postRoutesEnabled,
                                    @ConfigProperty(name = "cloud.microservice.bg_version") Optional<String> deploymentVersion,
-                                   @ConfigProperty(name = "SERVICE_MESH_TYPE") Optional<ServiceMeshType> serviceMeshType) {
+                                   @ConfigProperty(name = "SERVICE_MESH_TYPE") Optional<ServiceMeshType> serviceMeshType,
+                                   @ConfigProperty(name = "security.m2m.kubernetes.enabled", defaultValue = "false") boolean k8sEnabled) {
         this.microserviceName = microserviceName;
         this.cloudNamespace = cloudNamespace;
         this.controlPlaneUrl = controlPlaneUrl;
@@ -58,6 +61,7 @@ public class RouteRegistrationConfig {
 
         this.cloudServiceName = microserviceName;
         this.deploymentVersion = deploymentVersion;
+        this.k8sEnabled = k8sEnabled;
         deploymentVersion.ifPresent(s -> this.cloudServiceName += "-" + s);
     }
 
@@ -81,7 +85,7 @@ public class RouteRegistrationConfig {
     @Produces
     @Named(CONTROL_PLANE_HTTP_CLIENT)
     OkHttpClient controlPlaneHttpClient() {
-        return M2MClientFactory.getM2mOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue())
+        return M2MClientFactory.getM2mOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue(), k8sEnabled)
                 .newBuilder()
                 .retryOnConnectionFailure(true)
                 .build();

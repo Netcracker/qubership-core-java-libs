@@ -14,14 +14,19 @@ import com.netcracker.maas.declarative.kafka.client.impl.topic.provider.impl.Maa
 import io.quarkus.arc.DefaultBean;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 
 @Singleton
 public class MaasKafkaProdClientConfig {
+
+    @ConfigProperty(name = "security.m2m.kubernetes.enabled", defaultValue = "false")
+    boolean k8sEnabled;
+
     @Singleton
     @Produces
     KafkaMaaSClient kafkaMaaSClient(MaasKafkaProps props, M2MManager m2mManager) {
-        HttpClient httpClient = HttpClient.getM2mClient(() -> m2mManager.getToken().getTokenValue());
+        HttpClient httpClient = HttpClient.getM2mClient(() -> m2mManager.getToken().getTokenValue(), k8sEnabled);
         return new KafkaMaaSClientImpl(
                 httpClient,
                 () -> new TenantManagerConnectorImpl(httpClient),
@@ -41,7 +46,7 @@ public class MaasKafkaProdClientConfig {
     @Produces
     @DefaultBean
     InternalTenantService internalTenantService(M2MManager m2mManager) {
-        HttpClient httpClient = HttpClient.getM2mClient(() -> m2mManager.getToken().getTokenValue());
+        HttpClient httpClient = HttpClient.getM2mClient(() -> m2mManager.getToken().getTokenValue(), k8sEnabled);
         TenantManagerConnectorImpl tenantManagerConnector = new TenantManagerConnectorImpl(httpClient);
         return new InternalTenantServiceImpl(tenantManagerConnector);
     }

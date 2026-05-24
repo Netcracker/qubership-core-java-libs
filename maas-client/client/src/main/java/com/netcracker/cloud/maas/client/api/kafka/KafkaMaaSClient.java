@@ -54,7 +54,7 @@ public interface KafkaMaaSClient extends AutoCloseable {
      *
      * Typical code snippet to subscribe on tenant topics:
      * <pre>
-     *     kafkaClient = new MaaSAPIClientImpl(() -&gt; token).getKafkaClient();
+     *     kafkaClient = new MaaSAPIClientImpl(() -> token, false).getKafkaClient();
      *     kafkaClient.watchTenantTopics("orders", topics -&gt; {
      *             if (!topics.isEmpty()) {
      *                 KafkaConsumer&lt;Integer, OrderRecord&gt; consumer = getConsumer(topics.get(0).getBoostrapServers("PLAINTEXT"));

@@ -36,14 +36,15 @@ public class ConfigServerClientImpl implements ConfigServerClient {
     private URL url;
 
     public ConfigServerClientImpl(String csUrl) throws MalformedURLException {
-        client = M2MClientFactory.getM2mOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue())
+        final Config cfg = ConfigProvider.getConfig();
+        boolean k8sEnabled = cfg.getOptionalValue("security.m2m.kubernetes.enabled", Boolean.class).orElse(false);
+        client = M2MClientFactory.getM2mOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue(), k8sEnabled)
                 .newBuilder()
                 .connectionSpecs(Collections.singletonList(
                         csUrl.startsWith("https") ? ConnectionSpec.COMPATIBLE_TLS : ConnectionSpec.CLEARTEXT)
                 )
                 .sslSocketFactory(TlsUtils.getSslContext().getSocketFactory(), TlsUtils.getTrustManager())
                 .build();
-        final Config cfg = ConfigProvider.getConfig();
         String appName = cfg.getValue("cloud.microservice.name", String.class);
         url = new URL(csUrl + "/" + appName + "/default");
         mapper = new ObjectMapper();

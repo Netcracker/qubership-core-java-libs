@@ -52,7 +52,7 @@ class ServerApiVersionTest {
         );
 
         System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, "http://localhost:" + mockServer.getPort());
-        var httpClient = HttpClient.getMaasClient(() -> "faketoken");
+        var httpClient = HttpClient.getMaasClient(() -> "faketoken", false);
         System.clearProperty(M2MClientFactory.MAAS_AGENT_URL_PROP);
         return new ServerApiVersion(httpClient, "http://localhost:" + mockServer.getPort());
     }

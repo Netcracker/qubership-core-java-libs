@@ -54,12 +54,12 @@ public class KafkaWatchTenantTopicsTest {
             var agentUrl = "http://localhost:" + mockServer.getPort();
             System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, agentUrl);
 
-			HttpClient httpClient = HttpClient.getMaasClient(() -> "faketoken");
+			HttpClient httpClient = HttpClient.getMaasClient(() -> "faketoken", false);
 			var serverApiVersion = new ServerApiVersion(httpClient, agentUrl);
 
 			KafkaMaaSClientImpl client = new KafkaMaaSClientImpl(
 					httpClient,
-					() -> new TenantManagerConnectorImpl(tmMock.getUrl(), HttpClient.getM2mClient(() -> "faketoken")),
+					() -> new TenantManagerConnectorImpl(tmMock.getUrl(), HttpClient.getM2mClient(() -> "faketoken", false)),
 					new ApiUrlProvider(serverApiVersion, agentUrl));
 
 			BlockingQueue<List<TopicAddress>> events = new LinkedBlockingDeque<>();
@@ -136,12 +136,12 @@ public class KafkaWatchTenantTopicsTest {
             var agentUrl = "http://localhost:" + mockServer.getPort();
             System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, agentUrl);
 
-			HttpClient httpClient = HttpClient.getMaasClient(() -> "faketoken");
+			HttpClient httpClient = HttpClient.getMaasClient(() -> "faketoken", false);
 			var serverApiVersion = new ServerApiVersion(httpClient, agentUrl);
 
 			KafkaMaaSClientImpl client = new KafkaMaaSClientImpl(
 					httpClient,
-					() -> new TenantManagerConnectorImpl(tmMock.getUrl(), HttpClient.getM2mClient(() -> "faketoken")),
+					() -> new TenantManagerConnectorImpl(tmMock.getUrl(), HttpClient.getM2mClient(() -> "faketoken", false)),
 					new ApiUrlProvider(serverApiVersion, agentUrl));
 
 			BlockingQueue<List<TopicAddress>> events = new LinkedBlockingDeque<>();

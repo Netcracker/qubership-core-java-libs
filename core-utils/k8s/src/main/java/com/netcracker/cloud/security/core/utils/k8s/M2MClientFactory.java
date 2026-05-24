@@ -17,20 +17,20 @@ public final class M2MClientFactory {
     private static final Supplier<String> k8sAuthHeaderSupplier =
             getBearerAuthHeaderSupplier(() -> KubernetesAudienceToken.getToken(AudienceName.NETCRACKER));
 
-    public static OkHttpClient getM2mOkHttpClient(Supplier<String> keycloakTokenSupplier) {
-        return getOkHttpClient(new M2MInterceptor(new UrlCache(), getBearerAuthHeaderSupplier(keycloakTokenSupplier), k8sAuthHeaderSupplier));
+    public static OkHttpClient getM2mOkHttpClient(Supplier<String> keycloakTokenSupplier, boolean k8sEnabled) {
+        return getOkHttpClient(new M2MInterceptor(new UrlCache(), getBearerAuthHeaderSupplier(keycloakTokenSupplier), k8sAuthHeaderSupplier, k8sEnabled));
     }
 
-    public static OkHttpClient getDbaasOkHttpClient(Supplier<String> keycloakTokenSupplier) {
-        return getAgentOkHttpClient(keycloakTokenSupplier, Optional.ofNullable(System.getProperty(DBAAS_AGENT_URL_PROP)).orElse("http://dbaas-agent:8080"));
+    public static OkHttpClient getDbaasOkHttpClient(Supplier<String> keycloakTokenSupplier, boolean k8sEnabled) {
+        return getAgentOkHttpClient(keycloakTokenSupplier, Optional.ofNullable(System.getProperty(DBAAS_AGENT_URL_PROP)).orElse("http://dbaas-agent:8080"), k8sEnabled);
     }
 
-    public static OkHttpClient getMaasOkHttpClient(Supplier<String> keycloakTokenSupplier) {
-        return getAgentOkHttpClient(keycloakTokenSupplier, Optional.ofNullable(System.getProperty(MAAS_AGENT_URL_PROP)).orElse("http://maas-agent:8080"));
+    public static OkHttpClient getMaasOkHttpClient(Supplier<String> keycloakTokenSupplier, boolean k8sEnabled) {
+        return getAgentOkHttpClient(keycloakTokenSupplier, Optional.ofNullable(System.getProperty(MAAS_AGENT_URL_PROP)).orElse("http://maas-agent:8080"), k8sEnabled);
     }
 
-    private static OkHttpClient getAgentOkHttpClient(Supplier<String> keycloakTokenSupplier, String agentUrl) {
-        return getOkHttpClient(new M2MInterceptor(new UrlCache(), getBearerAuthHeaderSupplier(keycloakTokenSupplier), k8sAuthHeaderSupplier, agentUrl));
+    private static OkHttpClient getAgentOkHttpClient(Supplier<String> keycloakTokenSupplier, String agentUrl, boolean k8sEnabled) {
+        return getOkHttpClient(new M2MInterceptor(new UrlCache(), getBearerAuthHeaderSupplier(keycloakTokenSupplier), k8sAuthHeaderSupplier, agentUrl, k8sEnabled));
     }
 
     private static OkHttpClient getOkHttpClient(M2MInterceptor interceptor) {

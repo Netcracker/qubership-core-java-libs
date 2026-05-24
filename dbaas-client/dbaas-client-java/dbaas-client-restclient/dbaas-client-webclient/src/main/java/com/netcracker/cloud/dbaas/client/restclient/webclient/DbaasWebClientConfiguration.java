@@ -6,6 +6,7 @@ import com.netcracker.cloud.security.core.auth.M2MManager;
 import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import com.netcracker.cloud.smartclient.config.annotation.EnableFrameworkWebClient;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
@@ -18,9 +19,12 @@ import java.util.function.Consumer;
 @EnableFrameworkWebClient
 public class DbaasWebClientConfiguration {
 
+    @Value("${security.m2m.kubernetes.enabled:false}")
+    private boolean k8sEnabled;
+
     @Bean("dbaasRestClient")
     public MicroserviceRestClient dbaasRestClient(M2MManager m2MManager) {
-        var client = M2MClientFactory.getDbaasOkHttpClient(() -> m2MManager.getToken().getTokenValue());
+        var client = M2MClientFactory.getDbaasOkHttpClient(() -> m2MManager.getToken().getTokenValue(), k8sEnabled);
         return new MicroserviceOkHttpRestClient(client);
     }
 

@@ -24,7 +24,7 @@ public class WebClientConfigServerConfigDataLocationResolver extends AbstractCus
     @Override
     public MicroserviceRestClient getMicroserviceRestClient() {
         if (hasM2M(configurableBootstrapContext)) {
-            var client = M2MClientFactory.getM2mOkHttpClient(() -> getM2MToken(configurableBootstrapContext));
+            var client = M2MClientFactory.getM2mOkHttpClient(() -> getM2MToken(configurableBootstrapContext), k8sEnabled);
             return new MicroserviceOkHttpRestClient(client);
         }
         return createM2MWebClient();

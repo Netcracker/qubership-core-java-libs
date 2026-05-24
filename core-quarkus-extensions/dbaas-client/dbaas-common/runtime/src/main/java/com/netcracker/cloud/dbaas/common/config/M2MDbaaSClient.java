@@ -42,7 +42,7 @@ public class M2MDbaaSClient {
             dbaasUrl = dbaasConfig.dbaasUrl().orElse(dbaasAgentUrl);
         }
 
-        OkHttpClient httpClient = M2MClientFactory.getDbaasOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue());
+        OkHttpClient httpClient = M2MClientFactory.getDbaasOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue(), securityConfig.k8sEnabled());
 
         httpClient = httpClient.newBuilder()
                 .addInterceptor(chain -> {
