@@ -68,7 +68,7 @@ class M2MInterceptorTest {
                 .withHeader("Authorization", equalTo(K8S_TOKEN_HEADER))
                 .willReturn(aResponse().withStatus(200)));
 
-        try (Response response = client.newCall(buildRequest()).execute()) {
+        try (Response response = client.newCall(alterRequest()).execute()) {
             assertEquals(200, response.code());
         }
 
@@ -88,7 +88,7 @@ class M2MInterceptorTest {
                 .withHeader("Authorization", equalTo(FALLBACK_TOKEN_HEADER))
                 .willReturn(aResponse().withStatus(200)));
 
-        try (Response response = client.newCall(buildRequest()).execute()) {
+        try (Response response = client.newCall(alterRequest()).execute()) {
             assertEquals(200, response.code());
         }
 
@@ -97,7 +97,7 @@ class M2MInterceptorTest {
         verify(1, getRequestedFor(urlEqualTo(TEST_ENDPOINT)).withHeader("Authorization", equalTo(FALLBACK_TOKEN_HEADER)));
 
         // 3. Second call should go STRAIGHT to fallback because URL is now cached as "non-k8s"
-        try (Response response = client.newCall(buildRequest()).execute()) {
+        try (Response response = client.newCall(alterRequest()).execute()) {
             assertEquals(200, response.code());
         }
 
@@ -116,7 +116,7 @@ class M2MInterceptorTest {
                 .withHeader("Authorization", equalTo(FALLBACK_TOKEN_HEADER))
                 .willReturn(aResponse().withStatus(200)));
 
-        try (Response response = client.newCall(buildRequest()).execute()) {
+        try (Response response = client.newCall(alterRequest()).execute()) {
             assertEquals(200, response.code());
         }
 
@@ -132,11 +132,11 @@ class M2MInterceptorTest {
         when(fallbackSupplier.get()).thenReturn("");
 
         assertThrows(IllegalStateException.class, () -> {
-            client.newCall(buildRequest()).execute();
+            client.newCall(alterRequest()).execute();
         });
     }
 
-    private Request buildRequest() {
+    private Request alterRequest() {
         return new Request.Builder()
                 .url(wireMockServer.baseUrl() + TEST_ENDPOINT)
                 .get()

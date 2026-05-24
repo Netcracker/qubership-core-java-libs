@@ -62,21 +62,21 @@ public final class M2MInterceptor implements Interceptor {
             //first call (no information) / kubernetes token is applicable
             final Request altered;
             try {
-                altered = buildRequest(request, k8sAuthHeaderSupplier.get(), false);
+                altered = alterRequest(request, k8sAuthHeaderSupplier.get(), false);
             } catch (IllegalStateException|IllegalArgumentException ex) {
-                final Request fallbackRequest = buildRequest(request, fallbackAuthHeaderSupplier.get(), true);
+                final Request fallbackRequest = alterRequest(request, fallbackAuthHeaderSupplier.get(), true);
                 return doRequestFallback(fallbackRequest, KUBERNETES_TOKEN_ACQUISITION_ERROR, cacheKey, chain);
             }
             final Response response = chain.proceed(altered);
             if (response.code() == HTTP_UNAUTHORIZED) {
                 //authentication failed, need to use old approach
                 response.close();
-                final Request fallbackRequest = buildRequest(request, fallbackAuthHeaderSupplier.get(), true);
+                final Request fallbackRequest = alterRequest(request, fallbackAuthHeaderSupplier.get(), true);
                 return doRequestFallback(fallbackRequest, KUBERNETES_TOKEN_UNAUTHORIZED_ERROR, cacheKey, chain);
             }
             return response;
         }
-        final Request fallbackRequest = buildRequest(request, fallbackAuthHeaderSupplier.get(), true);
+        final Request fallbackRequest = alterRequest(request, fallbackAuthHeaderSupplier.get(), true);
         return chain.proceed(fallbackRequest);
     }
 
@@ -96,7 +96,7 @@ public final class M2MInterceptor implements Interceptor {
         return fallbackResponse;
     }
 
-    private Request buildRequest(final Request initialRequest, final String authHeader, final boolean useFallbackUrl) {
+    private Request alterRequest(final Request initialRequest, final String authHeader, final boolean useFallbackUrl) {
         if (StringUtils.isEmpty(authHeader)) {
             throw new IllegalStateException("M2M auth header is empty.");
         }
