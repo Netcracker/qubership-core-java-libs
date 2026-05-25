@@ -29,10 +29,10 @@
         <!-- Logging -->
         <slf4j.version>2.0.17</slf4j.version>
         <logback.version>1.5.32</logback.version>
-        <log4j.version>2.25.3</log4j.version>
+        <log4j.version>2.26.0</log4j.version>
 
         <!-- Build / annotation processing -->
-        <lombok.version>1.18.44</lombok.version>
+        <lombok.version>1.18.46</lombok.version>
         <jandex.version>3.5.3</jandex.version>
 
         <!-- Jackson -->
@@ -78,7 +78,7 @@
         <junit-bom.version>6.0.3</junit-bom.version>
         <mockito.version>5.21.0</mockito.version>
         <assertj.version>3.27.7</assertj.version>
-        <testcontainers.version>2.0.4</testcontainers.version>
+        <testcontainers.version>2.0.5</testcontainers.version>
         <system-stubs.version>2.1.8</system-stubs.version>
         <junit-pioneer.version>2.3.0</junit-pioneer.version>
         <h2.version>2.4.240</h2.version>
