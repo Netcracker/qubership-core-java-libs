@@ -13,6 +13,7 @@
   <artifactId>routes-registrator-parent</artifactId>
 
   <properties>
+    <mockito-inline.version>5.2.0</mockito-inline.version>
     <sonar.coverage.jacoco.xmlReportPaths>
       ${project.basedir}/../../report-aggregate/target/site/jacoco-aggregate/jacoco.xml
     </sonar.coverage.jacoco.xmlReportPaths>

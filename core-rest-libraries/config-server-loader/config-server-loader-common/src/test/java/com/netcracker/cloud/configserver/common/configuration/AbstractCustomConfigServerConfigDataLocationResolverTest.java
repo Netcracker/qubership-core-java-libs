@@ -81,4 +81,17 @@ class AbstractCustomConfigServerConfigDataLocationResolverTest {
                 !configServerConfigDataResource.getProperties().isFailFast());
     }
 
+    @Test
+    void checkK8sEnabledPropertyBinding() throws Exception {
+        environment.setProperty("security.m2m.kubernetes.enabled", "true");
+        Profiles profiles = mock(Profiles.class);
+
+        abstractConfigDataLocationResolver.resolveProfileSpecific(context, ConfigDataLocation.of("optional:configserver:http://config-server:8080"), profiles);
+
+        java.lang.reflect.Field field = AbstractCustomConfigServerConfigDataLocationResolver.class.getDeclaredField("k8sEnabled");
+        field.setAccessible(true);
+        boolean k8sEnabled = (boolean) field.get(abstractConfigDataLocationResolver);
+
+        assertThat(k8sEnabled).isTrue();
+    }
 }
