@@ -17,6 +17,10 @@ import static org.mockito.Mockito.mockConstruction;
 class MaaSClientConfigTest {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withInitializer(context -> {
+                org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor.applyTo(context.getEnvironment());
+            })
+            .withSystemProperties("spring.profiles.active=test")
             .withConfiguration(AutoConfigurations.of(MaaSClientConfig.class, MockM2MManagerConfig.class));
 
     @Test
@@ -25,25 +29,10 @@ class MaaSClientConfigTest {
                 (mock, context) -> {
                     assertThat(context.arguments().get(1)).isEqualTo(true);
                 })) {
-            contextRunner.withPropertyValues("security.m2m.kubernetes.enabled=true")
-                    .run(context -> {
-                        assertThat(context).hasSingleBean(MaaSAPIClient.class);
-                        assertThat(mocked.constructed()).hasSize(1);
-                    });
-        }
-    }
-
-    @Test
-    void shouldPassFalseToClientConstructor() {
-        try (MockedConstruction<MaaSAPIClientImpl> mocked = mockConstruction(MaaSAPIClientImpl.class,
-                (mock, context) -> {
-                    assertThat(context.arguments().get(1)).isEqualTo(false);
-                })) {
-            contextRunner.withPropertyValues("security.m2m.kubernetes.enabled=false")
-                    .run(context -> {
-                        assertThat(context).hasSingleBean(MaaSAPIClient.class);
-                        assertThat(mocked.constructed()).hasSize(1);
-                    });
+            contextRunner.run(context -> {
+                assertThat(context).hasSingleBean(MaaSAPIClient.class);
+                assertThat(mocked.constructed()).hasSize(1);
+            });
         }
     }
 

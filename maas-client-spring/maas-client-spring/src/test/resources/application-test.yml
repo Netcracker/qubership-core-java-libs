@@ -1,0 +1,4 @@
+security:
+  m2m:
+    kubernetes:
+      enabled: true

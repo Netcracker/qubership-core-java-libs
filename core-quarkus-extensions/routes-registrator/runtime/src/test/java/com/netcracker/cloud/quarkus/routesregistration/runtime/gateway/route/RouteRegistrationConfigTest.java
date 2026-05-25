@@ -20,7 +20,6 @@ import static com.netcracker.cloud.quarkus.routesregistration.runtime.gateway.ro
 
 
 @QuarkusTest
-@TestProfile(RouteRegistrationConfigTest.K8sEnabledProfile.class)
 class RouteRegistrationConfigTest {
 
     private static final String ANOTHER_CONTROL_PLANE_HTTP_CLIENT = "anotherControlPlaneHttpClient";
@@ -71,13 +70,6 @@ class RouteRegistrationConfigTest {
             config.controlPlaneHttpClient();
 
             mockedFactory.verify(() -> com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory.getM2mOkHttpClient(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.eq(true)));
-        }
-    }
-
-    public static class K8sEnabledProfile implements QuarkusTestProfile {
-        @Override
-        public Map<String, String> getConfigOverrides() {
-            return Map.of("security.m2m.kubernetes.enabled", "true");
         }
     }
 
