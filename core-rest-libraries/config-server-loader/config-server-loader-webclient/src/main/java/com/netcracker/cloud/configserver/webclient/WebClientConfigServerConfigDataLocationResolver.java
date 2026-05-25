@@ -8,9 +8,7 @@ import com.netcracker.cloud.security.core.auth.M2MManager;
 import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
-import org.springframework.http.client.reactive.JdkClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
-import java.net.http.HttpClient;
 
 public class WebClientConfigServerConfigDataLocationResolver extends AbstractCustomConfigServerConfigDataLocationResolver {
 

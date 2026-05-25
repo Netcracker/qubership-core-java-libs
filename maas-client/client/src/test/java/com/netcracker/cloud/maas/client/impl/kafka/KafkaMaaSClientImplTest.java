@@ -2,12 +2,7 @@ package com.netcracker.cloud.maas.client.impl.kafka;
 
 import static com.netcracker.cloud.maas.client.Utils.readResourceAsString;
 import static com.netcracker.cloud.maas.client.Utils.withProp;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.model.JsonBody.json;
@@ -771,12 +766,10 @@ class KafkaMaaSClientImplTest {
                 mockServer.when(request().withPath("/api-version")).respond(response().withBody("{\"major\":2, \"minor\":8}"));
 
                 KafkaMaaSClientImpl client = createKafkaClient("http://localhost:" + mockServer.getPort());
-                client.watchTopicCreate("orders", addr -> {
-                });
-
-                // Watch thread should be started now
+                client.watchTopicCreate("orders", addr -> {});
                 client.close();
-                // Watch thread should be interrupted and joined
+
+                assertDoesNotThrow(() -> client.close());
             });
         });
     }

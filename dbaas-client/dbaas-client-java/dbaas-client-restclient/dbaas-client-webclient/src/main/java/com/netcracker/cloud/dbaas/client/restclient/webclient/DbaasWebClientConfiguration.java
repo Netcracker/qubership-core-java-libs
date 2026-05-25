@@ -5,12 +5,10 @@ import com.netcracker.cloud.restclient.okhttp.MicroserviceOkHttpRestClient;
 import com.netcracker.cloud.security.core.auth.M2MManager;
 import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import com.netcracker.cloud.smartclient.config.annotation.EnableFrameworkWebClient;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.function.Consumer;

@@ -31,7 +31,7 @@ class EnvTest {
     }
 
     @Test
-    void testApiUrlK8sEnabled() throws Exception {
+    void testApiUrlK8sEnabled() {
         withProp(Env.PROP_MAAS_AGENT_URL, null, () ->
                 assertEquals("http://maas-agent:8080", Env.apiUrl(true))
         );

@@ -21,10 +21,12 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 public class MicroserviceOkHttpRestClient extends AbstractMicroserviceRestClient {
 
+    private final String contentTypeHeader = "Content-Type";
     private final OkHttpClient client;
 
     @Getter
@@ -59,82 +61,92 @@ public class MicroserviceOkHttpRestClient extends AbstractMicroserviceRestClient
                                                      Map<String, List<String>> headers,
                                                      Object requestBody,
                                                      Class<T> responseClass) {
-        Request.Builder requestBuilder = new Request.Builder().url(uri.toString());
+        Headers okHeaders = buildOkHeaders(headers);
+        RequestBody okBody = buildRequestBody(requestBody, httpMethod, okHeaders);
 
-        Headers.Builder okHeadersBuilder = new Headers.Builder();
-        if (headers != null) {
-            headers.forEach((name, values) -> values.forEach(value -> okHeadersBuilder.add(name, value)));
-        }
+        Request request = new Request.Builder()
+                .url(uri.toString())
+                .headers(okHeaders)
+                .method(httpMethod.name(), okBody)
+                .build();
 
-        if (okHeadersBuilder.get("Content-Type") == null) {
-            okHeadersBuilder.set("Content-Type", "application/json");
-        }
-        Headers okHeaders = okHeadersBuilder.build();
-        requestBuilder.headers(okHeaders);
-
-        RequestBody okBody = null;
-        if (requestBody != null) {
-            byte[] bodyBytes;
-            try {
-                if (requestBody instanceof String) {
-                    bodyBytes = ((String) requestBody).getBytes();
-                } else if (requestBody instanceof byte[]) {
-                    bodyBytes = (byte[]) requestBody;
-                } else {
-                    bodyBytes = mapper.writeValueAsBytes(requestBody);
-                }
-            } catch (IOException e) {
-                throw new MicroserviceRestClientException("Failed to serialize request body", e);
-            }
-            okBody = RequestBody.create(bodyBytes, MediaType.parse(okHeaders.get("Content-Type")));
-        } else if (HttpMethod.POST.equals(httpMethod) || HttpMethod.PUT.equals(httpMethod) || HttpMethod.PATCH.equals(httpMethod)) {
-            okBody = RequestBody.create(new byte[0], MediaType.parse(okHeaders.get("Content-Type")));
-        }
-
-        requestBuilder.method(httpMethod.name(), okBody);
-
-        try (Response response = client.newCall(requestBuilder.build()).execute()) {
+        try (Response response = client.newCall(request).execute()) {
             int code = response.code();
             Map<String, List<String>> responseHeaders = response.headers().toMultimap();
-            byte[] responseBodyBytes = null;
-            if (response.body() != null) {
-                responseBodyBytes = response.body().bytes();
-            }
+            byte[] bodyBytes = response.body() != null ? response.body().bytes() : null;
 
             if (response.isSuccessful()) {
-                T mappedBody = null;
-                if (responseBodyBytes != null && responseBodyBytes.length > 0 && responseClass != Void.class) {
-                    if (responseClass == String.class) {
-                        mappedBody = (T) new String(responseBodyBytes);
-                    } else if (responseClass == byte[].class) {
-                        mappedBody = (T) responseBodyBytes;
-                    } else {
-                        mappedBody = mapper.readValue(responseBodyBytes, responseClass);
-                    }
-                }
-                return new RestClientResponseEntity<>(mappedBody, code, responseHeaders);
-            } else {
-                MicroserviceRestClientResponseException mce;
-                try {
-                    if (responseBodyBytes != null && responseBodyBytes.length > 0) {
-                        TmfErrorResponse tmfErrorResponse = mapper.readValue(responseBodyBytes, TmfErrorResponse.class);
-                        final RemoteCodeException remoteCodeException = converter.buildErrorCodeException(tmfErrorResponse);
-                        mce = new MicroserviceRestClientResponseException(remoteCodeException.getMessage(),
-                                remoteCodeException, code, responseBodyBytes, responseHeaders);
-                    } else {
-                        mce = new MicroserviceRestClientResponseException("Request failed with status " + code,
-                                null, code, responseBodyBytes, responseHeaders);
-                    }
-                } catch (Exception ce) {
-                    log.warn("Failed to parse response as TMF error response, cause: {}", ce.getMessage());
-                    mce = new MicroserviceRestClientResponseException("Request failed with status " + code,
-                            ce, code, responseBodyBytes, responseHeaders);
-                }
-                throw mce;
+                T mapped = mapResponseBody(bodyBytes, responseClass);
+                return new RestClientResponseEntity<>(mapped, code, responseHeaders);
             }
+            throw buildResponseException(code, bodyBytes, responseHeaders);
         } catch (IOException e) {
             throw new MicroserviceRestClientException(e.getMessage(), e);
         }
+    }
+
+    private Headers buildOkHeaders(Map<String, List<String>> headers) {
+        Headers.Builder builder = new Headers.Builder();
+        if (headers != null) {
+            headers.forEach((name, values) -> values.forEach(v -> builder.add(name, v)));
+        }
+        if (builder.get(contentTypeHeader) == null) {
+            builder.set(contentTypeHeader, "application/json");
+        }
+        return builder.build();
+    }
+
+    private RequestBody buildRequestBody(Object requestBody, HttpMethod httpMethod, Headers okHeaders) {
+        MediaType contentType = MediaType.parse(Objects.requireNonNull(okHeaders.get(contentTypeHeader)));
+        if (requestBody == null) {
+            boolean needsEmptyBody = HttpMethod.POST.equals(httpMethod)
+                    || HttpMethod.PUT.equals(httpMethod)
+                    || HttpMethod.PATCH.equals(httpMethod);
+            return needsEmptyBody ? RequestBody.create(new byte[0], contentType) : null;
+        }
+        try {
+            byte[] bytes;
+            bytes = switch (requestBody) {
+                case String s  -> s.getBytes();
+                case byte[] b  -> b;
+                default        -> mapper.writeValueAsBytes(requestBody);
+            };
+            return RequestBody.create(bytes, contentType);
+        } catch (IOException e) {
+            throw new MicroserviceRestClientException("Failed to serialize request body", e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T mapResponseBody(byte[] bodyBytes, Class<T> responseClass) throws IOException {
+        if (bodyBytes == null || bodyBytes.length == 0 || responseClass == Void.class) {
+            return null;
+        }
+        if (responseClass == String.class) {
+            return (T) new String(bodyBytes);
+        }
+        if (responseClass == byte[].class) {
+            return (T) bodyBytes;
+        }
+        return mapper.readValue(bodyBytes, responseClass);
+    }
+
+    private MicroserviceRestClientResponseException buildResponseException(
+            int code, byte[] bodyBytes, Map<String, List<String>> responseHeaders) {
+        if (bodyBytes != null && bodyBytes.length > 0) {
+            try {
+                TmfErrorResponse tmf = mapper.readValue(bodyBytes, TmfErrorResponse.class);
+                RemoteCodeException rce = converter.buildErrorCodeException(tmf);
+                return new MicroserviceRestClientResponseException(
+                        rce.getMessage(), rce, code, bodyBytes, responseHeaders);
+            } catch (Exception ce) {
+                log.warn("Failed to parse response as TMF error response, cause: {}", ce.getMessage());
+                return new MicroserviceRestClientResponseException(
+                        "Request failed with status " + code, ce, code, bodyBytes, responseHeaders);
+            }
+        }
+        return new MicroserviceRestClientResponseException(
+                "Request failed with status " + code, null, code, bodyBytes, responseHeaders);
     }
 
     private String expandUrl(String urlTemplate, Map<String, Object> params) {
