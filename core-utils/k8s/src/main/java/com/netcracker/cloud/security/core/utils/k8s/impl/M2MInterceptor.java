@@ -41,7 +41,10 @@ public final class M2MInterceptor implements Interceptor {
     }
 
     public M2MInterceptor(UrlCache urlCache, Supplier<String> fallbackAuthHeaderSupplier, Supplier<String> k8sAuthHeaderSupplier, String fallbackBaseUrl, boolean k8sEnabled) {
-        this.k8sEnabled = k8sEnabled || isK8sEnabledFromSystem();
+        if (!k8sEnabled && isK8sEnabledFromSystem()) {
+            k8sEnabled = true;
+        }
+        this.k8sEnabled = k8sEnabled;
         this.urlCache = urlCache;
         this.fallbackAuthHeaderSupplier = fallbackAuthHeaderSupplier;
         this.k8sAuthHeaderSupplier = k8sAuthHeaderSupplier;
@@ -54,6 +57,7 @@ public final class M2MInterceptor implements Interceptor {
             k8sEnabledProp = System.getenv("SECURITY_M2M_KUBERNETES_ENABLED");
         }
         return Boolean.parseBoolean(k8sEnabledProp);
+        log.info("k8s not explicitly enabled, defaulting to system setting");
     }
 
     @NotNull
