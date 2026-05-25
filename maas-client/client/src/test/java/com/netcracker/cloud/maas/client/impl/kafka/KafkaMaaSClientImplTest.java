@@ -754,8 +754,10 @@ class KafkaMaaSClientImplTest {
                                 """)
         );
 
-        var client = createKafkaClient("http://localhost:" + mockServer.getPort());
-        var result = client.search(SearchCriteria.builder().topic("abc").build());
+        java.util.List<TopicAddress> result;
+        try (var client = createKafkaClient("http://localhost:" + mockServer.getPort())) {
+            result = client.search(SearchCriteria.builder().topic("abc").build());
+        }
         assertEquals(1, result.size());
     }
 
@@ -769,7 +771,7 @@ class KafkaMaaSClientImplTest {
                 client.watchTopicCreate("orders", addr -> {});
                 client.close();
 
-                assertDoesNotThrow(() -> client.close());
+                assertDoesNotThrow(client::close);
             });
         });
     }
