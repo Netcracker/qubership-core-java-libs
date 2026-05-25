@@ -29,8 +29,7 @@ public class WebClientConfigServerConfigDataLocationResolver extends AbstractCus
     }
 
     private MicroserviceRestClient createM2MWebClient() {
-        var builder =  WebClient.builder();
-        return new MicroserviceWebClient(builder.build());
+        return new MicroserviceWebClient(WebClient.builder().build());
     }
 
     private String getM2MToken(ConfigurableBootstrapContext configurableBootstrapContext) {
