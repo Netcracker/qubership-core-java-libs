@@ -149,15 +149,13 @@ public class AbstractMongoEvolution {
             } finally {
                 throw new Exception("executeChangeLogUpdate Exception during update.", e);
             }
-        } catch (Throwable t) {
-            LOGGER.error("Error: ", t);
         } finally {
             updateStatusTask.cancel();
         }
     }
 
     private Timer startMongoDbUpdateStatusTask() {
-        Timer updateStatusTimer = new Timer();
+        Timer updateStatusTimer = new Timer(true);
         statusTask = new MongoDbUpdateStatusTask(updateStatusTimer, this, database);
         updateStatusTimer.schedule(statusTask,
                 delayTimeMillisecStatusTask, delayTimeMillisecStatusTask);

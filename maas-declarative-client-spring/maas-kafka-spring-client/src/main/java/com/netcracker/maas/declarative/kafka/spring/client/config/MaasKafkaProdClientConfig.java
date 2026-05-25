@@ -13,6 +13,7 @@ import com.netcracker.maas.declarative.kafka.client.impl.tenant.impl.InternalTen
 import com.netcracker.maas.declarative.kafka.client.impl.topic.provider.api.MaasKafkaTopicServiceProvider;
 import com.netcracker.maas.declarative.kafka.client.impl.topic.provider.impl.MaasKafkaTopicServiceProviderImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,14 +28,17 @@ public class MaasKafkaProdClientConfig {
     @Autowired
     MaasKafkaProps props;
 
+    @Value("${security.m2m.kubernetes.enabled:false}")
+    private boolean k8sM2mEnabled;
+
     @Bean
     HttpClient maasHttpClient(@Autowired M2MManager m2MManager) {
-        return new HttpClient(() -> m2MManager.getToken().getTokenValue());
+        return HttpClient.getMaasClient(() -> m2MManager.getToken().getTokenValue(), k8sM2mEnabled);
     }
 
     @Bean
-    TenantManagerConnector tenantManagerConnector(HttpClient httpClient) {
-        return new TenantManagerConnectorImpl(httpClient);
+    TenantManagerConnector tenantManagerConnector(@Autowired M2MManager m2MManager) {
+        return new TenantManagerConnectorImpl(HttpClient.getM2mClient(() -> m2MManager.getToken().getTokenValue(), k8sM2mEnabled));
     }
 
     @Bean

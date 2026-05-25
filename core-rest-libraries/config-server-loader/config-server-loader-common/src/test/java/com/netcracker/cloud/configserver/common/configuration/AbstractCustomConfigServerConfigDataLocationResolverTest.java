@@ -4,14 +4,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.bootstrap.DefaultBootstrapContext;
+import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
 import org.springframework.boot.context.config.ConfigDataLocation;
 import org.springframework.boot.context.config.ConfigDataLocationResolverContext;
 import org.springframework.boot.context.config.Profiles;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.cloud.config.client.ConfigServerConfigDataResource;
-import org.springframework.mock.env.MockEnvironment;
+import org.springframework.core.env.StandardEnvironment;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,13 +25,16 @@ class AbstractCustomConfigServerConfigDataLocationResolverTest {
     private AbstractCustomConfigServerConfigDataLocationResolver abstractConfigDataLocationResolver;
     private ConfigDataLocationResolverContext context = mock(ConfigDataLocationResolverContext.class);
 
-    private MockEnvironment environment;
+    private StandardEnvironment environment;
 
     private Binder environmentBinder;
 
     @BeforeEach
     public void before() {
-        this.environment = new MockEnvironment();
+        this.environment = new StandardEnvironment();
+        this.environment.setActiveProfiles("test");
+        ConfigDataEnvironmentPostProcessor.applyTo(this.environment, null, null, Collections.emptyList());
+
         this.environmentBinder = Binder.get(this.environment);
         when(context.getBinder()).thenReturn(environmentBinder);
         when(context.getBootstrapContext()).thenReturn(new DefaultBootstrapContext());
@@ -81,4 +86,16 @@ class AbstractCustomConfigServerConfigDataLocationResolverTest {
                 !configServerConfigDataResource.getProperties().isFailFast());
     }
 
+    @Test
+    void checkK8sM2mEnabledPropertyBinding() throws Exception {
+        Profiles profiles = mock(Profiles.class);
+
+        abstractConfigDataLocationResolver.resolveProfileSpecific(context, ConfigDataLocation.of("optional:configserver:http://config-server:8080"), profiles);
+
+        java.lang.reflect.Field field = AbstractCustomConfigServerConfigDataLocationResolver.class.getDeclaredField("k8sM2mEnabled");
+        field.setAccessible(true);
+        boolean k8sM2mEnabled = (boolean) field.get(abstractConfigDataLocationResolver);
+
+        assertThat(k8sM2mEnabled).isTrue();
+    }
 }

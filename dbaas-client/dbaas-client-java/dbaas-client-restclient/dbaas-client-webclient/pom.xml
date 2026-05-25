@@ -18,6 +18,14 @@
             <artifactId>webclient</artifactId>
             <groupId>${project.groupId}</groupId>
         </dependency>
+        <dependency>
+            <groupId>com.netcracker.cloud.security.core.utils</groupId>
+            <artifactId>k8s-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netcracker.cloud</groupId>
+            <artifactId>microservice-restclient-okhttp</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

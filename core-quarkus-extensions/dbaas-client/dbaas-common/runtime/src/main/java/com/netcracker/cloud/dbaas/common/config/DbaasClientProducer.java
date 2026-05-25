@@ -12,14 +12,14 @@ public class DbaasClientProducer {
 
     @Produces
     @DefaultBean
-    public DbaasClient dbaaSClient(DbaasClientConfig dbaasClientConfig) {
+    public DbaasClient dbaaSClient(SecurityConfig securityConfig, DbaasClientConfig dbaasClientConfig) {
         if (dbaasClientConfig.dbaasUrl().isPresent() && dbaasClientConfig.dbaasUsername().isPresent() && dbaasClientConfig.dbaasPassword().isPresent()) {
             log.debug("Create dbaas client with basic auth");
             return new BasicDbaaSClient(dbaasClientConfig).build();
         }
 
         log.debug("Create dbaas client with m2m auth");
-        return new M2MDbaaSClient(dbaasClientConfig).build();
+        return new M2MDbaaSClient(securityConfig, dbaasClientConfig).build();
 
     }
 }

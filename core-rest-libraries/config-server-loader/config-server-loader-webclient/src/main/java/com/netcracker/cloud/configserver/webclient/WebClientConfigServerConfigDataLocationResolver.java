@@ -2,14 +2,13 @@ package com.netcracker.cloud.configserver.webclient;
 
 import com.netcracker.cloud.configserver.common.configuration.AbstractCustomConfigServerConfigDataLocationResolver;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
+import com.netcracker.cloud.restclient.okhttp.MicroserviceOkHttpRestClient;
 import com.netcracker.cloud.restclient.webclient.MicroserviceWebClient;
 import com.netcracker.cloud.security.core.auth.M2MManager;
+import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
-import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 public class WebClientConfigServerConfigDataLocationResolver extends AbstractCustomConfigServerConfigDataLocationResolver {
 
@@ -22,19 +21,15 @@ public class WebClientConfigServerConfigDataLocationResolver extends AbstractCus
 
     @Override
     public MicroserviceRestClient getMicroserviceRestClient() {
-        return new MicroserviceWebClient(createM2MWebClient());
+        if (hasM2M(configurableBootstrapContext)) {
+            var client = M2MClientFactory.getM2mOkHttpClient(() -> getM2MToken(configurableBootstrapContext), k8sM2mEnabled);
+            return new MicroserviceOkHttpRestClient(client);
+        }
+        return createM2MWebClient();
     }
 
-    private WebClient createM2MWebClient() {
-        WebClient.Builder builder = WebClient.builder();
-        if (hasM2M(configurableBootstrapContext)) {
-            builder.filter(
-                    (request, next) ->
-                            next.exchange(ClientRequest.from(request).
-                                    header(AUTHORIZATION, "Bearer " + getM2MToken(configurableBootstrapContext)).build())
-            );
-        }
-        return builder.build();
+    private MicroserviceRestClient createM2MWebClient() {
+        return new MicroserviceWebClient(WebClient.builder().build());
     }
 
     private String getM2MToken(ConfigurableBootstrapContext configurableBootstrapContext) {

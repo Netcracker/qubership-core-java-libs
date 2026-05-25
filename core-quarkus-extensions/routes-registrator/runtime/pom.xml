@@ -46,10 +46,20 @@
       <groupId>com.netcracker.cloud.security.core.utils</groupId>
       <artifactId>tls-utils</artifactId>
     </dependency>
-    <!--Test-->
+    <dependency>
+        <groupId>com.netcracker.cloud.security.core.utils</groupId>
+        <artifactId>k8s-utils</artifactId>
+    </dependency>
+      <!--Test-->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-inline</artifactId>
+      <version>${mockito-inline.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

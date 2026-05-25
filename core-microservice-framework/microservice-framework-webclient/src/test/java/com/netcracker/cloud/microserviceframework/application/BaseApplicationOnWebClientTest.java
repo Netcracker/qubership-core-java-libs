@@ -1,7 +1,7 @@
 package com.netcracker.cloud.microserviceframework.application;
 
 import com.netcracker.cloud.dbaas.client.DbaasClient;
-import com.netcracker.cloud.restclient.webclient.MicroserviceWebClient;
+import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,7 +23,7 @@ class BaseApplicationOnWebClientTest {
     @Test
     void testDbaasRestClientInitialized() {
         assertThat("Bean 'dbaasRestClient' is missing in context",
-                context.getBean("dbaasRestClient") instanceof MicroserviceWebClient);
+                context.getBean("dbaasRestClient") instanceof MicroserviceRestClient);
     }
 
     @Test

@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Deprecated(forRemoval = true)
-public class ConsulMicroserviceMutexService implements MicroserviceMutexService, AutoCloseable {
+public class ConsulMicroserviceMutexService implements MicroserviceMutexService {
     public static final String MS_MUTEX_CONSUL_PATH_TEMPLATE = "config/%s/%s/bluegreen/mutex/%s/%s"; //config/{namespace}/{microservice}/bluegreen/mutex/{name}/{pod}
     public static final Duration DEFAULT_TTL = Duration.ofMinutes(1);
     public static final Duration MIN_TTL = Duration.ofSeconds(10);

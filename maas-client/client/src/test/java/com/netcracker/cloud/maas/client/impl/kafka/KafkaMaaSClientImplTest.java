@@ -2,12 +2,7 @@ package com.netcracker.cloud.maas.client.impl.kafka;
 
 import static com.netcracker.cloud.maas.client.Utils.readResourceAsString;
 import static com.netcracker.cloud.maas.client.Utils.withProp;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.model.JsonBody.json;
@@ -17,6 +12,7 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -546,7 +542,7 @@ class KafkaMaaSClientImplTest {
     @Test
     void testWatchTopicCreate(ClientAndServer mockServer) throws InterruptedException {
         withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
-            withProp(Env.PROP_API_URL, "http://localhost:" + mockServer.getPort(), () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
 
                 HttpRequest req = request().withMethod("POST").withPath("/api/v2/kafka/topic/watch-create");
                 ExpectationResponseCallback respWithError = httpRequest -> {
@@ -581,7 +577,7 @@ class KafkaMaaSClientImplTest {
     @Test
     void testTopicDeleteSuccess(ClientAndServer mockServer) throws Exception {
         withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
-            withProp(Env.PROP_API_URL, "http://localhost:" + mockServer.getPort(), () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
 
                 mockServer.when(
                         request().withMethod("DELETE").withPath("/api/v2/kafka/topic"), Times.once()
@@ -594,7 +590,7 @@ class KafkaMaaSClientImplTest {
                         response().withBody("{\"deletedSuccessfully\": [], \"failedToDelete\": []}")
                 );
 
-                KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", null, null).getKafkaClient();
+                KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", false, null, null).getKafkaClient();
                 assertTrue(kafkaClient.deleteTopic(new Classifier("orders")));
                 assertFalse(kafkaClient.deleteTopic(new Classifier("orders")));
             });
@@ -604,7 +600,7 @@ class KafkaMaaSClientImplTest {
     @Test
     void testTopicDeleteError(ClientAndServer mockServer) throws Exception {
         withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
-            withProp(Env.PROP_API_URL, "http://localhost:" + mockServer.getPort(), () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
 
                 mockServer.when(
                         request().withMethod("DELETE").withPath("/api/v2/kafka/topic"),
@@ -758,14 +754,33 @@ class KafkaMaaSClientImplTest {
                                 """)
         );
 
-        var client = createKafkaClient("http://localhost:" + mockServer.getPort());
-        var result = client.search(SearchCriteria.builder().topic("abc").build());
+        java.util.List<TopicAddress> result;
+        try (var client = createKafkaClient("http://localhost:" + mockServer.getPort())) {
+            result = client.search(SearchCriteria.builder().topic("abc").build());
+        }
         assertEquals(1, result.size());
     }
 
+    @Test
+    void testClose(ClientAndServer mockServer) {
+        withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
+                mockServer.when(request().withPath("/api-version")).respond(response().withBody("{\"major\":2, \"minor\":8}"));
+
+                KafkaMaaSClientImpl client = createKafkaClient("http://localhost:" + mockServer.getPort());
+                client.watchTopicCreate("orders", addr -> {});
+                client.close();
+
+                assertDoesNotThrow(client::close);
+            });
+        });
+    }
+
     private KafkaMaaSClientImpl createKafkaClient(String agentUrl) {
-        var httpClient = new HttpClient(() -> "faketoken");
+        System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, agentUrl);
+        var httpClient = HttpClient.getMaasClient(() -> "faketoken", false);
         var serverApiVersion = new ServerApiVersion(httpClient, agentUrl);
+        System.clearProperty(M2MClientFactory.MAAS_AGENT_URL_PROP);
 
         return new KafkaMaaSClientImpl(
                 httpClient,

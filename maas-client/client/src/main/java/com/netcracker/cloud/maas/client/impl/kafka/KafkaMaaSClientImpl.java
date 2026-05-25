@@ -103,7 +103,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
             List<TopicAddress> topics = tenantList.stream()
                     .map(tenant -> getTopic(new Classifier(name).tenantId(tenant.getExternalId())))
                     .flatMap(Optional::stream)
-                    .collect(Collectors.toList());
+                    .toList();
             callback.accept(topics);
         });
     }
@@ -219,5 +219,24 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
                 .stream()
                 .map(TopicAddressImpl::new)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void close() {
+        if (watchThread.isInitialized()) {
+            watchThread.get().interrupt();
+            try {
+                watchThread.get().join(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        if (tenantManagerConnector.isInitialized()) {
+            try {
+                tenantManagerConnector.get().close();
+            } catch (Exception e) {
+                log.error("Error closing tenant manager connector", e);
+            }
+        }
     }
 }

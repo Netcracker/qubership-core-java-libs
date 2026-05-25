@@ -54,7 +54,7 @@ MaaSAPIClientImpl requires single parameter to instantiate - M2M auth token supp
 
 It's simple constructor call with token from cloud core libraries m2m-manager:
 ```java
-MaaSClient client = new MaaSAPIClientImpl(() -> M2MManager.getInstance().getToken().getToken());
+MaaSClient client = new MaaSAPIClientImpl(() -> M2MManager.getInstance().getToken().getToken(), false);
 ```
    
 

@@ -1,3 +1,7 @@
 cloud:
   microservice:
     name: "my-test-app"
+security:
+  m2m:
+    kubernetes:
+      enabled: true

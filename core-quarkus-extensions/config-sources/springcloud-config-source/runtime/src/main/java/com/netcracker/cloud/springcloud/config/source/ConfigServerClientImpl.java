@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.netcracker.cloud.quarkus.security.auth.M2MManager;
-import com.netcracker.cloud.security.core.auth.Token;
 import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
+import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import okhttp3.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.microprofile.config.Config;
@@ -36,13 +36,15 @@ public class ConfigServerClientImpl implements ConfigServerClient {
     private URL url;
 
     public ConfigServerClientImpl(String csUrl) throws MalformedURLException {
-        client = new OkHttpClient.Builder()
+        final Config cfg = ConfigProvider.getConfig();
+        boolean k8sM2mEnabled = cfg.getOptionalValue("security.m2m.kubernetes.enabled", Boolean.class).orElse(false);
+        client = M2MClientFactory.getM2mOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue(), k8sM2mEnabled)
+                .newBuilder()
                 .connectionSpecs(Collections.singletonList(
                         csUrl.startsWith("https") ? ConnectionSpec.COMPATIBLE_TLS : ConnectionSpec.CLEARTEXT)
                 )
                 .sslSocketFactory(TlsUtils.getSslContext().getSocketFactory(), TlsUtils.getTrustManager())
                 .build();
-        final Config cfg = ConfigProvider.getConfig();
         String appName = cfg.getValue("cloud.microservice.name", String.class);
         url = new URL(csUrl + "/" + appName + "/default");
         mapper = new ObjectMapper();
@@ -87,9 +89,7 @@ public class ConfigServerClientImpl implements ConfigServerClient {
         int count = 1;
         while (true) {
             try {
-                Token token = M2MManager.getInstance().getToken();
                 request = request.newBuilder()
-                        .addHeader("Authorization", token.getTokenType() + " " + token.getTokenValue())
                         .build();
                 Response response = client.newCall(request).execute();
                 return response.body().string();

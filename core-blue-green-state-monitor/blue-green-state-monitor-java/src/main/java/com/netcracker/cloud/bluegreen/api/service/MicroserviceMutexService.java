@@ -17,7 +17,7 @@ import java.time.Duration;
  * </p>
  */
 @Deprecated(forRemoval = true)
-public interface MicroserviceMutexService {
+public interface MicroserviceMutexService extends AutoCloseable {
 
     /**
      * Try to acquire Microservice lock within specified timeout with particular reason.

@@ -63,6 +63,10 @@
       <groupId>com.netcracker.cloud.security.core.utils</groupId>
       <artifactId>tls-utils</artifactId>
     </dependency>
+    <dependency>
+        <groupId>com.netcracker.cloud.security.core.utils</groupId>
+        <artifactId>k8s-utils</artifactId>
+    </dependency>
     <!--Test-->
     <dependency>
       <groupId>io.quarkus</groupId>

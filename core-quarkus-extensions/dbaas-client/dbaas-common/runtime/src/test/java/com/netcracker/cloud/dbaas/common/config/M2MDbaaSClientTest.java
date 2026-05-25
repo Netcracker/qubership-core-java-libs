@@ -16,11 +16,18 @@ import static org.mockito.Mockito.when;
 class M2MDbaaSClientTest {
     private M2MDbaaSClient m2MDbaaSClient;
     private static final String DB_AGENT_URL  = "http://dbaas-agent:8080";
+    private static final String DB_AGGREGATOR_URL  = "http://dbaas-aggregator:8080";
+
     @BeforeEach
     void setUp() {
-        DbaasClientConfig config = mock(DbaasClientConfig.class);
-        when(config.dbaasAgentUrl()).thenReturn(Optional.of(DB_AGENT_URL));
-        m2MDbaaSClient = new M2MDbaaSClient(config);
+        SecurityConfig securityConfig = mock(SecurityConfig.class);
+        when(securityConfig.k8sM2mEnabled()).thenReturn(true);
+
+        DbaasClientConfig dbaasConfig = mock(DbaasClientConfig.class);
+        when(dbaasConfig.dbaasAgentUrl()).thenReturn(Optional.of(DB_AGENT_URL));
+        when(dbaasConfig.dbaasUrl()).thenReturn(Optional.of(DB_AGGREGATOR_URL));
+
+        m2MDbaaSClient = new M2MDbaaSClient(securityConfig, dbaasConfig);
     }
     @Test
     void testBuild() throws NoSuchFieldException, IllegalAccessException {
@@ -29,8 +36,6 @@ class M2MDbaaSClientTest {
         clientField.setAccessible(true);
         OkHttpClient clientValue = (OkHttpClient) clientField.get(client);
         assertNotNull(client);
-        assertEquals(2, clientValue.interceptors().size());
+        assertEquals(3, clientValue.interceptors().size());
     }
 }
-
-

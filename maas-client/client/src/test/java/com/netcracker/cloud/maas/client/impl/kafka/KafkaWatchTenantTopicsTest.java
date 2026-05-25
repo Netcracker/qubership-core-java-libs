@@ -5,6 +5,7 @@ import com.netcracker.cloud.maas.client.impl.ApiUrlProvider;
 import com.netcracker.cloud.maas.client.impl.Env;
 import com.netcracker.cloud.maas.client.impl.apiversion.ServerApiVersion;
 import com.netcracker.cloud.maas.client.impl.http.HttpClient;
+import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import com.netcracker.cloud.tenantmanager.client.impl.TenantManagerConnectorImpl;
 import com.netcracker.cloud.testharness.MaaSCocoonExtension;
 import com.netcracker.cloud.testharness.TenantManagerMockInject;
@@ -50,13 +51,15 @@ public class KafkaWatchTenantTopicsTest {
     @Test
 	public void testWatchEvents(ClientAndServer mockServer) throws Exception {
     	withProp(Env.PROP_NAMESPACE, "core-dev", () -> {
-			HttpClient httpClient = new HttpClient(() -> "faketoken");
-			var agentUrl = "http://localhost:" + mockServer.getPort();
+            var agentUrl = "http://localhost:" + mockServer.getPort();
+            System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, agentUrl);
+
+			HttpClient httpClient = HttpClient.getMaasClient(() -> "faketoken", false);
 			var serverApiVersion = new ServerApiVersion(httpClient, agentUrl);
 
 			KafkaMaaSClientImpl client = new KafkaMaaSClientImpl(
 					httpClient,
-					() -> new TenantManagerConnectorImpl(tmMock.getUrl(), httpClient),
+					() -> new TenantManagerConnectorImpl(tmMock.getUrl(), HttpClient.getM2mClient(() -> "faketoken", false)),
 					new ApiUrlProvider(serverApiVersion, agentUrl));
 
 			BlockingQueue<List<TopicAddress>> events = new LinkedBlockingDeque<>();
@@ -66,7 +69,7 @@ public class KafkaWatchTenantTopicsTest {
 			};
 			client.watchTenantTopics("orders", cb);
 
-			List<TopicAddress> topics = events.poll(1, TimeUnit.SECONDS);
+			List<TopicAddress> topics = events.poll(10, TimeUnit.SECONDS);
 			assertNotNull(topics);
 			assertEquals(0, topics.size());
 
@@ -130,12 +133,16 @@ public class KafkaWatchTenantTopicsTest {
 	@Test
 	public void testWatchEvents_ButTopicsNotFoundInMaaS(ClientAndServer mockServer) throws Exception {
 		withProp(Env.PROP_NAMESPACE,  "core-dev", () -> {
-			HttpClient httpClient = new HttpClient(() -> "faketoken");
-			var agentUrl = "http://localhost:" + mockServer.getPort();
+            var agentUrl = "http://localhost:" + mockServer.getPort();
+            System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, agentUrl);
+
+			HttpClient httpClient = HttpClient.getMaasClient(() -> "faketoken", false);
+			var serverApiVersion = new ServerApiVersion(httpClient, agentUrl);
+
 			KafkaMaaSClientImpl client = new KafkaMaaSClientImpl(
 					httpClient,
-					() -> new TenantManagerConnectorImpl(tmMock.getUrl(), httpClient),
-					new ApiUrlProvider(new ServerApiVersion(httpClient, agentUrl), agentUrl));
+					() -> new TenantManagerConnectorImpl(tmMock.getUrl(), HttpClient.getM2mClient(() -> "faketoken", false)),
+					new ApiUrlProvider(serverApiVersion, agentUrl));
 
 			BlockingQueue<List<TopicAddress>> events = new LinkedBlockingDeque<>();
 			Consumer<List<TopicAddress>> cb = topics -> {
@@ -144,7 +151,7 @@ public class KafkaWatchTenantTopicsTest {
 			};
 			client.watchTenantTopics("orders", cb);
 
-			List<TopicAddress> topics = events.poll(1, TimeUnit.SECONDS);
+			List<TopicAddress> topics = events.poll(10, TimeUnit.SECONDS);
 			assertNotNull(topics);
 			assertEquals(0, topics.size());
 

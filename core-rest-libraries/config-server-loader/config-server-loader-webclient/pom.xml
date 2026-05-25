@@ -25,5 +25,15 @@
             <artifactId>rest-security-adapters</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.netcracker.cloud</groupId>
+            <artifactId>microservice-restclient-okhttp</artifactId>
+            <version>${cloud-core.core-restclient.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.netcracker.cloud.security.core.utils</groupId>
+            <artifactId>k8s-utils</artifactId>
+            <version>${cloud-core.core-utils.version}</version>
+        </dependency>
     </dependencies>
 </project>

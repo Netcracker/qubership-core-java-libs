@@ -32,6 +32,10 @@ public class Lazy<T> implements Supplier<T> {
 		return value;
 	}
 
+	public boolean isInitialized() {
+		return initialized;
+	}
+
 	public <R> Optional<R> map(Function<T, R> f) {
 		if (initialized) {
 			return Optional.ofNullable(f.apply(value));
