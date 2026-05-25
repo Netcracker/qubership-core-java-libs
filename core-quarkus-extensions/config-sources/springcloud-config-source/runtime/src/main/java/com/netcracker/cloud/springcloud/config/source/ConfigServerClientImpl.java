@@ -37,8 +37,8 @@ public class ConfigServerClientImpl implements ConfigServerClient {
 
     public ConfigServerClientImpl(String csUrl) throws MalformedURLException {
         final Config cfg = ConfigProvider.getConfig();
-        boolean k8sEnabled = cfg.getOptionalValue("security.m2m.kubernetes.enabled", Boolean.class).orElse(false);
-        client = M2MClientFactory.getM2mOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue(), k8sEnabled)
+        boolean k8sM2mEnabled = cfg.getOptionalValue("security.m2m.kubernetes.enabled", Boolean.class).orElse(false);
+        client = M2MClientFactory.getM2mOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue(), k8sM2mEnabled)
                 .newBuilder()
                 .connectionSpecs(Collections.singletonList(
                         csUrl.startsWith("https") ? ConnectionSpec.COMPATIBLE_TLS : ConnectionSpec.CLEARTEXT)

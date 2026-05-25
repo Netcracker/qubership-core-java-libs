@@ -21,7 +21,7 @@ class M2MDbaaSClientTest {
     @BeforeEach
     void setUp() {
         SecurityConfig securityConfig = mock(SecurityConfig.class);
-        when(securityConfig.k8sEnabled()).thenReturn(true);
+        when(securityConfig.k8sM2mEnabled()).thenReturn(true);
 
         DbaasClientConfig dbaasConfig = mock(DbaasClientConfig.class);
         when(dbaasConfig.dbaasAgentUrl()).thenReturn(Optional.of(DB_AGENT_URL));

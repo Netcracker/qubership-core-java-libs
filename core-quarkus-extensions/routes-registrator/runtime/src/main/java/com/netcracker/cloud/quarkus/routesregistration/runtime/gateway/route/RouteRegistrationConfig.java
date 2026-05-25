@@ -41,7 +41,7 @@ public class RouteRegistrationConfig {
 
     private Optional<String> deploymentVersion;
 
-    private boolean k8sEnabled;
+    private boolean k8sM2mEnabled;
 
     public RouteRegistrationConfig(@ConfigProperty(name = "cloud.microservice.name") String microserviceName,
                                    @ConfigProperty(name = "cloud.microservice.namespace") String cloudNamespace,
@@ -51,7 +51,7 @@ public class RouteRegistrationConfig {
                                    @ConfigProperty(name = "apigateway.routes.registration.enabled", defaultValue = "true") Boolean postRoutesEnabled,
                                    @ConfigProperty(name = "cloud.microservice.bg_version") Optional<String> deploymentVersion,
                                    @ConfigProperty(name = "SERVICE_MESH_TYPE") Optional<ServiceMeshType> serviceMeshType,
-                                   @ConfigProperty(name = "security.m2m.kubernetes.enabled", defaultValue = "false") boolean k8sEnabled) {
+                                   @ConfigProperty(name = "security.m2m.kubernetes.enabled", defaultValue = "false") boolean k8sM2mEnabled) {
         this.microserviceName = microserviceName;
         this.cloudNamespace = cloudNamespace;
         this.controlPlaneUrl = controlPlaneUrl;
@@ -61,7 +61,7 @@ public class RouteRegistrationConfig {
 
         this.cloudServiceName = microserviceName;
         this.deploymentVersion = deploymentVersion;
-        this.k8sEnabled = k8sEnabled;
+        this.k8sM2mEnabled = k8sM2mEnabled;
         deploymentVersion.ifPresent(s -> this.cloudServiceName += "-" + s);
     }
 
@@ -85,7 +85,7 @@ public class RouteRegistrationConfig {
     @Produces
     @Named(CONTROL_PLANE_HTTP_CLIENT)
     OkHttpClient controlPlaneHttpClient() {
-        return M2MClientFactory.getM2mOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue(), k8sEnabled)
+        return M2MClientFactory.getM2mOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue(), k8sM2mEnabled)
                 .newBuilder()
                 .retryOnConnectionFailure(true)
                 .build();

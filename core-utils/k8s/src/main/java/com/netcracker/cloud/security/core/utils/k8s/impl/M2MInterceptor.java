@@ -30,34 +30,34 @@ public final class M2MInterceptor implements Interceptor {
             The possible cause is an outdated version of the security library on the server side.
             The previous authentication method will be used as a fallback.""";
 
-    private final boolean k8sEnabled;
+    private final boolean k8sM2mEnabled;
     private final UrlCache urlCache;
     private final Supplier<String> fallbackAuthHeaderSupplier;
     private final Supplier<String> k8sAuthHeaderSupplier;
     private final HttpUrl fallbackBaseUrl;
 
-    public M2MInterceptor(UrlCache urlCache, Supplier<String> fallbackAuthHeaderSupplier, Supplier<String> k8sAuthHeaderSupplier, boolean k8sEnabled) {
-        this(urlCache, fallbackAuthHeaderSupplier, k8sAuthHeaderSupplier, null, k8sEnabled);
+    public M2MInterceptor(UrlCache urlCache, Supplier<String> fallbackAuthHeaderSupplier, Supplier<String> k8sAuthHeaderSupplier, boolean k8sM2mEnabled) {
+        this(urlCache, fallbackAuthHeaderSupplier, k8sAuthHeaderSupplier, null, k8sM2mEnabled);
     }
 
-    public M2MInterceptor(UrlCache urlCache, Supplier<String> fallbackAuthHeaderSupplier, Supplier<String> k8sAuthHeaderSupplier, String fallbackBaseUrl, boolean k8sEnabled) {
-        this.k8sEnabled = k8sEnabled || isK8sEnabledFromSystem();
+    public M2MInterceptor(UrlCache urlCache, Supplier<String> fallbackAuthHeaderSupplier, Supplier<String> k8sAuthHeaderSupplier, String fallbackBaseUrl, boolean k8sM2mEnabled) {
+        this.k8sM2mEnabled = k8sM2mEnabled || isK8sM2mEnabledFromSystem();
         this.urlCache = urlCache;
         this.fallbackAuthHeaderSupplier = fallbackAuthHeaderSupplier;
         this.k8sAuthHeaderSupplier = k8sAuthHeaderSupplier;
         this.fallbackBaseUrl = (fallbackBaseUrl != null) ? HttpUrl.get(fallbackBaseUrl) : null;
     }
 
-    private static boolean isK8sEnabledFromSystem() {
-        String k8sEnabledProp = System.getProperty("security.m2m.kubernetes.enabled");
-        if (k8sEnabledProp == null) {
-            k8sEnabledProp = System.getenv("SECURITY_M2M_KUBERNETES_ENABLED");
+    private static boolean isK8sM2mEnabledFromSystem() {
+        String k8sM2mEnabledProp = System.getProperty("security.m2m.kubernetes.enabled");
+        if (k8sM2mEnabledProp == null) {
+            k8sM2mEnabledProp = System.getenv("SECURITY_M2M_KUBERNETES_ENABLED");
         }
-        var k8sEnabled = Boolean.parseBoolean(k8sEnabledProp);
-        if(k8sEnabled) {
+        var k8sM2mEnabled = Boolean.parseBoolean(k8sM2mEnabledProp);
+        if(k8sM2mEnabled) {
             log.debug("k8s not explicitly enabled, defaulting to system setting");
         }
-        return k8sEnabled;
+        return k8sM2mEnabled;
     }
 
     @NotNull
@@ -65,7 +65,7 @@ public final class M2MInterceptor implements Interceptor {
     public Response intercept(final Interceptor.Chain chain) throws IOException {
         final Request request = chain.request();
         final String cacheKey = calculateCacheKey(request.url().toString());
-        if (k8sEnabled && !urlCache.containsKey(cacheKey)) {
+        if (k8sM2mEnabled && !urlCache.containsKey(cacheKey)) {
             //first call (no information) / kubernetes token is applicable
             final Request altered;
             try {
@@ -94,7 +94,7 @@ public final class M2MInterceptor implements Interceptor {
         final Response fallbackResponse = chain.proceed(fallbackRequest);
         if (fallbackResponse.isSuccessful()) {
             urlCache.store(cacheKey);
-            if(k8sEnabled && Objects.equals(reason, KUBERNETES_TOKEN_ACQUISITION_ERROR)) {
+            if(k8sM2mEnabled && Objects.equals(reason, KUBERNETES_TOKEN_ACQUISITION_ERROR)) {
                 log.warn("Failed to establish m2m connection to {}\n{}", fallbackRequest.url(), reason);
             } else {
                 log.debug("Failed to establish m2m connection to {}\n{}", fallbackRequest.url(), reason);
@@ -108,7 +108,7 @@ public final class M2MInterceptor implements Interceptor {
             throw new IllegalStateException("M2M auth header is empty.");
         }
         HttpUrl targetUrl = initialRequest.url();
-        if(k8sEnabled && useFallbackUrl && fallbackBaseUrl != null) {
+        if(k8sM2mEnabled && useFallbackUrl && fallbackBaseUrl != null) {
              targetUrl = rebaseUrl(initialRequest.url(), fallbackBaseUrl);
         }
         return initialRequest.newBuilder()

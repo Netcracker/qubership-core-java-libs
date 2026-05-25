@@ -19,7 +19,7 @@ public abstract class AbstractCustomConfigServerConfigDataLocationResolver exten
 
     public static final String INNER_CONFIG_SERVER_LOCATION_PREFIX = "confserv:";
     private boolean isConfigLocationRegistered = false;
-    protected boolean k8sEnabled = false;
+    protected boolean k8sM2mEnabled = false;
 
     public AbstractCustomConfigServerConfigDataLocationResolver(DeferredLogFactory log) {
         super(log);
@@ -49,7 +49,7 @@ public abstract class AbstractCustomConfigServerConfigDataLocationResolver exten
             return Collections.emptyList();
         }
 
-        this.k8sEnabled = resolverContext.getBinder().bind("security.m2m.kubernetes.enabled", Boolean.class).orElse(false);
+        this.k8sM2mEnabled = resolverContext.getBinder().bind("security.m2m.kubernetes.enabled", Boolean.class).orElse(false);
 
         resolverContext.getBootstrapContext().registerIfAbsent(MicroserviceRestClient.class, BootstrapRegistry.InstanceSupplier.of(getMicroserviceRestClient()));
         List<ConfigServerConfigDataResource> configServerConfigDataResources = super.resolveProfileSpecific(resolverContext, location, profiles);

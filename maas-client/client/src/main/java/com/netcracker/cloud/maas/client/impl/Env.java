@@ -34,11 +34,11 @@ public class Env {
     public static final String PROP_TENANT_MANAGER_RECONNECT_TIMEOUT = "maas.client.tenant-manager.reconnect-timeout";
     public static final String PROP_HTTP_TIMEOUT = "maas.http.timeout";
 
-    public static String apiUrl(boolean k8sEnabled) {
+    public static String apiUrl(boolean k8sM2mEnabled) {
         String maasAgentUrl = stringProperty(PROP_MAAS_AGENT_URL)
                 .map(Env::normalizeUrl)
                 .orElse(addr2http("maas-agent"));
-        if(!k8sEnabled) {
+        if(!k8sM2mEnabled) {
             return maasAgentUrl;
         }
         return stringProperty(PROP_MAAS_URL)

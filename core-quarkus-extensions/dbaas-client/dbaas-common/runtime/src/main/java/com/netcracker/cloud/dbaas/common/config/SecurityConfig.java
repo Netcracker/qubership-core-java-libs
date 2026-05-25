@@ -11,5 +11,5 @@ public interface SecurityConfig {
      */
     @WithName("kubernetes.enabled")
     @WithDefault("false")
-    boolean k8sEnabled();
+    boolean k8sM2mEnabled();
 }

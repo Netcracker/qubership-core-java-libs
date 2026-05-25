@@ -21,12 +21,12 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 public class MaasKafkaProdClientConfig {
 
     @ConfigProperty(name = "security.m2m.kubernetes.enabled", defaultValue = "false")
-    boolean k8sEnabled;
+    boolean k8sM2mEnabled;
 
     @Singleton
     @Produces
     KafkaMaaSClient kafkaMaaSClient(MaasKafkaProps props, M2MManager m2mManager) {
-        HttpClient httpClient = HttpClient.getM2mClient(() -> m2mManager.getToken().getTokenValue(), k8sEnabled);
+        HttpClient httpClient = HttpClient.getM2mClient(() -> m2mManager.getToken().getTokenValue(), k8sM2mEnabled);
         return new KafkaMaaSClientImpl(
                 httpClient,
                 () -> new TenantManagerConnectorImpl(httpClient),
@@ -46,7 +46,7 @@ public class MaasKafkaProdClientConfig {
     @Produces
     @DefaultBean
     InternalTenantService internalTenantService(M2MManager m2mManager) {
-        HttpClient httpClient = HttpClient.getM2mClient(() -> m2mManager.getToken().getTokenValue(), k8sEnabled);
+        HttpClient httpClient = HttpClient.getM2mClient(() -> m2mManager.getToken().getTokenValue(), k8sM2mEnabled);
         TenantManagerConnectorImpl tenantManagerConnector = new TenantManagerConnectorImpl(httpClient);
         return new InternalTenantServiceImpl(tenantManagerConnector);
     }

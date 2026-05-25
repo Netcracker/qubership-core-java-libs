@@ -29,16 +29,16 @@ public class MaasKafkaProdClientConfig {
     MaasKafkaProps props;
 
     @Value("${security.m2m.kubernetes.enabled:false}")
-    private boolean k8sEnabled;
+    private boolean k8sM2mEnabled;
 
     @Bean
     HttpClient maasHttpClient(@Autowired M2MManager m2MManager) {
-        return HttpClient.getMaasClient(() -> m2MManager.getToken().getTokenValue(), k8sEnabled);
+        return HttpClient.getMaasClient(() -> m2MManager.getToken().getTokenValue(), k8sM2mEnabled);
     }
 
     @Bean
     TenantManagerConnector tenantManagerConnector(@Autowired M2MManager m2MManager) {
-        return new TenantManagerConnectorImpl(HttpClient.getM2mClient(() -> m2MManager.getToken().getTokenValue(), k8sEnabled));
+        return new TenantManagerConnectorImpl(HttpClient.getM2mClient(() -> m2MManager.getToken().getTokenValue(), k8sM2mEnabled));
     }
 
     @Bean

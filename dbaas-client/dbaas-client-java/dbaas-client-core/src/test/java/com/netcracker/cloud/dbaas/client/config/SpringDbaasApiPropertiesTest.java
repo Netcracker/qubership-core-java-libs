@@ -14,7 +14,7 @@ class SpringDbaasApiPropertiesTest {
         SpringDbaasApiProperties properties = new SpringDbaasApiProperties();
         
         // Test non-k8s path
-        ReflectionTestUtils.setField(properties, "k8sEnabled", false);
+        ReflectionTestUtils.setField(properties, "k8sM2mEnabled", false);
         ReflectionTestUtils.setField(properties, "dbaasAgentAddress", Optional.of("http://custom"));
         assertEquals("http://custom", properties.getAddress());
         
@@ -22,7 +22,7 @@ class SpringDbaasApiPropertiesTest {
         assertEquals("http://dbaas-agent:8080", properties.getAddress());
         
         // Test k8s path
-        ReflectionTestUtils.setField(properties, "k8sEnabled", true);
+        ReflectionTestUtils.setField(properties, "k8sM2mEnabled", true);
         ReflectionTestUtils.setField(properties, "dbaasAddress", Optional.of("http://k8s-url"));
         assertEquals("http://k8s-url", properties.getAddress());
         

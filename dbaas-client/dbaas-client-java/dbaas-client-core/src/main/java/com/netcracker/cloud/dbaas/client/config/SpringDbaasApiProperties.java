@@ -22,7 +22,7 @@ public class SpringDbaasApiProperties {
 
     @Getter(AccessLevel.NONE)
     @Value("${security.m2m.kubernetes.enabled:false}")
-    private boolean k8sEnabled;
+    private boolean k8sM2mEnabled;
 
     @Value("${dbaas.api.retry.default.template.maxAttempts:10}")
     private int dbaasDefaultRetryMaxAttempts;
@@ -34,7 +34,7 @@ public class SpringDbaasApiProperties {
     private int dbaasAsyncRetryTimeoutInS;
 
     public String getAddress() {
-        if(!k8sEnabled) {
+        if(!k8sM2mEnabled) {
             return dbaasAgentAddress.orElse(DEFAULT_DBAAS_AGENT_URL);
         }
         if(dbaasAddress.isEmpty()) {

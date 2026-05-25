@@ -19,18 +19,18 @@ public class MaaSAPIClientImpl implements MaaSAPIClient {
     private final ServerApiVersion serverApiVersion;
     private final ApiUrlProvider apiProvider;
 
-    public MaaSAPIClientImpl(Supplier<String> tokenSupplier, boolean k8sEnabled) {
-        this.restClient = HttpClient.getMaasClient(tokenSupplier, k8sEnabled);
-        this.serverApiVersion = new ServerApiVersion(restClient, Env.apiUrl(k8sEnabled));
-        this.tenantManagerConnector = new Lazy<>(() -> new TenantManagerConnectorImpl(HttpClient.getM2mClient(tokenSupplier, k8sEnabled)));
-        this.apiProvider = new ApiUrlProvider(serverApiVersion, Env.apiUrl(k8sEnabled));
+    public MaaSAPIClientImpl(Supplier<String> tokenSupplier, boolean k8sM2mEnabled) {
+        this.restClient = HttpClient.getMaasClient(tokenSupplier, k8sM2mEnabled);
+        this.serverApiVersion = new ServerApiVersion(restClient, Env.apiUrl(k8sM2mEnabled));
+        this.tenantManagerConnector = new Lazy<>(() -> new TenantManagerConnectorImpl(HttpClient.getM2mClient(tokenSupplier, k8sM2mEnabled)));
+        this.apiProvider = new ApiUrlProvider(serverApiVersion, Env.apiUrl(k8sM2mEnabled));
     }
 
-    public MaaSAPIClientImpl(Supplier<String> tokenSupplier, boolean k8sEnabled, TenantManagerConnector tenantManagerConnector, BlueGreenStatePublisher statePublisher) {
-        this.restClient = HttpClient.getMaasClient(tokenSupplier, k8sEnabled);
-        this.serverApiVersion = new ServerApiVersion(restClient, Env.apiUrl(k8sEnabled));
+    public MaaSAPIClientImpl(Supplier<String> tokenSupplier, boolean k8sM2mEnabled, TenantManagerConnector tenantManagerConnector, BlueGreenStatePublisher statePublisher) {
+        this.restClient = HttpClient.getMaasClient(tokenSupplier, k8sM2mEnabled);
+        this.serverApiVersion = new ServerApiVersion(restClient, Env.apiUrl(k8sM2mEnabled));
         this.tenantManagerConnector = new Lazy<>(() -> tenantManagerConnector);
-        this.apiProvider = new ApiUrlProvider(serverApiVersion, Env.apiUrl(k8sEnabled));
+        this.apiProvider = new ApiUrlProvider(serverApiVersion, Env.apiUrl(k8sM2mEnabled));
     }
 
     @Override

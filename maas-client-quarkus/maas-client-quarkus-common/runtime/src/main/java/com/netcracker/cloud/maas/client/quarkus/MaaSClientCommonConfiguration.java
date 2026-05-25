@@ -13,12 +13,12 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 public class MaaSClientCommonConfiguration {
 
     @ConfigProperty(name = "security.m2m.kubernetes.enabled", defaultValue = "false")
-    boolean k8sEnabled;
+    boolean k8sM2mEnabled;
 
     @Produces
     @DefaultBean
     @Singleton
     public MaaSAPIClient getMaaSAPIClient() {
-        return new MaaSAPIClientImpl(() -> M2MManager.getInstance().getToken().getTokenValue(), k8sEnabled);
+        return new MaaSAPIClientImpl(() -> M2MManager.getInstance().getToken().getTokenValue(), k8sM2mEnabled);
     }
 }
