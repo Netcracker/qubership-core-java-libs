@@ -23,6 +23,11 @@ public class InMemoryMicroserviceMutexService implements MicroserviceMutexServic
         throw unsupported();
     }
 
+    @Override
+    public void close() {
+        throw unsupported();
+    }
+
     private UnsupportedOperationException unsupported() {
         return new UnsupportedOperationException("not implemented yet");
     }
