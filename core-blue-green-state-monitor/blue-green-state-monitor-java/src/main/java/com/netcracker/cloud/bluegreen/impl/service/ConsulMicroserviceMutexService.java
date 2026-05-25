@@ -316,10 +316,7 @@ public class ConsulMicroserviceMutexService implements MicroserviceMutexService 
             this.name = name;
             this.pod = pod;
             this.cancelled = new AtomicBoolean(false);
-            this.executorService = Executors.newScheduledThreadPool(1, r -> {
-                Thread t = new Thread(r, String.format("ms-lock-renewer-%s", name));
-                return t;
-            });
+            this.executorService = Executors.newScheduledThreadPool(1, r -> new Thread(r, String.format("ms-lock-renewer-%s", name)));
             Runnable renewSession = () -> {
                 try {
                     Duration ttl = this.renewSession();

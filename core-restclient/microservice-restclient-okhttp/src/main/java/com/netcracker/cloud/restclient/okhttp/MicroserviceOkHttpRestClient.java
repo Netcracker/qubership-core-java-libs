@@ -26,7 +26,7 @@ import java.util.Objects;
 @Slf4j
 public class MicroserviceOkHttpRestClient extends AbstractMicroserviceRestClient {
 
-    private final String contentTypeHeader = "Content-Type";
+    private static final String contentTypeHeader = "Content-Type";
     private final OkHttpClient client;
 
     @Getter
