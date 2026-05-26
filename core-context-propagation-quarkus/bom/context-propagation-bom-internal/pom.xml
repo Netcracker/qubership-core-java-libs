@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>cloud-core-context-propagation-bom-aggregator</artifactId>
-        <version>9.1.1-SNAPSHOT</version>
+        <version>9.1.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>cloud-core-context-propagation-bom-internal</artifactId>
