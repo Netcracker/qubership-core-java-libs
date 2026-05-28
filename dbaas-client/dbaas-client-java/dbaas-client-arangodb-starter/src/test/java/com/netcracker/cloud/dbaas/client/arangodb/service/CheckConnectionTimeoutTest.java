@@ -78,7 +78,7 @@ class CheckConnectionTimeoutTest {
         com.arangodb.ArangoDatabase realDb = buildBlackHoleDriver().db(DB_NAME);
 
         ArangoTemplate hangingOps = Mockito.mock(ArangoTemplate.class);
-        var ignored = Mockito.when(hangingOps.query(any(String.class), any(Class.class)))
+        Mockito.when(hangingOps.query(any(String.class), any(Class.class)))
                 .thenAnswer(inv -> realDb.query(inv.getArgument(0), Integer.class));
 
         DbaasArangoTemplate template = new DbaasArangoTemplate(null, null, null, props, null) {
@@ -93,13 +93,12 @@ class CheckConnectionTimeoutTest {
             }
         };
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<?> future = executor.submit(() -> template.query("RETURN 13", Integer.class));
-        executor.shutdown();
-
-        assertNotHang(future,
-                "DbaasArangoTemplate.query() blocked indefinitely against a non-responding server. " +
-                        "Ensure dbaas.arangodb.timeout is set to a positive value.");
+        try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
+            Future<?> future = executor.submit(() -> template.query("RETURN 13", Integer.class));
+            assertNotHang(future,
+                    "DbaasArangoTemplate.query() blocked indefinitely against a non-responding server. " +
+                            "Ensure dbaas.arangodb.timeout is set to a positive value.");
+        }
     }
 
     @Test
@@ -123,13 +122,12 @@ class CheckConnectionTimeoutTest {
                 DatabaseConfig.builder().build()
         );
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<?> future = executor.submit(() -> provider.provide());
-        executor.shutdown();
-
-        assertNotHang(future,
-                "ArangoDatabaseProvider.provide() blocked indefinitely against a non-responding server. " +
-                        "Ensure dbaas.arangodb.timeout is set to a positive value.");
+        try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
+            Future<?> future = executor.submit(() -> provider.provide());
+            assertNotHang(future,
+                    "ArangoDatabaseProvider.provide() blocked indefinitely against a non-responding server. " +
+                            "Ensure dbaas.arangodb.timeout is set to a positive value.");
+        }
     }
 
     private ArangoDB buildBlackHoleDriver() {
@@ -153,6 +151,7 @@ class CheckConnectionTimeoutTest {
                         try {
                             client.getInputStream().transferTo(OutputStream.nullOutputStream());
                         } catch (IOException ignored) {
+                            // Exception handling is not relevant to the purpose of this thread
                         }
                     }, "black-hole-drainer");
                     drainer.setDaemon(true);
