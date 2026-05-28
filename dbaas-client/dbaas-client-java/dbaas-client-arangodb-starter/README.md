@@ -63,18 +63,18 @@ or [microservice-framework-resttemplate](https://github.com/Netcracker/qubership
 
 ArangoDB Driver created by default configuration in dbaas-client can be configured with options from https://www.arangodb.com/docs/stable/drivers/java-reference-setup.html using next syntax:
 
-| Property                                      | Description                                                                                                          | Default Value                                  |
-|-----------------------------------------------|----------------------------------------------------------------------------------------------------------------------|------------------------------------------------|
-| dbaas.arangodb.timeout                        | Sets connect & request timeout (millisecond)                                                                         | `0`                                            |
-| dbaas.arangodb.useSsl                         | Use SSL connection                                                                                                   | `false`                                        |
-| dbaas.arangodb.chunkSize                      | Sets VelocyStream Chunk content-size (bytes)                                                                         | `30000`                                        |
-| dbaas.arangodb.maxConnections                 | Sets max number of connections                                                                                       | `1` for VST, `1` for HTTP/2, `20` for HTTP/1.1 |
-| dbaas.arangodb.connectionTtl                  | Sets a TTL (time to life) in milliseconds for connections managed by the internal connection pool                    | `null`, no automatic connection closure        |
-| dbaas.arangodb.keepAliveInterval              | Sets keep-alive interval (in seconds) for VST connections                                                            | `null`, no keep-alive probes will be sent      |
-| dbaas.arangodb.acquireHostList                | Enables driver feature of acquiring a list of known hosts in a cluster setup or a single server setup with followers | `false`                                        |
-| dbaas.arangodb.acquireHostListInterval        | Sets minimum interval in milliseconds for acquiring host list                                                        | `3600000`                                      |
-| dbaas.arangodb.loadBalancingStrategy          | Sets load balancing strategy                                                                                         | `NONE`                                         |
-| dbaas.arangodb.protocol                       | Configures network protocol used by the driver                                                                       | `HTTP2_JSON`                                          |
+| Property                               | Description                                                                                                          | Default Value                                  |
+|----------------------------------------|----------------------------------------------------------------------------------------------------------------------|------------------------------------------------|
+| dbaas.arangodb.timeout                 | Sets connect & request timeout (millisecond)                                                                         | `60000` (override of `0` from driver)          |
+| dbaas.arangodb.useSsl                  | Use SSL connection                                                                                                   | `false`                                        |
+| dbaas.arangodb.chunkSize               | Sets VelocyStream Chunk content-size (bytes)                                                                         | `30000`                                        |
+| dbaas.arangodb.maxConnections          | Sets max number of connections                                                                                       | `1` for VST, `1` for HTTP/2, `20` for HTTP/1.1 |
+| dbaas.arangodb.connectionTtl           | Sets a TTL (time to life) in milliseconds for connections managed by the internal connection pool                    | `null`, no automatic connection closure        |
+| dbaas.arangodb.keepAliveInterval       | Sets keep-alive interval (in seconds) for VST connections                                                            | `null`, no keep-alive probes will be sent      |
+| dbaas.arangodb.acquireHostList         | Enables driver feature of acquiring a list of known hosts in a cluster setup or a single server setup with followers | `false`                                        |
+| dbaas.arangodb.acquireHostListInterval | Sets minimum interval in milliseconds for acquiring host list                                                        | `3600000`                                      |
+| dbaas.arangodb.loadBalancingStrategy   | Sets load balancing strategy                                                                                         | `NONE`                                         |
+| dbaas.arangodb.protocol                | Configures network protocol used by the driver                                                                       | `HTTP2_JSON`                                   |
 
 ### ArangoDB creation params
 
