@@ -93,12 +93,12 @@ class CheckConnectionTimeoutTest {
             }
         };
 
-        try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
-            Future<?> future = executor.submit(() -> template.query("RETURN 13", Integer.class));
-            assertNotHang(future,
-                    "DbaasArangoTemplate.query() blocked indefinitely against a non-responding server. " +
-                            "Ensure dbaas.arangodb.timeout is set to a positive value.");
-        }
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<?> future = executor.submit(() -> template.query("RETURN 13", Integer.class));
+        assertNotHang(future,
+                "DbaasArangoTemplate.query() blocked indefinitely against a non-responding server. " +
+                        "Ensure dbaas.arangodb.timeout is set to a positive value.");
+        executor.shutdown();
     }
 
     @Test
@@ -122,12 +122,12 @@ class CheckConnectionTimeoutTest {
                 DatabaseConfig.builder().build()
         );
 
-        try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
-            Future<?> future = executor.submit(() -> provider.provide());
-            assertNotHang(future,
-                    "ArangoDatabaseProvider.provide() blocked indefinitely against a non-responding server. " +
-                            "Ensure dbaas.arangodb.timeout is set to a positive value.");
-        }
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<?> future = executor.submit(() -> provider.provide());
+        assertNotHang(future,
+                "ArangoDatabaseProvider.provide() blocked indefinitely against a non-responding server. " +
+                        "Ensure dbaas.arangodb.timeout is set to a positive value.");
+        executor.shutdown();
     }
 
     private ArangoDB buildBlackHoleDriver() {
