@@ -15,6 +15,8 @@ import java.util.Optional;
 @AllArgsConstructor
 public class DbaasArangoConfigPropertiesImpl implements ArangoConfigProperties {
 
+    private static final String DEFAULT_TIMEOUT_MS = "60000";
+
     @NonNull
     private Map<String, String> properties;
 
@@ -53,7 +55,7 @@ public class DbaasArangoConfigPropertiesImpl implements ArangoConfigProperties {
 
     @Override
     public Optional<Integer> getTimeout() {
-        return Optional.ofNullable(properties.get("timeout")).map(Integer::valueOf);
+        return Optional.ofNullable(properties.getOrDefault("timeout", DEFAULT_TIMEOUT_MS)).map(Integer::valueOf);
     }
 
     @Override
