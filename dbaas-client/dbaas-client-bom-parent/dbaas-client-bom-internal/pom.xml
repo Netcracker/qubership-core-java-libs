@@ -32,10 +32,10 @@
         <testcontainers.version>1.21.4</testcontainers.version>
 
         <!--Qubership's libs-->
-        <rest-libraries.version>7.1.5</rest-libraries.version>
-        <microservice-restclient.version>7.0.8</microservice-restclient.version>
-        <framework-contexts.version>8.0.9</framework-contexts.version>
-        <core-utils.version>3.0.6</core-utils.version>
+        <rest-libraries.version>7.1.6</rest-libraries.version>
+        <microservice-restclient.version>7.0.9</microservice-restclient.version>
+        <framework-contexts.version>8.0.10</framework-contexts.version>
+        <core-utils.version>3.0.7</core-utils.version>
     </properties>
 
     <dependencyManagement>
