@@ -21,7 +21,7 @@
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <testcontainers.version>1.21.4</testcontainers.version>
-        <quarkus.version>3.27.2</quarkus.version>
+        <quarkus.version>3.27.4</quarkus.version>
         <quarkus.core.extention.version>8.3.5</quarkus.core.extention.version>
         <blue-green-state-monitor.version>1.4.5</blue-green-state-monitor.version>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../aggregator-for-jacoco/target/jacoco-ut/jacoco.xml
