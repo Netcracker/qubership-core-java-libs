@@ -34,7 +34,7 @@
 
 		<cloud-core.maas-client.version>12.2.0</cloud-core.maas-client.version>
 
-		<surefire-plugin.version>3.5.5</surefire-plugin.version>
+		<surefire-plugin.version>3.5.6</surefire-plugin.version>
 		<!--Qubership -->
 		<nc.quarkus.security.version>${project.version}</nc.quarkus.security.version>
 		<!-- These properties are needed in order for them to be resolvable by the generated projects -->
