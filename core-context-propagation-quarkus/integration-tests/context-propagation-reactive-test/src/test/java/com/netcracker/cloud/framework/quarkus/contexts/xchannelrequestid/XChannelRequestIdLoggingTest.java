@@ -23,7 +23,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 
 @QuarkusTest
-class XChannelRequestIdLoggingIT {
+class XChannelRequestIdLoggingTest {
 
     @ConfigProperty(name = "quarkus.log.console.format")
     String configuredPattern;

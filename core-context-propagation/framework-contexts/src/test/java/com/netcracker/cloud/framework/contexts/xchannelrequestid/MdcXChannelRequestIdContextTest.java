@@ -20,7 +20,6 @@ class MdcXChannelRequestIdContextTest {
     private final AbstractXChannelRequestIdStrategy strategy =
             new XChannelRequestIdStrategy(() -> provide(null));
 
-    @AfterEach
     @BeforeEach
     void cleanUp() {
         ContextManager.clearAll();
@@ -53,7 +52,7 @@ class MdcXChannelRequestIdContextTest {
         assertEquals(strategy.get().getChannelRequestId(), getFromMdc());
     }
 
-    public XChannelRequestIdContextObject provide(@Nullable IncomingContextData incomingContextData) {
+    private XChannelRequestIdContextObject provide(@Nullable IncomingContextData incomingContextData) {
         return new XChannelRequestIdContextObject(incomingContextData);
     }
 
