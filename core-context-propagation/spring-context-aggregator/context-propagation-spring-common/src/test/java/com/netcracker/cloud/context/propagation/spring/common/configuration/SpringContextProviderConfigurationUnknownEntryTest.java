@@ -32,7 +32,6 @@ class SpringContextProviderConfigurationUnknownEntryTest {
         assertEquals("Custom-Header, X-Some-Other-Header",
                 System.getProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY));
 
-        HeaderPropagationConfiguration.resetCache();
         assertTrue(HeaderPropagationConfiguration.isRestricted(X_CHANNEL_REQUEST_ID),
                 "Restricted list must remain intact when no entry matches it");
         assertEquals(HeaderPropagationConfiguration.RESTRICTED_HEADERS,

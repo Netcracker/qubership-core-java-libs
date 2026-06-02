@@ -2,6 +2,7 @@ package com.netcracker.cloud.context.propagation.spring.common.configuration;
 
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
+import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -34,5 +35,6 @@ public class SpringContextProviderConfiguration {
     public void init() {
         System.setProperty("headers.allowed", allowedHeaders);
         System.setProperty(ENABLE_OPTIONAL_PROPERTY, enableOptional);
+        HeaderPropagationConfiguration.resetCache();
     }
 }

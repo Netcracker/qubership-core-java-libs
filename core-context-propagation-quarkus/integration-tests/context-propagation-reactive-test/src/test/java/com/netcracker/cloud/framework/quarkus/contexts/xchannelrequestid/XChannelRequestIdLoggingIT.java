@@ -70,11 +70,11 @@ class XChannelRequestIdLoggingIT {
     }
 
     private String formatWithConfiguredPattern(String message) {
-        ExtLogRecord record = new ExtLogRecord(Level.INFO, message, getClass().getName());
+        ExtLogRecord logRecord = new ExtLogRecord(Level.INFO, message, getClass().getName());
         Map<String, String> mdcSnapshot = MDC.getCopyOfContextMap();
         if (mdcSnapshot != null) {
-            mdcSnapshot.forEach(record::putMdc);
+            mdcSnapshot.forEach(logRecord::putMdc);
         }
-        return new PatternFormatter(configuredPattern).format(record);
+        return new PatternFormatter(configuredPattern).format(logRecord);
     }
 }

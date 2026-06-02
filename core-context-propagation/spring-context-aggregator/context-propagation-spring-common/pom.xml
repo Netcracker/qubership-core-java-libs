@@ -51,7 +51,7 @@
             <groupId>com.netcracker.cloud</groupId>
             <artifactId>framework-contexts</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>jakarta.annotation</groupId>

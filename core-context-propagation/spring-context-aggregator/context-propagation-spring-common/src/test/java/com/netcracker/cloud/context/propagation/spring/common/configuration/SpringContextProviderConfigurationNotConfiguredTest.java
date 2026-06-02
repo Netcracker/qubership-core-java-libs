@@ -28,7 +28,6 @@ class SpringContextProviderConfigurationNotConfiguredTest {
                 String.format("System property %s must be set to empty when no source configures it",
                         HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY));
 
-        HeaderPropagationConfiguration.resetCache();
         assertTrue(HeaderPropagationConfiguration.isRestricted(X_CHANNEL_REQUEST_ID),
                 "Restricted list must apply when no value is configured");
     }
