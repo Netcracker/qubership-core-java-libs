@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
             <artifactId>framework-contexts</artifactId>
-            <version>8.0.11-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

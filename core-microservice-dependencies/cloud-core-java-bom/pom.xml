@@ -25,7 +25,7 @@
         <rest.libraries.version>7.1.6</rest.libraries.version>
         <dbaas.client.version>9.0.10</dbaas.client.version>
         <framework.extension.version>7.0.9</framework.extension.version>
-        <context.propagation.version>8.0.10</context.propagation.version>
+        <context.propagation.version>8.0.11-SNAPSHOT</context.propagation.version>
         <maas-client.version>12.0.8</maas-client.version>
         <core-error-handling.version>4.0.7</core-error-handling.version>
     </properties>
