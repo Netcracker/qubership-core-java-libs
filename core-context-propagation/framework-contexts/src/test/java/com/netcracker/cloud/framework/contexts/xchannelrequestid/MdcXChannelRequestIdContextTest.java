@@ -4,7 +4,6 @@ import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
 import com.netcracker.cloud.framework.contexts.strategies.AbstractXChannelRequestIdStrategy;
 import org.jetbrains.annotations.Nullable;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
