@@ -19,7 +19,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <cloud-core.context-propagation.version>8.0.10-SNAPSHOT</cloud-core.context-propagation.version>
+        <cloud-core.context-propagation.version>8.0.11-SNAPSHOT</cloud-core.context-propagation.version>
         <testcontainers.version>1.21.4</testcontainers.version>
         <blue-green-monitor.version>2.0.9</blue-green-monitor.version>
 
