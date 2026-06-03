@@ -3,7 +3,7 @@
     <parent>
         <artifactId>dbaas-client-parent</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>9.0.10-SNAPSHOT</version>
+        <version>9.0.11-SNAPSHOT</version>
         <relativePath>./../../dbaas-client-parent/pom.xml</relativePath>
     </parent>
 
@@ -281,7 +281,7 @@
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-artifact</artifactId>
-                <version>3.9.11</version>
+                <version>3.9.16</version>
             </dependency>
 
             <!-- Test dependencies -->

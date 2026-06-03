@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.netcracker.cloud</groupId>
         <artifactId>rest-libraries</artifactId>
-        <version>7.1.6-SNAPSHOT</version>
+        <version>7.1.7-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -14,8 +14,8 @@
 
     <properties>
 
-        <microservice.restclient.version>7.0.8</microservice.restclient.version>
-        <qubership.context.framework>8.0.9</qubership.context.framework>
+        <microservice.restclient.version>7.0.9</microservice.restclient.version>
+        <qubership.context.framework>8.0.10</qubership.context.framework>
 
         <!--Spring's libraries -->
         <spring.boot.version>4.0.5</spring.boot.version>

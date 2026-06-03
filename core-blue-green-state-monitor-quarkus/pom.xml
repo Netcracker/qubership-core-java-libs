@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.netcracker.cloud.quarkus</groupId>
     <artifactId>blue-green-state-monitor-java-quarkus-parent</artifactId>
-    <version>3.0.9-SNAPSHOT</version>
+    <version>3.0.10-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -22,8 +22,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <testcontainers.version>1.21.4</testcontainers.version>
         <quarkus.version>3.27.3</quarkus.version>
-        <quarkus.core.extention.version>9.1.6</quarkus.core.extention.version>
-        <blue-green-state-monitor.version>2.0.9</blue-green-state-monitor.version>
+        <quarkus.core.extention.version>9.1.7</quarkus.core.extention.version>
+        <blue-green-state-monitor.version>2.0.10</blue-green-state-monitor.version>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../aggregator-for-jacoco/target/jacoco-ut/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
         <surefire-plugin.version>3.5.5</surefire-plugin.version>
