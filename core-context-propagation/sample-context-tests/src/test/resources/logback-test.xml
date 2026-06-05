@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd'T'HH:mm:ss.SSS}] [%-5p] [request_id=%X{requestId:--}] [tenant_id=%X{tenantId:--}] [thread=%thread] [class=%c{1}] [channel_request_id=%X{x_channel_request_id:--}] %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.netcracker" level="INFO"/>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
