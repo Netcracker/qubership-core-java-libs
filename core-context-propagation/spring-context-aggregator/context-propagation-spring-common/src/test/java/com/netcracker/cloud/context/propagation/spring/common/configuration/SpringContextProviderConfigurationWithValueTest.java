@@ -27,7 +27,6 @@ class SpringContextProviderConfigurationWithValueTest {
     void shouldExemptListedHeaderFromRestrictedList() {
         assertEquals(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME, System.getProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY));
 
-        HeaderPropagationConfiguration.resetCache();
         assertFalse(HeaderPropagationConfiguration.isRestricted(XChannelRequestIdContextProvider.X_CHANNEL_REQUEST_ID_CONTEXT_NAME),
                 "Exempted header must not be blocked");
         assertTrue(HeaderPropagationConfiguration.restrictedHeaders().isEmpty(),
