@@ -29,8 +29,9 @@
     <properties>
         <!-- Imported sub-BOMs -->
         <cloud-core.java-bom.version>1.0.0-SNAPSHOT</cloud-core.java-bom.version>
-        <cloud-core.dbaas-client.version>9.1.1</cloud-core.dbaas-client.version>
         <cloud-core.maas-declarative-client-spring.version>7.1.1</cloud-core.maas-declarative-client-spring.version>
+        <!-- dbaas-client (Spring modules) -->
+        <cloud-core.dbaas-client.version>9.1.1</cloud-core.dbaas-client.version>
 
         <!-- core-context-propagation (spring modules; pure-java versions inherited from qubership-java-bom) -->
         <cloud-core.context-propagation.version>8.2.2</cloud-core.context-propagation.version>
@@ -60,15 +61,6 @@
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-external-bom</artifactId>
                 <version>${cloud-core.java-bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <!-- DBaaS client BOM (pure-java base modules + Spring starters) -->
-            <dependency>
-                <groupId>com.netcracker.cloud</groupId>
-                <artifactId>dbaas-client-bom</artifactId>
-                <version>${cloud-core.dbaas-client.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -265,6 +257,58 @@
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>microservice-framework-resttemplate</artifactId>
                 <version>${cloud-core.microservice-framework.version}</version>
+            </dependency>
+
+            <!-- === dbaas-client (Spring) === -->
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-postgres-starter</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-postgres-flyway</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-mongo-starter</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-cassandra-starter</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-opensearch-starter</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-arangodb-starter</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-redis-starter</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-clickhouse-starter</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-resttemplate</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-webclient</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
             </dependency>
 
         </dependencies>

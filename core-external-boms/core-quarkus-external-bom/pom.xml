@@ -29,7 +29,6 @@
     <properties>
         <!-- Imported sub-BOMs -->
         <cloud-core.java-bom.version>1.0.0-SNAPSHOT</cloud-core.java-bom.version>
-        <cloud-core.dbaas-client.version>9.1.1</cloud-core.dbaas-client.version>
         <cloud-core.maas-client-quarkus.version>11.0.1</cloud-core.maas-client-quarkus.version>
         <cloud-core.maas-declarative-client-quarkus.version>9.0.1</cloud-core.maas-declarative-client-quarkus.version>
 
@@ -51,15 +50,6 @@
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-external-bom</artifactId>
                 <version>${cloud-core.java-bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <!-- DBaaS client BOM (pure-java base modules used by Quarkus dbaas extension) -->
-            <dependency>
-                <groupId>com.netcracker.cloud</groupId>
-                <artifactId>dbaas-client-bom</artifactId>
-                <version>${cloud-core.dbaas-client.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

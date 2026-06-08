@@ -45,6 +45,8 @@
         <cloud-core.rest-libraries.version>7.2.1</cloud-core.rest-libraries.version>
         <!-- core-blue-green-state-monitor (pure-java module) -->
         <cloud-core.blue-green-monitor.version>2.1.1</cloud-core.blue-green-monitor.version>
+        <!-- dbaas-client (pure-java modules) -->
+        <cloud-core.dbaas-client.version>9.1.1</cloud-core.dbaas-client.version>
         <!-- maas-client (pure-java modules) -->
         <cloud-core.maas-client.version>12.2.1</cloud-core.maas-client.version>
         <!-- maas-declarative-client-commons -->
@@ -160,6 +162,68 @@
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>blue-green-state-monitor-java-plain</artifactId>
                 <version>${cloud-core.blue-green-monitor.version}</version>
+            </dependency>
+
+            <!-- === dbaas-client (pure-java) === -->
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-light</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-base</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-core</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-postgres-base</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-mongo-base</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-cassandra-base</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-cassandra-migration</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-opensearch-base</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-arangodb-base</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-redis-base</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-clickhouse-base</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-base-test</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
             </dependency>
 
             <!-- === maas-client (pure-java) === -->
