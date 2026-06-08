@@ -30,24 +30,15 @@
         <!-- Imported sub-BOMs -->
         <cloud-core.java-bom.version>1.0.0-SNAPSHOT</cloud-core.java-bom.version>
         <cloud-core.maas-declarative-client-spring.version>7.1.1</cloud-core.maas-declarative-client-spring.version>
-        <!-- dbaas-client (Spring modules) -->
-        <cloud-core.dbaas-client.version>9.1.1</cloud-core.dbaas-client.version>
-
-        <!-- core-context-propagation (spring modules; pure-java versions inherited from qubership-java-bom) -->
-        <cloud-core.context-propagation.version>8.2.2</cloud-core.context-propagation.version>
-        <!-- core-mongo-evolution (spring module) -->
-        <cloud-core.mongo-evolution.version>8.1.1</cloud-core.mongo-evolution.version>
-        <!-- core-restclient (spring modules) -->
-        <cloud-core.restclient.version>7.1.1</cloud-core.restclient.version>
-        <!-- core-rest-libraries (spring modules) -->
-        <cloud-core.rest-libraries.version>7.2.1</cloud-core.rest-libraries.version>
-        <!-- core-blue-green-state-monitor (spring module) -->
-        <cloud-core.blue-green-monitor.version>2.1.1</cloud-core.blue-green-monitor.version>
-        <!-- core-microservice-framework-extensions -->
         <cloud-core.framework-extensions.version>7.1.1</cloud-core.framework-extensions.version>
-        <!-- maas-client-spring -->
+
+        <cloud-core.dbaas-client.version>9.1.1</cloud-core.dbaas-client.version>
+        <cloud-core.context-propagation.version>8.2.2</cloud-core.context-propagation.version>
+        <cloud-core.mongo-evolution.version>8.1.1</cloud-core.mongo-evolution.version>
+        <cloud-core.restclient.version>7.1.1</cloud-core.restclient.version>
+        <cloud-core.rest-libraries.version>7.2.1</cloud-core.rest-libraries.version>
+        <cloud-core.blue-green-monitor.version>2.1.1</cloud-core.blue-green-monitor.version>
         <cloud-core.maas-client-spring.version>9.1.1</cloud-core.maas-client-spring.version>
-        <!-- core-microservice-framework -->
         <cloud-core.microservice-framework.version>8.1.1</cloud-core.microservice-framework.version>
     </properties>
 
@@ -74,11 +65,29 @@
                 <scope>import</scope>
             </dependency>
 
+            <!-- framework-extension-bom -->
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>framework-extension-bom</artifactId>
+                <version>${cloud-core.framework-extensions.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- rest-legacy-bom -->
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>rest-legacy-bom</artifactId>
+                <version>${cloud-core.rest-libraries.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- ============================================================ -->
             <!-- Spring-specific modules                                       -->
             <!-- ============================================================ -->
 
-            <!-- === core-context-propagation (Spring) === -->
+            <!-- === core-context-propagation === -->
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>context-propagation-spring-common</artifactId>
@@ -105,14 +114,14 @@
                 <version>${cloud-core.context-propagation.version}</version>
             </dependency>
 
-            <!-- === core-mongo-evolution (Spring) === -->
+            <!-- === core-mongo-evolution === -->
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>mongo-evolution-spring</artifactId>
                 <version>${cloud-core.mongo-evolution.version}</version>
             </dependency>
 
-            <!-- === core-restclient (Spring) === -->
+            <!-- === core-restclient === -->
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>microservice-restclient-webclient</artifactId>
@@ -124,20 +133,10 @@
                 <version>${cloud-core.restclient.version}</version>
             </dependency>
 
-            <!-- === core-rest-libraries (Spring) === -->
+            <!-- === core-rest-libraries === -->
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>webclient</artifactId>
-                <version>${cloud-core.rest-libraries.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.netcracker.cloud</groupId>
-                <artifactId>restclient</artifactId>
-                <version>${cloud-core.rest-libraries.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.netcracker.cloud</groupId>
-                <artifactId>resttemplate</artifactId>
                 <version>${cloud-core.rest-libraries.version}</version>
             </dependency>
             <dependency>
@@ -201,28 +200,11 @@
                 <version>${cloud-core.rest-libraries.version}</version>
             </dependency>
 
-            <!-- === core-blue-green-state-monitor (Spring) === -->
+            <!-- === core-blue-green-state-monitor === -->
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>blue-green-state-monitor-spring</artifactId>
                 <version>${cloud-core.blue-green-monitor.version}</version>
-            </dependency>
-
-            <!-- === core-microservice-framework-extensions === -->
-            <dependency>
-                <groupId>com.netcracker.cloud</groupId>
-                <artifactId>framework-extension-metrics</artifactId>
-                <version>${cloud-core.framework-extensions.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.netcracker.cloud</groupId>
-                <artifactId>framework-extension-springdoc-swagger</artifactId>
-                <version>${cloud-core.framework-extensions.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.netcracker.cloud</groupId>
-                <artifactId>framework-extension-health-indicators</artifactId>
-                <version>${cloud-core.framework-extensions.version}</version>
             </dependency>
 
             <!-- === maas-client-spring === -->
@@ -259,7 +241,7 @@
                 <version>${cloud-core.microservice-framework.version}</version>
             </dependency>
 
-            <!-- === dbaas-client (Spring) === -->
+            <!-- === dbaas-client === -->
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>dbaas-client-postgres-starter</artifactId>

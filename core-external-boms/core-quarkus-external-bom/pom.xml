@@ -31,12 +31,9 @@
         <cloud-core.java-bom.version>1.0.0-SNAPSHOT</cloud-core.java-bom.version>
         <cloud-core.maas-client-quarkus.version>11.0.1</cloud-core.maas-client-quarkus.version>
         <cloud-core.maas-declarative-client-quarkus.version>9.0.1</cloud-core.maas-declarative-client-quarkus.version>
-
-        <!-- core-context-propagation-quarkus -->
         <cloud-core.context-propagation-quarkus.version>9.1.2</cloud-core.context-propagation-quarkus.version>
-        <!-- core-quarkus-extensions -->
+
         <cloud-core.quarkus-extensions.version>10.0.1</cloud-core.quarkus-extensions.version>
-        <!-- core-blue-green-state-monitor-quarkus -->
         <cloud-core.blue-green-monitor-quarkus.version>4.0.1</cloud-core.blue-green-monitor-quarkus.version>
     </properties>
 
@@ -54,7 +51,7 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- MaaS Quarkus client BOM (standalone) -->
+            <!-- MaaS Quarkus client BOM -->
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>maas-client-quarkus-bom</artifactId>
@@ -72,28 +69,20 @@
                 <scope>import</scope>
             </dependency>
 
+            <!-- cloud-core-context-propagation-bom -->
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>cloud-core-context-propagation-bom</artifactId>
+                <version>${cloud-core.context-propagation-quarkus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- ============================================================ -->
             <!-- Quarkus-specific modules                                      -->
             <!-- ============================================================ -->
 
-            <!-- === core-context-propagation-quarkus === -->
-            <dependency>
-                <groupId>com.netcracker.cloud.quarkus</groupId>
-                <artifactId>context-propagation</artifactId>
-                <version>${cloud-core.context-propagation-quarkus.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.netcracker.cloud.quarkus</groupId>
-                <artifactId>context-propagation-deployment</artifactId>
-                <version>${cloud-core.context-propagation-quarkus.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.netcracker.cloud.quarkus</groupId>
-                <artifactId>framework-contexts</artifactId>
-                <version>${cloud-core.context-propagation-quarkus.version}</version>
-            </dependency>
-
-            <!-- === core-quarkus-extensions: context === -->
+            <!-- === core-quarkus-extensions === -->
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>messaging-context</artifactId>
@@ -101,37 +90,19 @@
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
-                <artifactId>messaging-context-deployment</artifactId>
-                <version>${cloud-core.quarkus-extensions.version}</version>
-            </dependency>
-
-            <!-- === core-quarkus-extensions: security === -->
-            <dependency>
-                <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>security-adapters</artifactId>
                 <version>${cloud-core.quarkus-extensions.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
-                <artifactId>security-adapters-deployment</artifactId>
-                <version>${cloud-core.quarkus-extensions.version}</version>
-            </dependency>
-
-            <!-- === core-quarkus-extensions: log-manager === -->
-            <dependency>
-                <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>log-manager</artifactId>
                 <version>${cloud-core.quarkus-extensions.version}</version>
             </dependency>
-
-            <!-- === core-quarkus-extensions: stomp-ws-server === -->
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>stomp-ws-server</artifactId>
                 <version>${cloud-core.quarkus-extensions.version}</version>
             </dependency>
-
-            <!-- === core-quarkus-extensions: config-sources === -->
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>springcloud-config-source</artifactId>
@@ -142,15 +113,11 @@
                 <artifactId>consul-config-source</artifactId>
                 <version>${cloud-core.quarkus-extensions.version}</version>
             </dependency>
-
-            <!-- === core-quarkus-extensions: routes-registrator === -->
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>routes-registrator</artifactId>
                 <version>${cloud-core.quarkus-extensions.version}</version>
             </dependency>
-
-            <!-- === core-quarkus-extensions: dbaas-client extension === -->
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>dbaas-common</artifactId>
@@ -181,22 +148,16 @@
                 <artifactId>dbaas-client-test</artifactId>
                 <version>${cloud-core.quarkus-extensions.version}</version>
             </dependency>
-
-            <!-- === core-quarkus-extensions: consul-client === -->
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>consul-client</artifactId>
                 <version>${cloud-core.quarkus-extensions.version}</version>
             </dependency>
-
-            <!-- === core-quarkus-extensions: maas-client extension === -->
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>maas-client-quarkus</artifactId>
                 <version>${cloud-core.quarkus-extensions.version}</version>
             </dependency>
-
-            <!-- === core-quarkus-extensions: rest-api-deprecation-switcher === -->
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>rest-api-deprecation-switcher-quarkus</artifactId>
@@ -207,11 +168,6 @@
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>blue-green-state-monitor-quarkus</artifactId>
-                <version>${cloud-core.blue-green-monitor-quarkus.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.netcracker.cloud.quarkus</groupId>
-                <artifactId>blue-green-state-monitor-quarkus-deployment</artifactId>
                 <version>${cloud-core.blue-green-monitor-quarkus.version}</version>
             </dependency>
 
