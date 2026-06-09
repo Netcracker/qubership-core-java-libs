@@ -36,19 +36,19 @@ public final class M2MInterceptor implements Interceptor {
     private final Supplier<String> k8sAuthHeaderSupplier;
     private final HttpUrl fallbackBaseUrl;
 
-    public M2MInterceptor(UrlCache urlCache, Supplier<String> fallbackAuthHeaderSupplier, Supplier<String> k8sAuthHeaderSupplier, boolean k8sM2mEnabled) {
-        this(urlCache, fallbackAuthHeaderSupplier, k8sAuthHeaderSupplier, null, k8sM2mEnabled);
+    public M2MInterceptor(UrlCache urlCache, Supplier<String> fallbackAuthHeaderSupplier, Supplier<String> k8sAuthHeaderSupplier) {
+        this(urlCache, fallbackAuthHeaderSupplier, k8sAuthHeaderSupplier, null);
     }
 
-    public M2MInterceptor(UrlCache urlCache, Supplier<String> fallbackAuthHeaderSupplier, Supplier<String> k8sAuthHeaderSupplier, String fallbackBaseUrl, boolean k8sM2mEnabled) {
-        this.k8sM2mEnabled = k8sM2mEnabled || isK8sM2mEnabledFromSystem();
+    public M2MInterceptor(UrlCache urlCache, Supplier<String> fallbackAuthHeaderSupplier, Supplier<String> k8sAuthHeaderSupplier, String fallbackBaseUrl) {
+        this.k8sM2mEnabled = isK8sM2mEnabled();
         this.urlCache = urlCache;
         this.fallbackAuthHeaderSupplier = fallbackAuthHeaderSupplier;
         this.k8sAuthHeaderSupplier = k8sAuthHeaderSupplier;
         this.fallbackBaseUrl = (fallbackBaseUrl != null) ? HttpUrl.get(fallbackBaseUrl) : null;
     }
 
-    private static boolean isK8sM2mEnabledFromSystem() {
+    private static boolean isK8sM2mEnabled() {
         String k8sM2mEnabledProp = System.getProperty("security.m2m.kubernetes.enabled");
         if (k8sM2mEnabledProp == null) {
             k8sM2mEnabledProp = System.getenv("SECURITY_M2M_KUBERNETES_ENABLED");

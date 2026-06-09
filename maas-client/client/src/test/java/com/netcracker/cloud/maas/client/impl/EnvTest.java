@@ -12,31 +12,31 @@ class EnvTest {
     @Test
     void testApiUrl() {
         withProp(Env.PROP_MAAS_AGENT_URL, null, () ->
-                assertEquals("http://maas-agent:8080", Env.apiUrl(false))
+                assertEquals("http://maas-agent:8080", Env.apiUrl())
         );
     }
 
     @Test
     void testApiUrlOverride() {
         withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:8080/", () ->
-                assertEquals("http://localhost:8080", Env.apiUrl(false))
+                assertEquals("http://localhost:8080", Env.apiUrl())
         );
     }
 
     @Test
     void testApiUrlWrongOverride() {
         withProp(Env.PROP_MAAS_AGENT_URL, "localhost:8080", () ->
-                assertThrows(IllegalArgumentException.class, () -> Env.apiUrl(false))
+                assertThrows(IllegalArgumentException.class, Env::apiUrl)
         );
     }
 
     @Test
     void testApiUrlK8sM2mEnabled() {
         withProp(Env.PROP_MAAS_AGENT_URL, null, () ->
-                assertEquals("http://maas-agent:8080", Env.apiUrl(true))
+                assertEquals("http://maas-agent:8080", Env.apiUrl())
         );
         withProp(Env.PROP_MAAS_URL,  "http://localhost:8080/", () ->
-                assertEquals(  "http://localhost:8080", Env.apiUrl(true))
+                assertEquals(  "http://localhost:8080", Env.apiUrl())
         );
     }
 
@@ -68,7 +68,7 @@ class EnvTest {
     void testNamespace() {
         withProp(Env.PROP_NAMESPACE, null, () -> {
             var value = withEnvironmentVariable(Env.ENV_CLOUD_NAMESPACE, "abc")
-                    .execute(() -> Env.namespace());
+                    .execute(Env::namespace);
 
             assertEquals("abc", value);
         });
@@ -78,7 +78,7 @@ class EnvTest {
     void testNamespaceNewProp() {
         withProp(Env.PROP_CLOUD_NAMESPACE, "prop-namespace-test", () -> {
             var value = withEnvironmentVariable(Env.ENV_CLOUD_NAMESPACE, "abc")
-                    .execute(() -> Env.namespace());
+                    .execute(Env::namespace);
 
             assertEquals("prop-namespace-test", value);
         });

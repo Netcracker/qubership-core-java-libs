@@ -11,12 +11,12 @@ import java.util.function.Supplier;
 public class HttpClient {
     private final OkHttpClient httpClient;
 
-    public static HttpClient getM2mClient(Supplier<String> tokenSupplier, boolean k8sM2mEnabled) {
-        return new HttpClient(M2MClientFactory.getM2mOkHttpClient(tokenSupplier, k8sM2mEnabled));
+    public static HttpClient getM2mClient(Supplier<String> tokenSupplier) {
+        return new HttpClient(M2MClientFactory.getM2mOkHttpClient(tokenSupplier));
     }
 
-    public static HttpClient getMaasClient(Supplier<String> tokenSupplier, boolean k8sM2mEnabled) {
-        return new HttpClient(M2MClientFactory.getMaasOkHttpClient(tokenSupplier, k8sM2mEnabled));
+    public static HttpClient getMaasClient(Supplier<String> tokenSupplier) {
+        return new HttpClient(M2MClientFactory.getMaasOkHttpClient(tokenSupplier));
     }
 
     private HttpClient(OkHttpClient client) {

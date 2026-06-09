@@ -17,12 +17,9 @@ import java.util.function.Consumer;
 @EnableFrameworkWebClient
 public class DbaasWebClientConfiguration {
 
-    @Value("${security.m2m.kubernetes.enabled:false}")
-    private boolean k8sM2mEnabled;
-
     @Bean("dbaasRestClient")
     public MicroserviceRestClient dbaasRestClient(M2MManager m2MManager) {
-        var client = M2MClientFactory.getDbaasOkHttpClient(() -> m2MManager.getToken().getTokenValue(), k8sM2mEnabled);
+        var client = M2MClientFactory.getDbaasOkHttpClient(() -> m2MManager.getToken().getTokenValue());
         return new MicroserviceOkHttpRestClient(client);
     }
 

@@ -65,7 +65,7 @@ class M2MInterceptorTest {
         when(k8sSupplier.get()).thenReturn(K8S_TOKEN_HEADER);
         when(fallbackSupplier.get()).thenReturn(FALLBACK_TOKEN_HEADER);
 
-        final M2MInterceptor interceptor = new M2MInterceptor(urlCache, fallbackSupplier, k8sSupplier, true);
+        final M2MInterceptor interceptor = new M2MInterceptor(urlCache, fallbackSupplier, k8sSupplier);
 
         client = new OkHttpClient.Builder()
                 .addInterceptor(interceptor)
@@ -187,7 +187,7 @@ class M2MInterceptorTest {
         UrlCache urlCache = new UrlCache(TEST_CACHE_SIZE, TEST_CACHE_DURATION_SEC);
         String fallbackBaseUrl = "http://localhost:" + fallbackServer.port();
 
-        M2MInterceptor interceptor = new M2MInterceptor(urlCache, fallbackSupplier, k8sSupplier, fallbackBaseUrl, true);
+        M2MInterceptor interceptor = new M2MInterceptor(urlCache, fallbackSupplier, k8sSupplier, fallbackBaseUrl);
         OkHttpClient clientWithFallbackUrl = new OkHttpClient.Builder()
                 .addInterceptor(interceptor)
                 .build();

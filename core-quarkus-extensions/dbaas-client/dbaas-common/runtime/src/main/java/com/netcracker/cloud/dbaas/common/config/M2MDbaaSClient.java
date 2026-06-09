@@ -23,11 +23,9 @@ public class M2MDbaaSClient {
     private static final int MAX_RETRIES = 3;
     private static final long INITIAL_RETRY_DELAY = 500;
 
-    private final SecurityConfig securityConfig;
     private final DbaasClientConfig dbaasConfig;
 
-    public M2MDbaaSClient(SecurityConfig securityConfig, DbaasClientConfig dbaasConfig) {
-        this.securityConfig = securityConfig;
+    public M2MDbaaSClient(DbaasClientConfig dbaasConfig) {
         this.dbaasConfig = dbaasConfig;
     }
 
@@ -35,14 +33,14 @@ public class M2MDbaaSClient {
         String dbaasAgentUrl = dbaasConfig.dbaasAgentUrl().orElse(DEFAULT_DBAAS_AGENT_ADDRESS);
 
         String dbaasUrl = dbaasAgentUrl;
-        if(securityConfig.k8sM2mEnabled()) {
+        if(Boolean.parseBoolean(System.getenv("SECURITY_M2M_KUBERNETES_ENABLED"))) {
             if(dbaasConfig.dbaasUrl().isEmpty()) {
                 log.warn("DBaaS address is not available, falling back to dbaas-agent. Specify 'api.dbaas.address' property to DBaaS url");
             }
             dbaasUrl = dbaasConfig.dbaasUrl().orElse(dbaasAgentUrl);
         }
 
-        OkHttpClient httpClient = M2MClientFactory.getDbaasOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue(), securityConfig.k8sM2mEnabled());
+        OkHttpClient httpClient = M2MClientFactory.getDbaasOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue());
 
         httpClient = httpClient.newBuilder()
                 .addInterceptor(chain -> {

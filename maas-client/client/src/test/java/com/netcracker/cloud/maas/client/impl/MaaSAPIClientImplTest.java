@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class MaaSAPIClientImplTest {
     @Test
     void testCoverage() throws Exception {
-        MaaSAPIClientImpl client = new MaaSAPIClientImpl(() -> "faketoken", false);
+        MaaSAPIClientImpl client = new MaaSAPIClientImpl(() -> "faketoken");
         assertNotNull(client.getKafkaClient());
         assertNotNull(client.getRabbitClient());
         client.close();
