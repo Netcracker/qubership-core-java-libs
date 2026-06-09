@@ -38,7 +38,11 @@ public class Env {
         String maasAgentUrl = stringProperty(PROP_MAAS_AGENT_URL)
                 .map(Env::normalizeUrl)
                 .orElse(addr2http("maas-agent"));
-        if(!Boolean.parseBoolean(System.getenv("SECURITY_M2M_KUBERNETES_ENABLED"))) {
+        boolean k8sM2mEnabled = Boolean.parseBoolean(System.getenv("SECURITY_M2M_KUBERNETES_ENABLED"));
+        if(!k8sM2mEnabled) {
+            k8sM2mEnabled = Boolean.parseBoolean(System.getProperty("security.m2m.kubernetes.enabled"));
+        }
+        if(!k8sM2mEnabled) {
             return maasAgentUrl;
         }
         return stringProperty(PROP_MAAS_URL)

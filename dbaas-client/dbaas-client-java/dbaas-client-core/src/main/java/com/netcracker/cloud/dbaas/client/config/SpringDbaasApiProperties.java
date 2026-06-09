@@ -29,8 +29,11 @@ public class SpringDbaasApiProperties {
     @Value("${dbaas.api.retry.async.template.timeout.seconds:1200}")
     private int dbaasAsyncRetryTimeoutInS;
 
+    @Value("${SECURITY_M2M_KUBERNETES_ENABLED:false}")
+    private boolean k8sM2mEnabled;
+
     public String getAddress() {
-        if(!Boolean.parseBoolean(System.getenv("SECURITY_M2M_KUBERNETES_ENABLED"))) {
+        if(!k8sM2mEnabled) {
             return dbaasAgentAddress.orElse(DEFAULT_DBAAS_AGENT_URL);
         }
         if(dbaasAddress.isEmpty()) {
