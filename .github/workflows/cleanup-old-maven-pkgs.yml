@@ -43,7 +43,7 @@ jobs:
             echo "**Dry-run**: ${{ github.event.inputs.dry-run || 'false' }}"
             echo "**Debug**: ${{ github.event.inputs.debug || 'false' }}"
         - name: Run Maven Cleanup Action
-          uses: netcracker/qubership-workflow-hub/actions/container-package-cleanup@6a2de8d62ac5b6998e30f923613c998c263ea9f2 # v2.2.2
+          uses: netcracker/qubership-workflow-hub/actions/container-package-cleanup@cabbb90e9471163cfac84bd50ff0296b2803b44c # v2.3.0
           with:
             threshold-days: ${{ github.event.inputs.threshold-days || 14 }}
             included-patterns: ${{ github.event.inputs.included-patterns || '*SNAPSHOT*' }}
