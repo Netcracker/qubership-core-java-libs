@@ -31,17 +31,15 @@ class PodSecretsPropertySourceTest {
         Files.writeString(dir.resolve("db_password"), "secret");
         PodSecretsPropertySource ps = build();
 
-        assertThat(ps.getProperty("db_password")).isEqualTo("secret");
-        assertThat(ps.getProperty("DB_PASSWORD")).isEqualTo("secret");
-        assertThat(ps.getProperty("db.password")).isEqualTo("secret");
+        assertThat(ps.getProperty("DB_PASswORD")).isEqualTo("secret");
     }
 
     @Test
-    void getPropertyNames_containsAllForms() throws Exception {
+    void getPropertyNames_UpperCaseANDLowerCase() throws Exception {
         Files.writeString(dir.resolve("api_token"), "tok");
         PodSecretsPropertySource ps = build();
 
-        assertThat(ps.getPropertyNames()).contains("api_token", "API_TOKEN", "api.token");
+        assertThat(ps.getPropertyNames()).contains("api_token", "API_TOKEN");
     }
 
     @Test

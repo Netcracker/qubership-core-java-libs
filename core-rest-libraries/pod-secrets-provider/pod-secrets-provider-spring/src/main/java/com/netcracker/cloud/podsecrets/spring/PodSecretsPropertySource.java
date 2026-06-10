@@ -3,6 +3,8 @@ package com.netcracker.cloud.podsecrets.spring;
 import com.netcracker.cloud.podsecrets.PodSecretsLoader;
 import org.springframework.core.env.EnumerablePropertySource;
 
+import java.util.stream.Stream;
+
 /**
  * Spring {@link EnumerablePropertySource} backed by {@link PodSecretsLoader}.
  *
@@ -20,7 +22,11 @@ public class PodSecretsPropertySource extends EnumerablePropertySource<PodSecret
 
     @Override
     public String[] getPropertyNames() {
-        return source.getSecrets().keySet().toArray(new String[0]);
+        // because this method returns plain array and we cannot support case-insensitive matching,
+        // just duplicate all properties in lower-case and upper case versions
+        return source.getSecrets().keySet().stream()
+                .flatMap(key -> Stream.of(key.toLowerCase(), key.toUpperCase()))
+                .toArray(String[]::new);
     }
 
     @Override

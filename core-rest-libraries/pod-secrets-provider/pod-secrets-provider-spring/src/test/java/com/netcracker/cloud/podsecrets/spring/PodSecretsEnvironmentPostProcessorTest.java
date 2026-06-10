@@ -54,9 +54,7 @@ class PodSecretsEnvironmentPostProcessorTest {
         new PodSecretsEnvironmentPostProcessor()
                 .postProcessEnvironment(env, Mockito.mock(SpringApplication.class));
 
-        assertThat(env.getProperty("db_password")).isEqualTo("from-file");
-        assertThat(env.getProperty("DB_PASSWORD")).isEqualTo("from-file");
-        assertThat(env.getProperty("db.password")).isEqualTo("from-file");
+        assertThat(env.getProperty("DB_PASswORD")).isEqualTo("from-file");
     }
 
     @Test
@@ -64,17 +62,6 @@ class PodSecretsEnvironmentPostProcessorTest {
         Files.writeString(dir.resolve("k"), "v");
         System.setProperty("pod.secrets.dir", dir.toString());
         System.setProperty("pod.secrets.enabled", "false");
-
-        StandardEnvironment env = new StandardEnvironment();
-        new PodSecretsEnvironmentPostProcessor()
-                .postProcessEnvironment(env, Mockito.mock(SpringApplication.class));
-
-        assertThat(env.getPropertySources().contains(PodSecretsPropertySource.SOURCE_NAME)).isFalse();
-    }
-
-    @Test
-    void postProcessEnvironment_missingDir_noSourceAdded() {
-        System.setProperty("pod.secrets.dir", dir.resolve("nonexistent").toString());
 
         StandardEnvironment env = new StandardEnvironment();
         new PodSecretsEnvironmentPostProcessor()

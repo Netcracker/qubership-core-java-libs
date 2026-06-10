@@ -44,11 +44,6 @@ public class PodSecretsEnvironmentPostProcessor implements EnvironmentPostProces
         PodSecretsLoaderConfig config = PodSecretsLoaderConfig.fromSystem();
         PodSecretsLoader loader = new PodSecretsLoader(config);
 
-        if (!loader.isAvailable()) {
-            log.warn("Pod-secrets directory not available or empty: {}", config.getBaseDir().toAbsolutePath());
-            return;
-        }
-
         PodSecretsPropertySource propertySource = new PodSecretsPropertySource(loader);
         environment.getPropertySources().addBefore(
                 StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
