@@ -26,7 +26,7 @@ public class M2MDbaaSClient {
 
     private final DbaasClientConfig dbaasConfig;
 
-    @ConfigProperty(name = "SECURITY_M2M_KUBERNETES_ENABLED", defaultValue = "false")
+    @ConfigProperty(name = "KUBERNETES_M2M_ENABLED", defaultValue = "false")
     private boolean k8sM2mEnabled;
 
     public M2MDbaaSClient(DbaasClientConfig dbaasConfig) {

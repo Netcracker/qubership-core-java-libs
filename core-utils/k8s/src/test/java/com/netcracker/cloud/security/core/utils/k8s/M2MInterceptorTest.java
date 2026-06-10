@@ -14,7 +14,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 import java.util.function.Supplier;
 
@@ -22,6 +26,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(SystemStubsExtension.class)
 class M2MInterceptorTest {
     private static final String TEST_ENDPOINT = "/test/endpoint";
     private static final int TEST_CACHE_SIZE = 10;
@@ -39,10 +44,13 @@ class M2MInterceptorTest {
     private String K8S_TOKEN_HEADER;
     private static final String FALLBACK_TOKEN_HEADER = "Bearer fallback-test-token";
 
+    @SystemStub
+    private EnvironmentVariables environmentVariables;
+
     @BeforeEach
     @SuppressWarnings("unchecked")
     void beforeEach() throws JoseException {
-        System.setProperty("security.m2m.kubernetes.enabled", "true");
+        environmentVariables.set("KUBERNETES_M2M_ENABLED", "true");
 
         wireMockServer = new WireMockServer(0);
         wireMockServer.start();
@@ -75,7 +83,7 @@ class M2MInterceptorTest {
     @AfterEach
     void afterEach() {
         wireMockServer.stop();
-        System.clearProperty("security.m2m.kubernetes.enabled");
+        environmentVariables.remove("KUBERNETES_M2M_ENABLED");
     }
 
     @Test

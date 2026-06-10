@@ -35,7 +35,7 @@ public class Env {
     public static final String PROP_HTTP_TIMEOUT = "maas.http.timeout";
 
     public static String apiUrl() {
-        return apiUrl(Boolean.parseBoolean(System.getenv("SECURITY_M2M_KUBERNETES_ENABLED")));
+        return apiUrl(Boolean.parseBoolean(System.getenv("KUBERNETES_M2M_ENABLED")));
     }
 
     public static String apiUrl(boolean k8sM2mEnabled) {

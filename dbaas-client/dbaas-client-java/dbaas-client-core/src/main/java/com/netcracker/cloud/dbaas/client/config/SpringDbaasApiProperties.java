@@ -29,7 +29,7 @@ public class SpringDbaasApiProperties {
     @Value("${dbaas.api.retry.async.template.timeout.seconds:1200}")
     private int dbaasAsyncRetryTimeoutInS;
 
-    @Value("${SECURITY_M2M_KUBERNETES_ENABLED:false}")
+    @Value("${KUBERNETES_M2M_ENABLED:false}")
     private boolean k8sM2mEnabled;
 
     public String getAddress() {

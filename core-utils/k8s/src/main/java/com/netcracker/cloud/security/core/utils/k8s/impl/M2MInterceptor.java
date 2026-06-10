@@ -49,7 +49,7 @@ public final class M2MInterceptor implements Interceptor {
     }
 
     private static boolean isK8sM2mEnabled() {
-        var k8sM2mEnabled = Boolean.parseBoolean(System.getenv("SECURITY_M2M_KUBERNETES_ENABLED"));
+        var k8sM2mEnabled = Boolean.parseBoolean(System.getenv("KUBERNETES_M2M_ENABLED"));
         if(k8sM2mEnabled) {
             log.debug("k8s not explicitly enabled, defaulting to system setting");
         }

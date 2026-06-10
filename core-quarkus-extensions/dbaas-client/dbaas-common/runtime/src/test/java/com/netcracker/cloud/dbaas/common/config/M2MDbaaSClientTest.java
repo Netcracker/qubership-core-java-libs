@@ -31,7 +31,7 @@ class M2MDbaaSClientTest {
         DbaasClientConfig dbaasConfig = mock(DbaasClientConfig.class);
         when(dbaasConfig.dbaasAgentUrl()).thenReturn(Optional.of(DB_AGENT_URL));
         when(dbaasConfig.dbaasUrl()).thenReturn(Optional.of(DB_AGGREGATOR_URL));
-        environmentVariables.set("SECURITY_M2M_KUBERNETES_ENABLED", "true");
+        environmentVariables.set("KUBERNETES_M2M_ENABLED", "true");
 
         m2MDbaaSClient = new M2MDbaaSClient(dbaasConfig);
     }
