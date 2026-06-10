@@ -14,6 +14,7 @@ import java.util.Optional;
 public final class PodSecretsLoaderConfig {
     public static final Path DEFAULT_BASE_DIR = Paths.get("/etc/secrets/pod-secrets/");
     public static final Duration DEFAULT_TTL = Duration.ofSeconds(60);
+    public static final String ENV_PROP_POD_SECRETS_DIR = "POD_SECRETS_DIR";
 
     private final Path baseDir;
     private final Duration ttl;
@@ -32,7 +33,7 @@ public final class PodSecretsLoaderConfig {
     public static PodSecretsLoaderConfig fromSystem() {
         Path dir = Optional.ofNullable(System.getProperty("pod.secrets.dir"))
                 .map(Paths::get)
-                .orElseGet(() -> Optional.ofNullable(System.getenv("POD_SECRETS_DIR"))
+                .orElseGet(() -> Optional.ofNullable(System.getenv(ENV_PROP_POD_SECRETS_DIR))
                         .map(Paths::get)
                         .orElse(DEFAULT_BASE_DIR));
 
