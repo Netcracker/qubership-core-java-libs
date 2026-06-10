@@ -12,24 +12,26 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * SmallRye {@link ConfigSourceFactory} that creates a {@link PodSecretsConfigSource}
  * when the secrets directory is available.
  */
 public class PodSecretsConfigSourceFactory implements ConfigSourceFactory {
-
     private static final Logger log = Logger.getLogger(PodSecretsConfigSourceFactory.class);
+    private static final PodSecretsLoaderConfig DEFAULT_CONFIG = PodSecretsLoaderConfig.fromSystem();
 
     @Override
     public Iterable<ConfigSource> getConfigSources(ConfigSourceContext context) {
-        String enabled = getValue(context, "pod.secrets.enabled", "true");
-        if (!"true".equalsIgnoreCase(enabled)) {
+        boolean enabled = getValue(context, "pod.secrets.enabled", true, Boolean::valueOf);
+        if (!enabled) {
             log.debug("Pod-secrets config source is disabled");
             return Collections.emptyList();
         }
 
         PodSecretsLoaderConfig config = fromContext(context);
+        log.debugf("Pod-secrets config: %s", config);
         PodSecretsLoader loader = new PodSecretsLoader(config);
 
         if (!loader.isAvailable()) {
@@ -41,21 +43,15 @@ public class PodSecretsConfigSourceFactory implements ConfigSourceFactory {
     }
 
     static PodSecretsLoaderConfig fromContext(ConfigSourceContext context) {
-        String dirStr = getValue(context, "pod.secrets.dir",
-                Optional.ofNullable(System.getenv("POD_SECRETS_DIR"))
-                        .orElse(PodSecretsLoaderConfig.DEFAULT_BASE_DIR.toString()));
-        Path dir = Paths.get(dirStr);
-
-        String ttlStr = getValue(context, "pod.secrets.ttl", null);
-        Duration ttl = ttlStr != null ? Duration.parse(ttlStr) : PodSecretsLoaderConfig.DEFAULT_TTL;
-
+        var dir = getValue(context, "pod.secrets.dir", DEFAULT_CONFIG.getBaseDir(), Paths::get);
+        var ttl = getValue(context, "pod.secrets.ttl", PodSecretsLoaderConfig.DEFAULT_TTL, Duration::parse);
         return PodSecretsLoaderConfig.of(dir, ttl);
     }
 
-    private static String getValue(ConfigSourceContext context, String key, String defaultValue) {
+    private static <T> T getValue(ConfigSourceContext context, String key, T defaultValue, Function<String, T> converter) {
         io.smallrye.config.ConfigValue cv = context.getValue(key);
         if (cv != null && cv.getValue() != null && !cv.getValue().isBlank()) {
-            return cv.getValue();
+            return converter.apply(cv.getValue());
         }
         return defaultValue;
     }
