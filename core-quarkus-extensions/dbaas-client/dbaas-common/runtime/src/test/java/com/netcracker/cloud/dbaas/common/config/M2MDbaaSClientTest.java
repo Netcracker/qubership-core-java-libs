@@ -1,6 +1,7 @@
 package com.netcracker.cloud.dbaas.common.config;
 
 import okhttp3.OkHttpClient;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.dbaas.client.DbaasClient;
@@ -34,6 +35,11 @@ class M2MDbaaSClientTest {
         environmentVariables.set("KUBERNETES_M2M_ENABLED", "true");
 
         m2MDbaaSClient = new M2MDbaaSClient(dbaasConfig);
+    }
+
+    @AfterEach
+    void tearDown() {
+        environmentVariables.remove("KUBERNETES_M2M_ENABLED");
     }
 
     @Test
