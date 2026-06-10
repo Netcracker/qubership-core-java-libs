@@ -26,7 +26,7 @@ state "Standalone (1)" as Standalone1 <<NonBGActive>> {
 
 Standalone1 --> Active1 : InitDomain
 
-note right #white
+note on link #white
 existing consumer-groups:
 1. ns-1.ms-1.orders
 2. [new] ns-1.ms-1.orders-v1-a_i-2023-07-07_10-30-00
@@ -62,7 +62,7 @@ state "Active (2)" as Active1 <<Green>> {
 
 Active1 --> BGPrepare1 : Warmup
 
-note right #white
+note on link #white
 existing consumer-groups:
 1. ns-1.ms-1.orders-v1-a_i-2023-07-07_10-30-00
 2. [new] ns-1.ms-1.orders-v1-a_c-2023-07-07_11-30-00
@@ -99,7 +99,7 @@ state "BG Prepare (3)" as BGPrepare1 <<Green>> {
 
 BGPrepare1 --> Active2 : Commit
 
-note right #white
+note on link #white
 existing consumer-groups:
 1. ns-1.ms-1.orders-v1-a_c-2023-07-07_11-30-00
 2. ns-1.ms-1.orders-v2-c_a-2023-07-07_11-30-00
@@ -136,7 +136,7 @@ state "Active (4)" as Active2 <<Green>> {
 
 Active2 --> BGPrepare2 : Warmup
 
-note right #white
+note on link #white
 existing consumer-groups:
 1. ns-1.ms-1.orders-v1-a_i-2023-07-07_12-30-00
 2. [new] ns-1.ms-1.orders-v1-a_c-2023-07-07_13-30-00
@@ -173,7 +173,7 @@ state "BG Prepare (5)" as BGPrepare2 <<Green>> {
 
 BGPrepare2 --> BGFinalize2 : Promote
 
-note right #white
+note on link #white
 existing consumer-groups:
 1. ns-1.ms-1.orders-v1-a_c-2023-07-07_13-30-00
 2. ns-1.ms-1.orders-v3-c_a-2023-07-07_13-30-00
@@ -219,7 +219,7 @@ state "BG Finalize (6)" as BGFinalize2 <<Blue>> {
 
 BGFinalize2 --> BGPrepare3 : Rollback
 
-note right #white
+note on link #white
 existing consumer-groups:
 1. ns-1.ms-1.orders-v1-l_a-2023-07-07_14-30-00
 2. ns-1.ms-1.orders-v3-a_l-2023-07-07_14-30-00
@@ -265,7 +265,7 @@ state "BG Prepare (7)" as BGPrepare3 <<Green>> {
 
 BGPrepare3 --> BGFinalize3 : Promote
 
-note right #white
+note on link #white
 existing consumer-groups:
 1. ns-1.ms-1.orders-v1-a_c-2023-07-07_15-30-00
 2. ns-1.ms-1.orders-v3-c_a-2023-07-07_15-30-00
@@ -311,7 +311,7 @@ state "BG Finalize (8)" as BGFinalize3 <<Blue>> {
 
 BGFinalize3 --> Active4 : Commit
 
-note right #white
+note on link #white
 existing consumer-groups:
 1. ns-1.ms-1.orders-v1-l_a-2023-07-07_16-30-00
 2. ns-1.ms-1.orders-v3-a_l-2023-07-07_16-30-00
@@ -347,7 +347,7 @@ state "Active (9)" as Active4 <<Green>> {
 
 Active4 --> Standalone2 : DestroyDomain
 
-note right #white
+note on link #white
 existing consumer-groups:
 1. ns-1.ms-1.orders-v3-a_i-2023-07-07_17-30-00
 2. [new] ns-1.ms-1.orders
