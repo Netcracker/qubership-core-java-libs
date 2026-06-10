@@ -85,17 +85,4 @@ class AbstractCustomConfigServerConfigDataLocationResolverTest {
         assertThat(configServerConfigDataResources).allMatch(configServerConfigDataResource ->
                 !configServerConfigDataResource.getProperties().isFailFast());
     }
-
-    @Test
-    void checkK8sM2mEnabledPropertyBinding() throws Exception {
-        Profiles profiles = mock(Profiles.class);
-
-        abstractConfigDataLocationResolver.resolveProfileSpecific(context, ConfigDataLocation.of("optional:configserver:http://config-server:8080"), profiles);
-
-        java.lang.reflect.Field field = AbstractCustomConfigServerConfigDataLocationResolver.class.getDeclaredField("k8sM2mEnabled");
-        field.setAccessible(true);
-        boolean k8sM2mEnabled = (boolean) field.get(abstractConfigDataLocationResolver);
-
-        assertThat(k8sM2mEnabled).isTrue();
-    }
 }

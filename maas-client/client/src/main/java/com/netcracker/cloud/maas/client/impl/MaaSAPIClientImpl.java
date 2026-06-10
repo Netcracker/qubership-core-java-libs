@@ -19,18 +19,18 @@ public class MaaSAPIClientImpl implements MaaSAPIClient {
     private final ServerApiVersion serverApiVersion;
     private final ApiUrlProvider apiProvider;
 
-    public MaaSAPIClientImpl(Supplier<String> tokenSupplier, boolean k8sM2mEnabled) {
-        this.restClient = HttpClient.getMaasClient(tokenSupplier, k8sM2mEnabled);
-        this.serverApiVersion = new ServerApiVersion(restClient, Env.apiUrl(k8sM2mEnabled));
-        this.tenantManagerConnector = new Lazy<>(() -> new TenantManagerConnectorImpl(HttpClient.getM2mClient(tokenSupplier, k8sM2mEnabled)));
-        this.apiProvider = new ApiUrlProvider(serverApiVersion, Env.apiUrl(k8sM2mEnabled));
+    public MaaSAPIClientImpl(Supplier<String> tokenSupplier) {
+        this.restClient = HttpClient.getMaasClient(tokenSupplier);
+        this.serverApiVersion = new ServerApiVersion(restClient, Env.apiUrl());
+        this.tenantManagerConnector = new Lazy<>(() -> new TenantManagerConnectorImpl(HttpClient.getM2mClient(tokenSupplier)));
+        this.apiProvider = new ApiUrlProvider(serverApiVersion, Env.apiUrl());
     }
 
-    public MaaSAPIClientImpl(Supplier<String> tokenSupplier, boolean k8sM2mEnabled, TenantManagerConnector tenantManagerConnector, BlueGreenStatePublisher statePublisher) {
-        this.restClient = HttpClient.getMaasClient(tokenSupplier, k8sM2mEnabled);
-        this.serverApiVersion = new ServerApiVersion(restClient, Env.apiUrl(k8sM2mEnabled));
+    public MaaSAPIClientImpl(Supplier<String> tokenSupplier, TenantManagerConnector tenantManagerConnector, BlueGreenStatePublisher statePublisher) {
+        this.restClient = HttpClient.getMaasClient(tokenSupplier);
+        this.serverApiVersion = new ServerApiVersion(restClient, Env.apiUrl());
         this.tenantManagerConnector = new Lazy<>(() -> tenantManagerConnector);
-        this.apiProvider = new ApiUrlProvider(serverApiVersion, Env.apiUrl(k8sM2mEnabled));
+        this.apiProvider = new ApiUrlProvider(serverApiVersion, Env.apiUrl());
     }
 
     @Override

@@ -221,7 +221,7 @@ class RabbitMaaSClientImplTest {
 
     private RabbitMaaSClientImpl createRabbitClient(String agentUrl) {
         System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, agentUrl);
-        var httpClient = HttpClient.getMaasClient(() -> "faketoken", false);
+        var httpClient = HttpClient.getMaasClient(() -> "faketoken");
         var serverApiVersion = new ServerApiVersion(httpClient, agentUrl);
 
         return new RabbitMaaSClientImpl(httpClient, new ApiUrlProvider(serverApiVersion, agentUrl));
