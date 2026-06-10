@@ -178,6 +178,16 @@
             <artifactId>rest-api-deprecation-switcher-quarkus-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
+            <artifactId>pod-secrets-config-source</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
+            <artifactId>pod-secrets-config-source-deployment</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -113,6 +113,16 @@
             <artifactId>resttemplate</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.netcracker.cloud</groupId>
+            <artifactId>pod-secrets-provider-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.netcracker.cloud</groupId>
+            <artifactId>pod-secrets-provider-spring</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
