@@ -32,14 +32,12 @@ class EnvTest {
 
     @Test
     void testApiUrlK8sM2mEnabled() {
-        withProp("security.m2m.kubernetes.enabled", "true", () -> {
-            withProp(Env.PROP_MAAS_AGENT_URL, null, () ->
-                    assertEquals("http://maas-agent:8080", Env.apiUrl())
-            );
-            withProp(Env.PROP_MAAS_URL,  "http://localhost:8080/", () ->
-                    assertEquals(  "http://localhost:8080", Env.apiUrl())
-            );
-        });
+        withProp(Env.PROP_MAAS_AGENT_URL, null, () ->
+                assertEquals("http://maas-agent:8080", Env.apiUrl(true))
+        );
+        withProp(Env.PROP_MAAS_URL,  "http://localhost:8080/", () ->
+                assertEquals(  "http://localhost:8080", Env.apiUrl(true))
+        );
     }
 
     @Test

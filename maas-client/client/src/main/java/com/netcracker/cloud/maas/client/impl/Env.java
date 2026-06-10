@@ -35,13 +35,13 @@ public class Env {
     public static final String PROP_HTTP_TIMEOUT = "maas.http.timeout";
 
     public static String apiUrl() {
+        return apiUrl(Boolean.parseBoolean(System.getenv("SECURITY_M2M_KUBERNETES_ENABLED")));
+    }
+
+    public static String apiUrl(boolean k8sM2mEnabled) {
         String maasAgentUrl = stringProperty(PROP_MAAS_AGENT_URL)
                 .map(Env::normalizeUrl)
                 .orElse(addr2http("maas-agent"));
-        boolean k8sM2mEnabled = Boolean.parseBoolean(System.getenv("SECURITY_M2M_KUBERNETES_ENABLED"));
-        if(!k8sM2mEnabled) {
-            k8sM2mEnabled = Boolean.parseBoolean(System.getProperty("security.m2m.kubernetes.enabled"));
-        }
         if(!k8sM2mEnabled) {
             return maasAgentUrl;
         }
