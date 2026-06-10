@@ -17,6 +17,10 @@ public final class M2MClientFactory {
     private static final Supplier<String> k8sAuthHeaderSupplier =
             getBearerAuthHeaderSupplier(() -> KubernetesAudienceToken.getToken(AudienceName.NETCRACKER));
 
+    public static boolean isK8sM2mEnabled() {
+        return Boolean.parseBoolean(System.getenv("KUBERNETES_M2M_ENABLED"));
+    }
+
     public static OkHttpClient getM2mOkHttpClient(Supplier<String> keycloakTokenSupplier) {
         return getOkHttpClient(new M2MInterceptor(new UrlCache(), getBearerAuthHeaderSupplier(keycloakTokenSupplier), k8sAuthHeaderSupplier));
     }

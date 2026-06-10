@@ -1,5 +1,6 @@
 package com.netcracker.cloud.security.core.utils.k8s.impl;
 
+import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -41,19 +42,11 @@ public final class M2MInterceptor implements Interceptor {
     }
 
     public M2MInterceptor(UrlCache urlCache, Supplier<String> fallbackAuthHeaderSupplier, Supplier<String> k8sAuthHeaderSupplier, String fallbackBaseUrl) {
-        this.k8sM2mEnabled = isK8sM2mEnabled();
+        this.k8sM2mEnabled = M2MClientFactory.isK8sM2mEnabled();
         this.urlCache = urlCache;
         this.fallbackAuthHeaderSupplier = fallbackAuthHeaderSupplier;
         this.k8sAuthHeaderSupplier = k8sAuthHeaderSupplier;
         this.fallbackBaseUrl = (fallbackBaseUrl != null) ? HttpUrl.get(fallbackBaseUrl) : null;
-    }
-
-    private static boolean isK8sM2mEnabled() {
-        var k8sM2mEnabled = Boolean.parseBoolean(System.getenv("KUBERNETES_M2M_ENABLED"));
-        if(k8sM2mEnabled) {
-            log.debug("k8s not explicitly enabled, defaulting to system setting");
-        }
-        return k8sM2mEnabled;
     }
 
     @NotNull

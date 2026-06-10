@@ -1,5 +1,6 @@
 package com.netcracker.cloud.maas.client.impl;
 
+import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ public class Env {
     public static final String PROP_HTTP_TIMEOUT = "maas.http.timeout";
 
     public static String apiUrl() {
-        return apiUrl(Boolean.parseBoolean(System.getenv("KUBERNETES_M2M_ENABLED")));
+        return apiUrl(M2MClientFactory.isK8sM2mEnabled());
     }
 
     public static String apiUrl(boolean k8sM2mEnabled) {
