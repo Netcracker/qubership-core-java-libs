@@ -49,7 +49,7 @@ public class PodSecretsLoader {
         return Stream.of(
                 Map.entry(e.getKey().toLowerCase(), e.getValue()),
                 Map.entry(e.getKey().toUpperCase(), e.getValue()),
-                Map.entry(e.getKey().toLowerCase().replaceAll("[^a-zA-Z0-9]", "."), e.getValue())
+                Map.entry(e.getKey().toLowerCase().replaceAll("[^a-z0-9]", "."), e.getValue())
         );
     }
 
