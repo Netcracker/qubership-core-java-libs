@@ -34,16 +34,16 @@ public class PodSecretsConfigSource implements ConfigSource {
 
     @Override
     public Map<String, String> getProperties() {
-        return loader.snapshot();
+        return loader.getSecrets();
     }
 
     @Override
     public Set<String> getPropertyNames() {
-        return loader.propertyNames();
+        return loader.getSecrets().keySet();
     }
 
     @Override
     public String getValue(String propertyName) {
-        return loader.getValue(propertyName);
+        return loader.getSecrets().get(propertyName);
     }
 }

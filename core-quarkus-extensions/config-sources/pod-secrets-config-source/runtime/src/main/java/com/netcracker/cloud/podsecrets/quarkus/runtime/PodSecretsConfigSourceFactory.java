@@ -34,11 +34,6 @@ public class PodSecretsConfigSourceFactory implements ConfigSourceFactory {
         log.debugf("Pod-secrets config: %s", config);
         PodSecretsLoader loader = new PodSecretsLoader(config);
 
-        if (!loader.isAvailable()) {
-            log.debugf("Pod-secrets directory not available: %s", config.getBaseDir());
-            return Collections.emptyList();
-        }
-
         return Collections.singletonList(new PodSecretsConfigSource(loader));
     }
 

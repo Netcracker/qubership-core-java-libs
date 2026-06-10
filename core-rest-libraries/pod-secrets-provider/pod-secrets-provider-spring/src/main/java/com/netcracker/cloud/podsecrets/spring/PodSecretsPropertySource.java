@@ -20,11 +20,11 @@ public class PodSecretsPropertySource extends EnumerablePropertySource<PodSecret
 
     @Override
     public String[] getPropertyNames() {
-        return source.propertyNames().toArray(new String[0]);
+        return source.getSecrets().keySet().toArray(new String[0]);
     }
 
     @Override
     public Object getProperty(String name) {
-        return source.getValue(name);
+        return source.getSecrets().get(name);
     }
 }
