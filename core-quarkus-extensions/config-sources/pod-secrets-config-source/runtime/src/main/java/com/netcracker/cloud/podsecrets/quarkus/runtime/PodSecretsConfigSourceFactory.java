@@ -44,7 +44,7 @@ public class PodSecretsConfigSourceFactory implements ConfigSourceFactory {
 
     static PodSecretsLoaderConfig fromContext(ConfigSourceContext context) {
         var dir = getValue(context, "pod.secrets.dir", DEFAULT_CONFIG.getBaseDir(), Paths::get);
-        var ttl = getValue(context, "pod.secrets.ttl", PodSecretsLoaderConfig.DEFAULT_TTL, Duration::parse);
+        var ttl = getValue(context, "pod.secrets.ttl", DEFAULT_CONFIG.getTtl(), Duration::parse);
         return PodSecretsLoaderConfig.of(dir, ttl);
     }
 
