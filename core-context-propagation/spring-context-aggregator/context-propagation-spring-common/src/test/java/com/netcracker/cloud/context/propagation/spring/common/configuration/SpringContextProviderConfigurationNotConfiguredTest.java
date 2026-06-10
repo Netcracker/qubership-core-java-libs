@@ -9,7 +9,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannelRequestIdContextObject.X_CHANNEL_REQUEST_ID;
 
@@ -23,12 +23,11 @@ import static com.netcracker.cloud.framework.contexts.xchannelrequestid.XChannel
 class SpringContextProviderConfigurationNotConfiguredTest {
 
     @Test
-    void shouldNotTouchSystemPropertyAndKeepRestrictedList() {
-        assertNull(System.getProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY),
-                String.format("System property %s must remain unset when no source configures it",
+    void shouldPublishEmptySystemPropertyAndKeepRestrictedList() {
+        assertEquals("", System.getProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY),
+                String.format("System property %s must be set to empty when no source configures it",
                         HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY));
 
-        HeaderPropagationConfiguration.resetCache();
         assertTrue(HeaderPropagationConfiguration.isRestricted(X_CHANNEL_REQUEST_ID),
                 "Restricted list must apply when no value is configured");
     }

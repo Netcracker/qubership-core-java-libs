@@ -590,7 +590,7 @@ class KafkaMaaSClientImplTest {
                         response().withBody("{\"deletedSuccessfully\": [], \"failedToDelete\": []}")
                 );
 
-                KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", false, null, null).getKafkaClient();
+                KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", null, null).getKafkaClient();
                 assertTrue(kafkaClient.deleteTopic(new Classifier("orders")));
                 assertFalse(kafkaClient.deleteTopic(new Classifier("orders")));
             });
@@ -778,7 +778,7 @@ class KafkaMaaSClientImplTest {
 
     private KafkaMaaSClientImpl createKafkaClient(String agentUrl) {
         System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, agentUrl);
-        var httpClient = HttpClient.getMaasClient(() -> "faketoken", false);
+        var httpClient = HttpClient.getMaasClient(() -> "faketoken");
         var serverApiVersion = new ServerApiVersion(httpClient, agentUrl);
         System.clearProperty(M2MClientFactory.MAAS_AGENT_URL_PROP);
 

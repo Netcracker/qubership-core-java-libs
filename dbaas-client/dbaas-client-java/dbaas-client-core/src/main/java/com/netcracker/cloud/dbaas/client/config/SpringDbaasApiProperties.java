@@ -1,5 +1,6 @@
 package com.netcracker.cloud.dbaas.client.config;
 
+import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +21,6 @@ public class SpringDbaasApiProperties {
     @Value("${api.dbaas.address:#{null}}")
     private Optional<String> dbaasAddress;
 
-    @Getter(AccessLevel.NONE)
-    @Value("${security.m2m.kubernetes.enabled:false}")
-    private boolean k8sM2mEnabled;
-
     @Value("${dbaas.api.retry.default.template.maxAttempts:10}")
     private int dbaasDefaultRetryMaxAttempts;
 
@@ -34,7 +31,7 @@ public class SpringDbaasApiProperties {
     private int dbaasAsyncRetryTimeoutInS;
 
     public String getAddress() {
-        if(!k8sM2mEnabled) {
+        if(!M2MClientFactory.isK8sM2mEnabled()) {
             return dbaasAgentAddress.orElse(DEFAULT_DBAAS_AGENT_URL);
         }
         if(dbaasAddress.isEmpty()) {

@@ -60,19 +60,6 @@ class RouteRegistrationConfigTest {
         Assertions.assertTrue(routesRestRegistrationProcessor.isPostRoutesEnabled());
     }
 
-    @Test
-    void testM2mOkHttpClient_isCalledWithK8sM2mEnabledTrue() {
-        try (var mockedFactory = org.mockito.Mockito.mockStatic(com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory.class)) {
-            mockedFactory.when(() -> com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory.getM2mOkHttpClient(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.eq(true)))
-                    .thenReturn(new OkHttpClient.Builder().build());
-
-            // Trigger the producer method
-            config.controlPlaneHttpClient();
-
-            mockedFactory.verify(() -> com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory.getM2mOkHttpClient(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.eq(true)));
-        }
-    }
-
     // idk why, but in QuarkusTest we cannot declare bean via producer method and inject it in that class
     // (it says that circular dependencies created)
     @ApplicationScoped
@@ -84,4 +71,3 @@ class RouteRegistrationConfigTest {
         }
     }
 }
-

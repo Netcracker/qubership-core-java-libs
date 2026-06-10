@@ -1,0 +1,10 @@
+context:
+  propagation:
+    headers:
+      enable:
+        optional: X-Channel-Request-Id
+
+server:
+  error:
+    include-message: always
+    include-exception: true

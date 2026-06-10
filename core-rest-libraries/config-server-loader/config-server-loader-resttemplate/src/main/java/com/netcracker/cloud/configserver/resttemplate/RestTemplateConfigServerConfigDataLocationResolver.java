@@ -33,7 +33,7 @@ public class RestTemplateConfigServerConfigDataLocationResolver extends Abstract
     @Override
     public MicroserviceRestClient getMicroserviceRestClient() {
         if (hasM2M(configurableBootstrapContext)) {
-            var client = M2MClientFactory.getM2mOkHttpClient(() -> getM2MToken(configurableBootstrapContext), k8sM2mEnabled);
+            var client = M2MClientFactory.getM2mOkHttpClient(() -> getM2MToken(configurableBootstrapContext));
             return new MicroserviceOkHttpRestClient(client);
         }
         return createM2MRestTemplate();

@@ -11,13 +11,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MaaSClientConfig {
 
-    @Value("${security.m2m.kubernetes.enabled:false}")
-    private boolean k8sM2mEnabled;
-
     @Bean
     @ConditionalOnMissingBean
     public MaaSAPIClient getMaaSAPIClient(M2MManager m2MManager) {
-        return new MaaSAPIClientImpl(() -> m2MManager.getToken().getTokenValue(), k8sM2mEnabled);
+        return new MaaSAPIClientImpl(() -> m2MManager.getToken().getTokenValue());
     }
 
 }
