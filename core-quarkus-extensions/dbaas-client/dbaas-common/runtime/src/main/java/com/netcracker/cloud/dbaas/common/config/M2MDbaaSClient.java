@@ -26,9 +26,6 @@ public class M2MDbaaSClient {
 
     private final DbaasClientConfig dbaasConfig;
 
-    @ConfigProperty(name = "KUBERNETES_M2M_ENABLED", defaultValue = "false")
-    private boolean k8sM2mEnabled;
-
     public M2MDbaaSClient(DbaasClientConfig dbaasConfig) {
         this.dbaasConfig = dbaasConfig;
     }
@@ -37,7 +34,7 @@ public class M2MDbaaSClient {
         String dbaasAgentUrl = dbaasConfig.dbaasAgentUrl().orElse(DEFAULT_DBAAS_AGENT_ADDRESS);
 
         String dbaasUrl = dbaasAgentUrl;
-        if(k8sM2mEnabled) {
+        if(M2MClientFactory.isK8sM2mEnabled()) {
             if(dbaasConfig.dbaasUrl().isEmpty()) {
                 log.warn("DBaaS address is not available, falling back to dbaas-agent. Specify 'api.dbaas.address' property to DBaaS url");
             }
