@@ -54,7 +54,7 @@ class PodSecretsEnvironmentPostProcessorTest {
         new PodSecretsEnvironmentPostProcessor()
                 .postProcessEnvironment(env, Mockito.mock(SpringApplication.class));
 
-        assertThat(env.getProperty("DB_PASswORD")).isEqualTo("from-file");
+        assertThat(env.getProperty("DB_PASSWORD")).isEqualTo("from-file");
     }
 
     @Test

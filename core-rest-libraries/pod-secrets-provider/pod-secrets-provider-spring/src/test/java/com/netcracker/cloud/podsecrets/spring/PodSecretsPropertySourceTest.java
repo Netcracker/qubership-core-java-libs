@@ -31,7 +31,9 @@ class PodSecretsPropertySourceTest {
         Files.writeString(dir.resolve("db_password"), "secret");
         PodSecretsPropertySource ps = build();
 
-        assertThat(ps.getProperty("DB_PASswORD")).isEqualTo("secret");
+        assertThat(ps.getProperty("DB_PASSWORD")).isEqualTo("secret");
+        assertThat(ps.getProperty("db_password")).isEqualTo("secret");
+        assertThat(ps.getProperty("db.password")).isEqualTo("secret");
     }
 
     @Test

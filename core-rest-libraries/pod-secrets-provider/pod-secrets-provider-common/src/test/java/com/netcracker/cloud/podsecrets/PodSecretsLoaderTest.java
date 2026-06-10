@@ -20,10 +20,14 @@ class PodSecretsLoaderTest {
     void getSecretCaseinsensitive() throws Exception {
         Files.writeString(dir.resolve("db_password"), "secret123");
         PodSecretsLoader l = new PodSecretsLoader(PodSecretsLoaderConfig.of(dir, Duration.ofMinutes(10)));
-        assertThat(l.getSecrets().get("DB_PASswORD")).isEqualTo("secret123");
+        assertThat(l.getSecrets().get("DB_PASSWORD")).isEqualTo("secret123");
+        assertThat(l.getSecrets().get("db_password")).isEqualTo("secret123");
+        assertThat(l.getSecrets().get("db.password")).isEqualTo("secret123");
 
         // assert that set of property names also case-insensitive on select
-        assertTrue(l.getSecrets().keySet().contains("DB_PASswORD"));
+        assertTrue(l.getSecrets().keySet().contains("DB_PASSWORD"));
+        assertTrue(l.getSecrets().keySet().contains("db_password"));
+        assertTrue(l.getSecrets().keySet().contains("db.password"));
     }
 
     @Test

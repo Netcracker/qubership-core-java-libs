@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PodSecretsLoader {
     private static final Logger log = LoggerFactory.getLogger(PodSecretsLoader.class);
@@ -28,13 +29,9 @@ public class PodSecretsLoader {
                 return Files.list(config.getBaseDir())
                         .peek(s -> log.debug("process: {}", s))
                         .filter(p -> !Files.isDirectory(p))
-                        .collect(Collectors.toMap(
-                                        path -> path.getFileName().toString(),
-                                        path -> loadSecretValue(path),
-                                        (a, b) -> a,
-                                        () -> new TreeMap<>(String.CASE_INSENSITIVE_ORDER)
-                                )
-                        );
+                        .map(path -> Map.entry(path.getFileName().toString(), loadSecretValue(path)))
+                        .flatMap(this::variator)
+                        .collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue, (a, b) -> a));
             } catch (IOException e) {
                 log.error("Error process secrets folder", e);
             }
@@ -42,6 +39,18 @@ public class PodSecretsLoader {
             log.debug("Secrets folder not found by: {}", config.getBaseDir());
         }
         return Map.of();
+    }
+
+    private Stream<Map.Entry<String, String>> variator(Map.Entry<String, String> e) {
+        // now we should add key aliases, so user would find value by:
+        // - `DB_PASSWORD`
+        // - `db_password`
+        // - `db.password`
+        return Stream.of(
+                Map.entry(e.getKey().toLowerCase(), e.getValue()),
+                Map.entry(e.getKey().toUpperCase(), e.getValue()),
+                Map.entry(e.getKey().toLowerCase().replaceAll("[^a-zA-Z0-9]", "."), e.getValue())
+        );
     }
 
     private String loadSecretValue(Path path) {

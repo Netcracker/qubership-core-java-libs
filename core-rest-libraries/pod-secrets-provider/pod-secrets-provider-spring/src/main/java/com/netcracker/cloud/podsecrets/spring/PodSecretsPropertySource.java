@@ -22,11 +22,7 @@ public class PodSecretsPropertySource extends EnumerablePropertySource<PodSecret
 
     @Override
     public String[] getPropertyNames() {
-        // because this method returns plain array and we cannot support case-insensitive matching,
-        // just duplicate all properties in lower-case and upper case versions
-        return source.getSecrets().keySet().stream()
-                .flatMap(key -> Stream.of(key.toLowerCase(), key.toUpperCase()))
-                .toArray(String[]::new);
+        return source.getSecrets().keySet().toArray(new String[0]);
     }
 
     @Override
