@@ -56,6 +56,7 @@ public interface DatasourceProperties {
      * initial sql
      */
     @WithName("datasource.initial-sql")
+    @WithDefault("")
     String initialSql();
 
     /**
