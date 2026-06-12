@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.netcracker.cloud</groupId>
+    <artifactId>core-quarkus-external-bom</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <description>External BOM for Quarkus qubership-core-java-libs modules. Includes qubership-java-bom.</description>
+
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-java-libs</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <properties>
+        <!-- Imported sub-BOMs -->
+        <cloud-core.java-bom.version>1.0.0-SNAPSHOT</cloud-core.java-bom.version>
+        <cloud-core.maas-client-quarkus.version>11.0.1</cloud-core.maas-client-quarkus.version>
+        <cloud-core.maas-declarative-client-quarkus.version>9.0.1</cloud-core.maas-declarative-client-quarkus.version>
+        <cloud-core.context-propagation-quarkus.version>9.1.2</cloud-core.context-propagation-quarkus.version>
+
+        <cloud-core.quarkus-extensions.version>10.0.1</cloud-core.quarkus-extensions.version>
+        <cloud-core.blue-green-monitor-quarkus.version>4.0.1</cloud-core.blue-green-monitor-quarkus.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- ============================================================ -->
+            <!-- Imported BOMs: qubership-java-bom covers all pure-java modules -->
+            <!-- ============================================================ -->
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>core-external-bom</artifactId>
+                <version>${cloud-core.java-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- MaaS Quarkus client BOM -->
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>maas-client-quarkus-bom</artifactId>
+                <version>${cloud-core.maas-client-quarkus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- MaaS declarative Kafka Quarkus client BOM -->
+            <dependency>
+                <groupId>com.netcracker.cloud.maas.declarative</groupId>
+                <artifactId>maas-declarative-kafka-client-quarkus-bom</artifactId>
+                <version>${cloud-core.maas-declarative-client-quarkus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- cloud-core-context-propagation-bom -->
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>cloud-core-context-propagation-bom</artifactId>
+                <version>${cloud-core.context-propagation-quarkus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- ============================================================ -->
+            <!-- Quarkus-specific modules                                      -->
+            <!-- ============================================================ -->
+
+            <!-- === core-quarkus-extensions === -->
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>messaging-context</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>security-adapters</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>log-manager</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>stomp-ws-server</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>springcloud-config-source</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>consul-config-source</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>routes-registrator</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>dbaas-common</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>dbaas-datasource-postgresql</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>dbaas-mongo-client</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>dbaas-opensearch-client</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>dbaas-cassandra-client</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>dbaas-client-test</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>consul-client</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>maas-client-quarkus</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>rest-api-deprecation-switcher-quarkus</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+
+            <!-- === core-blue-green-state-monitor-quarkus === -->
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>blue-green-state-monitor-quarkus</artifactId>
+                <version>${cloud-core.blue-green-monitor-quarkus.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/netcracker/*</url>
+            <snapshots/>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/Netcracker/qubership-core-java-libs</url>
+        </repository>
+    </distributionManagement>
+
+</project>
