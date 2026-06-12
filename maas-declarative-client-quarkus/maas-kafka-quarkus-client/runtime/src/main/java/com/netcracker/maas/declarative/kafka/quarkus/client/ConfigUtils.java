@@ -40,7 +40,11 @@ public class ConfigUtils {
 
     private static void putIfPresent(Config config, String key, String mapKey, Map<String, Object> map, Class<?>... types) {
         for (Class<?> type : types) {
-            getOptionalPropertyOfType(config, key, type).ifPresent(value -> map.put(mapKey, value));
+            Optional<?> value = getOptionalPropertyOfType(config, key, type);
+            if (value.isPresent()) {
+                map.put(mapKey, value.get());
+                return;
+            }
         }
     }
 }

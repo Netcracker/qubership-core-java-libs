@@ -6,6 +6,7 @@ import com.netcracker.cloud.bluegreen.api.model.State;
 import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
 import com.netcracker.cloud.maas.bluegreen.kafka.BGKafkaConsumer;
 import com.netcracker.cloud.maas.bluegreen.kafka.CommitMarker;
+import com.netcracker.cloud.maas.bluegreen.kafka.PartitionsAssignedListener;
 import com.netcracker.cloud.maas.bluegreen.kafka.Record;
 import com.netcracker.cloud.maas.bluegreen.kafka.RecordsBatch;
 import com.netcracker.cloud.maas.bluegreen.versiontracker.impl.VersionFilterConstructor;
@@ -38,6 +39,7 @@ public class BGKafkaConsumerImpl<K, V> implements BGKafkaConsumer<K, V> {
 
     private BlueGreenState activeState;
     private final AtomicReference<BlueGreenState> bgStateRef = new AtomicReference<>();
+    private PartitionsAssignedListener partitionsAssignedListener;
 
     public BGKafkaConsumerImpl(BGKafkaConsumerConfig config) {
         this.config = config;
@@ -125,6 +127,11 @@ public class BGKafkaConsumerImpl<K, V> implements BGKafkaConsumer<K, V> {
         }
     }
 
+    @Override
+    public void setPartitionsAssignedListener(PartitionsAssignedListener listener) {
+        this.partitionsAssignedListener = listener;
+    }
+
     @SneakyThrows
     public void close() {
         log.info("Closing consumer");
@@ -209,6 +216,9 @@ public class BGKafkaConsumerImpl<K, V> implements BGKafkaConsumer<K, V> {
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
                 log.debug("Adjusting current consumer offsets to: {}", alignedOffsets);
                 alignedOffsets.forEach(((topicPartition, offsetAndMetadata) -> kafkaConsumer.seek(topicPartition, offsetAndMetadata)));
+                if (partitionsAssignedListener != null) {
+                    partitionsAssignedListener.onPartitionsAssigned(partitions);
+                }
             }
         };
         log.debug("Subscribing kafka consumer to the topics: {}", config.getTopics().stream().sorted().toList());
