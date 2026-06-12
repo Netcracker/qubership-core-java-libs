@@ -50,6 +50,11 @@ public class AgroalConnectionFactoryConfigurationBuilder {
         return this;
     }
 
+    public AgroalConnectionFactoryConfigurationBuilder initialSql(String initialSql) {
+        configurationHolder.initialSql = initialSql;
+        return this;
+    }
+
     public AgroalConnectionFactoryConfiguration build() {
         return configurationHolder;
     }

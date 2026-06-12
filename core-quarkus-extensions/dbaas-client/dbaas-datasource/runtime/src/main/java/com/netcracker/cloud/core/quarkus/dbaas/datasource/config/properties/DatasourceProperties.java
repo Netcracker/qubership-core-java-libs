@@ -52,6 +52,12 @@ public interface DatasourceProperties {
     @WithDefault("false")
     boolean xa();
 
+     /**
+     * initial sql
+     */
+    @WithName("datasource.initial-sql")
+    String initialSql();
+
     /**
      * jdbc
      */
@@ -83,5 +89,11 @@ public interface DatasourceProperties {
         @WithName("xa")
         @WithDefault("false")
         boolean xa();
+
+        /**
+         * initial sql
+         */
+        @WithName("initial-sql")
+        String initialSql();
     }
 }
