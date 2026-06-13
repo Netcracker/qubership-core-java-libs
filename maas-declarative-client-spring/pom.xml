@@ -27,7 +27,7 @@
         <maven.compiler.target>21</maven.compiler.target>
 
         <cloud-core.maas-declarative-client-commons.version>6.1.2-SNAPSHOT</cloud-core.maas-declarative-client-commons.version>
-        <cloud-core.maas-declarative-client-spring.version>9.1.1</cloud-core.maas-declarative-client-spring.version>
+        <cloud-core.maas-declarative-client-spring.version>9.1.2-SNAPSHOT</cloud-core.maas-declarative-client-spring.version>
         <cloud-core.core-blue-green-state-monitor.version>2.1.1</cloud-core.core-blue-green-state-monitor.version>
     </properties>
 
