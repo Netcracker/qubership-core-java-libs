@@ -77,9 +77,9 @@ public class DbaasDatasourcePoolConfiguration {
     }
 
     public String getInitialSql(@Nullable String logicalDbName) {
-        String initialSql = getDatasourceProperties().initialSql();
+        String initialSql = getDatasourceProperties().initialSql().orElse("");
         if (!StringUtil.isNullOrEmpty(logicalDbName) && getDatasourceProperties().datasources().containsKey(logicalDbName)) {
-            initialSql = getDatasourceProperties().datasources().get(logicalDbName).initialSql();
+            initialSql = getDatasourceProperties().datasources().get(logicalDbName).initialSql().orElse("");
         }
         return initialSql;
     }

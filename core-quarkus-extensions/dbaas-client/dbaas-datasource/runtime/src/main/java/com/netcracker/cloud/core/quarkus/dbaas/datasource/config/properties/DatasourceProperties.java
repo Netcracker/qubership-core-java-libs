@@ -8,6 +8,7 @@ import io.smallrye.config.WithName;
 import io.smallrye.config.WithParentName;
 
 import java.util.Map;
+import java.util.Optional;
 
 @ConfigMapping(prefix = "quarkus.dbaas")
 @ConfigRoot(phase = ConfigPhase.RUN_TIME)
@@ -56,8 +57,7 @@ public interface DatasourceProperties {
      * initial sql
      */
     @WithName("datasource.initial-sql")
-    @WithDefault("")
-    String initialSql();
+    Optional<String> initialSql();
 
     /**
      * jdbc
@@ -95,6 +95,6 @@ public interface DatasourceProperties {
          * initial sql
          */
         @WithName("initial-sql")
-        String initialSql();
+        Optional<String> initialSql();
     }
 }
