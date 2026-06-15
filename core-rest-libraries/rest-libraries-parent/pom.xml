@@ -20,7 +20,7 @@
         <java.version>21</java.version>
         <cloud-core.core-utils.version>3.1.2-SNAPSHOT</cloud-core.core-utils.version>
         <cloud-core.core-restclient.version>7.1.1</cloud-core.core-restclient.version>
-        <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
+        <jacoco.plugin.version>0.8.15</jacoco.plugin.version>
         <org.powermock.version>2.0.9</org.powermock.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
