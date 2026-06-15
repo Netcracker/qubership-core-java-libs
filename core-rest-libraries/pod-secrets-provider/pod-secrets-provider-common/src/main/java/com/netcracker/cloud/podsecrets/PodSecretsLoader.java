@@ -3,7 +3,6 @@ package com.netcracker.cloud.podsecrets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,13 +24,15 @@ public class PodSecretsLoader {
     private Map<String, String> reloadSecrets() {
         log.debug("Load secrets from: {}", config.getBaseDir());
         if (Files.isDirectory(config.getBaseDir())) {
-            try {
-                return Files.list(config.getBaseDir())
+            try (Stream<Path> stream = Files.list(config.getBaseDir())) {
+                return stream
                         .peek(s -> log.debug("process: {}", s))
                         .filter(p -> !Files.isDirectory(p))
-                        .map(path -> Map.entry(path.getFileName().toString(), loadSecretValue(path)))
+                        .flatMap(path -> loadSecretValue(path)
+                            .map(value -> Map.entry(path.getFileName().toString(), value))
+                            .stream())
                         .flatMap(this::variator)
-                        .collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue, (a, b) -> a));
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a));
             } catch (IOException e) {
                 log.error("Error process secrets folder", e);
             }
@@ -53,13 +54,13 @@ public class PodSecretsLoader {
         );
     }
 
-    private String loadSecretValue(Path path) {
+    private Optional<String> loadSecretValue(Path path) {
         try {
             log.debug("Load secret data from: {}", path);
-            return Files.readString(path);
+            return Optional.of(Files.readString(path));
         } catch (IOException e) {
             log.error("Error load secret value from: {}", path, e);
-            return null;
+            return Optional.empty();
         }
     }
 

@@ -26,7 +26,7 @@ class PodSecretsLoaderTest {
     }
 
     @Test
-    void getAbsentSecrets() throws Exception {
+    void getAbsentSecrets() {
         PodSecretsLoader l = new PodSecretsLoader(PodSecretsLoaderConfig.of(Path.of("/absent"), Duration.ofMinutes(10)));
         assertEquals(0, l.getSecrets().size());
     }
