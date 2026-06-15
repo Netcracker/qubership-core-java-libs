@@ -635,6 +635,66 @@ public class DbaaSPostgresDbCreationServiceImplTest {
         assertThrows(FlywayException.class, () -> dbaaSPostgresDbCreationService.getOrCreatePostgresDatabase(getServiceClassifier()));
     }
 
+    @Test
+    public void mustUseGlobalInitialSql() {
+        String globalInitialSql = "SET TIME ZONE 'UTC'";
+
+        DbaasDatasourcePoolConfiguration poolConfiguration = mock(DbaasDatasourcePoolConfiguration.class);
+        DatasourceProperties properties = mock(DatasourceProperties.class);
+        when(properties.debugDatasourceListeners()).thenReturn(false);
+        when(properties.globalJdbcProperties()).thenReturn(new HashMap<>());
+        when(poolConfiguration.getDatasourceProperties()).thenReturn(properties);
+        when(poolConfiguration.getJdbcProperties(any())).thenCallRealMethod();
+        when(poolConfiguration.getInitialSql(isNull())).thenReturn(globalInitialSql);
+
+        when(dbaaSClient.getOrCreateDatabase(any(), anyString(), anyMap(), any(DatabaseConfig.class)))
+                .thenReturn(getPostgresDatabase("test-url", "test-username", "test-password"));
+
+        DbaaSPostgresDbCreationServiceImpl service = dataSourceCreationServiceImplBuilder
+                .setDbaasPoolConfiguration(poolConfiguration)
+                .build();
+
+        PostgresDatabase result = service.getOrCreatePostgresDatabase(getTenantClassifier("test-tenant"));
+
+        AgroalConnectionFactoryConfiguration config = ((AgroalDataSource) result.getConnectionProperties().getDataSource())
+                .getConfiguration().connectionPoolConfiguration().connectionFactoryConfiguration();
+        assertEquals(globalInitialSql, config.initialSql());
+    }
+
+    @Test
+    public void mustUsePerDbInitialSqlOverridesGlobal() {
+        String perDbInitialSql = "SET search_path TO my_schema";
+
+        DbaasDatasourcePoolConfiguration poolConfiguration = mock(DbaasDatasourcePoolConfiguration.class);
+        DatasourceProperties properties = mock(DatasourceProperties.class);
+        when(properties.debugDatasourceListeners()).thenReturn(false);
+        when(properties.globalJdbcProperties()).thenReturn(new HashMap<>());
+        when(poolConfiguration.getDatasourceProperties()).thenReturn(properties);
+        when(poolConfiguration.getJdbcProperties(any())).thenCallRealMethod();
+        when(poolConfiguration.getInitialSql(eq("configs"))).thenReturn(perDbInitialSql);
+
+        AgroalConnectionPoolConfigurationFactory factory = mock(AgroalConnectionPoolConfigurationFactory.class);
+        doReturn(connectionPoolConfiguration).when(factory).createAgroalConnectionPoolConfiguration(any(), any());
+
+        DbaasDbClassifier classifier = getTenantClassifierWithLogicalDb("test-tenant");
+        PostgresDatabase postgresDatabase = getPostgresDatabase("test-url", "test-username", "test-password");
+        postgresDatabase.setClassifier(new TreeMap<>(classifier.asMap()));
+        when(dbaaSClient.getOrCreateDatabase(any(), anyString(), anyMap(), any(DatabaseConfig.class)))
+                .thenReturn(postgresDatabase);
+
+        DbaaSPostgresDbCreationServiceImpl service = dataSourceCreationServiceImplBuilder
+                .setDbaasPoolConfiguration(poolConfiguration)
+                .setConnectionPoolConfigurationFactory(factory)
+                .build();
+
+        PostgresDatabase result = service.getOrCreatePostgresDatabase(classifier);
+
+        AgroalConnectionFactoryConfiguration config = ((AgroalDataSource) result.getConnectionProperties().getDataSource())
+                .getConfiguration().connectionPoolConfiguration().connectionFactoryConfiguration();
+        assertEquals(perDbInitialSql, config.initialSql());
+        verify(poolConfiguration, never()).getInitialSql(isNull());
+    }
+
     private DbaasDbClassifier getTenantClassifier(String tenantId) {
         Map<String, Object> params = new HashMap<>();
         params.put("microserviceName", "test-service");

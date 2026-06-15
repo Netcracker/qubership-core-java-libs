@@ -237,6 +237,7 @@ public class DbaaSPostgresDbCreationServiceImpl implements DbaaSPostgresDbCreati
         SimplePassword securityPassword = new SimplePassword(password);
         Properties jdbcProperties = dbaasPoolConfiguration.getJdbcProperties(logicalDbName);
         Properties xaProperties = dbaasPoolConfiguration.getXaProperties(logicalDbName);
+        String initialSql = dbaasPoolConfiguration.getInitialSql(logicalDbName);
         removeJdbcPrefixedProperties(connectionParams);
         if (connectionParams != null && !connectionParams.isEmpty()) {
             jdbcProperties.putAll(connectionParams);
@@ -246,6 +247,7 @@ public class DbaaSPostgresDbCreationServiceImpl implements DbaaSPostgresDbCreati
                 .jdbcUrl(url)
                 .jdbcProperties(jdbcProperties)
                 .xaProperties(xaProperties)
+                .initialSql(initialSql)
                 .principal(new NamePrincipal(username))
                 .credential(securityPassword)
                 .securityProvider(new DbaasSecurityProvider(securityPassword))
