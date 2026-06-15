@@ -153,6 +153,8 @@ public class DbaaSPostgresDbCreationServiceImplTest {
             props.put("cloud.microservice.namespace", TEST_NAMESPACE);
             props.put("quarkus.http.test-port", "0");
             props.put("quarkus.http.test-ssl-port", "0");
+            props.put("quarkus.hibernate-orm.active", "false");
+            props.put("quarkus.flyway.active", "false");
             props.put("quarkus.dbaas.datasource.initial-sql", GLOBAL_VALUE);
             props.put("quarkus.dbaas.datasources." + LOGICAL_DB + ".initial-sql", PER_DB_VALUE);
             return props;
