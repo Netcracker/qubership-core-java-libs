@@ -19,7 +19,7 @@
         <java.version>21</java.version>
         <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
         <maven.pmd.plugin.version>3.7</maven.pmd.plugin.version>
-        <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
+        <jacoco.plugin.version>0.8.15</jacoco.plugin.version>
         <cloud-core.core-microservice-dependencies.version>12.1.2-SNAPSHOT</cloud-core.core-microservice-dependencies.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../microservice-framework-report-aggregate/target/site/jacoco-aggregate/jacoco.xml

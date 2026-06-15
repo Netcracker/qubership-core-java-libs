@@ -36,6 +36,7 @@
         <module>maas-client-quarkus</module>
         <module>core-springboot-starter</module>
         <module>maas-declarative-client-quarkus</module>
+        <module>core-maven-plugins</module>
     </modules>
 
     <licenses>

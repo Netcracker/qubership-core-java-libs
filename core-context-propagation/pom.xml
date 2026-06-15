@@ -19,7 +19,7 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <jacoco.plugin.version>0.8.14</jacoco.plugin.version>
+        <jacoco.plugin.version>0.8.15</jacoco.plugin.version>
         <jandex.version>3.5.3</jandex.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../context-propagation-report-aggregate/target/site/jacoco-aggregate/jacoco.xml

@@ -15,7 +15,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class MongoClientCreationImplVaultTest extends ContainerMongoDbBaseConfig {
+public class AbstractMongoClientCreationImplTest extends ContainerMongoDbBaseConfig {
 
     private static MongoClientCreationImpl mongoClientCreationImpl;
     private static final MongoDBConnection mongoDBConnection = new MongoDBConnection();
