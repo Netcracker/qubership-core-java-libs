@@ -34,9 +34,10 @@ class PodSecretsConfigSourceUnitTest {
     @Test
     void ordinal_higherThanEnv_lowerThanConsul() {
         int ordinal = PodSecretsConfigSource.PRIORITY;
-        assertThat(ordinal).isGreaterThan(300); // EnvConfigSource
-        assertThat(ordinal).isGreaterThan(400); // SysPropsConfigSource
-        assertThat(ordinal).isLessThan(500);    // ConsulConfigSource
+        assertThat(ordinal)
+                .isGreaterThan(300) // EnvConfigSource
+                .isGreaterThan(400) // SysPropsConfigSource
+                .isLessThan(500);   // ConsulConfigSource
     }
 
     @Test

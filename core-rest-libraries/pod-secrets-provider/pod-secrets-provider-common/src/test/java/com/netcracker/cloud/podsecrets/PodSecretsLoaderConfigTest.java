@@ -2,14 +2,10 @@ package com.netcracker.cloud.podsecrets;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.junitpioneer.jupiter.SetEnvironmentVariable;
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 
-import java.lang.reflect.Field;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,7 +20,7 @@ class PodSecretsLoaderConfigTest {
 
     @Test
     void fromSystem_systemPropertyOverridesDir(@TempDir Path tmp) {
-        withProperty("pod.secrets.dir", tmp.toString(), () -> {
+        withProperty(PodSecretsLoaderConfig.PROP_POD_SECRETS_DIR, tmp.toString(), () -> {
             PodSecretsLoaderConfig cfg = PodSecretsLoaderConfig.fromSystem();
             assertThat(cfg.getBaseDir()).isEqualTo(tmp);
         });
@@ -32,7 +28,7 @@ class PodSecretsLoaderConfigTest {
 
     @Test
     void fromSystem_ttlOverride() {
-        withProperty("pod.secrets.ttl", "PT30S", () -> {
+        withProperty(PodSecretsLoaderConfig.PROP_POD_SECRETS_TTL, "PT30S", () -> {
             PodSecretsLoaderConfig cfg = PodSecretsLoaderConfig.fromSystem();
             assertThat(cfg.getTtl()).isEqualTo(Duration.ofSeconds(30));
         });

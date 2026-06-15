@@ -14,12 +14,12 @@ pod.secrets.enabled=false
 
 ## Property source order
 
+Pod-secrets is positioned between Consul and environment variables, so:
+
 ```
-ConfigData (Consul)         ← highest
-pod-secrets-property-source ← before systemEnvironment
+ConfigData (Consul)         — overrides pod-secrets
+pod-secrets-property-source — overrides systemEnvironment
 systemEnvironment
-systemProperties
-applicationConfig
 ```
 
 ## DI access

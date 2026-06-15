@@ -1,5 +1,6 @@
 package com.netcracker.cloud.podsecrets.spring;
 
+import com.netcracker.cloud.podsecrets.PodSecretsLoaderConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -20,14 +21,14 @@ class PodSecretsEnvironmentPostProcessorTest {
 
     @AfterEach
     void clearProps() {
-        System.clearProperty("pod.secrets.dir");
-        System.clearProperty("pod.secrets.enabled");
+        System.clearProperty(PodSecretsLoaderConfig.PROP_POD_SECRETS_DIR);
+        System.clearProperty(PodSecretsLoaderConfig.PROP_POD_SECRETS_ENABLED);
     }
 
     @Test
     void postProcessEnvironment_addsSourceBeforeSystemEnvironment() throws Exception {
         Files.writeString(dir.resolve("db_password"), "secret");
-        System.setProperty("pod.secrets.dir", dir.toString());
+        System.setProperty(PodSecretsLoaderConfig.PROP_POD_SECRETS_DIR, dir.toString());
 
         StandardEnvironment env = new StandardEnvironment();
         new PodSecretsEnvironmentPostProcessor()
@@ -45,12 +46,9 @@ class PodSecretsEnvironmentPostProcessorTest {
     @Test
     void postProcessEnvironment_secretOverridesEnvVar() throws Exception {
         Files.writeString(dir.resolve("db_password"), "from-file");
-        System.setProperty("pod.secrets.dir", dir.toString());
+        System.setProperty(PodSecretsLoaderConfig.PROP_POD_SECRETS_DIR, dir.toString());
 
         StandardEnvironment env = new StandardEnvironment();
-        // Simulate env-var being present with a different value via system props
-        // (StandardEnvironment reads System.getenv which we can't override easily;
-        //  instead verify the source order gives precedence to pod-secrets)
         new PodSecretsEnvironmentPostProcessor()
                 .postProcessEnvironment(env, Mockito.mock(SpringApplication.class));
 
@@ -60,8 +58,8 @@ class PodSecretsEnvironmentPostProcessorTest {
     @Test
     void postProcessEnvironment_disabledByProperty() throws Exception {
         Files.writeString(dir.resolve("k"), "v");
-        System.setProperty("pod.secrets.dir", dir.toString());
-        System.setProperty("pod.secrets.enabled", "false");
+        System.setProperty(PodSecretsLoaderConfig.PROP_POD_SECRETS_DIR, dir.toString());
+        System.setProperty(PodSecretsLoaderConfig.PROP_POD_SECRETS_ENABLED, "false");
 
         StandardEnvironment env = new StandardEnvironment();
         new PodSecretsEnvironmentPostProcessor()

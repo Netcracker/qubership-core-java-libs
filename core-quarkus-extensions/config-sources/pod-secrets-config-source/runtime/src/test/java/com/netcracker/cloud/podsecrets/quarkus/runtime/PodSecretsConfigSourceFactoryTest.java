@@ -30,21 +30,21 @@ class PodSecretsConfigSourceFactoryTest {
     @Test
     void disabledViaContext_returnsEmpty() {
         var ctx = mock(ConfigSourceContext.class);
-        when(ctx.getValue("pod.secrets.enabled")).thenReturn(cvOf("false"));
+        when(ctx.getValue(PodSecretsLoaderConfig.PROP_POD_SECRETS_ENABLED)).thenReturn(cvOf("false"));
 
         var sources = new PodSecretsConfigSourceFactory().getConfigSources(ctx);
 
         assertThat(sources).isEmpty();
-        verify(ctx, never()).getValue("pod.secrets.dir");
-        verify(ctx, never()).getValue("pod.secrets.ttl");
+        verify(ctx, never()).getValue(PodSecretsLoaderConfig.PROP_POD_SECRETS_DIR);
+        verify(ctx, never()).getValue(PodSecretsLoaderConfig.PROP_POD_SECRETS_TTL);
     }
 
     @Test
     void enabledExplicitly_returnsOneSource(@TempDir Path dir) {
         var ctx = mock(ConfigSourceContext.class);
-        when(ctx.getValue("pod.secrets.enabled")).thenReturn(cvOf("true"));
-        when(ctx.getValue("pod.secrets.dir")).thenReturn(cvOf(dir.toString()));
-        when(ctx.getValue("pod.secrets.ttl")).thenReturn(cvOf("PT1S"));
+        when(ctx.getValue(PodSecretsLoaderConfig.PROP_POD_SECRETS_ENABLED)).thenReturn(cvOf("true"));
+        when(ctx.getValue(PodSecretsLoaderConfig.PROP_POD_SECRETS_DIR)).thenReturn(cvOf(dir.toString()));
+        when(ctx.getValue(PodSecretsLoaderConfig.PROP_POD_SECRETS_TTL)).thenReturn(cvOf("PT1S"));
 
         var sources = new PodSecretsConfigSourceFactory().getConfigSources(ctx);
 
@@ -57,9 +57,9 @@ class PodSecretsConfigSourceFactoryTest {
     @Test
     void enabledDefaultsToTrue(@TempDir Path dir) {
         var ctx = mock(ConfigSourceContext.class);
-        when(ctx.getValue("pod.secrets.enabled")).thenReturn(null);
-        when(ctx.getValue("pod.secrets.dir")).thenReturn(cvOf(dir.toString()));
-        when(ctx.getValue("pod.secrets.ttl")).thenReturn(null);
+        when(ctx.getValue(PodSecretsLoaderConfig.PROP_POD_SECRETS_ENABLED)).thenReturn(null);
+        when(ctx.getValue(PodSecretsLoaderConfig.PROP_POD_SECRETS_DIR)).thenReturn(cvOf(dir.toString()));
+        when(ctx.getValue(PodSecretsLoaderConfig.PROP_POD_SECRETS_TTL)).thenReturn(null);
 
         var sources = new PodSecretsConfigSourceFactory().getConfigSources(ctx);
 
@@ -69,8 +69,8 @@ class PodSecretsConfigSourceFactoryTest {
     @Test
     void dirOverrideIsApplied(@TempDir Path dir) {
         var ctx = mock(ConfigSourceContext.class);
-        when(ctx.getValue("pod.secrets.dir")).thenReturn(cvOf(dir.toString()));
-        when(ctx.getValue("pod.secrets.ttl")).thenReturn(null);
+        when(ctx.getValue(PodSecretsLoaderConfig.PROP_POD_SECRETS_DIR)).thenReturn(cvOf(dir.toString()));
+        when(ctx.getValue(PodSecretsLoaderConfig.PROP_POD_SECRETS_TTL)).thenReturn(null);
 
         var config = PodSecretsConfigSourceFactory.fromContext(ctx);
 
@@ -80,8 +80,8 @@ class PodSecretsConfigSourceFactoryTest {
     @Test
     void ttlOverrideIsParsed() {
         var ctx = mock(ConfigSourceContext.class);
-        when(ctx.getValue("pod.secrets.dir")).thenReturn(null);
-        when(ctx.getValue("pod.secrets.ttl")).thenReturn(cvOf("PT30S"));
+        when(ctx.getValue(PodSecretsLoaderConfig.PROP_POD_SECRETS_DIR)).thenReturn(null);
+        when(ctx.getValue(PodSecretsLoaderConfig.PROP_POD_SECRETS_TTL)).thenReturn(cvOf("PT30S"));
 
         var config = PodSecretsConfigSourceFactory.fromContext(ctx);
 
@@ -91,8 +91,8 @@ class PodSecretsConfigSourceFactoryTest {
     @Test
     void bothMissing_useDefaultConfig() {
         var ctx = mock(ConfigSourceContext.class);
-        when(ctx.getValue("pod.secrets.dir")).thenReturn(null);
-        when(ctx.getValue("pod.secrets.ttl")).thenReturn(null);
+        when(ctx.getValue(PodSecretsLoaderConfig.PROP_POD_SECRETS_DIR)).thenReturn(null);
+        when(ctx.getValue(PodSecretsLoaderConfig.PROP_POD_SECRETS_TTL)).thenReturn(null);
 
         var config = PodSecretsConfigSourceFactory.fromContext(ctx);
 
@@ -144,10 +144,10 @@ class PodSecretsConfigSourceFactoryTest {
     @Test
     void getValue_converterThrows_propagatesException() {
         var ctx = mock(ConfigSourceContext.class);
-        when(ctx.getValue("pod.secrets.ttl")).thenReturn(cvOf("not-a-duration"));
+        when(ctx.getValue(PodSecretsLoaderConfig.PROP_POD_SECRETS_TTL)).thenReturn(cvOf("not-a-duration"));
 
         assertThatThrownBy(() ->
-                PodSecretsConfigSourceFactory.getValue(ctx, "pod.secrets.ttl", Duration.ZERO, Duration::parse)
+                PodSecretsConfigSourceFactory.getValue(ctx, PodSecretsLoaderConfig.PROP_POD_SECRETS_TTL, Duration.ZERO, Duration::parse)
         ).isInstanceOf(DateTimeParseException.class);
     }
 }

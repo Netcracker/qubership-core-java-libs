@@ -3,8 +3,6 @@ package com.netcracker.cloud.podsecrets.spring;
 import com.netcracker.cloud.podsecrets.PodSecretsLoader;
 import org.springframework.core.env.EnumerablePropertySource;
 
-import java.util.stream.Stream;
-
 /**
  * Spring {@link EnumerablePropertySource} backed by {@link PodSecretsLoader}.
  *

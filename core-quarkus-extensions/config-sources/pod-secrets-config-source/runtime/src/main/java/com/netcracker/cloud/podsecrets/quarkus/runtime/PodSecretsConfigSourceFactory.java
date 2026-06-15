@@ -22,7 +22,7 @@ public class PodSecretsConfigSourceFactory implements ConfigSourceFactory {
 
     @Override
     public Iterable<ConfigSource> getConfigSources(ConfigSourceContext context) {
-        boolean enabled = getValue(context, "pod.secrets.enabled", true, Boolean::valueOf);
+        boolean enabled = getValue(context, PodSecretsLoaderConfig.PROP_POD_SECRETS_ENABLED, true, Boolean::valueOf);
         if (!enabled) {
             log.debug("Pod-secrets config source is disabled");
             return Collections.emptyList();
@@ -37,8 +37,8 @@ public class PodSecretsConfigSourceFactory implements ConfigSourceFactory {
 
     // visible for testing
     protected static PodSecretsLoaderConfig fromContext(ConfigSourceContext context) {
-        var dir = getValue(context, "pod.secrets.dir", DEFAULT_CONFIG.getBaseDir(), Paths::get);
-        var ttl = getValue(context, "pod.secrets.ttl", DEFAULT_CONFIG.getTtl(), Duration::parse);
+        var dir = getValue(context, PodSecretsLoaderConfig.PROP_POD_SECRETS_DIR, DEFAULT_CONFIG.getBaseDir(), Paths::get);
+        var ttl = getValue(context, PodSecretsLoaderConfig.PROP_POD_SECRETS_TTL, DEFAULT_CONFIG.getTtl(), Duration::parse);
         return PodSecretsLoaderConfig.of(dir, ttl);
     }
 

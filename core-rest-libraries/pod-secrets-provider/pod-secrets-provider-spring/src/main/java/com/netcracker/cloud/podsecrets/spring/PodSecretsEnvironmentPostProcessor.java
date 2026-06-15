@@ -35,9 +35,9 @@ public class PodSecretsEnvironmentPostProcessor implements EnvironmentPostProces
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-        String enabled = environment.getProperty("pod.secrets.enabled", "true");
-        if (!"true".equalsIgnoreCase(enabled)) {
-            log.debug("Pod-secrets property source is disabled (pod.secrets.enabled={})", enabled);
+        boolean enabled = environment.getProperty(PodSecretsLoaderConfig.PROP_POD_SECRETS_ENABLED, Boolean.class, true);
+        if (!enabled) {
+            log.debug("Pod-secrets property source is disabled ({}=false)", PodSecretsLoaderConfig.PROP_POD_SECRETS_ENABLED);
             return;
         }
 
