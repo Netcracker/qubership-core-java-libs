@@ -26,19 +26,21 @@ public class M2MDbaaSClient {
 
     private final DbaasClientConfig dbaasConfig;
 
+    @ConfigProperty(name = "api.dbaas.address")
+    Optional<String> apiDbaasAddress;
+
     public M2MDbaaSClient(DbaasClientConfig dbaasConfig) {
         this.dbaasConfig = dbaasConfig;
     }
 
     public DbaasClient build() {
-        String dbaasAgentUrl = dbaasConfig.dbaasAgentUrl().orElse(DEFAULT_DBAAS_AGENT_ADDRESS);
-
-        String dbaasUrl = dbaasAgentUrl;
+        String dbaasUrl = dbaasConfig.dbaasAgentUrl().orElse(DEFAULT_DBAAS_AGENT_ADDRESS);
         if(M2MClientFactory.isK8sM2mEnabled()) {
-            if(dbaasConfig.dbaasUrl().isEmpty()) {
+            if(apiDbaasAddress.isEmpty()) {
                 log.warn("DBaaS address is not available, falling back to dbaas-agent. Specify 'api.dbaas.address' property to DBaaS url");
+            } else {
+                dbaasUrl = apiDbaasAddress.get();
             }
-            dbaasUrl = dbaasConfig.dbaasUrl().orElse(dbaasAgentUrl);
         }
 
         OkHttpClient httpClient = M2MClientFactory.getDbaasOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue());

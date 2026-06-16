@@ -35,6 +35,7 @@ class M2MDbaaSClientTest {
         environmentVariables.set("KUBERNETES_M2M_ENABLED", "true");
 
         m2MDbaaSClient = new M2MDbaaSClient(dbaasConfig);
+        m2MDbaaSClient.apiDbaasAddress = Optional.of(DB_AGGREGATOR_URL);
     }
 
     @AfterEach
