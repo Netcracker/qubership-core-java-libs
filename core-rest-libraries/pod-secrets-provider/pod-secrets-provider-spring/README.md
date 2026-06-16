@@ -28,5 +28,5 @@ A `PodSecretsLoader` bean is published by `PodSecretsAutoConfiguration` for case
 
 ```java
 @Autowired PodSecretsLoader loader;
-String val = loader.getValue("db_password");
+String val = loader.getSecrets().get("db_password");
 ```

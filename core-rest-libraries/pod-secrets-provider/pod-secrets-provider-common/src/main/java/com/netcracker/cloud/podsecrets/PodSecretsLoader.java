@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -18,7 +19,7 @@ public class PodSecretsLoader {
 
     public PodSecretsLoader(PodSecretsLoaderConfig config) {
         this.config = config;
-        this.secrets = new CacheableValue<>(config.getTtl(), this::reloadSecrets);
+        this.secrets = new CacheableValue<>(config.getTtl(), this::reloadSecrets, Map.of());
     }
 
     private Map<String, String> reloadSecrets() {
@@ -26,15 +27,16 @@ public class PodSecretsLoader {
         if (Files.isDirectory(config.getBaseDir())) {
             try (Stream<Path> stream = Files.list(config.getBaseDir())) {
                 return stream
-                        .peek(s -> log.debug("process: {}", s))
                         .filter(p -> !Files.isDirectory(p))
+                        .peek(s -> log.debug("process: {}", s))
                         .flatMap(path -> loadSecretValue(path)
                             .map(value -> Map.entry(path.getFileName().toString(), value))
                             .stream())
                         .flatMap(this::variator)
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a));
             } catch (IOException e) {
-                log.error("Error process secrets folder", e);
+                log.error("Error during secrets folder processing", e);
+                throw new UncheckedIOException(e);
             }
         } else {
             log.debug("Secrets folder not found by: {}", config.getBaseDir());
