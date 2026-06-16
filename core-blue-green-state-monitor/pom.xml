@@ -19,7 +19,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <cloud-core.core-rest-libraries.version>7.2.2-SNAPSHOT</cloud-core.core-rest-libraries.version>
+        <cloud-core.core-rest-libraries.version>7.3.0-SNAPSHOT</cloud-core.core-rest-libraries.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../blue-green-state-monitor-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
