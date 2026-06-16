@@ -41,7 +41,7 @@ Values are cached with a 60 s TTL (configurable). After a Kubernetes Secret rota
 | Property | Env var | Default | Description |
 |---|---|---|---|
 | `pod.secrets.dir` | `POD_SECRETS_DIR` | `/etc/secrets/pod-secrets/` | Secrets directory |
-| `pod.secrets.ttl` | — | `PT5S` | Cache TTL (ISO-8601) |
+| `pod.secrets.ttl` | — | `PT60S` | Cache TTL (ISO-8601) |
 | `pod.secrets.enabled` | — | `true` | Set `false` to disable entirely |
 
 ## Inclusion
