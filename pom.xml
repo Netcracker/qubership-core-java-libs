@@ -13,6 +13,7 @@
 
     <modules>
         <module>core-internal-boms</module>
+        <module>core-external-boms</module>
         <module>core-utils</module>
         <module>core-error-handling</module>
         <module>core-process-orchestrator</module>
