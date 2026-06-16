@@ -27,7 +27,6 @@ public class M2MDbaaSClient {
 
     private final DbaasClientConfig dbaasConfig;
 
-    @Inject
     @ConfigProperty(name = "api.dbaas.address")
     Optional<String> apiDbaasAddress;
 
