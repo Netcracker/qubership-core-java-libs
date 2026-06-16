@@ -8,6 +8,7 @@ import com.netcracker.cloud.quarkus.security.auth.M2MManager;
 import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -26,6 +27,11 @@ public class M2MDbaaSClient {
 
     private final DbaasClientConfig dbaasConfig;
 
+    @Inject
+    @ConfigProperty(name = "api.dbaas.address")
+    Optional<String> apiDbaasAddress;
+
+    @Inject
     public M2MDbaaSClient(DbaasClientConfig dbaasConfig) {
         this.dbaasConfig = dbaasConfig;
     }
@@ -35,11 +41,10 @@ public class M2MDbaaSClient {
 
         String dbaasUrl = dbaasAgentUrl;
         if(M2MClientFactory.isK8sM2mEnabled()) {
-            String dbaasUrlFromEnv = System.getenv("API_DBAAS_ADDRESS");
-            if(dbaasUrlFromEnv == null || dbaasUrlFromEnv.isEmpty()) {
+            if(apiDbaasAddress == null || apiDbaasAddress.isEmpty()) {
                 log.warn("DBaaS address is not available, falling back to dbaas-agent. Specify 'api.dbaas.address' property to DBaaS url");
             } else {
-                dbaasUrl = dbaasUrlFromEnv;
+                dbaasUrl = apiDbaasAddress.get();
             }
         }
 
