@@ -37,6 +37,7 @@
         <cloud-core.mongo-evolution.version>8.1.1</cloud-core.mongo-evolution.version>
         <cloud-core.restclient.version>7.1.1</cloud-core.restclient.version>
         <cloud-core.rest-libraries.version>7.2.1</cloud-core.rest-libraries.version>
+        <cloud-core.pod-secrets-provider.version>7.3.0-SNAPSHOT</cloud-core.pod-secrets-provider.version>
         <cloud-core.blue-green-monitor.version>2.1.1</cloud-core.blue-green-monitor.version>
         <cloud-core.maas-client-spring.version>9.1.1</cloud-core.maas-client-spring.version>
         <cloud-core.microservice-framework.version>8.1.1</cloud-core.microservice-framework.version>
@@ -198,6 +199,11 @@
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>rest-security-adapters</artifactId>
                 <version>${cloud-core.rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>pod-secrets-provider-spring</artifactId>
+                <version>${cloud-core.pod-secrets-provider.version}</version>
             </dependency>
 
             <!-- === core-blue-green-state-monitor === -->
