@@ -59,6 +59,7 @@ public final class M2MInterceptor implements Interceptor {
             final Request altered;
             try {
                 altered = alterRequest(request, k8sAuthHeaderSupplier.get(), false);
+                log.debug("Sending http request to {} using kubernetes token", altered.url());
             } catch (IllegalStateException|IllegalArgumentException ex) {
                 final Request fallbackRequest = alterRequest(request, fallbackAuthHeaderSupplier.get(), true);
                 return doRequestFallback(fallbackRequest, KUBERNETES_TOKEN_ACQUISITION_ERROR, cacheKey, chain);
@@ -73,6 +74,7 @@ public final class M2MInterceptor implements Interceptor {
             return response;
         }
         final Request fallbackRequest = alterRequest(request, fallbackAuthHeaderSupplier.get(), true);
+        log.debug("Sending http request to {} using keycloak token", fallbackRequest.url());
         return chain.proceed(fallbackRequest);
     }
 
@@ -80,6 +82,7 @@ public final class M2MInterceptor implements Interceptor {
                                        final String reason,
                                        final String cacheKey,
                                        final Interceptor.Chain chain) throws IOException {
+        log.debug("Sending http request to {} using keycloak token", fallbackRequest.url());
         final Response fallbackResponse = chain.proceed(fallbackRequest);
         if (fallbackResponse.isSuccessful()) {
             urlCache.store(cacheKey);
