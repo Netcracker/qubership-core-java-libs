@@ -8,7 +8,6 @@ import com.netcracker.cloud.quarkus.security.auth.M2MManager;
 import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -30,7 +29,6 @@ public class M2MDbaaSClient {
     @ConfigProperty(name = "api.dbaas.address")
     Optional<String> apiDbaasAddress;
 
-    @Inject
     public M2MDbaaSClient(DbaasClientConfig dbaasConfig) {
         this.dbaasConfig = dbaasConfig;
     }
