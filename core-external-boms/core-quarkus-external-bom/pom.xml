@@ -33,7 +33,7 @@
         <cloud-core.maas-declarative-client-quarkus.version>9.0.1</cloud-core.maas-declarative-client-quarkus.version>
         <cloud-core.context-propagation-quarkus.version>9.1.2</cloud-core.context-propagation-quarkus.version>
 
-        <cloud-core.quarkus-extensions.version>10.0.1</cloud-core.quarkus-extensions.version>
+        <cloud-core.quarkus-extensions.version>10.1.0-SNAPSHOT</cloud-core.quarkus-extensions.version>
         <cloud-core.blue-green-monitor-quarkus.version>4.0.1</cloud-core.blue-green-monitor-quarkus.version>
     </properties>
 
@@ -141,6 +141,16 @@
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>consul-config-source-deployment</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>pod-secrets-config-source</artifactId>
+                <version>${cloud-core.quarkus-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>pod-secrets-config-source-deployment</artifactId>
                 <version>${cloud-core.quarkus-extensions.version}</version>
             </dependency>
             <!-- shared config-source deployment base (no runtime counterpart) -->
