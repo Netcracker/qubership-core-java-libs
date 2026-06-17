@@ -42,9 +42,7 @@
         <!-- core-restclient (pure-java modules) -->
         <cloud-core.restclient.version>7.1.1</cloud-core.restclient.version>
         <!-- core-rest-libraries (pure-java modules) -->
-        <cloud-core.rest-libraries.version>7.2.1</cloud-core.rest-libraries.version>
-        <!-- pod-secrets-provider (pure-java module, introduced in 7.3.0) -->
-        <cloud-core.pod-secrets-provider.version>7.3.0-SNAPSHOT</cloud-core.pod-secrets-provider.version>
+        <cloud-core.rest-libraries.version>7.3.0-SNAPSHOT</cloud-core.rest-libraries.version>
         <!-- core-blue-green-state-monitor (pure-java module) -->
         <cloud-core.blue-green-monitor.version>2.1.1</cloud-core.blue-green-monitor.version>
         <!-- dbaas-client (pure-java modules) -->
@@ -178,7 +176,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>pod-secrets-provider-common</artifactId>
-                <version>${cloud-core.pod-secrets-provider.version}</version>
+                <version>${cloud-core.rest-libraries.version}</version>
             </dependency>
 
             <!-- === core-blue-green-state-monitor (pure-java) === -->
