@@ -30,15 +30,15 @@
         <!-- core-utils -->
         <cloud-core.core-utils.version>3.1.1</cloud-core.core-utils.version>
         <!-- core-error-handling -->
-        <cloud-core.core-error-handling.version>4.2.1</cloud-core.core-error-handling.version>
+        <cloud-core.core-error-handling.version>4.2.2</cloud-core.core-error-handling.version>
         <!-- core-process-orchestrator -->
-        <cloud-core.process-orchestrator.version>1.5.1</cloud-core.process-orchestrator.version>
+        <cloud-core.process-orchestrator.version>1.5.2</cloud-core.process-orchestrator.version>
         <!-- core-context-propagation (pure-java modules) -->
-        <cloud-core.context-propagation.version>8.2.2</cloud-core.context-propagation.version>
+        <cloud-core.context-propagation.version>8.2.3</cloud-core.context-propagation.version>
         <!-- core-mongo-evolution (pure-java module) -->
-        <cloud-core.mongo-evolution.version>8.1.1</cloud-core.mongo-evolution.version>
+        <cloud-core.mongo-evolution.version>8.1.2</cloud-core.mongo-evolution.version>
         <!-- core-junit-k8s-extension -->
-        <cloud-core.junit-k8s-extension.version>8.9.1</cloud-core.junit-k8s-extension.version>
+        <cloud-core.junit-k8s-extension.version>8.9.2</cloud-core.junit-k8s-extension.version>
         <!-- core-restclient (pure-java modules) -->
         <cloud-core.restclient.version>7.1.1</cloud-core.restclient.version>
         <!-- core-rest-libraries (pure-java modules) -->

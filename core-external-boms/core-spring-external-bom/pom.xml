@@ -30,11 +30,11 @@
         <!-- Imported sub-BOMs -->
         <cloud-core.java-bom.version>1.0.0-SNAPSHOT</cloud-core.java-bom.version>
         <cloud-core.maas-declarative-client-spring.version>7.1.1</cloud-core.maas-declarative-client-spring.version>
-        <cloud-core.framework-extensions.version>7.1.1</cloud-core.framework-extensions.version>
+        <cloud-core.framework-extensions.version>7.1.2</cloud-core.framework-extensions.version>
 
         <cloud-core.dbaas-client.version>9.1.1</cloud-core.dbaas-client.version>
-        <cloud-core.context-propagation.version>8.2.2</cloud-core.context-propagation.version>
-        <cloud-core.mongo-evolution.version>8.1.1</cloud-core.mongo-evolution.version>
+        <cloud-core.context-propagation.version>8.2.3</cloud-core.context-propagation.version>
+        <cloud-core.mongo-evolution.version>8.1.2</cloud-core.mongo-evolution.version>
         <cloud-core.restclient.version>7.1.1</cloud-core.restclient.version>
         <cloud-core.rest-libraries.version>7.3.0-SNAPSHOT</cloud-core.rest-libraries.version>
         <cloud-core.blue-green-monitor.version>2.1.1</cloud-core.blue-green-monitor.version>
