@@ -21,8 +21,8 @@
         <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
         <build.plugins.plugin.version>3.4.0</build.plugins.plugin.version>
 
-        <cloud-core.core-error-handling.version>4.2.1</cloud-core.core-error-handling.version>
-        <cloud-core.core-utils.version>3.1.2-SNAPSHOT</cloud-core.core-utils.version>
+        <cloud-core.core-error-handling.version>4.2.2</cloud-core.core-error-handling.version>
+        <cloud-core.core-utils.version>3.1.2</cloud-core.core-utils.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../microservice-restclient-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
