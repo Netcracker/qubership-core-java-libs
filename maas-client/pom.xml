@@ -19,9 +19,9 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <cloud-core.core-context-propagation.version>8.2.2</cloud-core.core-context-propagation.version>
-        <cloud-core.core-blue-green-state-monitor.version>2.1.1</cloud-core.core-blue-green-state-monitor.version>
-        <cloud-core.core-utils.version>3.1.2-SNAPSHOT</cloud-core.core-utils.version>
+        <cloud-core.core-context-propagation.version>8.2.3</cloud-core.core-context-propagation.version>
+        <cloud-core.core-blue-green-state-monitor.version>2.1.2</cloud-core.core-blue-green-state-monitor.version>
+        <cloud-core.core-utils.version>3.1.2</cloud-core.core-utils.version>
 
         <kafka.version>4.2.0</kafka.version>
 
