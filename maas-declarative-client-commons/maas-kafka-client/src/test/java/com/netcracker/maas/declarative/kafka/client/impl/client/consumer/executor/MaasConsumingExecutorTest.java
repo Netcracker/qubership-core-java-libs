@@ -16,6 +16,7 @@ import com.netcracker.cloud.maas.bluegreen.kafka.BGKafkaConsumer;
 import com.netcracker.cloud.maas.bluegreen.kafka.CommitMarker;
 import com.netcracker.cloud.maas.bluegreen.kafka.Record;
 import com.netcracker.cloud.maas.bluegreen.kafka.RecordsBatch;
+import com.netcracker.maas.declarative.kafka.client.api.exception.MaasKafkaIllegalStateException;
 import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
 import com.netcracker.maas.declarative.kafka.client.SyncBarrier;
 import com.netcracker.maas.declarative.kafka.client.api.MaasKafkaConsumerErrorHandler;
@@ -35,6 +36,7 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.function.Consumer;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
@@ -228,9 +230,7 @@ class MaasConsumingExecutorTest {
         try {
             executor.start();
             executor.init();
-            // handler error is handled on worker thread — errorHandler notifies "handled"
             barrier.await("handled", Duration.ofSeconds(5));
-            // next record is successfully handled on worker thread
             barrier.await("consumed", Duration.ofSeconds(5));
         } finally {
             executor.close();
@@ -239,7 +239,6 @@ class MaasConsumingExecutorTest {
         barrier.reset();
 
         verify(consumerCreatorService, times(1)).createKafkaConsumer(any(), any(), any(), any(), any(), any());
-        // errorHandler returns normally → no consumer release → only closed once at executor.close()
         verify(consumer, timeout(10_000).times(1)).close();
     }
 
@@ -413,7 +412,17 @@ class MaasConsumingExecutorTest {
         }
     }
 
-
+    /** Build a batch with two partitions stamped with different versions: orders-0 → v1, orders-1 → v2. */
+    private static Optional<RecordsBatch> twoVersionBatch(NamespaceVersion v1, NamespaceVersion v2) {
+        var tp0 = new TopicPartition("orders", 0);
+        var tp1 = new TopicPartition("orders", 1);
+        var m0 = new CommitMarker(v1, Map.of(tp0, new OffsetAndMetadata(1)));
+        var m1 = new CommitMarker(v2, Map.of(tp1, new OffsetAndMetadata(1)));
+        List<Record> records = new ArrayList<>();
+        records.add(new Record(new ConsumerRecord("orders", 0, 0, "k0", "d0"), m0));
+        records.add(new Record(new ConsumerRecord("orders", 1, 0, "k1", "d1"), m1));
+        return Optional.of(new RecordsBatch(records, m1));
+    }
 
     @Test
     void testSamePartitionTwoVersionsActiveOffsetNotDropped() throws InterruptedException {
@@ -431,6 +440,7 @@ class MaasConsumingExecutorTest {
         // Same partition (orders-0) in flight under two generations:
         //   - stale v1 at the HIGHER offset 10 (commit position 11)
         //   - active v2 at the LOWER offset 2 (commit position 3) — e.g. v2 re-read lower after offset alignment
+        // The old key-by-partition merge would keep only the higher offset (v1) and DROP the active v2 marker.
         // poll #3 blocks so no commit can run between the two worker merges, forcing both markers to coexist
         // in readyToCommit at the same time — the exact collision the (partition, version) key must survive.
         when(consumer.poll(any()))
@@ -482,7 +492,7 @@ class MaasConsumingExecutorTest {
             verify(consumer, timeout(5_000).atLeast(1)).commitSync(captor.capture());
 
             var tp0 = new TopicPartition("orders", 0);
-            // the active (lower-offset) v2 marker MUST be committed
+            // the active (lower-offset) v2 marker MUST be committed — old partition-only keying dropped it
             boolean activeCommitted = captor.getAllValues().stream().anyMatch(m ->
                     vActive.equals(m.getVersion())
                             && m.getPosition().get(tp0) != null
@@ -499,6 +509,134 @@ class MaasConsumingExecutorTest {
                     "stale version marker should be committed separately; commits=" + captor.getAllValues());
         } finally {
             executor.close();
+        }
+    }
+
+    /** Build a single-partition (orders-0), single-version batch with one record at the given offset. */
+    private static Optional<RecordsBatch> singlePartitionVersionBatch(NamespaceVersion version, int offset) {
+        var tp = new TopicPartition("orders", 0);
+        var marker = new CommitMarker(version, Map.of(tp, new OffsetAndMetadata(offset + 1)));
+        List<Record> records = new ArrayList<>();
+        records.add(new Record(new ConsumerRecord("orders", 0, offset, "k" + offset, "d" + offset), marker));
+        return Optional.of(new RecordsBatch(records, marker));
+    }
+
+    /** True if the marker would commit a position strictly greater than "right after the failed record" (offset 1 → pos 2). */
+    private static boolean commitsPastFailure(CommitMarker marker) {
+        return marker.getPosition().values().stream()
+                .mapToLong(OffsetAndMetadata::offset)
+                .max()
+                .orElse(0) > 2;
+    }
+
+    private static Optional<RecordsBatch> nullVersionBatch() {
+        var tp = new TopicPartition("orders", 0);
+        var marker = new CommitMarker(null, Map.of(tp, new OffsetAndMetadata(1)));
+        var record = new Record<>(new ConsumerRecord<>("orders", 0, 0, "k", "v"), marker);
+        return Optional.of(new RecordsBatch<>(List.of(record), marker));
+    }
+
+    /** Build a single-partition (orders-0) batch with offsets 0..count-1 and cumulative commit markers. */
+    private static Optional<RecordsBatch> singlePartitionBatch(int count) {
+        var tp = new TopicPartition("orders", 0);
+        var version = new NamespaceVersion("order-processor", State.ACTIVE, new Version("v1"));
+        List<Record> records = new ArrayList<>(count);
+        CommitMarker batchMarker = null;
+        for (int i = 0; i < count; i++) {
+            Map<TopicPartition, OffsetAndMetadata> pos = new HashMap<>();
+            pos.put(tp, new OffsetAndMetadata(i + 1)); // commit "next offset" semantics
+            CommitMarker marker = new CommitMarker(version, pos);
+            records.add(new Record(new ConsumerRecord("orders", 0, i, "order" + i, "data" + i), marker));
+            batchMarker = marker;
+        }
+        return Optional.of(new RecordsBatch(records, batchMarker));
+    }
+
+    @Test
+    void testStartTwiceThrows() {
+        var consumerCreatorService = mock(KafkaClientCreationService.class);
+        var executor = new MaasConsumingExecutor(ctx,
+                (exception, errorRecord, handledRecords) -> {},
+                consumerCreatorService,
+                List.of(),
+                new InMemoryBlueGreenStatePublisher());
+        executor.start();
+        assertThrows(MaasKafkaIllegalStateException.class, executor::start);
+    }
+
+    @Test
+    void testNullVersionMarkerCommitted() {
+        var consumer = mock(BGKafkaConsumer.class);
+        var barrier = new SyncBarrier();
+        var consumerCreatorService = mock(KafkaClientCreationService.class);
+        when(consumerCreatorService.createKafkaConsumer(any(), any(), any(), any(), any(), any())).thenReturn(consumer);
+
+        var recordHandler = mock(Consumer.class);
+        ctx.setHandler(recordHandler);
+        doAnswer(i -> {
+            barrier.notify("processed");
+            return null;
+        }).when(recordHandler).accept(any());
+
+        when(consumer.poll(any()))
+                .thenReturn(nullVersionBatch())
+                .thenReturn(Optional.empty());
+
+        var executor = new MaasConsumingExecutor(ctx,
+                (exception, errorRecord, handledRecords) -> {},
+                consumerCreatorService,
+                List.of(),
+                new InMemoryBlueGreenStatePublisher());
+
+        try {
+            executor.start();
+            executor.init();
+            barrier.await("processed", Duration.ofSeconds(10));
+
+            var captor = ArgumentCaptor.forClass(CommitMarker.class);
+            verify(consumer, timeout(10_000).atLeastOnce()).commitSync(captor.capture());
+            org.junit.jupiter.api.Assertions.assertTrue(
+                    captor.getAllValues().stream().anyMatch(m -> m.getVersion() == null),
+                    "expected commit for null-version marker, got: " + captor.getAllValues());
+        } finally {
+            executor.close();
+        }
+    }
+
+    @Test
+    void testErrorHandlerRethrowsSameExceptionWithoutSuppressing() throws Exception {
+        var consumer = mock(BGKafkaConsumer.class);
+        var barrier = new SyncBarrier();
+        var consumerCreatorService = mock(KafkaClientCreationService.class);
+        var errorHandler = mock(MaasKafkaConsumerErrorHandler.class);
+        when(consumerCreatorService.createKafkaConsumer(any(), any(), any(), any(), any(), any())).thenReturn(consumer);
+
+        var recordHandler = mock(Consumer.class);
+        ctx.setHandler(recordHandler);
+        var processingError = new RuntimeException("same");
+
+        var executor = new MaasConsumingExecutor(ctx, errorHandler, consumerCreatorService, List.of(),
+                new InMemoryBlueGreenStatePublisher());
+
+        when(consumer.poll(any())).thenAnswer(i -> singlePartitionBatch(1)).thenReturn(Optional.empty());
+        doAnswer(i -> {
+            barrier.notify("consumed");
+            throw processingError;
+        }).when(recordHandler).accept(any());
+        doThrow(processingError).when(errorHandler).handle(any(), any(), any());
+        doAnswer(i -> {
+            barrier.notify("closed");
+            return null;
+        }).when(consumer).close();
+
+        try {
+            executor.start();
+            executor.init();
+            barrier.await("consumed", Duration.ofSeconds(10));
+            verify(consumer, timeout(10_000).times(1)).close();
+        } finally {
+            executor.close();
+            barrier.await("closed", Duration.ofSeconds(10));
         }
     }
 
@@ -555,50 +693,4 @@ class MaasConsumingExecutorTest {
             executor.close();
         }
     }
-
-    /** Build a batch with two partitions stamped with different versions: orders-0 → v1, orders-1 → v2. */
-    private static Optional<RecordsBatch> twoVersionBatch(NamespaceVersion v1, NamespaceVersion v2) {
-        var tp0 = new TopicPartition("orders", 0);
-        var tp1 = new TopicPartition("orders", 1);
-        var m0 = new CommitMarker(v1, Map.of(tp0, new OffsetAndMetadata(1)));
-        var m1 = new CommitMarker(v2, Map.of(tp1, new OffsetAndMetadata(1)));
-        List<Record> records = new ArrayList<>();
-        records.add(new Record(new ConsumerRecord("orders", 0, 0, "k0", "d0"), m0));
-        records.add(new Record(new ConsumerRecord("orders", 1, 0, "k1", "d1"), m1));
-        return Optional.of(new RecordsBatch(records, m1));
-    }
-
-    /** Build a single-partition (orders-0), single-version batch with one record at the given offset. */
-    private static Optional<RecordsBatch> singlePartitionVersionBatch(NamespaceVersion version, int offset) {
-        var tp = new TopicPartition("orders", 0);
-        var marker = new CommitMarker(version, Map.of(tp, new OffsetAndMetadata(offset + 1)));
-        List<Record> records = new ArrayList<>();
-        records.add(new Record(new ConsumerRecord("orders", 0, offset, "k" + offset, "d" + offset), marker));
-        return Optional.of(new RecordsBatch(records, marker));
-    }
-
-    /** True if the marker would commit a position strictly greater than "right after the failed record" (offset 1 → pos 2). */
-    private static boolean commitsPastFailure(CommitMarker marker) {
-        return marker.getPosition().values().stream()
-                .mapToLong(OffsetAndMetadata::offset)
-                .max()
-                .orElse(0) > 2;
-    }
-
-    /** Build a single-partition (orders-0) batch with offsets 0..count-1 and cumulative commit markers. */
-    private static Optional<RecordsBatch> singlePartitionBatch(int count) {
-        var tp = new TopicPartition("orders", 0);
-        var version = new NamespaceVersion("order-processor", State.ACTIVE, new Version("v1"));
-        List<Record> records = new ArrayList<>(count);
-        CommitMarker batchMarker = null;
-        for (int i = 0; i < count; i++) {
-            Map<TopicPartition, OffsetAndMetadata> pos = new HashMap<>();
-            pos.put(tp, new OffsetAndMetadata(i + 1)); // commit "next offset" semantics
-            CommitMarker marker = new CommitMarker(version, pos);
-            records.add(new Record(new ConsumerRecord("orders", 0, i, "order" + i, "data" + i), marker));
-            batchMarker = marker;
-        }
-        return Optional.of(new RecordsBatch(records, batchMarker));
-    }
-
 }
