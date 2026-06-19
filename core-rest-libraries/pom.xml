@@ -5,7 +5,7 @@
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>rest-libraries</artifactId>
     <packaging>pom</packaging>
-    <version>7.2.2-SNAPSHOT</version>
+    <version>7.3.1-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -17,7 +17,7 @@
 
     <properties>
         <java.version>21</java.version>
-        <cloud-core.core-utils.version>3.1.1</cloud-core.core-utils.version>
+        <cloud-core.core-utils.version>3.1.2</cloud-core.core-utils.version>
     </properties>
 
     <modules>
@@ -29,6 +29,7 @@
         <module>config-server-loader</module>
         <module>rest-third-party</module>
         <module>consul-config-provider</module>
+        <module>pod-secrets-provider</module>
         <module>rest-api-deprecation-switcher</module>
         <module>log-manager</module>
         <module>security</module>

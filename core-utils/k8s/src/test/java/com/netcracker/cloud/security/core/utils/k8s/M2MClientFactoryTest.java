@@ -22,13 +22,13 @@ class M2MClientFactoryTest {
     @Test
     void testGetM2mOkHttpClient() {
         Supplier<String> tokenSupplier = () -> "test-token";
-        OkHttpClient client = M2MClientFactory.getM2mOkHttpClient(tokenSupplier, false);
+        OkHttpClient client = M2MClientFactory.getM2mOkHttpClient(tokenSupplier);
 
         assertNotNull(client);
         M2MInterceptor interceptor = findM2mInterceptor(client);
         assertNotNull(interceptor);
 
-        assertNull(getFieldValue(interceptor, "fallbackBaseUrl"));
+        assertNull(getFieldValue(interceptor));
     }
 
     @Test
@@ -37,11 +37,11 @@ class M2MClientFactoryTest {
             // Ensure property is cleared
             System.clearProperty(M2MClientFactory.DBAAS_AGENT_URL_PROP);
 
-            OkHttpClient client = M2MClientFactory.getDbaasOkHttpClient(() -> "token", false);
+            OkHttpClient client = M2MClientFactory.getDbaasOkHttpClient(() -> "token");
             M2MInterceptor interceptor = findM2mInterceptor(client);
             assertNotNull(interceptor);
 
-            assertEquals(HttpUrl.get("http://dbaas-agent:8080"), getFieldValue(interceptor, "fallbackBaseUrl"));
+            assertEquals(HttpUrl.get("http://dbaas-agent:8080"), getFieldValue(interceptor));
         });
     }
 
@@ -49,11 +49,11 @@ class M2MClientFactoryTest {
     void testGetDbaasOkHttpClientWithProperty() throws Exception {
         String agentUrl = "http://custom-dbaas-agent:9090";
         SystemPropertiesTestHelper.withProperty(Map.of(M2MClientFactory.DBAAS_AGENT_URL_PROP, agentUrl), () -> {
-            OkHttpClient client = M2MClientFactory.getDbaasOkHttpClient(() -> "token", false);
+            OkHttpClient client = M2MClientFactory.getDbaasOkHttpClient(() -> "token");
             M2MInterceptor interceptor = findM2mInterceptor(client);
             assertNotNull(interceptor);
 
-            assertEquals(HttpUrl.get(agentUrl), getFieldValue(interceptor, "fallbackBaseUrl"));
+            assertEquals(HttpUrl.get(agentUrl), getFieldValue(interceptor));
         });
     }
 
@@ -62,11 +62,11 @@ class M2MClientFactoryTest {
         SystemPropertiesTestHelper.withProperty(Map.of(), () -> {
             System.clearProperty(M2MClientFactory.MAAS_AGENT_URL_PROP);
 
-            OkHttpClient client = M2MClientFactory.getMaasOkHttpClient(() -> "token", false);
+            OkHttpClient client = M2MClientFactory.getMaasOkHttpClient(() -> "token");
             M2MInterceptor interceptor = findM2mInterceptor(client);
             assertNotNull(interceptor);
 
-            assertEquals(HttpUrl.get("http://maas-agent:8080"), getFieldValue(interceptor, "fallbackBaseUrl"));
+            assertEquals(HttpUrl.get("http://maas-agent:8080"), getFieldValue(interceptor));
         });
     }
 
@@ -74,11 +74,11 @@ class M2MClientFactoryTest {
     void testGetMaasOkHttpClientWithProperty() throws Exception {
         String agentUrl = "http://custom-maas-agent:7070";
         SystemPropertiesTestHelper.withProperty(Map.of(M2MClientFactory.MAAS_AGENT_URL_PROP, agentUrl), () -> {
-            OkHttpClient client = M2MClientFactory.getMaasOkHttpClient(() -> "token", false);
+            OkHttpClient client = M2MClientFactory.getMaasOkHttpClient(() -> "token");
             M2MInterceptor interceptor = findM2mInterceptor(client);
             assertNotNull(interceptor);
 
-            assertEquals(HttpUrl.get(agentUrl), getFieldValue(interceptor, "fallbackBaseUrl"));
+            assertEquals(HttpUrl.get(agentUrl), getFieldValue(interceptor));
         });
     }
 
@@ -89,9 +89,9 @@ class M2MClientFactoryTest {
                 .orElse(null);
     }
 
-    private Object getFieldValue(Object target, String fieldName) {
+    private Object getFieldValue(Object target) {
         try {
-            Field field = target.getClass().getDeclaredField(fieldName);
+            Field field = target.getClass().getDeclaredField("fallbackBaseUrl");
             field.setAccessible(true);
             return field.get(target);
         } catch (Exception e) {

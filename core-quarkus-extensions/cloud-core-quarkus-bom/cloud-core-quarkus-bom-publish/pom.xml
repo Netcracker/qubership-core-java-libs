@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>cloud-core-quarkus-bom-parent</artifactId>
-        <version>10.0.2-SNAPSHOT</version>
+        <version>10.1.1-SNAPSHOT</version>
         <relativePath>../cloud-core-quarkus-bom-parent/pom.xml</relativePath>
     </parent>
     <artifactId>cloud-core-quarkus-bom-publish</artifactId>
@@ -72,6 +72,16 @@
             </dependency>
             <dependency>
                 <artifactId>consul-config-source</artifactId>
+                <groupId>${project.groupId}</groupId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>pod-secrets-config-source</artifactId>
+                <groupId>${project.groupId}</groupId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>pod-secrets-config-source-deployment</artifactId>
                 <groupId>${project.groupId}</groupId>
                 <version>${project.version}</version>
             </dependency>

@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.netcracker.cloud</groupId>
+    <artifactId>core-spring-external-bom</artifactId>
+    <version>1.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <description>External BOM for Spring Boot qubership-core-java-libs modules. Includes qubership-java-bom.</description>
+
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
+        <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
+        <url>https://github.com/Netcracker/qubership-core-java-libs</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <properties>
+        <!-- Imported sub-BOMs -->
+        <cloud-core.java-bom.version>1.0.1-SNAPSHOT</cloud-core.java-bom.version>
+        <cloud-core.maas-declarative-client-spring.version>7.1.2</cloud-core.maas-declarative-client-spring.version>
+        <cloud-core.framework-extensions.version>7.1.2</cloud-core.framework-extensions.version>
+
+        <cloud-core.dbaas-client.version>9.1.2</cloud-core.dbaas-client.version>
+        <cloud-core.context-propagation.version>8.2.3</cloud-core.context-propagation.version>
+        <cloud-core.mongo-evolution.version>8.1.2</cloud-core.mongo-evolution.version>
+        <cloud-core.restclient.version>7.1.2</cloud-core.restclient.version>
+        <cloud-core.rest-libraries.version>7.3.0</cloud-core.rest-libraries.version>
+        <cloud-core.blue-green-monitor.version>2.1.2</cloud-core.blue-green-monitor.version>
+        <cloud-core.maas-client-spring.version>9.1.2</cloud-core.maas-client-spring.version>
+        <cloud-core.microservice-framework.version>8.1.2</cloud-core.microservice-framework.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- ============================================================ -->
+            <!-- Imported BOMs: qubership-java-bom covers all pure-java modules -->
+            <!-- ============================================================ -->
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>core-external-bom</artifactId>
+                <version>${cloud-core.java-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- MaaS declarative Kafka Spring client BOM -->
+            <dependency>
+                <groupId>com.netcracker.cloud.maas.declarative</groupId>
+                <artifactId>maas-declarative-kafka-client-spring-bom</artifactId>
+                <version>${cloud-core.maas-declarative-client-spring.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- framework-extension-bom -->
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>framework-extension-bom</artifactId>
+                <version>${cloud-core.framework-extensions.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- rest-legacy-bom -->
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>rest-legacy-bom</artifactId>
+                <version>${cloud-core.rest-libraries.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- ============================================================ -->
+            <!-- Spring-specific modules                                       -->
+            <!-- ============================================================ -->
+
+            <!-- === core-context-propagation === -->
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>context-propagation-spring-common</artifactId>
+                <version>${cloud-core.context-propagation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>context-propagation-spring-resttemplate</artifactId>
+                <version>${cloud-core.context-propagation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>context-propagation-spring-webclient</artifactId>
+                <version>${cloud-core.context-propagation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>context-propagation-spring-rabbit</artifactId>
+                <version>${cloud-core.context-propagation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>context-propagation-spring-kafka</artifactId>
+                <version>${cloud-core.context-propagation.version}</version>
+            </dependency>
+
+            <!-- === core-mongo-evolution === -->
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>mongo-evolution-spring</artifactId>
+                <version>${cloud-core.mongo-evolution.version}</version>
+            </dependency>
+
+            <!-- === core-restclient === -->
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>microservice-restclient-webclient</artifactId>
+                <version>${cloud-core.restclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>microservice-restclient-resttemplate</artifactId>
+                <version>${cloud-core.restclient.version}</version>
+            </dependency>
+
+            <!-- === core-rest-libraries === -->
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>webclient</artifactId>
+                <version>${cloud-core.rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>route-registration-common-spring</artifactId>
+                <version>${cloud-core.rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>route-registration-resttemplate</artifactId>
+                <version>${cloud-core.rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>route-registration-webclient</artifactId>
+                <version>${cloud-core.rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>config-server-loader-common</artifactId>
+                <version>${cloud-core.rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>config-server-loader-resttemplate</artifactId>
+                <version>${cloud-core.rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>config-server-loader-webclient</artifactId>
+                <version>${cloud-core.rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>consul-config-provider-spring-common</artifactId>
+                <version>${cloud-core.rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>consul-config-provider-spring-resttemplate</artifactId>
+                <version>${cloud-core.rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>consul-config-provider-spring-webclient</artifactId>
+                <version>${cloud-core.rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>rest-api-deprecation-switcher-spring</artifactId>
+                <version>${cloud-core.rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>logger-manager-spring</artifactId>
+                <version>${cloud-core.rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>rest-security-adapters</artifactId>
+                <version>${cloud-core.rest-libraries.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>pod-secrets-provider-spring</artifactId>
+                <version>${cloud-core.rest-libraries.version}</version>
+            </dependency>
+
+            <!-- === core-blue-green-state-monitor === -->
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>blue-green-state-monitor-spring</artifactId>
+                <version>${cloud-core.blue-green-monitor.version}</version>
+            </dependency>
+
+            <!-- === maas-client-spring === -->
+            <dependency>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
+                <artifactId>maas-client-spring</artifactId>
+                <version>${cloud-core.maas-client-spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
+                <artifactId>maas-client-spring-kafka</artifactId>
+                <version>${cloud-core.maas-client-spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud.maas.client</groupId>
+                <artifactId>maas-client-spring-rabbit</artifactId>
+                <version>${cloud-core.maas-client-spring.version}</version>
+            </dependency>
+
+            <!-- === core-microservice-framework === -->
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>microservice-framework-common</artifactId>
+                <version>${cloud-core.microservice-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>microservice-framework-webclient</artifactId>
+                <version>${cloud-core.microservice-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>microservice-framework-resttemplate</artifactId>
+                <version>${cloud-core.microservice-framework.version}</version>
+            </dependency>
+
+            <!-- === dbaas-client === -->
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-postgres-starter</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-postgres-flyway</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-mongo-starter</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-cassandra-starter</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-opensearch-starter</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-arangodb-starter</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-redis-starter</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-clickhouse-starter</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-resttemplate</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>dbaas-client-webclient</artifactId>
+                <version>${cloud-core.dbaas-client.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/netcracker/*</url>
+            <snapshots />
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/Netcracker/qubership-core-java-libs</url>
+        </repository>
+    </distributionManagement>
+
+</project>

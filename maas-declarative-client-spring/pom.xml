@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud.maas.declarative</groupId>
     <artifactId>maas-declarative-kafka-client-spring-bom</artifactId>
-    <version>7.1.2-SNAPSHOT</version>
+    <version>7.1.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -26,9 +26,9 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
 
-        <cloud-core.maas-declarative-client-commons.version>6.1.1</cloud-core.maas-declarative-client-commons.version>
-        <cloud-core.maas-declarative-client-spring.version>9.1.1</cloud-core.maas-declarative-client-spring.version>
-        <cloud-core.core-blue-green-state-monitor.version>2.1.1</cloud-core.core-blue-green-state-monitor.version>
+        <cloud-core.maas-declarative-client-commons.version>6.1.2</cloud-core.maas-declarative-client-commons.version>
+        <cloud-core.maas-declarative-client-spring.version>9.1.2</cloud-core.maas-declarative-client-spring.version>
+        <cloud-core.core-blue-green-state-monitor.version>2.1.2</cloud-core.core-blue-green-state-monitor.version>
     </properties>
 
     <dependencyManagement>
@@ -109,7 +109,7 @@ because spring-boot-based microservices are maven-inherited from spring-boot-par
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.14</version>
+                <version>0.8.15</version>
                 <executions>
                     <execution>
                         <goals>

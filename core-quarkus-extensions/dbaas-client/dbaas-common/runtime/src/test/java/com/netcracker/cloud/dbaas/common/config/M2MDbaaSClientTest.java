@@ -1,9 +1,14 @@
 package com.netcracker.cloud.dbaas.common.config;
 
 import okhttp3.OkHttpClient;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.dbaas.client.DbaasClient;
+import org.junit.jupiter.api.extension.ExtendWith;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 import java.lang.reflect.Field;
 import java.util.Optional;
@@ -13,22 +18,31 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(SystemStubsExtension.class)
 class M2MDbaaSClientTest {
     private M2MDbaaSClient m2MDbaaSClient;
     private static final String DB_AGENT_URL  = "http://dbaas-agent:8080";
     private static final String DB_AGGREGATOR_URL  = "http://dbaas-aggregator:8080";
 
+    @SystemStub
+    private EnvironmentVariables environmentVariables;
+
     @BeforeEach
     void setUp() {
-        SecurityConfig securityConfig = mock(SecurityConfig.class);
-        when(securityConfig.k8sM2mEnabled()).thenReturn(true);
-
         DbaasClientConfig dbaasConfig = mock(DbaasClientConfig.class);
         when(dbaasConfig.dbaasAgentUrl()).thenReturn(Optional.of(DB_AGENT_URL));
         when(dbaasConfig.dbaasUrl()).thenReturn(Optional.of(DB_AGGREGATOR_URL));
+        environmentVariables.set("KUBERNETES_M2M_ENABLED", "true");
 
-        m2MDbaaSClient = new M2MDbaaSClient(securityConfig, dbaasConfig);
+        m2MDbaaSClient = new M2MDbaaSClient(dbaasConfig);
+        m2MDbaaSClient.apiDbaasAddress = Optional.of(DB_AGGREGATOR_URL);
     }
+
+    @AfterEach
+    void tearDown() {
+        environmentVariables.remove("KUBERNETES_M2M_ENABLED");
+    }
+
     @Test
     void testBuild() throws NoSuchFieldException, IllegalAccessException {
         DbaasClient client = m2MDbaaSClient.build();

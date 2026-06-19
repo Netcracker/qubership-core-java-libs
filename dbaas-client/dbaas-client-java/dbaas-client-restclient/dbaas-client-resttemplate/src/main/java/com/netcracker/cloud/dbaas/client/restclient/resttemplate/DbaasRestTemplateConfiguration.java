@@ -15,12 +15,9 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnProperty(value = "dbaas.restclient.resttemplate.basic-auth", havingValue = "false", matchIfMissing = true)
 public class DbaasRestTemplateConfiguration {
 
-    @Value("${security.m2m.kubernetes.enabled:false}")
-    private boolean k8sM2mEnabled;
-
     @Bean("dbaasRestClient")
     public MicroserviceRestClient dbaasRestClient(M2MManager m2MManager){
-        var client = M2MClientFactory.getDbaasOkHttpClient(() -> m2MManager.getToken().getTokenValue(), k8sM2mEnabled);
+        var client = M2MClientFactory.getDbaasOkHttpClient(() -> m2MManager.getToken().getTokenValue());
         return new MicroserviceOkHttpRestClient(client);
     }
 }
