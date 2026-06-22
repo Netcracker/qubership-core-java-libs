@@ -32,6 +32,9 @@ class DatabasePoolMountedSecretTest {
 
     private final DbaasClient dbaasClient = Mockito.mock(DbaasClient.class);
 
+    // DatabasePool's only constructors take the (deprecated, for-removal) DatabaseDefinitionHandler,
+    // which the REST-fallback path still invokes, so a stub is required here.
+    @SuppressWarnings({"deprecation", "removal"})
     private DatabasePool pool() {
         return new DatabasePool(dbaasClient, MS_NAME, NS,
                 Collections.emptyList(), Mockito.mock(DatabaseDefinitionHandler.class));
@@ -70,6 +73,32 @@ class DatabasePoolMountedSecretTest {
         assertEquals(MS_NAME, db.getClassifier().get(MICROSERVICE_NAME));
         assertEquals("app_db", db.getName());
 
+        verify(dbaasClient, never()).getOrCreateDatabase(any(), any(), any(), any());
+    }
+
+    @Test
+    void buildsDatabaseFromMinimalMetadataUsingFallbacks(@TempDir Path root) throws IOException {
+        // metadata without top-level name/namespace and connectionProperties without "name":
+        // exercises the synthetic-response fallbacks (name from props, namespace from classifier,
+        // settings copied through).
+        Path d = Files.createDirectories(root.resolve("postgres"));
+        Files.writeString(d.resolve("metadata.json"),
+                "{\"classifier\":{\"microserviceName\":\"" + MS_NAME + "\",\"namespace\":\"" + NS + "\",\"scope\":\"service\"},"
+                        + "\"type\":\"testdb\",\"settings\":{\"region\":\"eu\"}}");
+        Files.writeString(d.resolve("connectionProperties.json"),
+                "{\"url\":\"jdbc:testdb://pg/app\",\"username\":\"u\",\"password\":\"p\"}");
+
+        DatabasePool pool = pool();
+        pool.setMountedSecretSource(new MountedSecretSource(root.toString()));
+
+        TestDatabase db = pool.getOrCreateDatabase(TestDBType.INSTANCE, classifier(), DatabaseConfig.builder().build());
+
+        assertNotNull(db);
+        assertEquals("jdbc:testdb://pg/app", db.getConnectionProperties().getUrl());
+        assertEquals(NS, db.getNamespace(), "namespace falls back to the classifier namespace");
+        assertNull(db.getName(), "name is absent in both metadata and connectionProperties");
+        assertNotNull(db.getSettings());
+        assertEquals("eu", db.getSettings().get("region"));
         verify(dbaasClient, never()).getOrCreateDatabase(any(), any(), any(), any());
     }
 

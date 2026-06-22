@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -36,6 +37,8 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 public class MountedSecretSource {
 
+    // Fixed mount path established by the dbaas-operator Deployment contract, not a configurable URI.
+    @SuppressWarnings("java:S1075")
     static final String DEFAULT_PATH = "/etc/secrets/dbaas-secrets";
     static final String METADATA_FILE = "metadata.json";
     static final String CONNECTION_PROPERTIES_FILE = "connectionProperties.json";
@@ -47,9 +50,10 @@ public class MountedSecretSource {
     };
 
     private final Path basePath;
+    private final Duration rescanThrottle;
     private final ReentrantLock rescanLock = new ReentrantLock();
 
-    private volatile Map<String, IndexEntry> index = Collections.emptyMap();
+    private final AtomicReference<Map<String, IndexEntry>> index = new AtomicReference<>(Collections.emptyMap());
     private volatile Instant lastRescan = Instant.EPOCH;
 
     public MountedSecretSource() {
@@ -57,7 +61,13 @@ public class MountedSecretSource {
     }
 
     public MountedSecretSource(String basePath) {
+        this(basePath, RESCAN_THROTTLE);
+    }
+
+    // Package-private: lets tests drive the throttled re-scan deterministically (e.g. Duration.ZERO).
+    MountedSecretSource(String basePath, Duration rescanThrottle) {
         this.basePath = Path.of(basePath);
+        this.rescanThrottle = rescanThrottle;
         buildIndex();
     }
 
@@ -75,11 +85,11 @@ public class MountedSecretSource {
     public Optional<Resolved> resolve(Map<String, Object> classifier, String type, String role) {
         String key = ClassifierMatcher.matchingKey(classifier, type, role);
 
-        IndexEntry entry = index.get(key);
+        IndexEntry entry = index.get().get(key);
         if (entry == null) {
             if (rescanDue()) {
                 rescanThrottled();
-                entry = index.get(key);
+                entry = index.get().get(key);
             }
             if (entry == null) {
                 return Optional.empty();
@@ -113,7 +123,7 @@ public class MountedSecretSource {
     }
 
     private boolean rescanDue() {
-        return Duration.between(lastRescan, Instant.now()).compareTo(RESCAN_THROTTLE) >= 0;
+        return Duration.between(lastRescan, Instant.now()).compareTo(rescanThrottle) >= 0;
     }
 
     private void rescanThrottled() {
@@ -133,13 +143,13 @@ public class MountedSecretSource {
     private void evict(String key, IndexEntry expected) {
         rescanLock.lock();
         try {
-            IndexEntry current = index.get(key);
+            IndexEntry current = index.get().get(key);
             if (current == null || !current.equals(expected)) {
                 return;
             }
-            Map<String, IndexEntry> copy = new HashMap<>(index);
+            Map<String, IndexEntry> copy = new HashMap<>(index.get());
             copy.remove(key);
-            index = Collections.unmodifiableMap(copy);
+            index.set(Collections.unmodifiableMap(copy));
         } finally {
             rescanLock.unlock();
         }
@@ -158,7 +168,7 @@ public class MountedSecretSource {
         } catch (IOException e) {
             log.warn("mounted-secret: cannot read secret path {}: {}", basePath, e.toString());
         }
-        this.index = Collections.unmodifiableMap(newIndex);
+        this.index.set(Collections.unmodifiableMap(newIndex));
         this.lastRescan = Instant.now();
     }
 
