@@ -11,9 +11,11 @@ import com.netcracker.cloud.quarkus.dbaas.mongoclient.config.properties.DbaasMon
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.config.properties.MongoDbConfiguration;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.entity.connection.MongoDBConnection;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.entity.database.MongoDatabase;
+import com.netcracker.cloud.quarkus.dbaas.mongoclient.service.MongoLogicalDbProvider;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.QuarkusTestProfile;
 import io.quarkus.test.junit.TestProfile;
+import jakarta.enterprise.inject.Instance;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -25,6 +27,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static com.netcracker.cloud.dbaas.client.DbaasConst.SCOPE;
 import static com.netcracker.cloud.dbaas.client.DbaasConst.SERVICE;
@@ -67,7 +70,17 @@ class MongoClientCreationImplTest {
 
         dbaaSClient = mock(DbaaSClientOkHttpImpl.class);
         when(dbaaSClient.getOrCreateDatabase(any(), anyString(), anyMap(), any(DatabaseConfig.class))).thenReturn(mongoDatabase);
-        mongoClientCreationImpl.dbaaSClient = dbaaSClient;
+        mongoClientCreationImpl.dbProviders = singleProviderChain(dbaaSClient);
+    }
+
+    /** Wraps the mocked dbaas client in the REST agent provider and exposes it as a single-element chain. */
+    @SuppressWarnings("unchecked")
+    static Instance<MongoLogicalDbProvider> singleProviderChain(DbaasClient dbaasClient) {
+        DbaaSMongoLogicalDbProvider agentProvider = new DbaaSMongoLogicalDbProvider();
+        agentProvider.dbaasClient = dbaasClient;
+        Instance<MongoLogicalDbProvider> dbProviders = mock(Instance.class);
+        when(dbProviders.stream()).thenAnswer(inv -> Stream.<MongoLogicalDbProvider>of(agentProvider));
+        return dbProviders;
     }
 
     @Test

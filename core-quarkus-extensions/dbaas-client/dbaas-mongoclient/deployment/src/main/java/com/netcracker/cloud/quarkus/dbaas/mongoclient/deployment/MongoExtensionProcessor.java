@@ -7,6 +7,8 @@ import com.netcracker.cloud.quarkus.dbaas.mongoclient.annotations.ServiceDb;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.annotations.TenantDb;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.config.CustomNCMongoClients;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.config.MongoClientConfiguration;
+import com.netcracker.cloud.quarkus.dbaas.mongoclient.service.impl.DbaaSMongoLogicalDbProvider;
+import com.netcracker.cloud.quarkus.dbaas.mongoclient.service.impl.DbaaSMongoMountedSecretLogicalDbProvider;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
@@ -43,6 +45,10 @@ public class MongoExtensionProcessor {
                 .addBeanClass(MongoClientConfiguration.class)
                 .addBeanClass(MongoClientAggregator.class)
                 .addBeanClass(CustomNCMongoClients.class)
+                // The MongoLogicalDbProvider chain consumed via Instance<> in MongoClientCreationImpl.
+                // Registered explicitly + unremovable so the agent (REST) provider is always present.
+                .addBeanClass(DbaaSMongoLogicalDbProvider.class)
+                .addBeanClass(DbaaSMongoMountedSecretLogicalDbProvider.class)
                 .build();
     }
 
