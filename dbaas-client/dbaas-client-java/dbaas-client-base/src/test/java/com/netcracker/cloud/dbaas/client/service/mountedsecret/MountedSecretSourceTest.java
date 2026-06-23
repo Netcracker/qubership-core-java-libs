@@ -90,6 +90,36 @@ class MountedSecretSourceTest {
     }
 
     @Test
+    void readsMetadataFreshEveryCall() throws IOException {
+        // name n1; classifier/type/role unchanged so the index key stays the same.
+        writeSecret("s1",
+                "{\"classifier\":" + SERVICE_CLASSIFIER + ",\"type\":\"postgresql\",\"name\":\"n1\",\"namespace\":\"team-a\"}",
+                "{\"host\":\"pg\"}");
+        MountedSecretSource src = source();
+        assertEquals("n1", src.resolve(classifier("team-a"), "postgresql", null).get().metadata().getName());
+
+        // change a non-key descriptor field on disk — the next resolve must reflect it (fresh metadata, not cached).
+        Files.writeString(root.resolve("s1").resolve(MountedSecretSource.METADATA_FILE),
+                "{\"classifier\":" + SERVICE_CLASSIFIER + ",\"type\":\"postgresql\",\"name\":\"n2\",\"namespace\":\"team-a\"}");
+        assertEquals("n2", src.resolve(classifier("team-a"), "postgresql", null).get().metadata().getName());
+    }
+
+    @Test
+    void metadataChangedInPlaceIsEvictedAndNoLongerServesOldClassifier() throws IOException {
+        writeSecret("s1", metadata(SERVICE_CLASSIFIER, "postgresql", null), "{\"host\":\"pg\"}");
+        MountedSecretSource src = source();
+        assertTrue(src.resolve(classifier("team-a"), "postgresql", null).isPresent());
+
+        // The descriptor's classifier changes in place (different microserviceName -> different key).
+        String movedClassifier = "{\"microserviceName\":\"other\",\"scope\":\"service\",\"namespace\":\"team-a\"}";
+        Files.writeString(root.resolve("s1").resolve(MountedSecretSource.METADATA_FILE),
+                metadata(movedClassifier, "postgresql", null));
+
+        assertTrue(src.resolve(classifier("team-a"), "postgresql", null).isEmpty(),
+                "a descriptor that changed classifier in place must be evicted, not served under the old key");
+    }
+
+    @Test
     void missingMetadataSkipsDirectory() throws IOException {
         writeSecret("s1", null, "{\"host\":\"pg\"}");
         assertTrue(source().resolve(classifier("team-a"), "postgresql", null).isEmpty());
@@ -121,15 +151,18 @@ class MountedSecretSourceTest {
     }
 
     @Test
-    void duplicateKeySecondEntryWins() throws IOException {
+    void duplicateKeyResolvesDeterministicallyByLowestDirName() throws IOException {
         // two directories canonicalize to the same (classifier, type, role) key
         String md = metadata(SERVICE_CLASSIFIER, "postgresql", null);
-        writeSecret("a", md, "{\"host\":\"first\"}");
-        writeSecret("b", md, "{\"host\":\"second\"}");
+        // Written out of order on purpose; the lowest directory name ("a") must win regardless.
+        writeSecret("b", md, "{\"host\":\"from-b\"}");
+        writeSecret("a", md, "{\"host\":\"from-a\"}");
 
-        Optional<MountedSecretSource.Resolved> r = source().resolve(classifier("team-a"), "postgresql", null);
-        assertTrue(r.isPresent(), "one of the duplicate entries must still resolve");
-        assertTrue(r.get().connectionProperties().get("host") instanceof String);
+        assertEquals("from-a",
+                source().resolve(classifier("team-a"), "postgresql", null).get().connectionProperties().get("host"));
+        // Stable across separate index builds (i.e. restarts/re-scans).
+        assertEquals("from-a",
+                source().resolve(classifier("team-a"), "postgresql", null).get().connectionProperties().get("host"));
     }
 
     @Test

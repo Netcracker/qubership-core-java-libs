@@ -12,8 +12,11 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -96,6 +99,18 @@ public class MountedSecretSource {
             }
         }
 
+        // Re-read the descriptor fresh and confirm it still maps to this key. Guards against a Secret
+        // whose metadata.json changed in place (classifier/type/role): the cached entry would otherwise
+        // keep serving the new connectionProperties under the old key. On a mismatch evict and miss so
+        // the caller falls back to REST and a later re-scan re-indexes the new descriptor.
+        SecretMetadata meta = freshMetadataFor(entry.dir(), key);
+        if (meta == null) {
+            evict(key, entry);
+            log.warn("mounted-secret: descriptor in {} no longer matches the requested key "
+                    + "(type={}, classifier={}, role={}); evicting and falling back to REST", entry.dir(), type, classifier, role);
+            return Optional.empty();
+        }
+
         Path propsPath = entry.dir().resolve(CONNECTION_PROPERTIES_FILE);
         byte[] data;
         try {
@@ -119,7 +134,27 @@ public class MountedSecretSource {
         }
 
         log.debug("mounted-secret: hit for type={} classifier={} role={}", type, classifier, role);
-        return Optional.of(new Resolved(props, entry.meta()));
+        return Optional.of(new Resolved(props, meta));
+    }
+
+    /**
+     * Re-reads {@code metadata.json} for a hit and returns it only if it still maps to
+     * {@code expectedKey}; returns null if the descriptor is gone, corrupt, incomplete, or changed in
+     * place so that it no longer matches the requested {@code (classifier, type, role)}.
+     */
+    private SecretMetadata freshMetadataFor(Path dir, String expectedKey) {
+        SecretMetadata meta;
+        try {
+            meta = MAPPER.readValue(Files.readAllBytes(dir.resolve(METADATA_FILE)), SecretMetadata.class);
+        } catch (IOException e) {
+            return null;
+        }
+        if (meta.getClassifier() == null || meta.getClassifier().isEmpty()
+                || meta.getType() == null || meta.getType().isEmpty()) {
+            return null;
+        }
+        String currentKey = ClassifierMatcher.matchingKey(meta.getClassifier(), meta.getType(), meta.getUserRole());
+        return expectedKey.equals(currentKey) ? meta : null;
     }
 
     private boolean rescanDue() {
@@ -158,10 +193,17 @@ public class MountedSecretSource {
     private void buildIndex() {
         Map<String, IndexEntry> newIndex = new HashMap<>();
         try (DirectoryStream<Path> dirs = Files.newDirectoryStream(basePath)) {
+            List<Path> secretDirs = new ArrayList<>();
             for (Path dir : dirs) {
                 if (Files.isDirectory(dir)) {
-                    indexSecretDir(dir, newIndex);
+                    secretDirs.add(dir);
                 }
+            }
+            // Index in a deterministic order so duplicate-key resolution is stable across restarts and
+            // re-scans (DirectoryStream order is filesystem-dependent); the lowest directory name wins.
+            secretDirs.sort(Comparator.comparing(dir -> dir.getFileName().toString()));
+            for (Path dir : secretDirs) {
+                indexSecretDir(dir, newIndex);
             }
         } catch (NoSuchFileException e) {
             log.debug("mounted-secret: secret path {} not present, skipping (falling back to REST)", basePath);
@@ -196,10 +238,10 @@ public class MountedSecretSource {
         }
 
         String key = ClassifierMatcher.matchingKey(meta.getClassifier(), meta.getType(), meta.getUserRole());
-        IndexEntry existing = newIndex.put(key, new IndexEntry(dir, meta));
+        IndexEntry existing = newIndex.putIfAbsent(key, new IndexEntry(dir, meta));
         if (existing != null) {
-            log.warn("mounted-secret: duplicate key in {} and {} — second entry wins; check operator configuration",
-                    existing.dir(), dir);
+            log.warn("mounted-secret: duplicate key for {} and {} — keeping {} (lowest directory name wins); "
+                    + "check operator configuration", existing.dir(), dir, existing.dir());
         }
     }
 }
