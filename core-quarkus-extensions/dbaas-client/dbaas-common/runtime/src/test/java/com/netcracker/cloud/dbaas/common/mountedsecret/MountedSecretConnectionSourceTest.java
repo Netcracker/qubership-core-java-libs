@@ -226,4 +226,56 @@ class MountedSecretConnectionSourceTest {
         MountedSecretConnectionSource src = new MountedSecretConnectionSource(root.resolve("does-not-exist").toString());
         assertTrue(src.resolve(classifier("team-a"), "postgresql", null).isEmpty());
     }
+
+    // ── negative matching: tenant / role / extra-key (the "tricky" misses) ──────
+
+    private Map<String, Object> tenantClassifier(String ns, String tenantId) {
+        Map<String, Object> c = new TreeMap<>();
+        c.put("microserviceName", "svc");
+        c.put("scope", "tenant");
+        c.put("namespace", ns);
+        c.put("tenantId", tenantId);
+        return c;
+    }
+
+    private static final String TENANT_CLASSIFIER_ACME =
+            "{\"microserviceName\":\"svc\",\"scope\":\"tenant\",\"namespace\":\"team-a\",\"tenantId\":\"acme\"}";
+
+    @Test
+    void serviceSecretDoesNotMatchTenantRequest() throws IOException {
+        writeSecret("s1", metadata(SERVICE_CLASSIFIER, "postgresql", null), "{\"host\":\"pg\"}");
+        MountedSecretConnectionSource src = source();
+        assertTrue(src.resolve(classifier("team-a"), "postgresql", null).isPresent(), "service request hits the service secret");
+        assertTrue(src.resolve(tenantClassifier("team-a", "acme"), "postgresql", null).isEmpty(),
+                "a tenant request must not be served by a service-scope secret");
+    }
+
+    @Test
+    void differentTenantIdMisses() throws IOException {
+        writeSecret("s1", metadata(TENANT_CLASSIFIER_ACME, "postgresql", null), "{\"host\":\"pg\"}");
+        MountedSecretConnectionSource src = source();
+        assertTrue(src.resolve(tenantClassifier("team-a", "acme"), "postgresql", null).isPresent(), "same tenantId hits");
+        assertTrue(src.resolve(tenantClassifier("team-a", "globex"), "postgresql", null).isEmpty(), "a different tenantId misses");
+    }
+
+    @Test
+    void roleMatchingIsCaseSensitive() throws IOException {
+        writeSecret("s1", metadata(SERVICE_CLASSIFIER, "postgresql", "admin"), "{\"host\":\"pg\"}");
+        MountedSecretConnectionSource src = source();
+        assertTrue(src.resolve(classifier("team-a"), "postgresql", "admin").isPresent(), "exact-case role hits");
+        assertTrue(src.resolve(classifier("team-a"), "postgresql", "Admin").isEmpty(),
+                "role is case-sensitive (unlike type): 'Admin' must not match 'admin'");
+    }
+
+    @Test
+    void extraTopLevelClassifierKeyOnOneSideMisses() throws IOException {
+        String withExtra = "{\"microserviceName\":\"svc\",\"scope\":\"service\",\"namespace\":\"team-a\",\"logicalDbName\":\"reports\"}";
+        writeSecret("s1", metadata(withExtra, "postgresql", null), "{\"host\":\"pg\"}");
+        MountedSecretConnectionSource src = source();
+        assertTrue(src.resolve(classifier("team-a"), "postgresql", null).isEmpty(),
+                "an extra top-level identity key on only the descriptor side must diverge the canonical key (silent-miss guard)");
+        Map<String, Object> withKey = classifier("team-a");
+        withKey.put("logicalDbName", "reports");
+        assertTrue(src.resolve(withKey, "postgresql", null).isPresent(), "the same extra key on both sides hits");
+    }
 }

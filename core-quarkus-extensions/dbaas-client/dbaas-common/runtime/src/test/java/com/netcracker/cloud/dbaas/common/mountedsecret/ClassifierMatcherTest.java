@@ -58,4 +58,37 @@ class ClassifierMatcherTest {
         assertNotEquals(ClassifierMatcher.canonical(withoutNested), ClassifierMatcher.canonical(withNested),
                 "a non-empty nested object is part of the canonical key");
     }
+
+    @Test
+    void matchingKeyIsCaseSensitiveForRole() {
+        Map<String, Object> c = Map.of("scope", "service", "microserviceName", "svc");
+        assertNotEquals(ClassifierMatcher.matchingKey(c, "postgresql", "admin"),
+                ClassifierMatcher.matchingKey(c, "postgresql", "Admin"),
+                "role is matched case-sensitively (unlike type, which is lower-cased)");
+    }
+
+    @Test
+    void canonicalDiffersWhenTopLevelKeySetDiffers() {
+        Map<String, Object> base = Map.of("scope", "service", "microserviceName", "svc", "namespace", "team-a");
+        Map<String, Object> withExtra = new LinkedHashMap<>(base);
+        withExtra.put("logicalDbName", "reports");
+        assertNotEquals(ClassifierMatcher.canonical(base), ClassifierMatcher.canonical(withExtra),
+                "an arbitrary top-level identity key present on only one side must diverge the canonical key");
+    }
+
+    @Test
+    void canonicalDiffersForServiceVsTenantScope() {
+        Map<String, Object> service = Map.of("scope", "service", "microserviceName", "svc", "namespace", "team-a");
+        Map<String, Object> tenant = Map.of("scope", "tenant", "microserviceName", "svc", "namespace", "team-a", "tenantId", "acme");
+        assertNotEquals(ClassifierMatcher.canonical(service), ClassifierMatcher.canonical(tenant),
+                "service and tenant scope are different identities");
+    }
+
+    @Test
+    void canonicalDiffersForDifferentTenantId() {
+        Map<String, Object> acme = Map.of("scope", "tenant", "microserviceName", "svc", "namespace", "team-a", "tenantId", "acme");
+        Map<String, Object> globex = Map.of("scope", "tenant", "microserviceName", "svc", "namespace", "team-a", "tenantId", "globex");
+        assertNotEquals(ClassifierMatcher.canonical(acme), ClassifierMatcher.canonical(globex),
+                "different tenantId is a different identity");
+    }
 }
