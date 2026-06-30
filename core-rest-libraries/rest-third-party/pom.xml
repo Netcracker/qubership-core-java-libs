@@ -13,7 +13,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <cloud-core.core-restclient.version>7.1.2</cloud-core.core-restclient.version>
+        <cloud-core.core-restclient.version>7.1.3</cloud-core.core-restclient.version>
         <cloud-core.core-context-propagation.version>8.2.3</cloud-core.core-context-propagation.version>
         <cloud-core.core-error-handling.version>4.2.2</cloud-core.core-error-handling.version>
 
