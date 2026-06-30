@@ -29,4 +29,30 @@ public class VersionFilterConstructor {
             }
         }
     }
+
+    /**
+     * Builds a filter over the {@code X-Version-Name} header value (the BG state name: active/candidate/legacy).
+     * Mirrors {@link #constructVersionFilter} but matches by state name instead of version number, so it works
+     * regardless of the numeric version assigned to the sibling/current namespace.
+     */
+    public static Predicate<String> constructVersionNameFilter(BlueGreenState bgState) {
+        NamespaceVersion currentNsVersion = bgState.getCurrent();
+        Optional<NamespaceVersion> siblingNsV = bgState.getSibling();
+        State blueGreenState = currentNsVersion.getState();
+        if (siblingNsV.isEmpty() || siblingNsV.get().getState() == State.IDLE) {
+            return new PrintablePredicate<>(v -> true, "true");
+        } else {
+            switch (blueGreenState) {
+                case ACTIVE -> {
+                    String siblingName = siblingNsV.get().getState().getName();
+                    return new PrintablePredicate<>(name -> !siblingName.equalsIgnoreCase(name), "!" + siblingName);
+                }
+                case CANDIDATE, LEGACY -> {
+                    String currentName = blueGreenState.getName();
+                    return new PrintablePredicate<>(currentName::equalsIgnoreCase, currentName);
+                }
+                default -> throw new IllegalStateException("Invalid Blue Green State " + blueGreenState);
+            }
+        }
+    }
 }
