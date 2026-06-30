@@ -74,7 +74,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 
 @Slf4j
-public class DbaaSPostgresDbCreationServiceImplTest {
+class DbaaSPostgresDbCreationServiceImplTest {
 
     private DbaasClient dbaaSClient;
     private MigrationService migrationService;
@@ -85,7 +85,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
     private TransactionSynchronizationRegistry transactionSynchronizationRegistry;
 
     @BeforeEach
-    public void before() {
+    void before() {
         String logicaldbName =null;
         transactionManager = mock(TransactionManager.class);
         transactionSynchronizationRegistry = mock(TransactionSynchronizationRegistry.class);
@@ -145,7 +145,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
     }
 
     @Test
-    public void mustReturnSameDataSource() {
+    void mustReturnSameDataSource() {
         PostgresDatabase postgresDatabase = getPostgresDatabase("test-url", "test-username", "test-password");
         when(dbaaSClient.getOrCreateDatabase(any(), anyString(), anyMap(), any(DatabaseConfig.class))).thenReturn(postgresDatabase);
 
@@ -172,7 +172,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
     }
 
     @Test
-    public void mustUseDefaultPropertiesWhenCustomParamsEmpty() {
+    void mustUseDefaultPropertiesWhenCustomParamsEmpty() {
         DatasourceProperties properties = mock(DatasourceProperties.class);
         when(properties.enhancedLeakReport()).thenReturn(true);
         JDBCConfig jdbcConfig = getJdbcConfigProps();
@@ -210,7 +210,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
     }
 
     @Test
-    public void mustUseSpecificPropertiesForLogicalDb() {
+    void mustUseSpecificPropertiesForLogicalDb() {
         DatasourceProperties properties = createPropertiesData();
 
         Map<String, Object> jdbcPropCustomparams = new HashMap<>();
@@ -247,7 +247,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
     }
 
     @Test
-    public void mustUseSpecificPropertiesForCustomParams() {
+    void mustUseSpecificPropertiesForCustomParams() {
         DatasourceProperties properties = createPropertiesData();
         AgroalConnectionPoolConfigurationFactory agroalConnectionPoolConfigurationFactory = new AgroalConnectionPoolConfigurationFactory(properties, transactionManager, transactionSynchronizationRegistry);
 
@@ -302,7 +302,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
     }
 
     @Test
-    public void testPostgresTlsWithPredefineParams() {
+    void testPostgresTlsWithPredefineParams() {
         PostgresDatabase postgresDatabase = getPostgresDatabase("jdbc:postgresql://localhost/test?loggerLevel=OFF", "test-username", "test-password");
         postgresDatabase.getConnectionProperties().setTls(true);
         when(dbaaSClient.getOrCreateDatabase(any(), anyString(), anyMap(), any(DatabaseConfig.class))).thenReturn(postgresDatabase);
@@ -329,7 +329,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
     }
 
     @Test
-    public void testPostgresTlsNotStrictWithPredefineParams() {
+    void testPostgresTlsNotStrictWithPredefineParams() {
         PostgresDatabase postgresDatabase = getPostgresDatabase("jdbc:postgresql://localhost/test?loggerLevel=OFF", "test-username", "test-password");
         postgresDatabase.getConnectionProperties().setTls(true);
         postgresDatabase.getConnectionProperties().setTlsNotStrict(true);
@@ -357,7 +357,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
     }
 
     @Test
-    public void mustCreateDifferentDatabasesForDifferentTenants() throws SQLException {
+    void mustCreateDifferentDatabasesForDifferentTenants() {
         PostgresDatabase postgresDatabase = getPostgresDatabase("test-url", "test-username", "test-password");
         DbaasDbClassifier classifier = getTenantClassifier("test-tenant");
         when(dbaaSClient.getOrCreateDatabase(any(), anyString(), eq(classifier.asMap()), any(DatabaseConfig.class))).thenReturn(postgresDatabase);
@@ -379,7 +379,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
     }
 
     @Test
-    public void testCanCreateServiceDatabaseWithPgExtensions() {
+    void testCanCreateServiceDatabaseWithPgExtensions() {
         DbaaSPostgresDbCreationConfig postgresDbConfiguration = mock(DbaaSPostgresDbCreationConfig.class);
         DbaasApiPropertiesConfig dbaasApiPropertiesConfig = mock(DbaasApiPropertiesConfig.class);
         DbaasApiProperties dbaasApiProperties = new DbaasApiProperties();
@@ -407,7 +407,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
     }
 
     @Test
-    public void testCanCreateTenantDatabaseWithPgExtensions() {
+    void testCanCreateTenantDatabaseWithPgExtensions() {
         DbaaSPostgresDbCreationConfig tenantDbConfiguration = mock(DbaaSPostgresDbCreationConfig.class);
         DbaasApiPropertiesConfig dbaasApiPropertiesConfig = mock(DbaasApiPropertiesConfig.class);
         DbaasApiProperties dbaasApiProperties = new DbaasApiProperties();
@@ -444,7 +444,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
     }
 
     @Test
-    public void provideDbByCustomLogicDbProvider() {
+    void provideDbByCustomLogicDbProvider() {
         String url = "custom_url", username = "custom_username", password = "custom_password";
         PostgresqlLogicalDbProvider customProvider = new PostgresqlLogicalDbProvider() {
             @Override
@@ -466,7 +466,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
     }
 
     @Test
-    public void getLogicalDbAfterCustomProviderReturnNull() {
+    void getLogicalDbAfterCustomProviderReturnNull() {
         PostgresqlLogicalDbProvider customProvider = new PostgresqlLogicalDbProvider() {
             @Override
             public @Nullable PostgresConnectionProperty provideConnectionProperty(SortedMap<String, Object> classifier, DatabaseConfig params) {
@@ -487,7 +487,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
     }
 
     @Test
-    public void throwExceptionAfterAllDbProvidersReturnNull() {
+    void throwExceptionAfterAllDbProvidersReturnNull() {
         PostgresqlLogicalDbProvider customProvider = new PostgresqlLogicalDbProvider() {
             @Override
             public @Nullable PostgresConnectionProperty provideConnectionProperty(SortedMap<String, Object> classifier, DatabaseConfig params) {
@@ -500,14 +500,15 @@ public class DbaaSPostgresDbCreationServiceImplTest {
         DbaaSPostgresDbCreationServiceImpl dbaaSPostgresDbCreationService = dataSourceCreationServiceImplBuilder
                 .setDbProviders(dbProviders)
                 .build();
+        DbaasDbClassifier emptyClassifier = new DbaasDbClassifier(Collections.EMPTY_MAP);
         IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> dbaaSPostgresDbCreationService.getOrCreatePostgresDatabase(new DbaasDbClassifier(Collections.EMPTY_MAP)));
+                () -> dbaaSPostgresDbCreationService.getOrCreatePostgresDatabase(emptyClassifier));
         dbProviders.sort(Comparator.comparingInt(LogicalDbProvider::order));
         assertEquals("Not one of the providers: " + dbProviders + " could provide a logical postgresql database", exception.getMessage());
     }
 
     @Test
-    public void throwExceptionAfterDbWasProvidedButConnIsNull() {
+    void throwExceptionAfterDbWasProvidedButConnIsNull() {
         PostgresDatabase postgresDatabase = new PostgresDatabase();
         when(dbaaSClient.getOrCreateDatabase(any(), anyString(), anyMap(), any(DatabaseConfig.class))).thenReturn(postgresDatabase);
         DbaaSPgLogicalDbProvider dbProvider = new DbaaSPgLogicalDbProvider(dbaaSClient);
@@ -515,15 +516,16 @@ public class DbaaSPostgresDbCreationServiceImplTest {
                 .setDbProviders(Collections.singletonList(dbProvider))
                 .build();
 
+        DbaasDbClassifier emptyClassifier = new DbaasDbClassifier(Collections.EMPTY_MAP);
         IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> dbaaSPostgresDbCreationService.getOrCreatePostgresDatabase(new DbaasDbClassifier(Collections.EMPTY_MAP)));
+                () -> dbaaSPostgresDbCreationService.getOrCreatePostgresDatabase(emptyClassifier));
 
         assertEquals("Provider: " + dbProvider + "have provided postgresql database " +
                 "but connection properties is null", exception.getMessage());
     }
 
     @Test
-    public void updatesPasswordsFromDbaasProperly() throws IllegalAccessException {
+    void updatesPasswordsFromDbaasProperly() throws IllegalAccessException {
         SimplePassword firstPassword = new SimplePassword("first-password");
         SimplePassword secondPassword = new SimplePassword("second-password");
 
@@ -579,7 +581,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
     }
 
     @Test
-    public void testCreateMultipleDatasources() throws Exception {
+    void testCreateMultipleDatasources() throws Exception {
         DbaaSPostgresDbCreationServiceImpl creationService = dataSourceCreationServiceImplBuilder.build();
 
         String tenantUsername = "tenant-username";
@@ -622,7 +624,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
     }
 
     @Test
-    public void mustFreeResourcesOnMigrationFailure() {
+    void mustFreeResourcesOnMigrationFailure() {
         PostgresDatabase postgresDatabase = getPostgresDatabase("test-url", "test-username", "test-password");
         when(dbaaSClient.getOrCreateDatabase(any(), anyString(), anyMap(), any(DatabaseConfig.class))).thenReturn(postgresDatabase);
         when(dbaaSClient.getConnection(any(), eq(null), eq(null), anyMap())).
@@ -632,11 +634,12 @@ public class DbaaSPostgresDbCreationServiceImplTest {
         when(migrationService.migrate(Mockito.any(DataSource.class), isNull())).thenThrow(migrationException);
 
         DbaaSPostgresDbCreationServiceImpl dbaaSPostgresDbCreationService = dataSourceCreationServiceImplBuilder.build();
-        assertThrows(FlywayException.class, () -> dbaaSPostgresDbCreationService.getOrCreatePostgresDatabase(getServiceClassifier()));
+        DbaasDbClassifier serviceClassifier = getServiceClassifier();
+        assertThrows(FlywayException.class, () -> dbaaSPostgresDbCreationService.getOrCreatePostgresDatabase(serviceClassifier));
     }
 
     @Test
-    public void mustUseGlobalInitialSql() {
+    void mustUseGlobalInitialSql() {
         String globalInitialSql = "SET TIME ZONE 'UTC'";
 
         DbaasDatasourcePoolConfiguration poolConfiguration = mock(DbaasDatasourcePoolConfiguration.class);
@@ -662,7 +665,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
     }
 
     @Test
-    public void mustUsePerDbInitialSqlOverridesGlobal() {
+    void mustUsePerDbInitialSqlOverridesGlobal() {
         String perDbInitialSql = "SET search_path TO my_schema";
 
         DbaasDatasourcePoolConfiguration poolConfiguration = mock(DbaasDatasourcePoolConfiguration.class);
@@ -671,7 +674,7 @@ public class DbaaSPostgresDbCreationServiceImplTest {
         when(properties.globalJdbcProperties()).thenReturn(new HashMap<>());
         when(poolConfiguration.getDatasourceProperties()).thenReturn(properties);
         when(poolConfiguration.getJdbcProperties(any())).thenCallRealMethod();
-        when(poolConfiguration.getInitialSql(eq("configs"))).thenReturn(perDbInitialSql);
+        when(poolConfiguration.getInitialSql("configs")).thenReturn(perDbInitialSql);
 
         AgroalConnectionPoolConfigurationFactory factory = mock(AgroalConnectionPoolConfigurationFactory.class);
         doReturn(connectionPoolConfiguration).when(factory).createAgroalConnectionPoolConfiguration(any(), any());

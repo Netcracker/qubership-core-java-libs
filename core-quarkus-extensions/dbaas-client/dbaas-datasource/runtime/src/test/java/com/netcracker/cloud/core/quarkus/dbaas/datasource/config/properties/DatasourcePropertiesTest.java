@@ -14,18 +14,18 @@ import java.util.Map;
 
 @QuarkusTest
 @TestProfile(DatasourcePropertiesTest.Profile.class)
-public class DatasourcePropertiesTest {
+class DatasourcePropertiesTest {
 
     @Inject
     DatasourceProperties datasourceProperties;
 
     @Test
-    public void globalInitialSqlIsRead() {
+    void globalInitialSqlIsRead() {
         Assertions.assertEquals(Profile.GLOBAL_VALUE, datasourceProperties.initialSql().orElseThrow());
     }
 
     @Test
-    public void perDatasourceInitialSqlIsRead() {
+    void perDatasourceInitialSqlIsRead() {
         Assertions.assertEquals(
                 Profile.PER_DB_VALUE,
                 datasourceProperties.datasources().get(Profile.LOGICAL_DB).initialSql().orElseThrow()
@@ -33,32 +33,32 @@ public class DatasourcePropertiesTest {
     }
 
     @Test
-    public void enhancedLeakReportIsRead() {
+    void enhancedLeakReportIsRead() {
         Assertions.assertTrue(datasourceProperties.enhancedLeakReport());
     }
 
     @Test
-    public void debugDatasourceListenersIsRead() {
+    void debugDatasourceListenersIsRead() {
         Assertions.assertTrue(datasourceProperties.debugDatasourceListeners());
     }
 
     @Test
-    public void globalXaIsRead() {
+    void globalXaIsRead() {
         Assertions.assertTrue(datasourceProperties.xa());
     }
 
     @Test
-    public void globalJdbcPropertiesIsRead() {
+    void globalJdbcPropertiesIsRead() {
         Assertions.assertEquals(Profile.JDBC_PROP_VALUE, datasourceProperties.globalJdbcProperties().get(Profile.JDBC_PROP_KEY));
     }
 
     @Test
-    public void globalXaPropertiesIsRead() {
+    void globalXaPropertiesIsRead() {
         Assertions.assertEquals(Profile.XA_PROP_VALUE, datasourceProperties.globalXaProperties().get(Profile.XA_PROP_KEY));
     }
 
     @Test
-    public void globalJdbcConfigIsRead() {
+    void globalJdbcConfigIsRead() {
         JDBCConfig jdbc = datasourceProperties.jdbc();
         Assertions.assertEquals(10, jdbc.poolSize());
         Assertions.assertEquals(2, jdbc.minPoolSize());
@@ -74,13 +74,13 @@ public class DatasourcePropertiesTest {
     }
 
     @Test
-    public void perDatasourceJdbcConfigIsRead() {
+    void perDatasourceJdbcConfigIsRead() {
         JDBCConfig jdbc = datasourceProperties.datasources().get(Profile.LOGICAL_DB).jdbc();
         Assertions.assertEquals(20, jdbc.poolSize());
     }
 
     @Test
-    public void perDatasourceJdbcPropertiesIsRead() {
+    void perDatasourceJdbcPropertiesIsRead() {
         Assertions.assertEquals(
                 Profile.PER_JDBC_PROP_VALUE,
                 datasourceProperties.datasources().get(Profile.LOGICAL_DB).jdbcProperties().get(Profile.JDBC_PROP_KEY)
@@ -88,7 +88,7 @@ public class DatasourcePropertiesTest {
     }
 
     @Test
-    public void perDatasourceXaPropertiesIsRead() {
+    void perDatasourceXaPropertiesIsRead() {
         Assertions.assertEquals(
                 Profile.PER_XA_PROP_VALUE,
                 datasourceProperties.datasources().get(Profile.LOGICAL_DB).xaProperties().get(Profile.XA_PROP_KEY)
@@ -96,7 +96,7 @@ public class DatasourcePropertiesTest {
     }
 
     @Test
-    public void perDatasourceXaIsRead() {
+    void perDatasourceXaIsRead() {
         Assertions.assertTrue(datasourceProperties.datasources().get(Profile.LOGICAL_DB).xa());
     }
 
