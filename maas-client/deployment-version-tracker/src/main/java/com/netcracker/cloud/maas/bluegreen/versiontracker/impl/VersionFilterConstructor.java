@@ -32,8 +32,7 @@ public class VersionFilterConstructor {
 
     /**
      * Builds a filter over the {@code X-Version-Name} header value (the BG state name: active/candidate/legacy).
-     * Mirrors {@link #constructVersionFilter} but matches by state name instead of version number, so it works
-     * regardless of the numeric version assigned to the sibling/current namespace.
+     * Mirrors {@link #constructVersionFilter} but matches by state name instead of version number.
      */
     public static Predicate<String> constructVersionNameFilter(BlueGreenState bgState) {
         NamespaceVersion currentNsVersion = bgState.getCurrent();
