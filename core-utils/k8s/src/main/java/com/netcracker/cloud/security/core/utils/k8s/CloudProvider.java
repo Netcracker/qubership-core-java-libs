@@ -1,4 +1,4 @@
-package com.netcracker.core.declarative.service;
+package com.netcracker.cloud.security.core.utils.k8s;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

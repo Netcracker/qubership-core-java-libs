@@ -1,4 +1,4 @@
-package com.netcracker.core.declarative.service;
+package com.netcracker.cloud.security.core.utils.k8s;
 
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.AfterEach;
