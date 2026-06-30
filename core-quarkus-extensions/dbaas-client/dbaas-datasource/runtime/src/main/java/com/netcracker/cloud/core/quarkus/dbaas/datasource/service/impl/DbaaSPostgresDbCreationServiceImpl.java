@@ -38,7 +38,6 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import static com.netcracker.cloud.core.quarkus.dbaas.datasource.metrics.PostgresMicrometerMetricsProvider.DATASOURCE_PARAMETER;
 import static com.netcracker.cloud.core.quarkus.dbaas.datasource.metrics.PostgresMicrometerMetricsProvider.SCHEMA_TAG;
@@ -97,7 +96,7 @@ public class DbaaSPostgresDbCreationServiceImpl implements DbaaSPostgresDbCreati
     }
 
     private List<PostgresqlLogicalDbProvider> sortProviders(Instance<PostgresqlLogicalDbProvider> dbProviders) {
-        return dbProviders.stream().sorted(Comparator.comparingInt(PostgresqlLogicalDbProvider::order)).collect(Collectors.toList());
+        return dbProviders.stream().sorted(Comparator.comparingInt(PostgresqlLogicalDbProvider::order)).toList();
     }
 
     @Override
@@ -133,8 +132,7 @@ public class DbaaSPostgresDbCreationServiceImpl implements DbaaSPostgresDbCreati
     private void updateDbPassword(DataSource dataSource, String password) {
         AgroalSecurityProvider securityProvider = getSecurityProvider((AgroalDataSource) dataSource);
 
-        if (securityProvider instanceof DbaasSecurityProvider) {
-            DbaasSecurityProvider dbaasSecurityProvider = (DbaasSecurityProvider) securityProvider;
+        if (securityProvider instanceof DbaasSecurityProvider dbaasSecurityProvider) {
             dbaasSecurityProvider.setCurrentDatabasePassword(new SimplePassword(password));
         } else {
             throw new IllegalStateException("Cannot update db password because DbaasSecurityProvider not enabled");
@@ -304,7 +302,7 @@ public class DbaaSPostgresDbCreationServiceImpl implements DbaaSPostgresDbCreati
                 .securityProviders()
                 .stream()
                 .findFirst()
-                .get();
+                .orElseThrow();
     }
 
     private void registerMetrics(PostgresDatabase database, DatasourceConnectorSettings settings) {
