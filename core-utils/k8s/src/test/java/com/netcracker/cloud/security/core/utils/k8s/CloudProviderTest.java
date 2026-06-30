@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 
@@ -20,7 +21,7 @@ class CloudProviderTest {
     private String baseUrl;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() throws IOException {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.start();
         baseUrl = "http://127.0.0.1:" + server.getAddress().getPort();
@@ -28,7 +29,7 @@ class CloudProviderTest {
     }
 
     @AfterEach
-    void tearDown() throws Exception {
+    void tearDown() {
         server.stop(0);
         resetCache();
     }
@@ -149,12 +150,12 @@ class CloudProviderTest {
     }
 
     @Test
-    void getCloudProvider_isUncomputed_beforeFirstDetection() throws Exception {
+    void getCloudProvider_isUncomputed_beforeFirstDetection() {
         assertNull(readCache());
     }
 
     @Test
-    void getCloudProvider_returnsAndKeepsCachedValue_onceDetected() throws Exception {
+    void getCloudProvider_returnsAndKeepsCachedValue_onceDetected() {
         seedCache(CloudProvider.AKS);
 
         assertEquals(CloudProvider.AKS, CloudProvider.getCloudProvider());
@@ -175,15 +176,15 @@ class CloudProviderTest {
         });
     }
 
-    private static void resetCache() throws Exception {
+    private static void resetCache() {
         CloudProvider.detected = null;
     }
 
-    private static void seedCache(CloudProvider value) throws Exception {
+    private static void seedCache(CloudProvider value) {
         CloudProvider.detected = value;
     }
 
-    private static CloudProvider readCache() throws Exception {
+    private static CloudProvider readCache() {
         return CloudProvider.detected;
     }
 }

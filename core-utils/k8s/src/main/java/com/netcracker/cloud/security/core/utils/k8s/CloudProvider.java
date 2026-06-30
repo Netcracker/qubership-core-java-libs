@@ -4,7 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URI;
+
+import java.io.IOException;
 
 /**
  * Identifies which managed Kubernetes cloud provider (if any) the JVM is
@@ -103,7 +106,7 @@ public enum CloudProvider {
         }
     }
 
-    private static HttpURLConnection openConnection(String url) throws Exception {
+    private static HttpURLConnection openConnection(String url) throws URISyntaxException, IOException {
         HttpURLConnection conn = (HttpURLConnection) new URI(url).toURL().openConnection();
         conn.setConnectTimeout(CONNECT_TIMEOUT_MS);
         conn.setReadTimeout(READ_TIMEOUT_MS);
