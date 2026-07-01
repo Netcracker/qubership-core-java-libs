@@ -1,5 +1,6 @@
 package com.netcracker.cloud.security.core.utils.k8s.impl;
 
+import com.netcracker.cloud.security.core.utils.k8s.CloudProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.jodah.failsafe.Failsafe;
@@ -61,11 +62,14 @@ public class KubernetesOidcRestClient {
         }
 
         log.debug("Perform request: GET {}", url);
-        var request = HttpRequest.newBuilder()
-                .setHeader("Authorization", "Bearer %s".formatted(tokenSupplier.get()))
+        var requestBuilder = HttpRequest.newBuilder()
                 .uri(uri)
-                .GET()
-                .build();
+                .GET();
+        if (CloudProvider.getCloudProvider() != CloudProvider.GKE) {
+            requestBuilder.setHeader("Authorization", "Bearer %s".formatted(tokenSupplier.get()));
+        }
+        var request = requestBuilder.build();
+
         HttpResponse<String> response = Failsafe.with(retryPolicy).get(() -> this.client.send(request, HttpResponse.BodyHandlers.ofString()));
         if (response.statusCode() != HTTP_OK) {
             throw new RuntimeException("Unexpected response code " + response.statusCode() + " for GET " + url);
