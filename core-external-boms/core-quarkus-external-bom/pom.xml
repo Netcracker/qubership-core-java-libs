@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>core-quarkus-external-bom</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>External BOM for Quarkus qubership-core-java-libs modules. Includes qubership-java-bom.</description>
@@ -26,13 +26,13 @@
 
     <properties>
         <!-- Imported sub-BOMs -->
-        <cloud-core.java-bom.version>1.0.1-SNAPSHOT</cloud-core.java-bom.version>
-        <cloud-core.maas-client-quarkus.version>11.0.2</cloud-core.maas-client-quarkus.version>
-        <cloud-core.maas-declarative-client-quarkus.version>9.0.2</cloud-core.maas-declarative-client-quarkus.version>
+        <cloud-core.java-bom.version>1.0.3-SNAPSHOT</cloud-core.java-bom.version>
+        <cloud-core.maas-client-quarkus.version>11.0.4</cloud-core.maas-client-quarkus.version>
+        <cloud-core.maas-declarative-client-quarkus.version>9.0.4</cloud-core.maas-declarative-client-quarkus.version>
         <cloud-core.context-propagation-quarkus.version>9.1.3</cloud-core.context-propagation-quarkus.version>
 
-        <cloud-core.quarkus-extensions.version>10.1.0</cloud-core.quarkus-extensions.version>
-        <cloud-core.blue-green-monitor-quarkus.version>4.0.2</cloud-core.blue-green-monitor-quarkus.version>
+        <cloud-core.quarkus-extensions.version>10.1.2</cloud-core.quarkus-extensions.version>
+        <cloud-core.blue-green-monitor-quarkus.version>4.0.4</cloud-core.blue-green-monitor-quarkus.version>
     </properties>
 
     <dependencyManagement>
@@ -54,15 +54,6 @@
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>maas-client-quarkus-bom</artifactId>
                 <version>${cloud-core.maas-client-quarkus.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <!-- MaaS declarative Kafka Quarkus client BOM -->
-            <dependency>
-                <groupId>com.netcracker.cloud.maas.declarative</groupId>
-                <artifactId>maas-declarative-kafka-client-quarkus-bom</artifactId>
-                <version>${cloud-core.maas-declarative-client-quarkus.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -300,6 +291,11 @@
             </dependency>
 
             <!-- === maas-declarative-client-quarkus === -->
+            <dependency>
+                <groupId>com.netcracker.cloud.maas.declarative</groupId>
+                <artifactId>maas-declarative-kafka-client-quarkus</artifactId>
+                <version>${cloud-core.maas-declarative-client-quarkus.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud.maas.declarative</groupId>
                 <artifactId>maas-declarative-kafka-client-quarkus-deployment</artifactId>

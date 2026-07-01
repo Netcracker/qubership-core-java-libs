@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>core-spring-external-bom</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>External BOM for Spring Boot qubership-core-java-libs modules. Includes qubership-java-bom.</description>
@@ -26,18 +26,18 @@
 
     <properties>
         <!-- Imported sub-BOMs -->
-        <cloud-core.java-bom.version>1.0.1-SNAPSHOT</cloud-core.java-bom.version>
-        <cloud-core.maas-declarative-client-spring.version>7.1.2</cloud-core.maas-declarative-client-spring.version>
+        <cloud-core.java-bom.version>1.0.3-SNAPSHOT</cloud-core.java-bom.version>
+        <cloud-core.maas-declarative-client-spring.version>7.1.4</cloud-core.maas-declarative-client-spring.version>
         <cloud-core.framework-extensions.version>7.1.2</cloud-core.framework-extensions.version>
 
-        <cloud-core.dbaas-client.version>9.1.2</cloud-core.dbaas-client.version>
+        <cloud-core.dbaas-client.version>9.1.4</cloud-core.dbaas-client.version>
         <cloud-core.context-propagation.version>8.2.3</cloud-core.context-propagation.version>
         <cloud-core.mongo-evolution.version>8.1.2</cloud-core.mongo-evolution.version>
-        <cloud-core.restclient.version>7.1.2</cloud-core.restclient.version>
-        <cloud-core.rest-libraries.version>7.3.0</cloud-core.rest-libraries.version>
-        <cloud-core.blue-green-monitor.version>2.1.2</cloud-core.blue-green-monitor.version>
-        <cloud-core.maas-client-spring.version>9.1.2</cloud-core.maas-client-spring.version>
-        <cloud-core.microservice-framework.version>8.1.2</cloud-core.microservice-framework.version>
+        <cloud-core.restclient.version>7.1.4</cloud-core.restclient.version>
+        <cloud-core.rest-libraries.version>7.3.2</cloud-core.rest-libraries.version>
+        <cloud-core.blue-green-monitor.version>2.1.4</cloud-core.blue-green-monitor.version>
+        <cloud-core.maas-client-spring.version>9.1.4</cloud-core.maas-client-spring.version>
+        <cloud-core.microservice-framework.version>8.1.4</cloud-core.microservice-framework.version>
     </properties>
 
     <dependencyManagement>
@@ -50,15 +50,6 @@
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-external-bom</artifactId>
                 <version>${cloud-core.java-bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <!-- MaaS declarative Kafka Spring client BOM -->
-            <dependency>
-                <groupId>com.netcracker.cloud.maas.declarative</groupId>
-                <artifactId>maas-declarative-kafka-client-spring-bom</artifactId>
-                <version>${cloud-core.maas-declarative-client-spring.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -225,6 +216,13 @@
                 <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>maas-client-spring-rabbit</artifactId>
                 <version>${cloud-core.maas-client-spring.version}</version>
+            </dependency>
+
+            <!-- === maas-declarative-client-spring === -->
+            <dependency>
+                <groupId>com.netcracker.cloud.maas.declarative</groupId>
+                <artifactId>maas-declarative-kafka-client-spring</artifactId>
+                <version>${cloud-core.maas-declarative-client-spring.version}</version>
             </dependency>
 
             <!-- === core-microservice-framework === -->
