@@ -66,7 +66,7 @@
         <guava.version>33.5.0-jre</guava.version>
         <rxjava.version>2.2.21</rxjava.version>
         <hikaricp.version>7.0.2</hikaricp.version>
-        <undertow.version>2.3.24.Final</undertow.version>
+        <undertow.version>2.3.25.Final</undertow.version>
         <reflections.version>0.10.2</reflections.version>
         <awaitility.version>4.3.0</awaitility.version>
 
@@ -85,7 +85,7 @@
         <logcaptor.version>2.12.6</logcaptor.version>
         <mockserver.version>5.15.0</mockserver.version>
         <mongo-java-server.version>1.47.0</mongo-java-server.version>
-        <hibernate-validator.version>8.0.3.Final</hibernate-validator.version>
+        <hibernate-validator.version>8.0.4.Final</hibernate-validator.version>
         <docker-java.version>3.7.1</docker-java.version>
     </properties>
 
