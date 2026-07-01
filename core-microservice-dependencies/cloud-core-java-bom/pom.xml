@@ -24,7 +24,7 @@
         <cloud-core.core-mongo-evolution.version>8.1.2</cloud-core.core-mongo-evolution.version>
         <cloud-core.core-rest-libraries.version>7.3.2</cloud-core.core-rest-libraries.version>
         <cloud-core.dbaas-client.version>9.1.4</cloud-core.dbaas-client.version>
-        <cloud-core.core-microservice-framework-extensions.version>7.1.2</cloud-core.core-microservice-framework-extensions.version>
+        <cloud-core.core-microservice-framework-extensions.version>7.1.3-SNAPSHOT</cloud-core.core-microservice-framework-extensions.version>
         <cloud-core.core-context-propagation.version>8.2.3</cloud-core.core-context-propagation.version>
         <cloud-core.maas-client.version>12.2.4</cloud-core.maas-client.version>
         <cloud-core.core-error-handling.version>4.2.2</cloud-core.core-error-handling.version>
