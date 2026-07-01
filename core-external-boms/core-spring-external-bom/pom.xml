@@ -28,8 +28,7 @@
         <!-- Imported sub-BOMs -->
         <cloud-core.java-bom.version>1.0.3-SNAPSHOT</cloud-core.java-bom.version>
         <cloud-core.maas-declarative-client-spring.version>7.1.4</cloud-core.maas-declarative-client-spring.version>
-        <cloud-core.framework-extensions.version>7.1.2</cloud-core.framework-extensions.version>
-
+        <cloud-core.framework-extensions.version>7.1.3-SNAPSHOT</cloud-core.framework-extensions.version>
         <cloud-core.dbaas-client.version>9.1.4</cloud-core.dbaas-client.version>
         <cloud-core.context-propagation.version>8.2.3</cloud-core.context-propagation.version>
         <cloud-core.mongo-evolution.version>8.1.2</cloud-core.mongo-evolution.version>
