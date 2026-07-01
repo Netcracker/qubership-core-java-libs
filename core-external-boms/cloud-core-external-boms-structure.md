@@ -33,6 +33,7 @@ When a module ships its own BOM:
 
 - **Single-technology sub-BOM** (all artifacts are Java-only, Spring-only, or Quarkus-only) — import the sub-BOM into the corresponding external BOM rather than listing artifacts individually.
 - **Mixed-technology sub-BOM** (artifacts span multiple stacks) — do not import the sub-BOM; instead, add each artifact individually to the appropriate external BOM.
+- **Build/parent sub-BOM** (imports an internal BOM and does not manage its own published artifact versions) — do not import; add each published artifact individually to the external BOM instead. Example: `maas-declarative-kafka-client-*-bom`.
 
 ---
 
@@ -46,16 +47,12 @@ core-spring-external-bom
 ├── core-external-bom
 ├── framework-extension-bom
 │   └── core-spring-internal-bom   [internal, via parent]
-├── rest-legacy-bom
-└── maas-declarative-kafka-client-spring-bom
-    └── core-spring-internal-bom   [internal]
+└── rest-legacy-bom
 
 core-quarkus-external-bom
 ├── core-external-bom
 ├── cloud-core-context-propagation-bom
-├── maas-client-quarkus-bom
-└── maas-declarative-kafka-client-quarkus-bom
-    └── core-quarkus-internal-bom  [internal]
+└── maas-client-quarkus-bom
 ```
 
 ---
@@ -293,11 +290,11 @@ core-quarkus-external-bom
 | maas-client-quarkus                    | com.netcracker.cloud.quarkus:maas-client-quarkus-rabbit-deployment                     | quarkus-bom  |                                                                                                                       |
 | maas-client-quarkus                    | com.netcracker.cloud.quarkus:maas-client-quarkus-rabbit-parent                         | -            | parent POM                                                                                                            |
 | maas-client-quarkus                    | com.netcracker.cloud.quarkus:maas-client-quarkus-report-aggregate                      | -            | Aggregator for Sonar                                                                                                  |
-| maas-declarative-client-spring         | com.netcracker.cloud.maas.declarative:maas-declarative-kafka-client-spring             | spring-bom   | transitively via maas-declarative-kafka-client-spring-bom                                                             |
-| maas-declarative-client-spring         | com.netcracker.cloud.maas.declarative:maas-declarative-kafka-client-spring-bom         | spring-bom   | BOM aggregator, imported into spring-bom                                                                              |
+| maas-declarative-client-spring         | com.netcracker.cloud.maas.declarative:maas-declarative-kafka-client-spring             | spring-bom   | listed individually in spring-bom                                                                                     |
+| maas-declarative-client-spring         | com.netcracker.cloud.maas.declarative:maas-declarative-kafka-client-spring-bom         | -            | build/parent BOM only; imports internal BOM, not imported into external BOM                                           |
 | core-springboot-starter                | com.netcracker.cloud:netcracker-spring-boot-starter-parent                             | -            | Parent POM (packaging=pom, inherited via parent, not a dependency)                                                    |
-| maas-declarative-client-quarkus        | com.netcracker.cloud.maas.declarative:maas-declarative-kafka-client-quarkus            | quarkus-bom  | transitively via maas-declarative-kafka-client-quarkus-bom                                                            |
-| maas-declarative-client-quarkus        | com.netcracker.cloud.maas.declarative:maas-declarative-kafka-client-quarkus-bom        | quarkus-bom  | BOM aggregator, imported into quarkus-bom                                                                             |
-| maas-declarative-client-quarkus        | com.netcracker.cloud.maas.declarative:maas-declarative-kafka-client-quarkus-deployment | quarkus-bom  |                                                                                                                       |
+| maas-declarative-client-quarkus        | com.netcracker.cloud.maas.declarative:maas-declarative-kafka-client-quarkus            | quarkus-bom  | listed individually in quarkus-bom                                                                                    |
+| maas-declarative-client-quarkus        | com.netcracker.cloud.maas.declarative:maas-declarative-kafka-client-quarkus-bom        | -            | build/parent BOM only; imports internal BOM, not imported into external BOM                                           |
+| maas-declarative-client-quarkus        | com.netcracker.cloud.maas.declarative:maas-declarative-kafka-client-quarkus-deployment | quarkus-bom  | listed individually in quarkus-bom                                                                                  |
 | maas-declarative-client-quarkus        | com.netcracker.cloud.maas.declarative:maas-declarative-kafka-client-quarkus-parent     | -            | parent POM                                                                                                            |
 | maas-declarative-client-quarkus        | com.netcracker.cloud.maas.declarative:maas-kafka-quarkus-client-report-aggregate       | -            | Aggregator for Sonar                                                                                                  |

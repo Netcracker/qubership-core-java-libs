@@ -76,6 +76,14 @@ public class DbaasDatasourcePoolConfiguration {
         return properties;
     }
 
+    public String getInitialSql(@Nullable String logicalDbName) {
+        String initialSql = getDatasourceProperties().initialSql().orElse("");
+        if (!StringUtil.isNullOrEmpty(logicalDbName) && getDatasourceProperties().datasources().containsKey(logicalDbName)) {
+            initialSql = getDatasourceProperties().datasources().get(logicalDbName).initialSql().orElse(initialSql);
+        }
+        return initialSql;
+    }
+
     public boolean isXa(@Nullable String logicalDbName) {
         if (!StringUtil.isNullOrEmpty(logicalDbName) && getDatasourceProperties().datasources().containsKey(logicalDbName)) {
             return getDatasourceProperties().datasources().get(logicalDbName).xa();
