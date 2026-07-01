@@ -29,8 +29,8 @@ public enum CloudProvider {
     @SuppressWarnings("java:S1313")
     private static final String DEFAULT_METADATA_URL = "http://169.254.169.254";
 
-    private static final int CONNECT_TIMEOUT_MS = 10_000;
-    private static final int READ_TIMEOUT_MS = 10_000;
+    private static final int CONNECT_TIMEOUT_MS = 5_000;
+    private static final int READ_TIMEOUT_MS = 5_000;
 
     // Lazily computed and cached on first access.
     static volatile CloudProvider detected;
