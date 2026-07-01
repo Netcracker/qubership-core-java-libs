@@ -5,7 +5,7 @@
 	<packaging>pom</packaging>
 	<artifactId>maas-client-quarkus-parent</artifactId>
 	<groupId>com.netcracker.cloud.quarkus</groupId>
-	<version>11.0.4-SNAPSHOT</version>
+	<version>11.0.4</version>
 
     <licenses>
         <license>
@@ -333,7 +333,7 @@
         <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
         <url>https://github.com/Netcracker/qubership-core-java-libs</url>
-        <tag>HEAD</tag>
+        <tag>maas-client-quarkus-parent-11.0.4</tag>
     </scm>
 
 	<repositories>
