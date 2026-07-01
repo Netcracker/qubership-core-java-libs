@@ -8,7 +8,7 @@
     <packaging>maven-plugin</packaging>
 
     <properties>
-        <cloud-core.core-rest-libraries.version>7.3.0</cloud-core.core-rest-libraries.version>
+        <cloud-core.core-rest-libraries.version>7.3.2</cloud-core.core-rest-libraries.version>
     </properties>
 
     <dependencyManagement>
