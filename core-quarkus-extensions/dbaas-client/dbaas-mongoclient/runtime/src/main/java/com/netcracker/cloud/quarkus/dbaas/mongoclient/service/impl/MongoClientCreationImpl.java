@@ -5,15 +5,15 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import com.netcracker.cloud.dbaas.client.DbaasClient;
 import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
 import com.netcracker.cloud.dbaas.client.management.DbaasDbClassifier;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.config.properties.DbaasMongoDbCreationConfig;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.entity.connection.MongoDBConnection;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.entity.database.MongoDatabase;
-import com.netcracker.cloud.quarkus.dbaas.mongoclient.entity.database.type.MongoDBType;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.service.MongoClientCreation;
+import com.netcracker.cloud.quarkus.dbaas.mongoclient.service.MongoLogicalDbProvider;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.UuidRepresentation;
@@ -22,8 +22,13 @@ import org.bson.codecs.pojo.PojoCodecProvider;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
@@ -35,7 +40,7 @@ public class MongoClientCreationImpl implements MongoClientCreation {
     String namespace;
 
     @Inject
-    DbaasClient dbaaSClient;
+    Instance<MongoLogicalDbProvider> dbProviders;
 
     private DbaasMongoDbCreationConfig dbaasMongoDbCreationConfig;
 
@@ -67,7 +72,7 @@ public class MongoClientCreationImpl implements MongoClientCreation {
         DatabaseConfig config = getDbCreateParameters(tenantId);
         log.debug("Create new MongoClient for {}", classifier);
 
-        MongoDatabase db = dbaaSClient.getOrCreateDatabase(MongoDBType.INSTANCE, namespace, classifier, config);
+        MongoDatabase db = resolveMongoDatabase(classifier, config);
         log.debug("Connection: " + db.getConnectionProperties());
 
         log.debug("Starting the initialization of MongoClient for database with classifier: {}", db.getClassifier());
@@ -96,6 +101,34 @@ public class MongoClientCreationImpl implements MongoClientCreation {
         log.info("Created mongo client: {}", mongoClient);
         connectionProperties.setClient(mongoClient);
         return db;
+    }
+
+    /**
+     * Resolves the mongo database through the {@link MongoLogicalDbProvider} chain: providers are
+     * tried in ascending {@link MongoLogicalDbProvider#order()} order and the first non-null result
+     * wins. The file-backed mounted-secret provider (order {@code MAX_VALUE - 1}) is consulted just
+     * before the dbaas-aggregator provider (order {@code MAX_VALUE}), so when no Secret is mounted
+     * resolution falls through to REST exactly as before.
+     */
+    private MongoDatabase resolveMongoDatabase(Map<String, Object> classifier, DatabaseConfig config) {
+        SortedMap<String, Object> sortedClassifier = new TreeMap<>(classifier);
+        for (MongoLogicalDbProvider provider : sortProviders(dbProviders)) {
+            MongoDatabase db = provider.provide(sortedClassifier, config, namespace);
+            if (db != null) {
+                if (db.getConnectionProperties() == null) {
+                    throw new IllegalStateException("Provider: " + provider
+                            + " provided a mongo database but connection properties is null");
+                }
+                return db;
+            }
+        }
+        throw new IllegalStateException("No MongoLogicalDbProvider resolved a database for classifier " + classifier);
+    }
+
+    private List<MongoLogicalDbProvider> sortProviders(Instance<MongoLogicalDbProvider> dbProviders) {
+        return dbProviders.stream()
+                .sorted(Comparator.comparingInt(MongoLogicalDbProvider::order))
+                .collect(Collectors.toList());
     }
 
     private void setDbName(MongoDBConnection connectionProperties) {
