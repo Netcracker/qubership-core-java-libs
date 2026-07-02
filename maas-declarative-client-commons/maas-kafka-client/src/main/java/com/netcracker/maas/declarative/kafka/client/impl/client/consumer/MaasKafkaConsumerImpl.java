@@ -275,11 +275,6 @@ public class MaasKafkaConsumerImpl extends MaasKafkaCommonClient implements Maas
         execContext.setDeserializerHolder(deserializerHolder);
         execContext.setPollDuration(Duration.ofMillis(pollDuration));
 
-        MaasConsumingExecutor executor;
-        executor = new MaasConsumingExecutor(execContext,
-                errorHandler, kafkaClientCreationService, recordFilters, statePublisher);
-        execContext.setExecutor(executor);
-
         MaasKafkaBlueGreenDefinition blueGreenDefinition = consumerDefinition.getBlueGreenDefinition();
         KafkaConsumerConfiguration.Builder kafkaConsumerConfigurationBuilder = KafkaConsumerConfiguration.builder(consumerCfg);
         if (blueGreenDefinition != null) {
@@ -291,7 +286,12 @@ public class MaasKafkaConsumerImpl extends MaasKafkaCommonClient implements Maas
                     .setLocaldev(blueGreenDefinition.isLocaldev())
                     .setVersioned(topic.isVersioned());
         }
+        // Must be set before MaasConsumingExecutor construction: executor reads max.poll.records from here.
         execContext.setBlueGreenConfiguration(kafkaConsumerConfigurationBuilder.build());
+
+        MaasConsumingExecutor executor = new MaasConsumingExecutor(execContext,
+                errorHandler, kafkaClientCreationService, recordFilters, statePublisher);
+        execContext.setExecutor(executor);
         return execContext;
     }
 

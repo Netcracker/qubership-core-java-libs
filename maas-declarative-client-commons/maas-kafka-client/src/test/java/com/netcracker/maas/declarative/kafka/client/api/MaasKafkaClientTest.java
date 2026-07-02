@@ -33,6 +33,8 @@ import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.a
 import com.netcracker.maas.declarative.kafka.client.impl.definition.api.MaasKafkaClientDefinitionService;
 import com.netcracker.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
 import com.netcracker.maas.declarative.kafka.client.impl.tracing.TracingService;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -256,7 +258,9 @@ class MaasKafkaClientTest {
         TopicInfo topicInfo = createTopicInfo();
         when(maasKafkaTopicService.getTopicAddressByDefinition(any())).thenReturn(new TopicAddressImpl(topicInfo));
         final CompletableFuture<String> msg = new CompletableFuture<>();
-        try (var ignored = maasKafkaConsumer(topicInfo.getName(), record -> msg.complete(record.value()), false, true)) {
+        String groupId = "group-" + RANDOM_STRING.get();
+        try (var ignored = maasKafkaConsumer(topicInfo.getName(), record -> msg.complete(record.value()), false, true, groupId)) {
+            waitForBgConsumerReady(groupId);
             String testMsg = "message-" + RANDOM_STRING.get();
             kafkaProducer.send(new ProducerRecord<>(topicInfo.getName(), testMsg));
             assertEquals(testMsg, msg.get(ASYNC_WAIT_TIMEOUT_SEC, TimeUnit.SECONDS));
@@ -272,6 +276,7 @@ class MaasKafkaClientTest {
         String firstMsg = "message-first-" + RANDOM_STRING.get();
         String secondMsg = "message-second-" + RANDOM_STRING.get();
         AtomicInteger c = new AtomicInteger(0);
+        String groupId = "group-" + RANDOM_STRING.get();
         try (var ignored = maasKafkaConsumer(topicInfo.getName(), rec -> {
             int counter = c.getAndIncrement();
             if (counter == 0) {
@@ -281,7 +286,8 @@ class MaasKafkaClientTest {
             } else {
                 secondMsgReceived.complete(rec.value());
             }
-        }, false, true)) {
+        }, false, true, groupId)) {
+            waitForBgConsumerReady(groupId);
             kafkaProducer.send(new ProducerRecord<>(topicInfo.getName(), firstMsg));
             assertEquals(firstMsg, firstMsgReceived.get(ASYNC_WAIT_TIMEOUT_SEC, TimeUnit.SECONDS));
             kafkaProducer.send(new ProducerRecord<>(topicInfo.getName(), secondMsg));
@@ -444,6 +450,26 @@ class MaasKafkaClientTest {
 
     MaasKafkaConsumer maasKafkaConsumer(String topicName, Consumer<ConsumerRecord<String, String>> handler, boolean isTenant, boolean bluegreen) {
         return maasKafkaConsumer(topicName, handler, isTenant, bluegreen, "group-" + RANDOM_STRING.get());
+    }
+
+    /**
+     * Waits until the BG consumer finishes its first poll and offset alignment.
+     * Producing before that can race with {@code OffsetCorrector} and skip the first record on CI.
+     */
+    private void waitForBgConsumerReady(String groupId) throws Exception {
+        Properties adminProps = new Properties();
+        adminProps.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers());
+        long deadline = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(10);
+        try (AdminClient admin = AdminClient.create(adminProps)) {
+            while (System.currentTimeMillis() < deadline) {
+                if (!admin.listConsumerGroupOffsets(groupId).partitionsToOffsetAndMetadata()
+                        .get(3, TimeUnit.SECONDS).isEmpty()) {
+                    return;
+                }
+                Thread.sleep(50);
+            }
+        }
+        fail("BG consumer group " + groupId + " did not become ready within timeout");
     }
 
     private static class StrTestDeserializer implements Deserializer<String> {

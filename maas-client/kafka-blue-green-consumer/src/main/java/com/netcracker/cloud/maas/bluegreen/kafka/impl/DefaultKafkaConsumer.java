@@ -2,6 +2,7 @@ package com.netcracker.cloud.maas.bluegreen.kafka.impl;
 
 import com.netcracker.cloud.maas.bluegreen.kafka.BGKafkaConsumer;
 import com.netcracker.cloud.maas.bluegreen.kafka.CommitMarker;
+import com.netcracker.cloud.maas.bluegreen.kafka.PartitionsAssignedListener;
 import com.netcracker.cloud.maas.bluegreen.kafka.Record;
 import com.netcracker.cloud.maas.bluegreen.kafka.RecordsBatch;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import java.util.*;
 public class DefaultKafkaConsumer<K, V> implements BGKafkaConsumer<K, V> {
 
     private final Consumer<K, V> consumer;
+    private PartitionsAssignedListener partitionsAssignedListener;
 
     public DefaultKafkaConsumer(BGKafkaConsumerConfig config) {
         this.consumer = config.getConsumerSupplier().apply(config.getProperties());
@@ -36,6 +38,9 @@ public class DefaultKafkaConsumer<K, V> implements BGKafkaConsumer<K, V> {
                 log.debug("Partitions were assigned: {}", partitions);
                 consumer.committed(new HashSet<>(partitions)).forEach(((topicPartition, offsetAndMetadata) ->
                         consumer.seek(topicPartition, Optional.ofNullable(offsetAndMetadata).map(OffsetAndMetadata::offset).orElse(0L))));
+                if (partitionsAssignedListener != null) {
+                    partitionsAssignedListener.onPartitionsAssigned(partitions);
+                }
             }
         });
     }
@@ -61,6 +66,11 @@ public class DefaultKafkaConsumer<K, V> implements BGKafkaConsumer<K, V> {
     @Override
     public void commitSync(CommitMarker marker) {
         consumer.commitSync(marker.getPosition());
+    }
+
+    @Override
+    public void setPartitionsAssignedListener(PartitionsAssignedListener listener) {
+        this.partitionsAssignedListener = listener;
     }
 
     @Override
