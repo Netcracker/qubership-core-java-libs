@@ -9,13 +9,13 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 public class DefaultContextPropagationServiceImpl implements ContextPropagationService {
 
     @Override
-    public void propagateDataToContext(ConsumerRecord record) {
-        KafkaContextPropagation.restoreContext(record.headers());
+    public void propagateDataToContext(ConsumerRecord consumerRecord) {
+        KafkaContextPropagation.restoreContext(consumerRecord.headers());
     }
 
     @Override
-    public void populateDataToHeaders(ProducerRecord record) {
-        KafkaContextPropagation.propagateContext().forEach(header -> record.headers().add(header));
+    public void populateDataToHeaders(ProducerRecord producerRecord) {
+        KafkaContextPropagation.propagateContext().forEach(header -> producerRecord.headers().add(header));
     }
 
     @Override

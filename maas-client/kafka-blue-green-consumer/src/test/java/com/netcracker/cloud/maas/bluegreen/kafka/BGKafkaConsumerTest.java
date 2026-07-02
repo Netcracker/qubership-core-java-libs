@@ -44,6 +44,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.netcracker.cloud.framework.contexts.xversion.XVersionContextObject.X_VERSION_SERIALIZATION_NAME;
+import static com.netcracker.cloud.framework.contexts.xversionname.XVersionNameContextObject.X_VERSION_NAME_SERIALIZATION_NAME;
 import static com.netcracker.cloud.maas.bluegreen.kafka.util.TestUtils.uniqueGroupId;
 import static com.netcracker.cloud.maas.bluegreen.kafka.util.TestUtils.uniqueTopicName;
 import static org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG;
@@ -62,6 +63,8 @@ class BGKafkaConsumerTest {
 
     private RecordHeaders v1headers = new RecordHeaders(List.of(new RecordHeader(X_VERSION_SERIALIZATION_NAME, "v1".getBytes())));
     private RecordHeaders v2headers = new RecordHeaders(List.of(new RecordHeader(X_VERSION_SERIALIZATION_NAME, "v2".getBytes())));
+    private RecordHeaders nameActiveHeaders = new RecordHeaders(List.of(new RecordHeader(X_VERSION_NAME_SERIALIZATION_NAME, "active".getBytes())));
+    private RecordHeaders nameCandidateHeaders = new RecordHeaders(List.of(new RecordHeader(X_VERSION_NAME_SERIALIZATION_NAME, "candidate".getBytes())));
     private Duration POLL_TIMEOUT = Duration.ofSeconds(10);
 
     @Container
@@ -289,6 +292,67 @@ class BGKafkaConsumerTest {
             assertEquals("5", records.getBatch().get(2).getConsumerRecord().key());
             assertEquals("6", records.getBatch().get(3).getConsumerRecord().key());
         }
+    }
+
+    // end-to-end check of X-Version-Name header routing with fallback to X-Version when the header is absent
+    @Test
+    void testVersionNameHeaderFiltering(TestInfo testInfo) throws Exception {
+        var topicName = uniqueTopicName(testInfo, "vname");
+        admin.createTopics(List.of(new NewTopic(topicName, 1, (short) 1))).all().get();
+
+        // mix of records:
+        //  key 1: X-Version-Name=active                 -> new name filter
+        //  key 2: X-Version-Name=candidate              -> new name filter
+        //  key 3: no name, X-Version=v2                 -> fallback to legacy version filter
+        //  key 4: no headers                            -> fallback to legacy version filter (empty version)
+        try (KafkaProducer<String, String> producer = new KafkaProducer<>(producerProps)) {
+            producer.send(new ProducerRecord<>(topicName, 0, "1", "<order1>", nameActiveHeaders));
+            producer.send(new ProducerRecord<>(topicName, 0, "2", "<order2>", nameCandidateHeaders));
+            producer.send(new ProducerRecord<>(topicName, 0, "3", "<order3>", v2headers));
+            producer.send(new ProducerRecord<>(topicName, 0, "4", "<order4>"));
+        }
+
+        var connectionProperties = Map.<String, Object>of(
+                "bootstrap.servers", bootstrapServers,
+                "group.id", uniqueGroupId(testInfo, "vname-proc"),
+                "enable.auto.commit", "false");
+
+        var v1 = new Version("v1");
+        var v2 = new Version("v2");
+        OffsetDateTime updateTime = OffsetDateTime.parse("2018-12-03T19:34:50Z");
+
+        var statePublisherActive = new InMemoryBlueGreenStatePublisher(new BlueGreenState(
+                new NamespaceVersion(NAMESPACE_1, State.ACTIVE, v1),
+                new NamespaceVersion(NAMESPACE_2, State.CANDIDATE, v2),
+                updateTime));
+        var statePublisherCandidate = new InMemoryBlueGreenStatePublisher(new BlueGreenState(
+                new NamespaceVersion(NAMESPACE_2, State.CANDIDATE, v2),
+                new NamespaceVersion(NAMESPACE_1, State.ACTIVE, v1),
+                updateTime));
+
+        try (BGKafkaConsumerImpl<String, String> consumerActive = new BGKafkaConsumerImpl<>(BGKafkaConsumerConfig.builder(connectionProperties,
+                        topicName, M2M_TOKEN_SUPPLIER, statePublisherActive)
+                .deserializers(new StringDeserializer(), new StringDeserializer())
+                .consistencyMode(ConsumerConsistencyMode.GUARANTEE_CONSUMPTION).build());
+             BGKafkaConsumerImpl<String, String> consumerCandidate = new BGKafkaConsumerImpl<>(BGKafkaConsumerConfig.builder(connectionProperties,
+                             topicName, M2M_TOKEN_SUPPLIER, statePublisherCandidate)
+                     .deserializers(new StringDeserializer(), new StringDeserializer())
+                     .consistencyMode(ConsumerConsistencyMode.GUARANTEE_CONSUMPTION).build())) {
+
+            // ACTIVE: name filter '!candidate', fallback '!v2'
+            //  1 name=active -> accept, 2 name=candidate -> reject, 3 v2 -> reject, 4 empty -> accept
+            var activeRecords = consumerActive.poll(POLL_TIMEOUT).get();
+            assertEquals(List.of("1", "4"), keys(activeRecords));
+
+            // CANDIDATE: name filter 'candidate', fallback '==v2'
+            //  1 name=active -> reject, 2 name=candidate -> accept, 3 v2 -> accept, 4 empty -> reject
+            var candidateRecords = consumerCandidate.poll(POLL_TIMEOUT).get();
+            assertEquals(List.of("2", "3"), keys(candidateRecords));
+        }
+    }
+
+    private static List<String> keys(RecordsBatch<String, String> batch) {
+        return batch.getBatch().stream().map(r -> r.getConsumerRecord().key()).toList();
     }
 
     @Test
