@@ -352,7 +352,7 @@ class BGKafkaConsumerTest {
     }
 
     private static List<String> keys(RecordsBatch<String, String> batch) {
-        return batch.getBatch().stream().map(r -> r.getConsumerRecord().key()).collect(Collectors.toList());
+        return batch.getBatch().stream().map(r -> r.getConsumerRecord().key()).toList();
     }
 
     @Test

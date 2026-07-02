@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class VersionFilterConstructorTest {
 
     @Test
-    public void testStateNoSibling() {
+    void testStateNoSibling() {
         Arrays.stream(State.values()).forEach(blueGreenStatus -> {
             BlueGreenState state = new BlueGreenState(new NamespaceVersion("namespace-1", blueGreenStatus, new Version(1)), OffsetDateTime.now());
 
@@ -29,7 +29,7 @@ class VersionFilterConstructorTest {
     }
 
     @Test
-    public void testStateActiveIdle() {
+    void testStateActiveIdle() {
         BlueGreenState state = new BlueGreenState(
                 new NamespaceVersion("namespace-1", State.ACTIVE, new Version(1)),
                 new NamespaceVersion("namespace-2", State.IDLE, null),
@@ -42,7 +42,7 @@ class VersionFilterConstructorTest {
     }
 
     @Test
-    public void testStateActiveCandidate() {
+    void testStateActiveCandidate() {
         BlueGreenState state = new BlueGreenState(
                 new NamespaceVersion("namespace-1", State.ACTIVE, new Version(3)),
                 new NamespaceVersion("namespace-2", State.CANDIDATE, new Version(4)),
@@ -59,7 +59,7 @@ class VersionFilterConstructorTest {
     }
 
     @Test
-    public void testStateActiveLegacy() {
+    void testStateActiveLegacy() {
         BlueGreenState state = new BlueGreenState(
                 new NamespaceVersion("namespace-1", State.ACTIVE, new Version(4)),
                 new NamespaceVersion("namespace-2", State.LEGACY, new Version(3)),
@@ -76,7 +76,7 @@ class VersionFilterConstructorTest {
     }
 
     @Test
-    public void testStateCandidateActive() {
+    void testStateCandidateActive() {
         BlueGreenState state = new BlueGreenState(
                 new NamespaceVersion("namespace-1", State.CANDIDATE, new Version(4)),
                 new NamespaceVersion("namespace-2", State.ACTIVE, new Version(3)),
@@ -93,7 +93,7 @@ class VersionFilterConstructorTest {
     }
 
     @Test
-    public void testStateLegacyActive() {
+    void testStateLegacyActive() {
         BlueGreenState state = new BlueGreenState(
                 new NamespaceVersion("namespace-1", State.LEGACY, new Version(3)),
                 new NamespaceVersion("namespace-2", State.ACTIVE, new Version(4)),
@@ -110,7 +110,7 @@ class VersionFilterConstructorTest {
     }
 
     @Test
-    public void testVersionNameNoSibling() {
+    void testVersionNameNoSibling() {
         Arrays.stream(State.values()).forEach(blueGreenStatus -> {
             BlueGreenState state = new BlueGreenState(new NamespaceVersion("namespace-1", blueGreenStatus, new Version(1)), OffsetDateTime.now());
 
@@ -122,7 +122,7 @@ class VersionFilterConstructorTest {
     }
 
     @Test
-    public void testVersionNameActiveIdle() {
+    void testVersionNameActiveIdle() {
         BlueGreenState state = new BlueGreenState(
                 new NamespaceVersion("namespace-1", State.ACTIVE, new Version(1)),
                 new NamespaceVersion("namespace-2", State.IDLE, null),
@@ -135,7 +135,7 @@ class VersionFilterConstructorTest {
     }
 
     @Test
-    public void testVersionNameActiveCandidate() {
+    void testVersionNameActiveCandidate() {
         BlueGreenState state = new BlueGreenState(
                 new NamespaceVersion("namespace-1", State.ACTIVE, new Version(3)),
                 new NamespaceVersion("namespace-2", State.CANDIDATE, new Version(4)),
@@ -151,7 +151,7 @@ class VersionFilterConstructorTest {
     }
 
     @Test
-    public void testVersionNameActiveLegacy() {
+    void testVersionNameActiveLegacy() {
         BlueGreenState state = new BlueGreenState(
                 new NamespaceVersion("namespace-1", State.ACTIVE, new Version(4)),
                 new NamespaceVersion("namespace-2", State.LEGACY, new Version(3)),
@@ -166,7 +166,7 @@ class VersionFilterConstructorTest {
     }
 
     @Test
-    public void testVersionNameCandidateActive() {
+    void testVersionNameCandidateActive() {
         BlueGreenState state = new BlueGreenState(
                 new NamespaceVersion("namespace-1", State.CANDIDATE, new Version(4)),
                 new NamespaceVersion("namespace-2", State.ACTIVE, new Version(3)),
@@ -183,7 +183,7 @@ class VersionFilterConstructorTest {
     }
 
     @Test
-    public void testVersionNameLegacyActive() {
+    void testVersionNameLegacyActive() {
         BlueGreenState state = new BlueGreenState(
                 new NamespaceVersion("namespace-1", State.LEGACY, new Version(3)),
                 new NamespaceVersion("namespace-2", State.ACTIVE, new Version(4)),

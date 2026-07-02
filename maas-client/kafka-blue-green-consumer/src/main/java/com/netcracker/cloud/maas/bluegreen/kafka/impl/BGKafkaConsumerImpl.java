@@ -231,16 +231,16 @@ public class BGKafkaConsumerImpl<K, V> implements BGKafkaConsumer<K, V> {
         return bgState;
     }
 
-    public static String extractVersionHeader(ConsumerRecord record) {
-        return extractHeader(record, X_VERSION_SERIALIZATION_NAME);
+    public static String extractVersionHeader(ConsumerRecord consumerRecord) {
+        return extractHeader(consumerRecord, X_VERSION_SERIALIZATION_NAME);
     }
 
-    public static String extractVersionNameHeader(ConsumerRecord record) {
-        return extractHeader(record, X_VERSION_NAME_SERIALIZATION_NAME);
+    public static String extractVersionNameHeader(ConsumerRecord consumerRecord) {
+        return extractHeader(consumerRecord, X_VERSION_NAME_SERIALIZATION_NAME);
     }
 
-    private static String extractHeader(ConsumerRecord record, String key) {
-        return Arrays.stream(record.headers().toArray())
+    private static String extractHeader(ConsumerRecord consumerRecord, String key) {
+        return Arrays.stream(consumerRecord.headers().toArray())
                 .filter(h -> h.key().equalsIgnoreCase(key))
                 .findFirst()
                 .map(h -> new String(h.value(), StandardCharsets.UTF_8))
