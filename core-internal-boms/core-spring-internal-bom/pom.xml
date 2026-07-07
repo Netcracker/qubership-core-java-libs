@@ -17,8 +17,8 @@
     </licenses>
 
     <properties>
-        <spring-boot.version>4.0.6</spring-boot.version>
-        <spring-cloud.version>2025.1.1</spring-cloud.version>
+        <spring-boot.version>4.0.7</spring-boot.version>
+        <spring-cloud.version>2025.1.2</spring-cloud.version>
         <springdoc.version>3.0.3</springdoc.version>
         <qubership-java-internal-bom.version>1.0.0-SNAPSHOT</qubership-java-internal-bom.version>
     </properties>

@@ -36,7 +36,7 @@
         <jandex.version>3.5.3</jandex.version>
 
         <!-- Jackson -->
-        <jackson-bom.version>2.21.2</jackson-bom.version>
+        <jackson-bom.version>2.21.4</jackson-bom.version>
 
         <!-- Annotations -->
         <jetbrains-annotations.version>26.0.2</jetbrains-annotations.version>
