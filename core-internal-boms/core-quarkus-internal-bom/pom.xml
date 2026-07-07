@@ -17,7 +17,7 @@
     </licenses>
 
     <properties>
-        <quarkus.version>3.33.1</quarkus.version>
+        <quarkus.version>3.33.2.1</quarkus.version>
         <qubership-java-internal-bom.version>1.0.0-SNAPSHOT</qubership-java-internal-bom.version>
     </properties>
 
