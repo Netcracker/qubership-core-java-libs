@@ -5,9 +5,9 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 public interface ContextPropagationService {
 
-    void propagateDataToContext(ConsumerRecord record);
+    void propagateDataToContext(ConsumerRecord consumerRecord);
 
-    void populateDataToHeaders(ProducerRecord record);
+    void populateDataToHeaders(ProducerRecord producerRecord);
 
     void clear();
 
