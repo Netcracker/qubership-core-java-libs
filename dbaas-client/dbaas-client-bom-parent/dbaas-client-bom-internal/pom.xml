@@ -21,13 +21,13 @@
         <jedis.client.version>7.0.0</jedis.client.version>
         <flyway.version>11.20.3</flyway.version>
         <shedlock.version>7.7.0</shedlock.version>
-        <qubership-spring-internal-bom.version>1.0.0-SNAPSHOT</qubership-spring-internal-bom.version>
+        <qubership-spring-internal-bom.version>1.0.0</qubership-spring-internal-bom.version>
 
         <!--Qubership's libs-->
-        <cloud-core.core-rest-libraries.version>7.3.2</cloud-core.core-rest-libraries.version>
-        <cloud-core.core-restclient.version>7.1.4</cloud-core.core-restclient.version>
-        <cloud-core.core-context-propagation.version>8.2.3</cloud-core.core-context-propagation.version>
-        <cloud-core.core-utils.version>3.1.4</cloud-core.core-utils.version>
+        <cloud-core.core-rest-libraries.version>7.3.3</cloud-core.core-rest-libraries.version>
+        <cloud-core.core-restclient.version>7.1.5</cloud-core.core-restclient.version>
+        <cloud-core.core-context-propagation.version>8.2.4</cloud-core.core-context-propagation.version>
+        <cloud-core.core-utils.version>3.1.5</cloud-core.core-utils.version>
     </properties>
 
     <dependencyManagement>
