@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud.plugins</groupId>
     <artifactId>core-maven-plugins</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.4</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -27,6 +27,6 @@
         <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
         <url>https://github.com/Netcracker/qubership-core-java-libs</url>
-        <tag>HEAD</tag>
+        <tag>core-maven-plugins-1.0.4</tag>
     </scm>
 </project>
