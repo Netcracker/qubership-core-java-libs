@@ -32,10 +32,10 @@
         <jandex.version>3.5.3</jandex.version>
         <curator.version>5.1.0</curator.version>
 
-        <cloud-core.maas-declarative-client-commons.version>6.1.4</cloud-core.maas-declarative-client-commons.version>
-        <cloud-core.maas-declarative-client-quarkus.version>11.0.4</cloud-core.maas-declarative-client-quarkus.version>
-        <cloud-core.core-blue-green-state-monitor-quarkus.version>4.0.4</cloud-core.core-blue-green-state-monitor-quarkus.version>
-        <cloud-core.core-utils.version>3.1.4</cloud-core.core-utils.version>
+        <cloud-core.maas-declarative-client-commons.version>6.1.5</cloud-core.maas-declarative-client-commons.version>
+        <cloud-core.maas-declarative-client-quarkus.version>11.0.5</cloud-core.maas-declarative-client-quarkus.version>
+        <cloud-core.core-blue-green-state-monitor-quarkus.version>4.0.5</cloud-core.core-blue-green-state-monitor-quarkus.version>
+        <cloud-core.core-utils.version>3.1.5</cloud-core.core-utils.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../maas-kafka-quarkus-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
@@ -52,7 +52,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-quarkus-internal-bom</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>1.0.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
