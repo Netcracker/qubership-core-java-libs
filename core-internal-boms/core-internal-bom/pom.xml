@@ -28,7 +28,7 @@
     <properties>
         <!-- Logging -->
         <slf4j.version>2.0.18</slf4j.version>
-        <logback.version>1.5.32</logback.version>
+        <logback.version>1.5.34</logback.version>
         <log4j.version>2.26.0</log4j.version>
 
         <!-- Build / annotation processing -->
@@ -66,7 +66,7 @@
         <guava.version>33.5.0-jre</guava.version>
         <rxjava.version>2.2.21</rxjava.version>
         <hikaricp.version>7.0.2</hikaricp.version>
-        <undertow.version>2.3.24.Final</undertow.version>
+        <undertow.version>2.3.25.Final</undertow.version>
         <reflections.version>0.10.2</reflections.version>
         <awaitility.version>4.3.0</awaitility.version>
 

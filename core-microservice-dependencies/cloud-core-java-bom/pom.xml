@@ -19,7 +19,7 @@
     </licenses>
 
     <properties>
-        <io.micrometer.verion>1.16.5</io.micrometer.verion>
+        <io.micrometer.verion>1.16.6</io.micrometer.verion>
         <java.version>21</java.version>
         <cloud-core.core-mongo-evolution.version>8.1.2</cloud-core.core-mongo-evolution.version>
         <cloud-core.core-rest-libraries.version>7.3.2</cloud-core.core-rest-libraries.version>
