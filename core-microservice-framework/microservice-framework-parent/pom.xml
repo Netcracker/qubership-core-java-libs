@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.netcracker.cloud</groupId>
-    <version>8.1.5-SNAPSHOT</version>
+    <version>8.1.6-SNAPSHOT</version>
     <artifactId>microservice-framework-parent</artifactId>
     <packaging>pom</packaging>
 
@@ -20,7 +20,7 @@
         <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
         <maven.pmd.plugin.version>3.7</maven.pmd.plugin.version>
         <jacoco.plugin.version>0.8.15</jacoco.plugin.version>
-        <cloud-core.core-microservice-dependencies.version>12.1.4</cloud-core.core-microservice-dependencies.version>
+        <cloud-core.core-microservice-dependencies.version>12.1.5</cloud-core.core-microservice-dependencies.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../microservice-framework-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -31,7 +31,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-spring-internal-bom</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>1.0.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>core-quarkus-external-bom</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>External BOM for Quarkus qubership-core-java-libs modules. Includes qubership-java-bom.</description>
@@ -26,13 +26,13 @@
 
     <properties>
         <!-- Imported sub-BOMs -->
-        <cloud-core.java-bom.version>1.0.4-SNAPSHOT</cloud-core.java-bom.version>
-        <cloud-core.maas-client-quarkus.version>11.0.4</cloud-core.maas-client-quarkus.version>
-        <cloud-core.maas-declarative-client-quarkus.version>9.0.4</cloud-core.maas-declarative-client-quarkus.version>
-        <cloud-core.context-propagation-quarkus.version>9.1.3</cloud-core.context-propagation-quarkus.version>
+        <cloud-core.java-bom.version>1.0.5-SNAPSHOT</cloud-core.java-bom.version>
+        <cloud-core.maas-client-quarkus.version>11.0.5</cloud-core.maas-client-quarkus.version>
+        <cloud-core.maas-declarative-client-quarkus.version>9.0.5</cloud-core.maas-declarative-client-quarkus.version>
+        <cloud-core.context-propagation-quarkus.version>9.1.4</cloud-core.context-propagation-quarkus.version>
 
-        <cloud-core.quarkus-extensions.version>10.1.2</cloud-core.quarkus-extensions.version>
-        <cloud-core.blue-green-monitor-quarkus.version>4.0.4</cloud-core.blue-green-monitor-quarkus.version>
+        <cloud-core.quarkus-extensions.version>10.1.3</cloud-core.quarkus-extensions.version>
+        <cloud-core.blue-green-monitor-quarkus.version>4.0.5</cloud-core.blue-green-monitor-quarkus.version>
     </properties>
 
     <dependencyManagement>
