@@ -82,7 +82,7 @@
         <junit-pioneer.version>2.3.0</junit-pioneer.version>
         <h2.version>2.4.240</h2.version>
         <logcaptor.version>2.12.6</logcaptor.version>
-        <mockserver.version>5.15.0</mockserver.version>
+        <mockserver.version>7.4.0</mockserver.version>
         <mongo-java-server.version>1.47.0</mongo-java-server.version>
         <hibernate-validator.version>8.0.3.Final</hibernate-validator.version>
         <docker-java.version>3.7.1</docker-java.version>
