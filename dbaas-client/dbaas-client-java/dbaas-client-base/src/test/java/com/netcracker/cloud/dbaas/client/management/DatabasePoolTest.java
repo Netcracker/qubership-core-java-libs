@@ -280,12 +280,13 @@ public class DatabasePoolTest {
             // ignore expected exception
         }
         try {
-            databasePool.getOrCreateDatabase(TestDBType.INSTANCE, classifier); // now should get db from cache
+            databasePool.getOrCreateDatabase(TestDBType.INSTANCE, classifier); // now should get db from dbaasClient
         } catch (RuntimeException e) {
             // ignore expected exception
         }
 
-        Mockito.verify(dbaasClient, times(1)).getOrCreateDatabase(
+        // L2 is not populated on failure, so dbaasClient is called again on retry
+        Mockito.verify(dbaasClient, times(2)).getOrCreateDatabase(
                 eq(TestDBType.INSTANCE),
                 eq(TEST_NAMESPACE),
                 anyMap(),

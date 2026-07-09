@@ -161,7 +161,10 @@ public class DatabasePool {
                                                                                                                               P settings) {
         AbstractDatabase<?> abstractDatabase;
         try {
-            abstractDatabase = databasesCacheL2.computeIfAbsent(key, dbKey -> createDatabase(key, databaseConfig));
+            abstractDatabase = databasesCacheL2.get(key);
+            if (abstractDatabase == null) {
+                abstractDatabase = createDatabase(key, databaseConfig);
+            }
         } catch (Exception e) {
             log.error("Error while retrieving database from cache by key {}: {}", key, e);
             throw new RuntimeException("Failed to get or create database", e);
@@ -178,6 +181,8 @@ public class DatabasePool {
             database.setDoClose(true);
             applyPostConnectProcessors(database);
             database.setDoClose(false);
+
+            databasesCacheL2.put(key, abstractDatabase);
 
             return database;
         } catch (Exception e) {
