@@ -61,6 +61,9 @@
         <!-- HTTP clients (Apache) -->
         <apache.httpclient5.version>5.5.2</apache.httpclient5.version>
 
+        <!-- Database migration -->
+        <flyway.version>12.10.0</flyway.version>
+
         <!-- Other compile/runtime -->
         <guava.version>33.5.0-jre</guava.version>
         <rxjava.version>2.2.21</rxjava.version>
@@ -261,6 +264,20 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-collections4</artifactId>
                 <version>${commons-collections4.version}</version>
+            </dependency>
+
+            <!-- ===== Database migration ===== -->
+            <!-- Pinned here to override the versions brought in by the Spring Boot and Quarkus BOMs.
+            This import is declared before those BOMs, so this version wins for both stacks. -->
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>${flyway.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-database-postgresql</artifactId>
+                <version>${flyway.version}</version>
             </dependency>
 
             <!-- ===== Other compile/runtime ===== -->
