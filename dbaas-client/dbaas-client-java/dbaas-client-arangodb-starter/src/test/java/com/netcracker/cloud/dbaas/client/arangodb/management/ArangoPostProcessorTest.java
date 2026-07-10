@@ -3,6 +3,7 @@ package com.netcracker.cloud.dbaas.client.arangodb.management;
 import com.arangodb.ArangoDB;
 import com.arangodb.internal.config.ArangoConfig;
 import com.arangodb.serde.ArangoSerde;
+import com.netcracker.cloud.dbaas.client.arangodb.configuration.DbaasArangoConfigPropertiesImpl;
 import com.netcracker.cloud.dbaas.client.arangodb.configuration.DbaasArangoDBClientProperties;
 import com.netcracker.cloud.dbaas.client.arangodb.configuration.DbaasArangoDBConfigurationProperties;
 import com.netcracker.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
@@ -61,6 +62,27 @@ public class ArangoPostProcessorTest {
 
         assertEquals(false, builderConfig.getAcquireHostList());
         Assertions.assertEquals(54321, builderConfig.getAcquireHostListInterval());
+    }
+
+    @Test
+    public void testLoadPropertiesFromConfigCompressionProperties() throws NoSuchFieldException, IllegalAccessException {
+        Map<String, String> arangoConfig = new HashMap<>();
+        arangoConfig.put("compression", "GZIP");
+        arangoConfig.put("compressionLevel", "1");
+        arangoConfig.put("compressionThreshold", "2");
+
+        DbaasArangoDBConfigurationProperties config = new DbaasArangoDBConfigurationProperties();
+        config.setArangodb(arangoConfig);
+
+        DbaasArangoDBClientProperties dbaasArangoDBClientProperties = new DbaasArangoDBClientProperties(config, null);
+        ArangoPostProcessor processor = new ArangoPostProcessor(dbaasArangoDBClientProperties);
+
+        ArangoDB.Builder builderWithLoadedProperties = processor.loadPropertiesFromConfig(new ArangoDB.Builder());
+        ArangoConfig builderConfig = (ArangoConfig) getFieldValue(builderWithLoadedProperties, "config");
+
+        assertEquals("GZIP", builderConfig.getCompression().name());
+        assertEquals(1, builderConfig.getCompressionLevel());
+        assertEquals(2, builderConfig.getCompressionThreshold());
     }
 
     @Test
