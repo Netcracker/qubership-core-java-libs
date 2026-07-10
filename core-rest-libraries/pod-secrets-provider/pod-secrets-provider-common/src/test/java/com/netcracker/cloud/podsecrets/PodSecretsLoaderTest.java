@@ -6,7 +6,6 @@ import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,6 +32,7 @@ class PodSecretsLoaderTest {
     }
 
     @Test
+    @SuppressWarnings("java:S2925")
     void storedValueReturnedWhenFileUnreadable() throws Exception {
         Path fileA = dir.resolve("db_password");
         Path fileB = dir.resolve("api_token");
@@ -53,10 +53,8 @@ class PodSecretsLoaderTest {
 
         Thread.sleep(2); // wait for TTL to expire
 
-        Map<String, String> result = loader.getSecrets();
-        // stored value preserved for the unreadable key
-        assertThat(result).containsEntry("db.password", "secret-pass");
-        // other key updated normally
-        assertThat(result).containsEntry("api.token", "secret-token");
+        assertThat(loader.getSecrets())
+                .containsEntry("db.password", "secret-pass")
+                .containsEntry("api.token", "secret-token");
     }
 }

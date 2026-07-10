@@ -40,12 +40,11 @@ public class PodSecretsLoader {
                     .flatMap(this::variator)
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a));
         } catch (IOException e) {
-            log.error("Cannot list pod-secrets directory {}: {}", config.getBaseDir(), e.getMessage());
             throw new UncheckedIOException(e);
         }
 
         Map<String, String> merged = new HashMap<>(result);
-        secrets.getCurrent().forEach((key, value) -> merged.putIfAbsent(key, value));
+        secrets.getCurrent().forEach(merged::putIfAbsent);
 
         log.debug("Pod-secrets key names: {} (dir={})", result.keySet(), config.getBaseDir());
         return Map.copyOf(merged);
@@ -68,7 +67,7 @@ public class PodSecretsLoader {
             log.debug("Load secret data from: {}", path);
             return Optional.of(Files.readString(path));
         } catch (IOException e) {
-            log.warn("Cannot read pod-secret file {}: {}", path.getFileName(), e.getMessage());
+            log.warn("Cannot read pod-secret file {}", path.getFileName(), e);
             return Optional.empty();
         }
     }
