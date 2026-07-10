@@ -3,7 +3,6 @@ package com.netcracker.cloud.dbaas.client.arangodb.management;
 import com.arangodb.ArangoDB;
 import com.arangodb.internal.config.ArangoConfig;
 import com.arangodb.serde.ArangoSerde;
-import com.netcracker.cloud.dbaas.client.arangodb.configuration.DbaasArangoConfigPropertiesImpl;
 import com.netcracker.cloud.dbaas.client.arangodb.configuration.DbaasArangoDBClientProperties;
 import com.netcracker.cloud.dbaas.client.arangodb.configuration.DbaasArangoDBConfigurationProperties;
 import com.netcracker.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
