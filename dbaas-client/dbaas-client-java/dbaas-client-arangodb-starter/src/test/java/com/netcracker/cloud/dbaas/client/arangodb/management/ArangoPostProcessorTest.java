@@ -64,6 +64,27 @@ public class ArangoPostProcessorTest {
     }
 
     @Test
+    public void testLoadPropertiesFromConfigCompressionProperties() throws NoSuchFieldException, IllegalAccessException {
+        Map<String, String> arangoConfig = new HashMap<>();
+        arangoConfig.put("compression", "GZIP");
+        arangoConfig.put("compressionLevel", "1");
+        arangoConfig.put("compressionThreshold", "2");
+
+        DbaasArangoDBConfigurationProperties config = new DbaasArangoDBConfigurationProperties();
+        config.setArangodb(arangoConfig);
+
+        DbaasArangoDBClientProperties dbaasArangoDBClientProperties = new DbaasArangoDBClientProperties(config, null);
+        ArangoPostProcessor processor = new ArangoPostProcessor(dbaasArangoDBClientProperties);
+
+        ArangoDB.Builder builderWithLoadedProperties = processor.loadPropertiesFromConfig(new ArangoDB.Builder());
+        ArangoConfig builderConfig = (ArangoConfig) getFieldValue(builderWithLoadedProperties, "config");
+
+        assertEquals("GZIP", builderConfig.getCompression().name());
+        assertEquals(1, builderConfig.getCompressionLevel());
+        assertEquals(2, builderConfig.getCompressionThreshold());
+    }
+
+    @Test
     public void checkCanGetCredentialsFromDbaas() {
         String username = "user";
         String password = "passwd";
