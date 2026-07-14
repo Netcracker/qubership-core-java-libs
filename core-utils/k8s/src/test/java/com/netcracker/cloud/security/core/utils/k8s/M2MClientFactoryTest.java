@@ -1,14 +1,27 @@
 package com.netcracker.cloud.security.core.utils.k8s;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
+import com.netcracker.cloud.context.propagation.core.Strategy;
+import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
+import com.netcracker.cloud.context.propagation.core.contexts.SerializableContext;
+import com.netcracker.cloud.context.propagation.core.supports.providers.AbstractContextProvider;
+import com.netcracker.cloud.context.propagation.core.supports.strategies.ThreadLocalDefaultStrategy;
 import com.netcracker.cloud.security.core.utils.k8s.impl.M2MInterceptor;
+import lombok.SneakyThrows;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class M2MClientFactoryTest {
@@ -80,6 +93,33 @@ class M2MClientFactoryTest {
 
             assertEquals(HttpUrl.get(agentUrl), getFieldValue(interceptor));
         });
+    }
+
+    @Test
+    @SneakyThrows
+    void testContextPropagation() {
+        ThreadLocalDefaultStrategy<SerializableContext> strategy = new ThreadLocalDefaultStrategy<>();
+        ContextManager.register(List.of(new AbstractContextProvider<SerializableContext>() {
+            @Override public Strategy<SerializableContext> strategy() { return strategy; }
+            @Override public String contextName() { return "test-ctx"; }
+            @Override public SerializableContext provide(IncomingContextData d) { return null; }
+        }));
+        strategy.set(out -> out.set("X-Test", "propagated"));
+
+        WireMockServer server = new WireMockServer(0);
+        server.start();
+        WireMock.configureFor("localhost", server.port());
+        server.stubFor(get(anyUrl()).willReturn(aResponse().withStatus(200)));
+        try {
+            OkHttpClient client = M2MClientFactory.getM2mOkHttpClient(() -> "token");
+            try (Response response = client.newCall(new Request.Builder().url(server.baseUrl() + "/test").get().build()).execute()) {
+                assertEquals(200, response.code());
+            }
+            server.verify(1, getRequestedFor(anyUrl()).withHeader("X-Test", equalTo("propagated")));
+        } finally {
+            strategy.clear();
+            server.stop();
+        }
     }
 
     private M2MInterceptor findM2mInterceptor(OkHttpClient client) {
