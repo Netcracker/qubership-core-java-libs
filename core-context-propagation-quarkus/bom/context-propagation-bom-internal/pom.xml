@@ -16,8 +16,6 @@
 
     <properties>
         <cloud-core.core-context-propagation.version>8.2.4</cloud-core.core-context-propagation.version>
-
-        <wagon-provider-api.version>3.5.3</wagon-provider-api.version>
     </properties>
 
     <dependencyManagement>
@@ -40,13 +38,6 @@
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>framework-contexts</artifactId>
                 <version>${cloud-core.core-context-propagation.version}</version>
-            </dependency>
-
-            <!-- Miscellaneous -->
-            <dependency>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-provider-api</artifactId>
-                <version>${wagon-provider-api.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

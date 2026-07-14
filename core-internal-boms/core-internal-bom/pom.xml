@@ -58,9 +58,6 @@
         <commons-io.version>2.21.0</commons-io.version>
         <commons-collections4.version>4.5.0</commons-collections4.version>
 
-        <!-- HTTP clients (Apache) -->
-        <apache.httpclient5.version>5.5.2</apache.httpclient5.version>
-
         <!-- Other compile/runtime -->
         <guava.version>33.5.0-jre</guava.version>
         <rxjava.version>2.2.21</rxjava.version>
@@ -203,13 +200,6 @@
                 <groupId>com.squareup.okio</groupId>
                 <artifactId>okio</artifactId>
                 <version>${okio.version}</version>
-            </dependency>
-
-            <!-- ===== HTTP clients (Apache) ===== -->
-            <dependency>
-                <groupId>org.apache.httpcomponents.client5</groupId>
-                <artifactId>httpclient5</artifactId>
-                <version>${apache.httpclient5.version}</version>
             </dependency>
 
             <!-- ===== JSON ===== -->
