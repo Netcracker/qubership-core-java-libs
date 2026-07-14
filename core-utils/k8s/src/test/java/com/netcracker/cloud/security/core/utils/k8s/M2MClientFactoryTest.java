@@ -3,11 +3,8 @@ package com.netcracker.cloud.security.core.utils.k8s;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.netcracker.cloud.context.propagation.core.ContextManager;
-import com.netcracker.cloud.context.propagation.core.Strategy;
-import com.netcracker.cloud.context.propagation.core.contextdata.IncomingContextData;
-import com.netcracker.cloud.context.propagation.core.contexts.SerializableContext;
-import com.netcracker.cloud.context.propagation.core.supports.providers.AbstractContextProvider;
-import com.netcracker.cloud.context.propagation.core.supports.strategies.ThreadLocalDefaultStrategy;
+import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
+import com.netcracker.cloud.framework.contexts.tenant.context.TenantContext;
 import com.netcracker.cloud.security.core.utils.k8s.impl.M2MInterceptor;
 import lombok.SneakyThrows;
 import okhttp3.HttpUrl;
@@ -17,7 +14,6 @@ import okhttp3.Response;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -97,15 +93,8 @@ class M2MClientFactoryTest {
 
     @Test
     @SneakyThrows
-    void testContextPropagation() {
-        ThreadLocalDefaultStrategy<SerializableContext> strategy = new ThreadLocalDefaultStrategy<>();
-        ContextManager.register(List.of(new AbstractContextProvider<SerializableContext>() {
-            @Override public Strategy<SerializableContext> strategy() { return strategy; }
-            @Override public String contextName() { return "test-ctx"; }
-            @Override public SerializableContext provide(IncomingContextData d) { return null; }
-        }));
-        strategy.set(out -> out.set("X-Test", "propagated"));
-
+    void testTenantContextPropagation() {
+        TenantContext.set("test-tenant");
         WireMockServer server = new WireMockServer(0);
         server.start();
         WireMock.configureFor("localhost", server.port());
@@ -115,9 +104,9 @@ class M2MClientFactoryTest {
             try (Response response = client.newCall(new Request.Builder().url(server.baseUrl() + "/test").get().build()).execute()) {
                 assertEquals(200, response.code());
             }
-            server.verify(1, getRequestedFor(anyUrl()).withHeader("X-Test", equalTo("propagated")));
+            server.verify(1, getRequestedFor(anyUrl()).withHeader(TenantContextObject.TENANT_HEADER, equalTo("test-tenant")));
         } finally {
-            strategy.clear();
+            ContextManager.clearAll();
             server.stop();
         }
     }
