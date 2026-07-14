@@ -54,7 +54,7 @@
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
             <artifactId>context-propagation-core</artifactId>
-            <version>8.2.4</version>
+            <version>8.2.5-SNAPSHOT</version>
         </dependency>
 
         <!-- test dependencies -->
