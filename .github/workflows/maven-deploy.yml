@@ -32,7 +32,7 @@ jobs:
     name: Maven deploy
     uses: Netcracker/qubership-core-infra/.github/workflows/generic-maven-build.yaml@8668020927f2a84d8d096a359c719c3c3a403520 # v2.5.0
     with:
-      maven-command: 'deploy -T 1C -Dorg.slf4j.simpleLogger.showThreadId=true'
+      maven-command: 'deploy -pl core-utils/k8s -am -T 1C -Dorg.slf4j.simpleLogger.showThreadId=true'
       maven-username: 'NetcrackerCLPLCI'
       sonar-project-key: ${{ vars.SONAR_PROJECT_KEY }}
       ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.branch || github.ref }}
