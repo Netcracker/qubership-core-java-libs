@@ -16,8 +16,6 @@
 
     <properties>
         <cloud-core.core-context-propagation.version>8.2.7</cloud-core.core-context-propagation.version>
-
-        <wagon-provider-api.version>3.5.3</wagon-provider-api.version>
     </properties>
 
     <dependencyManagement>
@@ -25,7 +23,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-quarkus-internal-bom</artifactId>
-                <version>1.0.3</version>
+                <version>1.1.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -40,13 +38,6 @@
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>framework-contexts</artifactId>
                 <version>${cloud-core.core-context-propagation.version}</version>
-            </dependency>
-
-            <!-- Miscellaneous -->
-            <dependency>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-provider-api</artifactId>
-                <version>${wagon-provider-api.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
