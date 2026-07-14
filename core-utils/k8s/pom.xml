@@ -51,6 +51,11 @@
             <artifactId>okhttp</artifactId>
             <version>4.12.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.netcracker.cloud</groupId>
+            <artifactId>context-propagation-core</artifactId>
+            <version>8.2.4</version>
+        </dependency>
 
         <!-- test dependencies -->
         <dependency>

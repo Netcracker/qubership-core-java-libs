@@ -1,5 +1,6 @@
 package com.netcracker.cloud.security.core.utils.k8s;
 
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
 import com.netcracker.cloud.security.core.utils.k8s.impl.M2MInterceptor;
 import com.netcracker.cloud.security.core.utils.k8s.impl.UrlCache;
 import lombok.AccessLevel;
@@ -36,6 +37,11 @@ public final class M2MClientFactory {
 
     private static OkHttpClient getOkHttpClient(M2MInterceptor interceptor) {
         return new OkHttpClient.Builder()
+                .addInterceptor(chain -> {
+                    okhttp3.Request.Builder requestBuilder = chain.request().newBuilder();
+                    RequestContextPropagation.populateResponse((key, value) -> requestBuilder.header(key, String.valueOf(value)));
+                    return chain.proceed(requestBuilder.build());
+                })
                 .addInterceptor(interceptor)
                 .build();
     }
