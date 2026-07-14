@@ -14,19 +14,14 @@
     <properties>
         <!-- Qubership -->
         <cloud-core.core-context-propagation.version>8.2.4</cloud-core.core-context-propagation.version>
-        <!--cloud-core.core-context-propagation-quarkus.version>9.1.0-SNAPSHOT</cloud-core.core-context-propagation-quarkus.version-->
         <cloud-core.dbaas-client.version>9.1.5</cloud-core.dbaas-client.version>
         <cloud-core.core-utils.version>3.1.5</cloud-core.core-utils.version>
         <cloud-core.core-rest-libraries.version>7.3.3</cloud-core.core-rest-libraries.version>
         <cloud-core.maas-client.version>12.2.5</cloud-core.maas-client.version>
         <cloud-core.core-error-handling.version>4.2.3</cloud-core.core-error-handling.version>
 
-        <!-- Dev tools -->
-        <freemarker.version>2.3.34</freemarker.version>
-
         <!-- Align various dependencies that are not really part of the bom-->
         <jsoup.version>1.22.2</jsoup.version>
-        <wagon-provider-api.version>3.5.3</wagon-provider-api.version>
     </properties>
 
     <dependencyManagement>
@@ -142,23 +137,11 @@
                 <version>${cloud-core.core-error-handling.version}</version>
             </dependency>
 
-            <!-- Dev tools -->
-            <dependency>
-                <groupId>org.freemarker</groupId>
-                <artifactId>freemarker</artifactId>
-                <version>${freemarker.version}</version>
-            </dependency>
-
             <!-- Miscellaneous -->
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
                 <version>${jsoup.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-provider-api</artifactId>
-                <version>${wagon-provider-api.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
