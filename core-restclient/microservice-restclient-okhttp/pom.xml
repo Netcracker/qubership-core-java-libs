@@ -49,6 +49,17 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>com.netcracker.cloud</groupId>
+            <artifactId>context-propagation-core</artifactId>
+            <version>8.2.5-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.netcracker.cloud</groupId>
+            <artifactId>framework-contexts</artifactId>
+            <version>8.2.5-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
