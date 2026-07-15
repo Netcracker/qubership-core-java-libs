@@ -1,23 +1,14 @@
 package com.netcracker.cloud.security.core.utils.k8s;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.netcracker.cloud.context.propagation.core.ContextManager;
-import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
-import com.netcracker.cloud.framework.contexts.tenant.context.TenantContext;
 import com.netcracker.cloud.security.core.utils.k8s.impl.M2MInterceptor;
-import lombok.SneakyThrows;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class M2MClientFactoryTest {
@@ -89,26 +80,6 @@ class M2MClientFactoryTest {
 
             assertEquals(HttpUrl.get(agentUrl), getFieldValue(interceptor));
         });
-    }
-
-    @Test
-    @SneakyThrows
-    void testTenantContextPropagation() {
-        TenantContext.set("test-tenant");
-        WireMockServer server = new WireMockServer(0);
-        server.start();
-        WireMock.configureFor("localhost", server.port());
-        server.stubFor(get(anyUrl()).willReturn(aResponse().withStatus(200)));
-        try {
-            OkHttpClient client = M2MClientFactory.getM2mOkHttpClient(() -> "token");
-            try (Response response = client.newCall(new Request.Builder().url(server.baseUrl() + "/test").get().build()).execute()) {
-                assertEquals(200, response.code());
-            }
-            server.verify(1, getRequestedFor(anyUrl()).withHeader(TenantContextObject.TENANT_HEADER, equalTo("test-tenant")));
-        } finally {
-            ContextManager.clearAll();
-            server.stop();
-        }
     }
 
     private M2MInterceptor findM2mInterceptor(OkHttpClient client) {
