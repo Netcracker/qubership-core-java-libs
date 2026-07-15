@@ -1,14 +1,18 @@
 package com.netcracker.cloud.restclient.okhttp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.core.error.rest.exception.RemoteCodeException;
 import com.netcracker.cloud.core.error.rest.tmf.TmfErrorResponse;
+import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
+import com.netcracker.cloud.framework.contexts.tenant.context.TenantContext;
 import com.netcracker.cloud.restclient.BaseMicroserviceRestClientTest;
 import com.netcracker.cloud.restclient.HttpMethod;
 import com.netcracker.cloud.restclient.exception.MicroserviceRestClientResponseException;
 import okhttp3.OkHttpClient;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.RecordedRequest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +26,23 @@ class MicroserviceOkHttpRestClientTest extends BaseMicroserviceRestClientTest {
     @BeforeEach
     void setUp() {
         restClient = new MicroserviceOkHttpRestClient(new OkHttpClient());
+    }
+
+    @AfterEach
+    void tearDown() {
+        ContextManager.clearAll();
+    }
+
+    @Test
+    void testTenantContextPropagation() throws InterruptedException {
+        TenantContext.set("test-tenant");
+        mockBackEnd.enqueue(new MockResponse().setResponseCode(200));
+
+        restClient.doRequest(testUrl, HttpMethod.GET, null, null, Void.class);
+        RecordedRequest recordedRequest = mockBackEnd.takeRequest(60, TimeUnit.SECONDS);
+
+        assertNotNull(recordedRequest);
+        assertEquals("test-tenant", recordedRequest.getHeader(TenantContextObject.TENANT_HEADER));
     }
 
     @Test
