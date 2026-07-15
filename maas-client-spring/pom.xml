@@ -19,8 +19,8 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <cloud-core.maas-client.version>12.2.5</cloud-core.maas-client.version>
-        <cloud-core.core-utils.version>3.1.5</cloud-core.core-utils.version>
+        <cloud-core.maas-client.version>12.2.6</cloud-core.maas-client.version>
+        <cloud-core.core-utils.version>3.1.6</cloud-core.core-utils.version>
         <jacoco.plugin.version>0.8.15</jacoco.plugin.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../maas-client-spring-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
@@ -53,7 +53,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-spring-internal-bom</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
