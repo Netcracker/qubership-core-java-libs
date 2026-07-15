@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>core-quarkus-external-bom</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.5</version>
     <packaging>pom</packaging>
 
     <description>External BOM for Quarkus qubership-core-java-libs modules. Includes qubership-java-bom.</description>
@@ -21,12 +21,12 @@
         <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
         <url>https://github.com/Netcracker/qubership-core-java-libs</url>
-        <tag>HEAD</tag>
+        <tag>core-external-boms-1.0.5</tag>
     </scm>
 
     <properties>
         <!-- Imported sub-BOMs -->
-        <cloud-core.java-bom.version>1.0.5-SNAPSHOT</cloud-core.java-bom.version>
+        <cloud-core.java-bom.version>1.0.5</cloud-core.java-bom.version>
         <cloud-core.maas-client-quarkus.version>11.0.6</cloud-core.maas-client-quarkus.version>
         <cloud-core.maas-declarative-client-quarkus.version>9.0.6</cloud-core.maas-declarative-client-quarkus.version>
         <cloud-core.context-propagation-quarkus.version>9.1.5</cloud-core.context-propagation-quarkus.version>
