@@ -1,5 +1,6 @@
 package com.netcracker.cloud.dbaas.client.arangodb.configuration;
 
+import com.arangodb.Compression;
 import com.arangodb.Protocol;
 import com.arangodb.config.ArangoConfigProperties;
 import com.arangodb.config.HostDescription;
@@ -106,5 +107,20 @@ public class DbaasArangoConfigPropertiesImpl implements ArangoConfigProperties {
     @Override
     public Optional<Integer> getResponseQueueTimeSamples() {
         return Optional.ofNullable(properties.get("responseQueueTimeSamples")).map(Integer::valueOf);
+    }
+
+    @Override
+    public Optional<Integer> getCompressionLevel() {
+        return Optional.ofNullable(properties.get("compressionLevel")).map(Integer::valueOf);
+    }
+
+    @Override
+    public Optional<Integer> getCompressionThreshold() {
+        return Optional.ofNullable(properties.get("compressionThreshold")).map(Integer::valueOf);
+    }
+
+    @Override
+    public Optional<Compression> getCompression() {
+        return Optional.ofNullable(properties.get("compression")).map(Compression::valueOf);
     }
 }

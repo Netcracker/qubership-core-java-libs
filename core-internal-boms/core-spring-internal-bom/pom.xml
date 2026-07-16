@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>core-spring-internal-bom</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -19,7 +19,7 @@
         <spring-boot.version>4.0.7</spring-boot.version>
         <spring-cloud.version>2025.1.2</spring-cloud.version>
         <springdoc.version>3.0.3</springdoc.version>
-        <qubership-java-internal-bom.version>1.0.1-SNAPSHOT</qubership-java-internal-bom.version>
+        <qubership-java-internal-bom.version>1.0.2-SNAPSHOT</qubership-java-internal-bom.version>
     </properties>
 
     <dependencyManagement>

@@ -7,6 +7,7 @@ import com.netcracker.cloud.core.error.rest.exception.RemoteCodeException;
 import com.netcracker.cloud.core.error.rest.tmf.DefaultTmfErrorResponseConverter;
 import com.netcracker.cloud.core.error.rest.tmf.TmfErrorResponse;
 import com.netcracker.cloud.core.error.rest.tmf.TmfErrorResponseConverter;
+import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
 import com.netcracker.cloud.restclient.AbstractMicroserviceRestClient;
 import com.netcracker.cloud.restclient.HttpMethod;
 import com.netcracker.cloud.restclient.entity.RestClientResponseEntity;
@@ -40,7 +41,13 @@ public class MicroserviceOkHttpRestClient extends AbstractMicroserviceRestClient
     private TmfErrorResponseConverter converter = new DefaultTmfErrorResponseConverter();
 
     public MicroserviceOkHttpRestClient(OkHttpClient client) {
-        this.client = client;
+        this.client = client.newBuilder()
+                .addInterceptor(chain -> {
+                    Request.Builder requestBuilder = chain.request().newBuilder();
+                    RequestContextPropagation.populateResponse((key, value) -> requestBuilder.header(key, String.valueOf(value)));
+                    return chain.proceed(requestBuilder.build());
+                })
+                .build();
     }
 
     @Override

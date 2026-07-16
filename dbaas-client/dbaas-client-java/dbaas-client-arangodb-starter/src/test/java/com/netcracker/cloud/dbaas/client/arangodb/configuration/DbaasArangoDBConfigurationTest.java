@@ -37,6 +37,9 @@ import static com.netcracker.cloud.dbaas.client.arangodb.configuration.TenantDba
         "dbaas.arangodb.dbName=db-test-name-1",
         "dbaas.arangodb.acquireHostList=true",
         "dbaas.arangodb.acquireHostListInterval=12345",
+        "dbaas.arangodb.compression=GZIP",
+        "dbaas.arangodb.compressionLevel=1",
+        "dbaas.arangodb.compressionThreshold=2",
         "dbaas.api.arangodb.db-prefix=test-prefix",
         "dbaas.api.arangodb.runtime-user-role=admin"
 })
@@ -90,6 +93,9 @@ class DbaasArangoDBConfigurationTest {
         assertEquals("db-test-name-1", arangoConfig.getArangodb().get("dbName"));
         assertEquals("true", arangoConfig.getArangodb().get("acquireHostList"));
         assertEquals("12345", arangoConfig.getArangodb().get("acquireHostListInterval"));
+        assertEquals("GZIP", arangoConfig.getArangodb().get("compression"));
+        assertEquals("1", arangoConfig.getArangodb().get("compressionLevel"));
+        assertEquals("2", arangoConfig.getArangodb().get("compressionThreshold"));
     }
 
     @Test

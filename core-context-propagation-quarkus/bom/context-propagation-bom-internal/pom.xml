@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>cloud-core-context-propagation-bom-aggregator</artifactId>
-        <version>9.1.5-SNAPSHOT</version>
+        <version>9.1.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>cloud-core-context-propagation-bom-internal</artifactId>
@@ -15,7 +15,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <cloud-core.core-context-propagation.version>8.2.4</cloud-core.core-context-propagation.version>
+        <cloud-core.core-context-propagation.version>8.2.5</cloud-core.core-context-propagation.version>
 
         <wagon-provider-api.version>3.5.3</wagon-provider-api.version>
     </properties>
@@ -25,7 +25,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-quarkus-internal-bom</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
