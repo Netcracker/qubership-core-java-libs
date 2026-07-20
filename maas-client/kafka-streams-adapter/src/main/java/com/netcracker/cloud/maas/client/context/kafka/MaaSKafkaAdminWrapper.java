@@ -18,7 +18,9 @@ import org.apache.kafka.common.errors.NotLeaderOrFollowerException;
 import org.apache.kafka.common.errors.TimeoutException;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.apache.kafka.common.internals.KafkaFutureImpl;
+import org.apache.kafka.common.metrics.KafkaMetric;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +36,27 @@ public class MaaSKafkaAdminWrapper extends ForwardingAdmin {
     private static final long METADATA_FETCH_TIMEOUT_SECONDS = 10;
     private static final long INITIAL_RETRY_BACKOFF_MS = 200;
     private static final long MAX_RETRY_BACKOFF_MS = 3000;
+
+    /**
+     * Gap in kafka-clients {@link ForwardingAdmin} after KIP-1076: the new
+     * {@code registerMetricForSubscription}/{@code unregisterMetricFromSubscription} methods throw
+     * {@link UnsupportedOperationException} instead of delegating to the underlying {@link Admin}
+     * (still present on Kafka trunk / 4.2). {@code KafkaAdminClient} implements them correctly; only
+     * the {@code ForwardingAdmin} stub does not. Kafka Streams 4.x calls them via
+     * {@code StreamsClientMetricsDelegatingReporter}, so we reach the private delegate via reflection
+     * and forward the calls.
+     * @see <a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-1076%3A+Extend+KIP-714+to+allow+registering+additional+metrics+with+clients">KIP-1076</a>
+     */
+    private static final Field FORWARDING_ADMIN_DELEGATE;
+
+    static {
+        try {
+            FORWARDING_ADMIN_DELEGATE = ForwardingAdmin.class.getDeclaredField("delegate");
+            FORWARDING_ADMIN_DELEGATE.setAccessible(true);
+        } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     private final Map<String, Object> configs;
     private final KafkaMaaSClient kafkaMaaSClient;
@@ -59,6 +82,24 @@ public class MaaSKafkaAdminWrapper extends ForwardingAdmin {
         return new MaaSKafkaAdminWrapperBuilder()
                 .configs(configs)
                 .kafkaMaaSClient(kafkaMaaSClient);
+    }
+
+    @Override
+    public void registerMetricForSubscription(KafkaMetric metric) {
+        adminDelegate().registerMetricForSubscription(metric);
+    }
+
+    @Override
+    public void unregisterMetricFromSubscription(KafkaMetric metric) {
+        adminDelegate().unregisterMetricFromSubscription(metric);
+    }
+
+    private Admin adminDelegate() {
+        try {
+            return (Admin) FORWARDING_ADMIN_DELEGATE.get(this);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException("Unable to access ForwardingAdmin.delegate for metrics delegation", e);
+        }
     }
 
     @Override
