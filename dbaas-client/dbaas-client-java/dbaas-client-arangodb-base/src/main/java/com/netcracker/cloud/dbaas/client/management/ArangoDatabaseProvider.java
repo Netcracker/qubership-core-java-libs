@@ -6,14 +6,25 @@ import com.netcracker.cloud.dbaas.client.arangodb.classifier.ArangoDBClassifierB
 import com.netcracker.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
 import com.netcracker.cloud.dbaas.client.arangodb.entity.database.type.ArangoDBType;
 import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@AllArgsConstructor
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 @RequiredArgsConstructor
 @Slf4j
 public class ArangoDatabaseProvider {
+
+    private static final long DEFAULT_CHECK_TIMEOUT_MS = 60_000L;
+    private static final ExecutorService CHECK_EXECUTOR = Executors.newCachedThreadPool(r -> {
+        Thread t = new Thread(r, "arango-connection-check");
+        t.setDaemon(true);
+        return t;
+    });
 
     private final DatabasePool pool;
     private final DbaaSChainClassifierBuilder builder;
@@ -21,6 +32,22 @@ public class ArangoDatabaseProvider {
 
     private int retries = 0;
     private long retryDelay = 0;
+    private long connectionCheckTimeoutMs = DEFAULT_CHECK_TIMEOUT_MS;
+
+    public ArangoDatabaseProvider(DatabasePool pool, DbaaSChainClassifierBuilder builder, DatabaseConfig databaseConfig,
+                                  int retries, long retryDelay) {
+        this.pool = pool;
+        this.builder = builder;
+        this.databaseConfig = databaseConfig;
+        this.retries = retries;
+        this.retryDelay = retryDelay;
+    }
+
+    public ArangoDatabaseProvider(DatabasePool pool, DbaaSChainClassifierBuilder builder, DatabaseConfig databaseConfig,
+                                  int retries, long retryDelay, long connectionCheckTimeoutMs) {
+        this(pool, builder, databaseConfig, retries, retryDelay);
+        this.connectionCheckTimeoutMs = connectionCheckTimeoutMs;
+    }
 
     public ArangoDatabase provide() {
         DbaasDbClassifier classifier = builder.build();
@@ -67,14 +94,21 @@ public class ArangoDatabaseProvider {
     }
 
     private boolean checkConnection(ArangoConnection connection) {
-        try {
-            Integer checkValue;
-            try (ArangoCursor<Integer> query = connection.getArangoDatabase().query("RETURN 42", Integer.class)) {
-                checkValue = query.next();
-                if (checkValue == null || checkValue != 42) throw new RuntimeException("Wrong check query result: " + checkValue);
+        Future<Boolean> future = CHECK_EXECUTOR.submit(() -> {
+            try (ArangoCursor<Integer> cursor = connection.getArangoDatabase().query("RETURN 42", Integer.class)) {
+                Integer checkValue = cursor.next();
+                if (checkValue == null || checkValue != 42)
+                    throw new RuntimeException("Wrong check query result: " + checkValue);
+                log.debug("Connection check succeeded, check value: {}", checkValue);
+                return true;
             }
-            log.debug("Connection check succeeded, check value: {}", checkValue);
-            return true;
+        });
+        try {
+            return future.get(connectionCheckTimeoutMs, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            future.cancel(true);
+            log.warn("Connection check timed out after {}ms", connectionCheckTimeoutMs);
+            return false;
         } catch (Exception e) {
             log.debug("Connection check has failed with exception", e);
             return false;

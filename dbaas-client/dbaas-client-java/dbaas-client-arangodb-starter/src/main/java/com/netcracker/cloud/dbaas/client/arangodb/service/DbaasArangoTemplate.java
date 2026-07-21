@@ -20,11 +20,23 @@ import org.springframework.dao.DataAccessException;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Supplier;
 
 @Slf4j
 public class DbaasArangoTemplate extends ArangoTemplate {
+
+    private static final long DEFAULT_CHECK_TIMEOUT_MS = 60_000L;
+    private static final ExecutorService CHECK_EXECUTOR = Executors.newCachedThreadPool(r -> {
+        Thread t = new Thread(r, "arango-connection-check");
+        t.setDaemon(true);
+        return t;
+    });
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
     private final ArangoDatabaseProvider arangoDatabaseProvider;
@@ -300,19 +312,29 @@ public class DbaasArangoTemplate extends ArangoTemplate {
     }
 
     protected boolean checkConnection(ArangoOperations operations) {
-        try {
-            Integer checkValue;
+        long timeoutMs = dbaasArangoConfig.asArangoConfigProperties().getTimeout()
+                .filter(t -> t > 0)
+                .map(Long::valueOf)
+                .orElse(DEFAULT_CHECK_TIMEOUT_MS);
+        Future<Boolean> future = CHECK_EXECUTOR.submit(() -> {
             try (ArangoCursor<Integer> query = operations.query("RETURN 42", Integer.class)) {
-                checkValue = query.next();
+                Integer checkValue = query.next();
                 if (checkValue == null || checkValue != 42)
                     throw new RuntimeException("Wrong check query result: " + checkValue);
+                log.debug("Connection check succeeded, check value: {}", checkValue);
+                return true;
             }
-            log.debug("Connection check succeeded, check value: {}", checkValue);
+        });
+        try {
+            return future.get(timeoutMs, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            future.cancel(true);
+            log.warn("Connection check timed out after {}ms", timeoutMs);
+            return false;
         } catch (Exception e) {
             log.debug("Connection check failed with exception", e);
             return false;
         }
-        return true;
     }
 
     protected void initArangoTemplate() {
