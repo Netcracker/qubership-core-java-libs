@@ -109,6 +109,11 @@ public class ArangoDatabaseProvider {
             future.cancel(true);
             log.warn("Connection check timed out after {}ms", connectionCheckTimeoutMs);
             return false;
+        } catch (InterruptedException e) {
+            future.cancel(true);
+            Thread.currentThread().interrupt();
+            log.debug("Connection check was interrupted", e);
+            return false;
         } catch (Exception e) {
             log.debug("Connection check has failed with exception", e);
             return false;
