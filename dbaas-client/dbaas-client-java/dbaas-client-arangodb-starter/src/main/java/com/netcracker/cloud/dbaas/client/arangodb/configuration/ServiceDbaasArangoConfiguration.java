@@ -33,11 +33,16 @@ public class ServiceDbaasArangoConfiguration {
     @ConditionalOnMissingBean(name = SERVICE_ARANGODB_PROVIDER)
     public ArangoDatabaseProvider serviceArangoDatabaseProvider(DatabasePool databasePool,
                                                                 DbaasClassifierFactory classifierFactory,
-                                                                DbaasApiProperties arangodbDbaasApiProperties) {
+                                                                DbaasApiProperties arangodbDbaasApiProperties,
+                                                                DbaasArangoDBConfigurationProperties arangoProperties) {
         DatabaseConfig databaseConfig = DatabaseConfig.builder()
                 .userRole(arangodbDbaasApiProperties.getRuntimeUserRole())
                 .dbNamePrefix(arangodbDbaasApiProperties.getDbPrefix())
                 .build();
-        return new ArangoDatabaseProvider(databasePool, classifierFactory.newServiceClassifierBuilder(), databaseConfig, arangodbDbaasApiProperties.getRetryAttempts(), arangodbDbaasApiProperties.getRetryDelay());
+        long checkConnectionTimeoutMs = arangoProperties.asArangoConfigProperties().getTimeout()
+                .filter(t -> t > 0)
+                .map(Long::valueOf)
+                .orElse(60_000L);
+        return new ArangoDatabaseProvider(databasePool, classifierFactory.newServiceClassifierBuilder(), databaseConfig, arangodbDbaasApiProperties.getRetryAttempts(), arangodbDbaasApiProperties.getRetryDelay(), checkConnectionTimeoutMs);
     }
 }

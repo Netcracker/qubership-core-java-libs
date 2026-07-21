@@ -4,6 +4,7 @@ import com.arangodb.ArangoCursor;
 import com.arangodb.internal.cursor.ArangoCursorImpl;
 import com.arangodb.springframework.core.ArangoOperations;
 import com.arangodb.springframework.core.template.ArangoTemplate;
+import com.netcracker.cloud.dbaas.client.arangodb.configuration.DbaasArangoDBConfigurationProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +42,9 @@ public class DbaasArangoTemplateTest {
         Field field = dbaasArangoTemplate.getClass().getDeclaredField("lock");
         field.setAccessible(true);
         field.set(dbaasArangoTemplate, new ReentrantReadWriteLock(true));
+        Field configField = dbaasArangoTemplate.getClass().getDeclaredField("dbaasArangoConfig");
+        configField.setAccessible(true);
+        configField.set(dbaasArangoTemplate, new DbaasArangoDBConfigurationProperties());
         arangoCursor42 = Mockito.mock(ArangoCursorImpl.class);
         Mockito.lenient().when(arangoCursor42.next()).thenReturn(42);
         arangoCursor13 = Mockito.mock(ArangoCursorImpl.class);
