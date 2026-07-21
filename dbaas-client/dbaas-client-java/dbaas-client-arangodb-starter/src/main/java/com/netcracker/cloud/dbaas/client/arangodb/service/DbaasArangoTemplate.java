@@ -331,6 +331,11 @@ public class DbaasArangoTemplate extends ArangoTemplate {
             future.cancel(true);
             log.warn("Connection check timed out after {}ms", timeoutMs);
             return false;
+        } catch (InterruptedException e) {
+            future.cancel(true);
+            Thread.currentThread().interrupt();
+            log.debug("Connection check was interrupted", e);
+            return false;
         } catch (Exception e) {
             log.debug("Connection check failed with exception", e);
             return false;
