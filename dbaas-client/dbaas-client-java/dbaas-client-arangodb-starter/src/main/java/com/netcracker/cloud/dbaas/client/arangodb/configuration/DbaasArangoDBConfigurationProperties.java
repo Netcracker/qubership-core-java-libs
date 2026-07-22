@@ -28,6 +28,10 @@ public class DbaasArangoDBConfigurationProperties {
         return arangoConfigProperties;
     }
 
+    public long checkConnectionTimeoutMs() {
+        return asArangoConfigProperties().getTimeout().filter(t -> t > 0).orElse(60_000).longValue();
+    }
+
     @Bean("arangodbDbaasApiProperties")
     @ConfigurationProperties("dbaas.api.arangodb")
     public DbaasApiProperties dbaasApiProperties() {

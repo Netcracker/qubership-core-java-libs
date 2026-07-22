@@ -26,19 +26,13 @@ public class ArangoDatabaseProvider {
     private int retries = 0;
     private long retryDelay = 0;
     private long connectionCheckTimeoutMs;
-
     public ArangoDatabaseProvider(DatabasePool pool, DbaaSChainClassifierBuilder builder, DatabaseConfig databaseConfig,
-                                  int retries, long retryDelay) {
+                                  int retries, long retryDelay, long connectionCheckTimeoutMs) {
         this.pool = pool;
         this.builder = builder;
         this.databaseConfig = databaseConfig;
         this.retries = retries;
         this.retryDelay = retryDelay;
-    }
-
-    public ArangoDatabaseProvider(DatabasePool pool, DbaaSChainClassifierBuilder builder, DatabaseConfig databaseConfig,
-                                  int retries, long retryDelay, long connectionCheckTimeoutMs) {
-        this(pool, builder, databaseConfig, retries, retryDelay);
         this.connectionCheckTimeoutMs = connectionCheckTimeoutMs;
     }
 

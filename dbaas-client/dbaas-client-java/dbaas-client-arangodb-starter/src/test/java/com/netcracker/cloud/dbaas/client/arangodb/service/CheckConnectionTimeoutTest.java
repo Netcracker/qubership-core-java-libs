@@ -116,10 +116,7 @@ class CheckConnectionTimeoutTest {
         DatabasePool pool = Mockito.mock(DatabasePool.class);
         Mockito.when(pool.getOrCreateDatabase(any(), any(), any())).thenReturn(arangoDatabase);
 
-        long timeoutMs = props.asArangoConfigProperties().getTimeout()
-                .filter(t -> t > 0)
-                .map(Long::valueOf)
-                .orElse(60_000L);
+        long timeoutMs = props.checkConnectionTimeoutMs();
         ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
                 pool,
                 new ArangoDBClassifierBuilder(null),
