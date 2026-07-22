@@ -109,6 +109,58 @@ class StaleCachedConnectionHangTest {
         }
     }
 
+    @Test
+    void checkExecutor_slot_shouldBeReleasedAfterTimeout() throws Exception {
+        ArangoDB driver = new ArangoDB.Builder()
+                .host("127.0.0.1", proxy.getLocalPort())
+                .user(TEST_USER)
+                .password(TEST_PASSWORD)
+                .timeout(0)
+                .build();
+
+        try (Closeable ignored = driver::shutdown) {
+            driver.db(DB_NAME_1).query("RETURN 1", Integer.class).close();
+            proxy.goSilent();
+
+            ArangoConnection staleConnection = new ArangoConnection();
+            staleConnection.setArangoDatabase(driver.db(DB_NAME_1));
+
+            ArangoDatabase staleDb = new ArangoDatabase();
+            staleDb.setName(DB_NAME_1);
+            staleDb.setConnectionProperties(staleConnection);
+
+            DatabasePool pool = mock(DatabasePool.class);
+            when(pool.getOrCreateDatabase(any(), any(), any())).thenReturn(staleDb);
+
+            ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
+                    pool,
+                    new ArangoDBClassifierBuilder(null),
+                    DatabaseConfig.builder().build(),
+                    0, 0, CHECK_TIMEOUT_MS
+            );
+
+            // Grab CHECK_EXECUTOR via reflection to observe activeCount
+            java.lang.reflect.Field executorField = ArangoDatabaseProvider.class.getDeclaredField("CHECK_EXECUTOR");
+            executorField.setAccessible(true);
+            ThreadPoolExecutor executor = (ThreadPoolExecutor) executorField.get(null);
+
+            // Trigger checkConnection() in background
+            Thread callerThread = new Thread(() -> {
+                try { provider.provide(); } catch (Exception ignored2) { }
+            }, "test-caller");
+            callerThread.setDaemon(true);
+            callerThread.start();
+
+            // Wait until the worker slot is taken, then wait for it to be released
+            callerThread.join(CHECK_TIMEOUT_MS * 3 + 1000);
+
+            if (executor.getActiveCount() > 0) {
+                fail("CHECK_EXECUTOR slot was not released after checkConnectionTimeoutMs — " +
+                        "future.cancel(true) failed to interrupt the blocked CompletableFuture.get()");
+            }
+        }
+    }
+
     private void assertNotHang(Future<?> future, String failMessage) throws InterruptedException {
         try {
             future.get(HANG_DETECTION_SECONDS, TimeUnit.SECONDS);
