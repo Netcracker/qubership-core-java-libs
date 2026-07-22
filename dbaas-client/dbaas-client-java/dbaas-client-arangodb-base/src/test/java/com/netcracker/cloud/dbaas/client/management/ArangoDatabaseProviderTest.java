@@ -91,6 +91,40 @@ public class ArangoDatabaseProviderTest {
     }
 
     @Test
+    void testCheckConnection_Timeout_TreatedAsFailure() {
+        Mockito.when(cursor.next()).thenAnswer(invocation -> {
+            Thread.sleep(10_000);
+            return 42;
+        });
+        ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
+                databasePool, new ServiceDbaaSClassifierBuilder(null), DatabaseConfig.builder().build(), 0, 0L, 100L);
+        ArangoDatabase db = provider.provide(DB_NAME_1);
+        Assertions.assertNotNull(db);
+        // initial + reconnect (timeout counts as failure)
+        Mockito.verify(databasePool, times(2)).getOrCreateDatabase(any(ArangoDBType.class), any(), any(DatabaseConfig.class));
+    }
+
+    @Test
+    void testCheckConnection_Interrupted_TreatedAsFailure() {
+        Mockito.when(cursor.next()).thenAnswer(invocation -> {
+            Thread.sleep(10_000);
+            return 42;
+        });
+        ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
+                databasePool, new ServiceDbaaSClassifierBuilder(null), DatabaseConfig.builder().build(), 0, 0L, 60_000L);
+
+        Thread.currentThread().interrupt(); // caller interrupted -> future.get() aborts with InterruptedException
+        ArangoDatabase db = provider.provide(DB_NAME_1);
+
+        Assertions.assertNotNull(db);
+        // flag is re-set only by the InterruptedException branch; verify + clear so it can't leak
+        Assertions.assertTrue(Thread.interrupted());
+        // initial + reconnect (interrupted check counts as failure)
+        Mockito.verify(databasePool, times(2))
+                .getOrCreateDatabase(any(ArangoDBType.class), any(), any(DatabaseConfig.class));
+    }
+
+    @Test
     void testRetryAttempts() {
         int retries = 5;
         ArangoDatabaseProvider databaseProvider =
