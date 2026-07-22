@@ -15,7 +15,7 @@ import java.util.concurrent.*;
 @Slf4j
 public class ArangoDatabaseProvider {
 
-    private static final ExecutorService CHECK_EXECUTOR = new ThreadPoolExecutor(
+    public static final ExecutorService CHECK_EXECUTOR = new ThreadPoolExecutor(
             5, 5, 0L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
             r -> { Thread t = new Thread(r, "arango-connection-check"); t.setDaemon(true); return t; });
 

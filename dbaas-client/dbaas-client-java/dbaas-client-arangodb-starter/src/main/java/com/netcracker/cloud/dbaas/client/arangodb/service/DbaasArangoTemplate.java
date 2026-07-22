@@ -20,21 +20,16 @@ import org.springframework.dao.DataAccessException;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Supplier;
 
+import static com.netcracker.cloud.dbaas.client.management.ArangoDatabaseProvider.CHECK_EXECUTOR;
+
 @Slf4j
 public class DbaasArangoTemplate extends ArangoTemplate {
-
-    private static final ExecutorService CHECK_EXECUTOR = new ThreadPoolExecutor(
-            5, 5, 0L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
-            r -> { Thread t = new Thread(r, "arango-connection-check"); t.setDaemon(true); return t; });
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
     private final ArangoDatabaseProvider arangoDatabaseProvider;
