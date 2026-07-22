@@ -9,22 +9,15 @@ import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSChainClassif
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 @RequiredArgsConstructor
 @Slf4j
 public class ArangoDatabaseProvider {
 
-    private static final long DEFAULT_CHECK_TIMEOUT_MS = 60_000L;
-    private static final ExecutorService CHECK_EXECUTOR = Executors.newCachedThreadPool(r -> {
-        Thread t = new Thread(r, "arango-connection-check");
-        t.setDaemon(true);
-        return t;
-    });
+    private static final ExecutorService CHECK_EXECUTOR = new ThreadPoolExecutor(
+            5, 5, 0L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
+            r -> { Thread t = new Thread(r, "arango-connection-check"); t.setDaemon(true); return t; });
 
     private final DatabasePool pool;
     private final DbaaSChainClassifierBuilder builder;
@@ -32,7 +25,7 @@ public class ArangoDatabaseProvider {
 
     private int retries = 0;
     private long retryDelay = 0;
-    private long connectionCheckTimeoutMs = DEFAULT_CHECK_TIMEOUT_MS;
+    private long connectionCheckTimeoutMs;
 
     public ArangoDatabaseProvider(DatabasePool pool, DbaaSChainClassifierBuilder builder, DatabaseConfig databaseConfig,
                                   int retries, long retryDelay) {
