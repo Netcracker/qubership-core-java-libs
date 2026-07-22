@@ -29,6 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class DbaasArangoTemplateTest {
@@ -230,8 +231,9 @@ public class DbaasArangoTemplateTest {
         configField.setAccessible(true);
         configField.set(dbaasArangoTemplate, config);
 
-        Mockito.when(arangoTemplate.query(eq("RETURN 42"), any())).thenAnswer(inv -> {
-            Thread.sleep(10_000);
+        CountDownLatch blockCheck = new CountDownLatch(1);
+        when(arangoTemplate.query(eq("RETURN 42"), any())).thenAnswer(inv -> {
+            blockCheck.await();
             return arangoCursor42;
         });
 
@@ -241,10 +243,12 @@ public class DbaasArangoTemplateTest {
 
     @Test
     public void testCheckConnection_Interrupted_ReturnsFalse() {
-        // lenient: the pre-set interrupt makes future.get() abort before the worker reaches this query;
-        // the sleep only exists to keep the Future in-flight so get() observes the interrupt.
+        // The pre-set interrupt makes future.get abort before the worker reaches this query,
+        // so the stubbing is lenient. The latch only keeps the Future in-flight long enough
+        // for get to observe the interrupt.
+        CountDownLatch blockCheck = new CountDownLatch(1);
         Mockito.lenient().when(arangoTemplate.query(eq("RETURN 42"), any())).thenAnswer(inv -> {
-            Thread.sleep(10_000);
+            blockCheck.await();
             return arangoCursor42;
         });
 

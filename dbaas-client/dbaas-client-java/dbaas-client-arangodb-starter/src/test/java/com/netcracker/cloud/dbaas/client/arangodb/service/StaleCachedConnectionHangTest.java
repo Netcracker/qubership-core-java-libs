@@ -12,7 +12,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -27,6 +26,8 @@ import static com.netcracker.cloud.dbaas.client.arangodb.test.ArangoTestCommon.*
 import static com.netcracker.cloud.dbaas.client.arangodb.test.configuration.TestArangoDBConfiguration.DB_NAME_1;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Reproduces the stale-cached-connection hang: when an ArangoDB node goes silent
@@ -74,7 +75,7 @@ class StaleCachedConnectionHangTest {
                 .timeout(0)
                 .build();
 
-        try {
+        try (Closeable ignored = driver::shutdown) {
             // Warm up: one successful query so the driver caches the TCP connection in its pool
             driver.db(DB_NAME_1).query("RETURN 1", Integer.class).close();
 
@@ -88,8 +89,8 @@ class StaleCachedConnectionHangTest {
             staleDb.setName(DB_NAME_1);
             staleDb.setConnectionProperties(staleConnection);
 
-            DatabasePool pool = Mockito.mock(DatabasePool.class);
-            Mockito.when(pool.getOrCreateDatabase(any(), any(), any())).thenReturn(staleDb);
+            DatabasePool pool = mock(DatabasePool.class);
+            when(pool.getOrCreateDatabase(any(), any(), any())).thenReturn(staleDb);
 
             ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
                     pool,
@@ -99,14 +100,12 @@ class StaleCachedConnectionHangTest {
             );
 
             try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
-                Future<?> future = executor.submit(() -> provider.provide());
+                Future<?> future = executor.submit((Callable<?>) provider::provide);
                 assertNotHang(future,
                         "ArangoDatabaseProvider.provide() hung on a stale cached connection. " +
                                 "checkConnection() needs an explicit deadline independent of the " +
                                 "driver's socket timeout.");
             }
-        } finally {
-            driver.shutdown();
         }
     }
 
@@ -138,6 +137,7 @@ class StaleCachedConnectionHangTest {
                         // backend → client: drop responses when silent, keeping TCP alive
                         startForwarder("proxy-s2c", backend.getInputStream(), client.getOutputStream(), () -> silent);
                     } catch (IOException ignored) {
+                        // Accept loop ends when the socket is closed in close(); nothing to recover here
                     }
                 }
             }, "proxy-acceptor");
@@ -170,6 +170,7 @@ class StaleCachedConnectionHangTest {
                         }
                     }
                 } catch (IOException ignored) {
+                    // Forwarding stops when either socket closes; the proxy is being torn down
                 }
             }, name);
             t.setDaemon(true);

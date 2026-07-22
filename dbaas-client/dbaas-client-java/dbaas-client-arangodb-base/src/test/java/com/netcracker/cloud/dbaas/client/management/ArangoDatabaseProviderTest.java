@@ -12,10 +12,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.util.concurrent.CountDownLatch;
+
 import static com.netcracker.cloud.dbaas.client.arangodb.classifier.ArangoDBClassifierBuilder.DB_ID_CLASSIFIER_PROPERTY;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 public class ArangoDatabaseProviderTest {
 
@@ -27,14 +29,14 @@ public class ArangoDatabaseProviderTest {
 
     @BeforeEach
     public void setup() {
-        databasePool = Mockito.mock(DatabasePool.class);
-        cursor = Mockito.mock(ArangoCursor.class);
+        databasePool = mock(DatabasePool.class);
+        cursor = mock(ArangoCursor.class);
         Mockito.when(cursor.next()).thenReturn(42);
         Mockito.when(databasePool.getOrCreateDatabase(any(ArangoDBType.class), any(DbaasDbClassifier.class), any(DatabaseConfig.class))).thenAnswer(
                 invocationOnMock -> {
                     DbaasDbClassifier dbaasDbClassifier = invocationOnMock.getArgument(1);
                     String dbName = (String) dbaasDbClassifier.asMap().get(DB_ID_CLASSIFIER_PROPERTY);
-                    ArangoDatabase arangoDatabase = Mockito.mock(ArangoDatabase.class);
+                    ArangoDatabase arangoDatabase = mock(ArangoDatabase.class);
                     Mockito.when(arangoDatabase.name()).thenReturn(dbName);
                     ArangoConnection arangoConnection = new ArangoConnection();
                     arangoConnection.setArangoDatabase(arangoDatabase);
@@ -92,8 +94,9 @@ public class ArangoDatabaseProviderTest {
 
     @Test
     void testCheckConnection_Timeout_TreatedAsFailure() {
-        Mockito.when(cursor.next()).thenAnswer(invocation -> {
-            Thread.sleep(10_000);
+        CountDownLatch blockCheck = new CountDownLatch(1);
+        when(cursor.next()).thenAnswer(invocation -> {
+            blockCheck.await();
             return 42;
         });
         ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
@@ -101,13 +104,14 @@ public class ArangoDatabaseProviderTest {
         ArangoDatabase db = provider.provide(DB_NAME_1);
         Assertions.assertNotNull(db);
         // initial + reconnect (timeout counts as failure)
-        Mockito.verify(databasePool, times(2)).getOrCreateDatabase(any(ArangoDBType.class), any(), any(DatabaseConfig.class));
+        verify(databasePool, times(2)).getOrCreateDatabase(any(ArangoDBType.class), any(), any(DatabaseConfig.class));
     }
 
     @Test
     void testCheckConnection_Interrupted_TreatedAsFailure() {
-        Mockito.when(cursor.next()).thenAnswer(invocation -> {
-            Thread.sleep(10_000);
+        CountDownLatch blockCheck = new CountDownLatch(1);
+        when(cursor.next()).thenAnswer(invocation -> {
+            blockCheck.await();
             return 42;
         });
         ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
@@ -120,7 +124,7 @@ public class ArangoDatabaseProviderTest {
         // flag is re-set only by the InterruptedException branch; verify + clear so it can't leak
         Assertions.assertTrue(Thread.interrupted());
         // initial + reconnect (interrupted check counts as failure)
-        Mockito.verify(databasePool, times(2))
+        verify(databasePool, times(2))
                 .getOrCreateDatabase(any(ArangoDBType.class), any(), any(DatabaseConfig.class));
     }
 
