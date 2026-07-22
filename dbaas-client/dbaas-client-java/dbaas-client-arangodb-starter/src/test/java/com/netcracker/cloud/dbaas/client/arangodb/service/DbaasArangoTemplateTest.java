@@ -15,13 +15,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -216,6 +219,39 @@ public class DbaasArangoTemplateTest {
         Mockito.verify(arangoTemplate, times(2)).query(eq("RETURN 13"), any());
         Mockito.verify(dbaasArangoTemplate, times(2)).initArangoTemplate();
         Mockito.verify(dbaasArangoTemplate, times(1)).checkConnection(arangoTemplate);
+    }
+
+    @Test
+    public void testCheckConnection_Timeout_ReturnsFalse() throws NoSuchFieldException, IllegalAccessException {
+        // set a very short timeout via config
+        DbaasArangoDBConfigurationProperties config = new DbaasArangoDBConfigurationProperties();
+        config.setArangodb(Map.of("timeout", "100"));
+        Field configField = dbaasArangoTemplate.getClass().getDeclaredField("dbaasArangoConfig");
+        configField.setAccessible(true);
+        configField.set(dbaasArangoTemplate, config);
+
+        Mockito.when(arangoTemplate.query(eq("RETURN 42"), any())).thenAnswer(inv -> {
+            Thread.sleep(10_000);
+            return arangoCursor42;
+        });
+
+        // check query outlives the timeout -> future.get times out -> false
+        assertFalse(dbaasArangoTemplate.checkConnection(arangoTemplate));
+    }
+
+    @Test
+    public void testCheckConnection_Interrupted_ReturnsFalse() {
+        // lenient: the pre-set interrupt makes future.get() abort before the worker reaches this query;
+        // the sleep only exists to keep the Future in-flight so get() observes the interrupt.
+        Mockito.lenient().when(arangoTemplate.query(eq("RETURN 42"), any())).thenAnswer(inv -> {
+            Thread.sleep(10_000);
+            return arangoCursor42;
+        });
+
+        Thread.currentThread().interrupt(); // caller interrupted -> future.get() aborts with InterruptedException
+        assertFalse(dbaasArangoTemplate.checkConnection(arangoTemplate));
+        // flag is re-set only by the InterruptedException branch; verify + clear so it can't leak
+        assertTrue(Thread.interrupted());
     }
 
     @Test
