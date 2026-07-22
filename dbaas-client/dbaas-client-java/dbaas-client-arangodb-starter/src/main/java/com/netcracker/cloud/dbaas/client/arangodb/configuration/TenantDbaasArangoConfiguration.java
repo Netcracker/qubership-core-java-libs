@@ -25,10 +25,7 @@ public class TenantDbaasArangoConfiguration {
                 .userRole(arangodbDbaasApiProperties.getRuntimeUserRole())
                 .dbNamePrefix(arangodbDbaasApiProperties.getDbPrefix())
                 .build();
-        long checkConnectionTimeoutMs = arangoProperties.asArangoConfigProperties().getTimeout()
-                .filter(t -> t > 0)
-                .map(Long::valueOf)
-                .orElse(60_000L);
+        long checkConnectionTimeoutMs = arangoProperties.checkConnectionTimeoutMs();
         return new ArangoDatabaseProvider(databasePool, classifierFactory.newTenantClassifierBuilder(), databaseConfig, arangodbDbaasApiProperties.getRetryAttempts(), arangodbDbaasApiProperties.getRetryDelay(), checkConnectionTimeoutMs);
     }
 }

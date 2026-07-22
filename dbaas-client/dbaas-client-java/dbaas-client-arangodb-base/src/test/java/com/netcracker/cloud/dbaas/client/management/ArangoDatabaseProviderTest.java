@@ -132,7 +132,7 @@ public class ArangoDatabaseProviderTest {
     void testRetryAttempts() {
         int retries = 5;
         ArangoDatabaseProvider databaseProvider =
-                new ArangoDatabaseProvider(databasePool, new ServiceDbaaSClassifierBuilder(null), DatabaseConfig.builder().build(), retries, 1L);
+                new ArangoDatabaseProvider(databasePool, new ServiceDbaaSClassifierBuilder(null), DatabaseConfig.builder().build(), retries, 1L, 60_000L);
         DatabaseConfig databaseConfig = DatabaseConfig.builder()
                 .physicalDatabaseId("retry-db-id-1")
                 .userRole("admin")
