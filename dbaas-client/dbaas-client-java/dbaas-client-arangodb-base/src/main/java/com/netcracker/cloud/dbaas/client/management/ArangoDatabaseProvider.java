@@ -98,7 +98,7 @@ public class ArangoDatabaseProvider {
             try (ArangoCursor<Integer> cursor = connection.getArangoDatabase().query("RETURN 42", Integer.class)) {
                 Integer checkValue = cursor.next();
                 if (checkValue == null || checkValue != 42)
-                    throw new RuntimeException("Wrong check query result: " + checkValue);
+                    throw new IllegalStateException("Wrong check query result: " + checkValue);
                 log.debug("Connection check succeeded, check value: {}", checkValue);
                 return true;
             }

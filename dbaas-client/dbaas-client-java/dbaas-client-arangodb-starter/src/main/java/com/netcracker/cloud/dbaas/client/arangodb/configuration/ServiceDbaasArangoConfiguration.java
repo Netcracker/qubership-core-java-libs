@@ -15,8 +15,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 
-import java.util.Optional;
-
 @Configuration
 public class ServiceDbaasArangoConfiguration {
 
