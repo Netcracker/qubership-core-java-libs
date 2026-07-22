@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.netcracker.cloud.dbaas.client.arangodb.configuration.DbaasArangoConfigPropertiesImpl.DEFAULT_TIMEOUT_MS;
+
 @ConfigurationProperties(prefix = "dbaas")
 @Configuration
 public class DbaasArangoDBConfigurationProperties {
@@ -29,7 +31,7 @@ public class DbaasArangoDBConfigurationProperties {
     }
 
     public long checkConnectionTimeoutMs() {
-        return asArangoConfigProperties().getTimeout().filter(t -> t > 0).orElse(60_000).longValue();
+        return asArangoConfigProperties().getTimeout().filter(t -> t > 0).orElse(DEFAULT_TIMEOUT_MS).longValue();
     }
 
     @Bean("arangodbDbaasApiProperties")
