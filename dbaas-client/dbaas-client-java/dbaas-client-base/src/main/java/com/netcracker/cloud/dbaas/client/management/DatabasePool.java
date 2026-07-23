@@ -1,8 +1,6 @@
 package com.netcracker.cloud.dbaas.client.management;
 
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netcracker.cloud.dbaas.client.DbaasClient;
 import com.netcracker.cloud.dbaas.client.DbaasConst;
 import com.netcracker.cloud.dbaas.client.entity.database.AbstractConnectorSettings;
@@ -10,7 +8,6 @@ import com.netcracker.cloud.dbaas.client.entity.database.AbstractDatabase;
 import com.netcracker.cloud.dbaas.client.entity.database.type.DatabaseType;
 import com.netcracker.cloud.dbaas.client.service.LogicalDbProvider;
 import com.netcracker.cloud.dbaas.client.service.mountedsecret.MountedSecretSource;
-import com.netcracker.cloud.dbaas.client.service.mountedsecret.SecretMetadata;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,14 +39,6 @@ public class DatabasePool {
      * mounted it returns empty and the pool falls back to REST exactly as before.
      */
     private MountedSecretSource mountedSecretSource = new MountedSecretSource();
-
-    /**
-     * Used to build a typed {@link AbstractDatabase} from a mounted Secret via the synthetic-response
-     * mechanism (a property map converted to {@code DatabaseType#getDatabaseClass()}). Unknown
-     * connection-property keys (e.g. {@code roHost}) are tolerated, matching the REST deserialization.
-     */
-    private final ObjectMapper objectMapper = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     /**
      * L1 cache holds cached databases connections. When client asks for a database, we first look in L1 cache.
@@ -229,39 +218,8 @@ public class DatabasePool {
                                                                         DatabaseType<T, D> type) {
         String role = databaseConfig != null ? databaseConfig.getUserRole() : null;
         return mountedSecretSource.resolve(classifier, type.getName(), role)
-                .map(resolved -> buildAbstractDatabase(type, classifier, resolved))
+                .map(resolved -> mountedSecretSource.buildDatabase(type.getDatabaseClass(), classifier, resolved))
                 .orElse(null);
-    }
-
-    /**
-     * Builds the typed database from a mounted Secret (synthetic-response): assemble a map mirroring
-     * the dbaas REST response and convert it to {@code type.getDatabaseClass()} with the same
-     * deserialization semantics as the REST path. No provisioning and no REST call happen here.
-     */
-    private <T, D extends AbstractDatabase<T>> D buildAbstractDatabase(DatabaseType<T, D> type,
-                                                                       Map<String, Object> classifier,
-                                                                       MountedSecretSource.Resolved resolved) {
-        SecretMetadata meta = resolved.metadata();
-        Map<String, Object> synthetic = new HashMap<>();
-        synthetic.put("classifier", meta.getClassifier() != null ? meta.getClassifier() : classifier);
-        synthetic.put("connectionProperties", resolved.connectionProperties());
-
-        String name = meta.getName() != null ? meta.getName() : asString(resolved.connectionProperties().get("name"));
-        if (name != null) {
-            synthetic.put("name", name);
-        }
-        String dbNamespace = meta.getNamespace() != null ? meta.getNamespace() : asString(classifier.get(DbaasConst.NAMESPACE));
-        if (dbNamespace != null) {
-            synthetic.put("namespace", dbNamespace);
-        }
-        if (meta.getSettings() != null) {
-            synthetic.put("settings", meta.getSettings());
-        }
-        return objectMapper.convertValue(synthetic, type.getDatabaseClass());
-    }
-
-    private static String asString(Object value) {
-        return value instanceof String s ? s : null;
     }
 
     /**
