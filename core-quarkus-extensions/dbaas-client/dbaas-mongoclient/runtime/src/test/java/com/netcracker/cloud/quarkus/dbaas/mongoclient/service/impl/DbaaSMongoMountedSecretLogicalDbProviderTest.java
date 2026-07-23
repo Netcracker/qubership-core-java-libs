@@ -60,4 +60,22 @@ class DbaaSMongoMountedSecretLogicalDbProviderTest {
     void returnsNullWhenNothingMounted(@TempDir Path root) {
         assertNull(providerFor(root).provide(classifier(), DatabaseConfig.builder().build(), NS));
     }
+
+    @Test
+    void orderSitsJustBeforeTheAggregatorProvider(@TempDir Path root) {
+        // After any user-supplied providers (default order 0), before the agent provider (MAX_VALUE).
+        assertEquals(Integer.MAX_VALUE - 1, providerFor(root).order());
+    }
+
+    @Test
+    void nullConfigMatchesDescriptorWithoutUserRole(@TempDir Path root) throws IOException {
+        Path d = Files.createDirectories(root.resolve("no-role"));
+        Files.writeString(d.resolve("metadata.json"),
+                "{\"classifier\":{\"microserviceName\":\"svc\",\"namespace\":\"" + NS + "\",\"scope\":\"service\"},"
+                        + "\"type\":\"mongodb\"}");
+        Files.writeString(d.resolve("connectionProperties.json"), "{}");
+
+        // A null DatabaseConfig means "no requested role", which matches a descriptor without userRole.
+        assertNotNull(providerFor(root).provide(classifier(), null, NS));
+    }
 }

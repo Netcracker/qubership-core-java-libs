@@ -19,8 +19,12 @@ import java.util.SortedMap;
 @ApplicationScoped
 public class DbaaSMongoLogicalDbProvider extends MongoLogicalDbProvider {
 
+    final DbaasClient dbaasClient;
+
     @Inject
-    DbaasClient dbaasClient;
+    public DbaaSMongoLogicalDbProvider(DbaasClient dbaasClient) {
+        this.dbaasClient = dbaasClient;
+    }
 
     @Override
     public MongoDatabase provide(SortedMap<String, Object> classifier, DatabaseConfig params, String namespace) {

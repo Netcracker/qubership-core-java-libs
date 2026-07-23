@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
@@ -128,7 +127,7 @@ public class MongoClientCreationImpl implements MongoClientCreation {
     private List<MongoLogicalDbProvider> sortProviders(Instance<MongoLogicalDbProvider> dbProviders) {
         return dbProviders.stream()
                 .sorted(Comparator.comparingInt(MongoLogicalDbProvider::order))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void setDbName(MongoDBConnection connectionProperties) {

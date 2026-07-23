@@ -3,6 +3,7 @@ package com.netcracker.cloud.core.quarkus.dbaas.datasource.service.impl;
 import com.netcracker.cloud.dbaas.client.entity.database.PostgresDatabase;
 import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
 import com.netcracker.cloud.dbaas.common.mountedsecret.MountedSecretConnectionSource;
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -13,6 +14,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -64,5 +66,31 @@ class DbaaSPgMountedSecretLogicalDbProviderTest {
     void returnsNullWhenNothingMounted(@TempDir Path root) {
         // empty mount directory → miss → null → chain falls through to the agent provider (REST)
         assertNull(providerFor(root).provide(classifier(), DatabaseConfig.builder().build(), NS));
+    }
+
+    @Test
+    void orderSitsJustBeforeTheAggregatorProvider(@TempDir Path root) {
+        // After any user-supplied providers (default order 0), before the agent provider (MAX_VALUE).
+        assertEquals(Integer.MAX_VALUE - 1, providerFor(root).order());
+    }
+
+    @Test
+    void nullConfigMatchesDescriptorWithoutUserRole(@TempDir Path root) throws IOException {
+        Path d = Files.createDirectories(root.resolve("no-role"));
+        Files.writeString(d.resolve("metadata.json"),
+                "{\"classifier\":{\"microserviceName\":\"svc\",\"namespace\":\"" + NS + "\",\"scope\":\"service\"},"
+                        + "\"type\":\"postgresql\"}");
+        Files.writeString(d.resolve("connectionProperties.json"), "{}");
+
+        // A null DatabaseConfig means "no requested role", which matches a descriptor without userRole.
+        assertNotNull(providerFor(root).provide(classifier(), null, NS));
+    }
+
+    @Test
+    void connectionPropertyLookupIsNotImplemented(@TempDir Path root) {
+        // The mounted-secret provider only serves whole databases; the property-level
+        // lookup of the parent contract is intentionally unsupported.
+        assertThrows(NotImplementedException.class,
+                () -> providerFor(root).provideConnectionProperty(classifier(), DatabaseConfig.builder().build()));
     }
 }
