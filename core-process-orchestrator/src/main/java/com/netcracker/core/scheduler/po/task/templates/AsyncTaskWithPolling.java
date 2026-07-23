@@ -70,7 +70,7 @@ public abstract class AsyncTaskWithPolling extends AbstractProcessTask {
                     onPollingSuccess(taskInstance.getData());
                     task.setEndTime(Calendar.getInstance().getTime());
                     task.setState(TaskState.COMPLETED);
-                    task.save();
+                    task.saveResolvingConflict(t -> t.setState(TaskState.COMPLETED));
                     when.accept(null);
                 }
             } catch (Exception e) {
@@ -79,7 +79,7 @@ public abstract class AsyncTaskWithPolling extends AbstractProcessTask {
                 ProcessInstanceImpl processInstance = taskInstance.getData().getProcess();
                 processInstance.setState(TaskState.FAILED);
                 processInstance.save();
-                task.save();
+                task.saveResolvingConflict(t -> t.setState(TaskState.FAILED));
                 when.accept(null);
             }
 

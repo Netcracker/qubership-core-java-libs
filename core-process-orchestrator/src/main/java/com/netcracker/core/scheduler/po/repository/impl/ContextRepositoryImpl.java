@@ -53,24 +53,31 @@ public class ContextRepositoryImpl extends AbstractRepository implements Context
         if (version == null) {
             jdbcRunner.execute(insertQuery, (PreparedStatement p) -> assignParameters(context, p));
             context.setDirty(false);
-        } else if (Objects.equals(context.getVersion(), version)) {
-            context.setVersion(version + 1);
-            jdbcRunner.execute(
+        } else {
+            // The version check must live in the UPDATE itself: a check-then-act
+            // compare leaves a window where a concurrent writer slips between the
+            // SELECT above and the UPDATE, silently losing one of the writes. The
+            // in-memory version is bumped only after the guarded UPDATE succeeded.
+            int expectedVersion = context.getVersion();
+            int updated = jdbcRunner.execute(
                     "update " +
                             tableName +
                             " set " +
                             "version = ?, " +
-                            "context_data = ? where id=?"
+                            "context_data = ? where id=? and version=?"
                     , (PreparedStatement p) -> {
-                        p.setString(3, context.getId());
+                        p.setInt(1, expectedVersion + 1);
                         p.setObject(2, serializer.serialize(context));
-                        p.setInt(1, context.getVersion());
+                        p.setString(3, context.getId());
+                        p.setInt(4, expectedVersion);
                     }
             );
+            if (updated == 0) {
+                throw new VersionMismatchException("Current version are less than saved");
+            }
+            context.setVersion(expectedVersion + 1);
             context.setDirty(false);
-        } else throw new
-
-                VersionMismatchException("Current version are less than saved");
+        }
     }
 
     @Override

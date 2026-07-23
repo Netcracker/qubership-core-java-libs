@@ -41,29 +41,35 @@ public class TaskInstanceRepositoryImpl extends AbstractRepository implements Ta
                             " (task_id,name,def_id,version, state,type,pi_id,depends_on) values(?,?,?,?,?,?,?,?)"
                     , (PreparedStatement p) -> assignParameters(taskInstance, p));
         } else {
-            if (version.equals(taskInstance.getVersion())) {
-                taskInstance.setVersion(version + 1);
-                jdbcRunner.execute(
-                        "update " +
-                                tableName +
-                                " set " +
-                                "   state=?," +
-                                "   type=?," +
-                                "   version=?," +
-                                "   name=?," +
-                                "   depends_on=?" +
-                                " where task_id=?"
-                        ,
-                        (PreparedStatement p) -> {
-                            p.setString(1, taskInstance.getState().toString());
-                            p.setString(2, taskInstance.getType());
-                            p.setInt(3, taskInstance.getVersion());
-                            p.setString(4, taskInstance.getName());
-                            p.setObject(5, serializer.serialize(taskInstance.getDependsOn()));
-                            p.setString(6, taskInstance.getId());
-
-                        });
-            } else throw new VersionMismatchException(String.format("Version in repository: %s, Task Version %s",version,taskInstance.getVersion()));
+            // The version check must live in the UPDATE itself: a check-then-act
+            // compare leaves a window where a concurrent writer slips between the
+            // SELECT above and the UPDATE, silently losing one of the writes. The
+            // in-memory version is bumped only after the guarded UPDATE succeeded.
+            int expectedVersion = taskInstance.getVersion();
+            int updated = jdbcRunner.execute(
+                    "update " +
+                            tableName +
+                            " set " +
+                            "   state=?," +
+                            "   type=?," +
+                            "   version=?," +
+                            "   name=?," +
+                            "   depends_on=?" +
+                            " where task_id=? and version=?"
+                    ,
+                    (PreparedStatement p) -> {
+                        p.setString(1, taskInstance.getState().toString());
+                        p.setString(2, taskInstance.getType());
+                        p.setInt(3, expectedVersion + 1);
+                        p.setString(4, taskInstance.getName());
+                        p.setObject(5, serializer.serialize(taskInstance.getDependsOn()));
+                        p.setString(6, taskInstance.getId());
+                        p.setInt(7, expectedVersion);
+                    });
+            if (updated == 0) {
+                throw new VersionMismatchException(String.format("Version in repository: %s, Task Version %s", version, expectedVersion));
+            }
+            taskInstance.setVersion(expectedVersion + 1);
         }
     }
 

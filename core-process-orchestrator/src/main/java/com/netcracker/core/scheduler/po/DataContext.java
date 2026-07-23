@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.netcracker.core.scheduler.po.repository.ContextRepository;
+import com.netcracker.core.scheduler.po.repository.VersionMismatchException;
 import com.netcracker.core.scheduler.po.serializers.DataContextDeserializer;
 import com.netcracker.core.scheduler.po.serializers.DataContextSerializer;
 import lombok.Getter;
@@ -71,8 +72,22 @@ public class DataContext extends HashMap<String, Object> {
         repository.putContext(this);
     }
 
+    /**
+     * Applies the mutation and saves. On a version conflict the fresh context is
+     * reloaded, the same mutation is re-applied to it, and the fresh copy is
+     * saved — so a fixed-value update (task state description, start/end time)
+     * survives a concurrent writer instead of aborting the whole execution.
+     * The mutation must be idempotent.
+     */
     public void apply(Consumer<DataContext> function) {
         function.accept(this);
-        save();
+        try {
+            save();
+        } catch (VersionMismatchException e) {
+            DataContext fresh = repository.getContext(getId());
+            fresh.setRepository(repository);
+            function.accept(fresh);
+            fresh.save();
+        }
     }
 }

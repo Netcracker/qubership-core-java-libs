@@ -123,7 +123,7 @@ public class TaskExecutorService implements ExecutorService {
                         processInstance.save();
                         TaskInstanceImpl task = ProcessOrchestrator.getInstance().getTaskInstanceRepository().getTaskInstance(taskId);
                         task.setState(TaskState.FAILED);
-                        task.save();
+                        task.saveResolvingConflict(t -> t.setState(TaskState.FAILED));
                     }
 
                     return Boolean.TRUE;

@@ -42,7 +42,7 @@ public class ProcessTaskFailureHandler implements FailureHandler<TaskExecutionCo
             if (delegate != null) delegate.onFailure(executionComplete, executionOperations);
             task.setState(TaskState.FAILED);
             task.setEndTime(Calendar.getInstance().getTime());
-            task.save();
+            task.saveResolvingConflict(t -> t.setState(TaskState.FAILED));
             executionOperations.remove();
             logger.error("Task {} with ID:{} failed", executionComplete.getExecution().taskInstance.getTaskName(), executionComplete.getExecution().taskInstance.getId());
         }
