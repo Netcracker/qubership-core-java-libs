@@ -13,7 +13,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +29,8 @@ import java.util.concurrent.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Reproduces the deadlock: when an ArangoDB cluster leader is replaced and the old TCP
@@ -78,8 +79,8 @@ class CheckConnectionTimeoutTest {
     void dbaasArangoTemplate_query_shouldNotHang() throws Exception {
         com.arangodb.ArangoDatabase realDb = buildBlackHoleDriver().db(DB_NAME);
 
-        ArangoTemplate hangingOps = Mockito.mock(ArangoTemplate.class);
-        Mockito.when(hangingOps.query(any(String.class), any(Class.class)))
+        ArangoTemplate hangingOps = mock(ArangoTemplate.class);
+        when(hangingOps.query(any(String.class), any(Class.class)))
                 .thenAnswer(inv -> realDb.query(inv.getArgument(0), Integer.class));
 
         DbaasArangoTemplate template = new DbaasArangoTemplate(null, null, null, props, null) {
@@ -116,8 +117,8 @@ class CheckConnectionTimeoutTest {
         arangoDatabase.setName(DB_NAME);
         arangoDatabase.setConnectionProperties(connection);
 
-        DatabasePool pool = Mockito.mock(DatabasePool.class);
-        Mockito.when(pool.getOrCreateDatabase(any(), any(), any())).thenReturn(arangoDatabase);
+        DatabasePool pool = mock(DatabasePool.class);
+        when(pool.getOrCreateDatabase(any(), any(), any())).thenReturn(arangoDatabase);
 
         long timeoutMs = props.checkConnectionTimeoutMs();
         ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
@@ -128,6 +129,8 @@ class CheckConnectionTimeoutTest {
         );
 
         try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
+            // Not a method reference: ExecutorService.submit() is overloaded for Callable<T> and
+            // Runnable, and provider::provide (non-void) is ambiguous between the two overloads.
             Future<?> future = executor.submit(() -> provider.provide());
             assertNotHang(future,
                     "ArangoDatabaseProvider.provide() blocked indefinitely against a non-responding server. " +
@@ -149,8 +152,8 @@ class CheckConnectionTimeoutTest {
         arangoDatabase.setName(DB_NAME);
         arangoDatabase.setConnectionProperties(connection);
 
-        DatabasePool pool = Mockito.mock(DatabasePool.class);
-        Mockito.when(pool.getOrCreateDatabase(any(), any(), any())).thenReturn(arangoDatabase);
+        DatabasePool pool = mock(DatabasePool.class);
+        when(pool.getOrCreateDatabase(any(), any(), any())).thenReturn(arangoDatabase);
 
         ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
                 pool,
