@@ -186,6 +186,9 @@ public class DatabasePool {
             applyPostConnectProcessors(database);
             database.setDoClose(false);
 
+            // The put deliberately comes last: an entry added before the creator and the
+            // processors have succeeded would survive a failed initialization, and every
+            // retry would then reuse a closed, half-initialized database from the cache.
             databasesCacheL2.put(key, abstractDatabase);
 
             return database;
