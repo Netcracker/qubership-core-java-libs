@@ -1,6 +1,7 @@
 package com.netcracker.cloud.dbaas.client.arangodb.entity.connection;
 
 import com.arangodb.ArangoDatabase;
+import com.arangodb.ArangoDatabaseAsync;
 import com.netcracker.cloud.dbaas.client.entity.connection.DatabaseConnection;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ public class ArangoConnection extends DatabaseConnection {
     private String dbName;
 
     private ArangoDatabase arangoDatabase;
+    private ArangoDatabaseAsync arangoDatabaseAsync;
 
     @Override
     public void close() {

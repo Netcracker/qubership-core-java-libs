@@ -43,6 +43,7 @@ public class ArangoPostProcessor implements PostConnectProcessor<ArangoDatabase>
 
         ArangoDB arangoDB = arangoDBBuilder.build();
         connectionProperties.setArangoDatabase(arangoDB.db(connectionProperties.getDbName()));
+        connectionProperties.setArangoDatabaseAsync(arangoDB.async().db(connectionProperties.getDbName()));
         log.info("Finished creating ArangoOperations for database: {}", database.getName());
     }
 
