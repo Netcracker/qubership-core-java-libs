@@ -104,6 +104,7 @@ class CheckConnectionTimeoutTest {
     }
 
     @Test
+    @SuppressWarnings("java:S1612") // method ref is ambiguous here, see comment below
     void arangoDatabaseProvider_provide_shouldNotHang() throws Exception {
         ArangoDB driver = buildBlackHoleDriver();
         ArangoConnection connection = new ArangoConnection();

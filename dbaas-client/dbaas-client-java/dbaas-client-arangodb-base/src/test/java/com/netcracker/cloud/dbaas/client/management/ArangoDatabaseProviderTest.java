@@ -31,7 +31,7 @@ class ArangoDatabaseProviderTest {
     private static CompletableFuture<ArangoCursorAsync<Integer>> checkFuture;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         databasePool = mock(DatabasePool.class);
         checkFuture = CompletableFuture.completedFuture(cursorAsyncReturning(42));
         when(databasePool.getOrCreateDatabase(any(ArangoDBType.class), any(DbaasDbClassifier.class), any(DatabaseConfig.class))).thenAnswer(
