@@ -5,33 +5,58 @@ import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.ForwardingAdmin;
 import org.apache.kafka.common.metrics.KafkaMetric;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 class MaaSKafkaAdminWrapperTest {
 
+    private final MaaSKafkaAdminWrapper.DelegateFieldGetter originalDelegateFieldGetter =
+            MaaSKafkaAdminWrapper.delegateFieldGetter;
+
+    @AfterEach
+    void restoreDelegateFieldGetter() {
+        MaaSKafkaAdminWrapper.delegateFieldGetter = originalDelegateFieldGetter;
+    }
+
     @Test
-    void registerAndUnregisterMetricForSubscription_delegateToUnderlyingAdmin() throws Exception {
+    void registerAndUnregisterMetricForSubscription_delegateToUnderlyingAdmin() {
         Map<String, Object> configs = Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         KafkaMaaSClient kafkaMaaSClient = mock(KafkaMaaSClient.class);
         Admin underlyingAdmin = mock(Admin.class);
         KafkaMetric metric = mock(KafkaMetric.class);
 
-        try (MaaSKafkaAdminWrapper wrapper = MaaSKafkaAdminWrapper.builder(configs, kafkaMaaSClient).build()) {
-            replaceDelegate(wrapper, underlyingAdmin);
+        MaaSKafkaAdminWrapper.delegateFieldGetter = target -> underlyingAdmin;
 
-            assertDoesNotThrow(() -> wrapper.registerMetricForSubscription(metric));
-            assertDoesNotThrow(() -> wrapper.unregisterMetricFromSubscription(metric));
+        try (MaaSKafkaAdminWrapper wrapper = MaaSKafkaAdminWrapper.builder(configs, kafkaMaaSClient).build()) {
+            wrapper.registerMetricForSubscription(metric);
+            wrapper.unregisterMetricFromSubscription(metric);
 
             verify(underlyingAdmin).registerMetricForSubscription(metric);
             verify(underlyingAdmin).unregisterMetricFromSubscription(metric);
+        }
+    }
+
+    @Test
+    void registerMetricForSubscription_wrapsIllegalAccessException() {
+        Map<String, Object> configs = Map.of(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        KafkaMaaSClient kafkaMaaSClient = mock(KafkaMaaSClient.class);
+        KafkaMetric metric = mock(KafkaMetric.class);
+
+        MaaSKafkaAdminWrapper.delegateFieldGetter = target -> {
+            throw new IllegalAccessException("forced for test");
+        };
+
+        try (MaaSKafkaAdminWrapper wrapper = MaaSKafkaAdminWrapper.builder(configs, kafkaMaaSClient).build()) {
+            IllegalStateException exception = assertThrows(IllegalStateException.class,
+                    () -> wrapper.registerMetricForSubscription(metric));
+            assertInstanceOf(IllegalAccessException.class, exception.getCause());
         }
     }
 
@@ -44,16 +69,6 @@ class MaaSKafkaAdminWrapperTest {
                     () -> forwardingAdmin.registerMetricForSubscription(metric));
             assertThrows(UnsupportedOperationException.class,
                     () -> forwardingAdmin.unregisterMetricFromSubscription(metric));
-        }
-    }
-
-    private static void replaceDelegate(ForwardingAdmin admin, Admin delegate) throws Exception {
-        Field delegateField = ForwardingAdmin.class.getDeclaredField("delegate");
-        delegateField.setAccessible(true);
-        Admin previous = (Admin) delegateField.get(admin);
-        delegateField.set(admin, delegate);
-        if (previous != null) {
-            previous.close();
         }
     }
 }

@@ -58,6 +58,14 @@ public class MaaSKafkaAdminWrapper extends ForwardingAdmin {
         }
     }
 
+    @FunctionalInterface
+    interface DelegateFieldGetter {
+        Object get(Object target) throws IllegalAccessException;
+    }
+
+    // Package-visible for tests; defaults to reflection over ForwardingAdmin.delegate.
+    static DelegateFieldGetter delegateFieldGetter = FORWARDING_ADMIN_DELEGATE::get;
+
     private final Map<String, Object> configs;
     private final KafkaMaaSClient kafkaMaaSClient;
     @Builder.Default
@@ -96,7 +104,7 @@ public class MaaSKafkaAdminWrapper extends ForwardingAdmin {
 
     private Admin adminDelegate() {
         try {
-            return (Admin) FORWARDING_ADMIN_DELEGATE.get(this);
+            return (Admin) delegateFieldGetter.get(this);
         } catch (IllegalAccessException e) {
             throw new IllegalStateException("Unable to access ForwardingAdmin.delegate for metrics delegation", e);
         }
