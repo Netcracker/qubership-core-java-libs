@@ -147,8 +147,8 @@ class StaleCachedConnectionHangTest {
             // Trigger checkConnection() in background
             Thread callerThread = new Thread(() -> {
                 try { provider.provide(); } catch (Exception ignored2) {
-                    // provide() is expected to throw once the check times out against the silent proxy;
-                    // the test only cares that the CHECK_EXECUTOR slot is released afterward.
+                    // The provide call is expected to fail once the check times out against the
+                    // silent proxy — the test only cares that the CHECK_EXECUTOR slot is released afterward.
                 }
             }, "test-caller");
             callerThread.setDaemon(true);
