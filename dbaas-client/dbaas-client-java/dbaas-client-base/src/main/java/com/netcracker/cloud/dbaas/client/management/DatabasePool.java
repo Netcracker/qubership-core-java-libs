@@ -58,14 +58,15 @@ public class DatabasePool {
     private final Map<DatabaseKey<?, ?>, AbstractDatabase<?>> databasesCacheL1 = new ConcurrentHashMap<>();
 
     /**
-     * This cache contains connection properties of the databases, that were obtained from DBaaS,
-     * but which post-processors have failed. <br><br>
+     * L2 cache holds databases whose initialization — the database client creator and the
+     * post-connect processors — has fully succeeded. <br><br>
      * <p>
-     * When client comes for a database, if we don't find it in L1 cache, we take database from L2 cache and try to
-     * apply post-processors. If post-processors succeed, we save this database connection in L1 cache. <br><br>
+     * When client comes for a database and it is missing from L1, we take it from here and
+     * re-initialize it instead of requesting DBaaS again. A database whose initialization
+     * failed is closed and deliberately not cached, so the next request starts from a fresh
+     * DBaaS lookup instead of reusing a closed connection. <br><br>
      * <p>
-     * If database is not present in L2, DBaaS Client gets new database from DBaaS and subscribes on notifications
-     * about this database's changes. <br><br>
+     * If database is not present in L2 either, DBaaS Client gets a new database from DBaaS. <br><br>
      */
     private final Map<DatabaseKey<?, ?>, AbstractDatabase<?>> databasesCacheL2 = new ConcurrentHashMap<>();
 
@@ -166,19 +167,22 @@ public class DatabasePool {
                 abstractDatabase = createDatabase(key, databaseConfig);
             }
         } catch (Exception e) {
-            log.error("Error while retrieving database from cache by key {}: {}", key, e);
+            log.error("Error while retrieving database from cache by key {}", key, e);
             throw new RuntimeException("Failed to get or create database", e);
         }
 
         log.info("Created or received existing database: {}", abstractDatabase);
-        DatabaseClientCreator<D, P> databaseClientCreator = (DatabaseClientCreator<D, P>) mapDatabaseClientCreators.get(key.getDbType().getDatabaseClass());
-        if (databaseClientCreator != null) {
-            log.debug("Running database client creators on db {}", abstractDatabase.getName());
-            databaseClientCreator.create((D) abstractDatabase, settings);
-        }
-        log.debug("Running post connect processors on db {}", abstractDatabase.getName());
+        // The client creator runs inside try-with-resources on purpose: it may allocate live
+        // resources (e.g. a connection pool) before failing, and a database that did not finish
+        // initialization must be closed and must not reach the cache.
         try (AbstractDatabase<?> database = abstractDatabase) {
             database.setDoClose(true);
+            DatabaseClientCreator<D, P> databaseClientCreator = (DatabaseClientCreator<D, P>) mapDatabaseClientCreators.get(key.getDbType().getDatabaseClass());
+            if (databaseClientCreator != null) {
+                log.debug("Running database client creators on db {}", database.getName());
+                databaseClientCreator.create((D) database, settings);
+            }
+            log.debug("Running post connect processors on db {}", database.getName());
             applyPostConnectProcessors(database);
             database.setDoClose(false);
 
@@ -186,8 +190,8 @@ public class DatabasePool {
 
             return database;
         } catch (Exception e) {
-            log.error("One of postprocessors has failed with error", e);
-            throw new RuntimeException("PostProcessor error", e);
+            log.error("Database client creator or post-connect processor failed; the connection is closed and not cached", e);
+            throw new RuntimeException("Database initialization error", e);
         }
     }
 
