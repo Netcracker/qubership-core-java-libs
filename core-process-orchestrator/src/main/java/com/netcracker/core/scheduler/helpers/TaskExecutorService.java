@@ -112,29 +112,34 @@ public class TaskExecutorService implements ExecutorService {
             final Future<Boolean> future = delegate.submit(wrapper);
             tasks.put(fk, future);
             if (timeout != 0L) {
-                tasks.put(fk2, delegate.submit(() -> {
-                    try {
-                        future.get(timeout, TimeUnit.SECONDS);
-                    } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                        if (e instanceof InterruptedException) {
-                            Thread.currentThread().interrupt();
-                        }
-                        log.info("Task {} execution was interrupted by timeout", taskId);
-                        future.cancel(true);
-                        ProcessInstanceImpl processInstance = ProcessOrchestrator.getInstance().getProcessInstance(taskInstance.getProcessID());
-                        processInstance.setState(TaskState.FAILED);
-                        processInstance.saveResolvingConflict(pi -> pi.setState(TaskState.FAILED));
-                        TaskInstanceImpl task = ProcessOrchestrator.getInstance().getTaskInstanceRepository().getTaskInstance(taskId);
-                        task.setState(TaskState.FAILED);
-                        task.saveResolvingConflict(t -> t.setState(TaskState.FAILED));
-                    }
-
-                    return Boolean.TRUE;
-                }));
+                tasks.put(fk2, delegate.submit(() -> watchTask(future, timeout, taskId, taskInstance.getProcessID())));
             }
 
 
         }
+    }
+
+    // Watchdog for tasks with a sync timeout. The completion callback in execute()
+    // cancels the watchdog with cancel(true) once the task finishes, so an
+    // interrupt means "stop watching", not "the task timed out" — only a real
+    // timeout or a failed worker future may mark the task and process FAILED.
+    // Package-private so tests can drive it directly.
+    Boolean watchTask(Future<Boolean> future, long timeout, String taskId, String processId) {
+        try {
+            future.get(timeout, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException | TimeoutException e) {
+            log.info("Task {} execution was interrupted by timeout", taskId);
+            future.cancel(true);
+            ProcessInstanceImpl processInstance = ProcessOrchestrator.getInstance().getProcessInstance(processId);
+            processInstance.setState(TaskState.FAILED);
+            processInstance.saveResolvingConflict(pi -> pi.setState(TaskState.FAILED));
+            TaskInstanceImpl task = ProcessOrchestrator.getInstance().getTaskInstanceRepository().getTaskInstance(taskId);
+            task.setState(TaskState.FAILED);
+            task.saveResolvingConflict(t -> t.setState(TaskState.FAILED));
+        }
+        return Boolean.TRUE;
     }
 
 
