@@ -11,9 +11,11 @@ import com.netcracker.cloud.quarkus.dbaas.mongoclient.config.properties.DbaasMon
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.config.properties.MongoDbConfiguration;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.entity.connection.MongoDBConnection;
 import com.netcracker.cloud.quarkus.dbaas.mongoclient.entity.database.MongoDatabase;
+import com.netcracker.cloud.quarkus.dbaas.mongoclient.service.MongoLogicalDbProvider;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.QuarkusTestProfile;
 import io.quarkus.test.junit.TestProfile;
+import jakarta.enterprise.inject.Instance;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -25,11 +27,14 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.SortedMap;
+import java.util.stream.Stream;
 
 import static com.netcracker.cloud.dbaas.client.DbaasConst.SCOPE;
 import static com.netcracker.cloud.dbaas.client.DbaasConst.SERVICE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -67,7 +72,16 @@ class MongoClientCreationImplTest {
 
         dbaaSClient = mock(DbaaSClientOkHttpImpl.class);
         when(dbaaSClient.getOrCreateDatabase(any(), anyString(), anyMap(), any(DatabaseConfig.class))).thenReturn(mongoDatabase);
-        mongoClientCreationImpl.dbaaSClient = dbaaSClient;
+        mongoClientCreationImpl.dbProviders = singleProviderChain(dbaaSClient);
+    }
+
+    /** Wraps the mocked dbaas client in the REST agent provider and exposes it as a single-element chain. */
+    @SuppressWarnings("unchecked")
+    static Instance<MongoLogicalDbProvider> singleProviderChain(DbaasClient dbaasClient) {
+        DbaaSMongoLogicalDbProvider agentProvider = new DbaaSMongoLogicalDbProvider(dbaasClient);
+        Instance<MongoLogicalDbProvider> dbProviders = mock(Instance.class);
+        when(dbProviders.stream()).thenAnswer(inv -> Stream.<MongoLogicalDbProvider>of(agentProvider));
+        return dbProviders;
     }
 
     @Test
@@ -81,6 +95,55 @@ class MongoClientCreationImplTest {
         assertNotNull(db);
         assertNotNull(db.getConnectionProperties().getClient());
         assertEquals("dbName", db.getConnectionProperties().getAuthDbName());
+    }
+
+    /** Wraps ad-hoc providers into the CDI Instance shape the creation service expects. */
+    @SuppressWarnings("unchecked")
+    private static Instance<MongoLogicalDbProvider> chainOf(MongoLogicalDbProvider... providers) {
+        Instance<MongoLogicalDbProvider> instance = mock(Instance.class);
+        when(instance.stream()).thenAnswer(inv -> Stream.of(providers));
+        return instance;
+    }
+
+    private DbaasDbClassifier serviceClassifier() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("microserviceName", "test-service");
+        params.put(SCOPE, SERVICE);
+        return new DbaasDbClassifier(params);
+    }
+
+    /** Fixed-result provider; also exercises MongoLogicalDbProvider's default order(). */
+    private static MongoLogicalDbProvider fixedProvider(MongoDatabase result) {
+        return new MongoLogicalDbProvider() {
+            @Override
+            public MongoDatabase provide(SortedMap<String, Object> classifier, DatabaseConfig params, String namespace) {
+                return result;
+            }
+        };
+    }
+
+    @Test
+    void rejectsProviderThatReturnsDatabaseWithoutConnectionProperties() {
+        Instance<MongoLogicalDbProvider> original = mongoClientCreationImpl.dbProviders;
+        try {
+            mongoClientCreationImpl.dbProviders = chainOf(fixedProvider(new MongoDatabase()));
+            assertThrows(IllegalStateException.class,
+                    () -> mongoClientCreationImpl.getOrCreateMongoDatabase(serviceClassifier()));
+        } finally {
+            mongoClientCreationImpl.dbProviders = original;
+        }
+    }
+
+    @Test
+    void failsWhenNoProviderResolvesADatabase() {
+        Instance<MongoLogicalDbProvider> original = mongoClientCreationImpl.dbProviders;
+        try {
+            mongoClientCreationImpl.dbProviders = chainOf(fixedProvider(null));
+            assertThrows(IllegalStateException.class,
+                    () -> mongoClientCreationImpl.getOrCreateMongoDatabase(serviceClassifier()));
+        } finally {
+            mongoClientCreationImpl.dbProviders = original;
+        }
     }
 
     @Test

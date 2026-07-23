@@ -3,6 +3,7 @@ package com.netcracker.cloud.dbaas.common.deployment;
 import com.netcracker.cloud.dbaas.common.config.DbaaSClassifierProducer;
 import com.netcracker.cloud.dbaas.common.config.DbaaSMetricsRegistrarProducer;
 import com.netcracker.cloud.dbaas.common.config.DbaasClientProducer;
+import com.netcracker.cloud.dbaas.common.mountedsecret.MountedSecretConnectionSource;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
@@ -23,6 +24,7 @@ public class DbaasCommonProcessor {
                 .addBeanClass(DbaasClientProducer.class)
                 .addBeanClass(DbaaSClassifierProducer.class)
                 .addBeanClass(DbaaSMetricsRegistrarProducer.class)
+                .addBeanClass(MountedSecretConnectionSource.class)
                 .build();
     }
 

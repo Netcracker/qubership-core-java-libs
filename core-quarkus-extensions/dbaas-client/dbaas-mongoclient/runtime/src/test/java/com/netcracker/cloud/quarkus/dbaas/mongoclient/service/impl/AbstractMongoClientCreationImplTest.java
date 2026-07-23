@@ -40,6 +40,6 @@ public class AbstractMongoClientCreationImplTest extends ContainerMongoDbBaseCon
 
         DbaasClient dbaaSClient = mock(DbaaSClientOkHttpImpl.class);
         when(dbaaSClient.getOrCreateDatabase(any(), anyString(), anyMap(), any(DatabaseConfig.class))).thenReturn(mongoDatabase);
-        mongoClientCreationImpl.dbaaSClient = dbaaSClient;
+        mongoClientCreationImpl.dbProviders = MongoClientCreationImplTest.singleProviderChain(dbaaSClient);
     }
 }
