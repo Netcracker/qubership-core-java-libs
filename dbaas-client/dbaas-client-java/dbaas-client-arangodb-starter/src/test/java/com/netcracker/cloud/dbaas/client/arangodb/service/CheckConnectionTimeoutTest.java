@@ -27,6 +27,7 @@ import java.net.Socket;
 import java.util.Optional;
 import java.util.concurrent.*;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -103,11 +104,13 @@ class CheckConnectionTimeoutTest {
 
     @Test
     void arangoDatabaseProvider_provide_shouldNotHang() throws Exception {
+        ArangoDB driver = buildBlackHoleDriver();
         ArangoConnection connection = new ArangoConnection();
         connection.setHost("127.0.0.1");
         connection.setPort(blackHoleServer.getLocalPort());
         connection.setDbName(DB_NAME);
-        connection.setArangoDatabase(buildBlackHoleDriver().db(DB_NAME));
+        connection.setArangoDatabase(driver.db(DB_NAME));
+        connection.setArangoDatabaseAsync(driver.async().db(DB_NAME));
 
         ArangoDatabase arangoDatabase = new ArangoDatabase();
         arangoDatabase.setName(DB_NAME);
@@ -130,6 +133,34 @@ class CheckConnectionTimeoutTest {
                     "ArangoDatabaseProvider.provide() blocked indefinitely against a non-responding server. " +
                             "Ensure dbaas.arangodb.timeout is set to a positive value.");
         }
+    }
+
+    @Test
+    void arangoDatabaseProvider_provide_shouldThrowWhenAllChecksFail() {
+        ArangoDB driver = buildBlackHoleDriver();
+        ArangoConnection connection = new ArangoConnection();
+        connection.setHost("127.0.0.1");
+        connection.setPort(blackHoleServer.getLocalPort());
+        connection.setDbName(DB_NAME);
+        connection.setArangoDatabase(driver.db(DB_NAME));
+        connection.setArangoDatabaseAsync(driver.async().db(DB_NAME));
+
+        ArangoDatabase arangoDatabase = new ArangoDatabase();
+        arangoDatabase.setName(DB_NAME);
+        arangoDatabase.setConnectionProperties(connection);
+
+        DatabasePool pool = Mockito.mock(DatabasePool.class);
+        Mockito.when(pool.getOrCreateDatabase(any(), any(), any())).thenReturn(arangoDatabase);
+
+        ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
+                pool,
+                new ArangoDBClassifierBuilder(null),
+                DatabaseConfig.builder().build(),
+                0, 0, props.checkConnectionTimeoutMs()
+        );
+
+        // retries=0 and the check always times out against the black hole -> exhaustion -> throw
+        assertThrows(IllegalStateException.class, provider::provide);
     }
 
     private ArangoDB buildBlackHoleDriver() {

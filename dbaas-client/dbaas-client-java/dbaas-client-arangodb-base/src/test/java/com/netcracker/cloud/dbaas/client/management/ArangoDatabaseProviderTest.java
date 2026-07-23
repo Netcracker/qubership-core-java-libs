@@ -1,7 +1,8 @@
 package com.netcracker.cloud.dbaas.client.management;
 
-import com.arangodb.ArangoCursor;
+import com.arangodb.ArangoCursorAsync;
 import com.arangodb.ArangoDatabase;
+import com.arangodb.ArangoDatabaseAsync;
 import com.netcracker.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
 import com.netcracker.cloud.dbaas.client.arangodb.entity.database.type.ArangoDBType;
 import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSChainClassifierBuilder;
@@ -12,7 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.util.concurrent.CountDownLatch;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static com.netcracker.cloud.dbaas.client.arangodb.classifier.ArangoDBClassifierBuilder.DB_ID_CLASSIFIER_PROPERTY;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,22 +27,25 @@ public class ArangoDatabaseProviderTest {
     private static final String DB_NAME_2 = "db-test-name-2";
     private static ArangoDatabaseProvider arangoDatabaseProvider;
     private static DatabasePool databasePool;
-    private static ArangoCursor<Integer> cursor;
+    // The async "RETURN 42" probe result, read by the getOrCreateDatabase answer at invocation
+    // time. Tests swap it (never-completing / failed) before calling provide() to drive the check.
+    private static CompletableFuture<ArangoCursorAsync<Integer>> checkFuture;
 
     @BeforeEach
     public void setup() {
         databasePool = mock(DatabasePool.class);
-        cursor = mock(ArangoCursor.class);
-        Mockito.when(cursor.next()).thenReturn(42);
+        checkFuture = CompletableFuture.completedFuture(cursorAsyncReturning(42));
         Mockito.when(databasePool.getOrCreateDatabase(any(ArangoDBType.class), any(DbaasDbClassifier.class), any(DatabaseConfig.class))).thenAnswer(
                 invocationOnMock -> {
                     DbaasDbClassifier dbaasDbClassifier = invocationOnMock.getArgument(1);
                     String dbName = (String) dbaasDbClassifier.asMap().get(DB_ID_CLASSIFIER_PROPERTY);
                     ArangoDatabase arangoDatabase = mock(ArangoDatabase.class);
                     Mockito.when(arangoDatabase.name()).thenReturn(dbName);
+                    ArangoDatabaseAsync arangoDatabaseAsync = mock(ArangoDatabaseAsync.class);
+                    Mockito.when(arangoDatabaseAsync.query(eq("RETURN 42"), eq(Integer.class))).thenReturn(checkFuture);
                     ArangoConnection arangoConnection = new ArangoConnection();
                     arangoConnection.setArangoDatabase(arangoDatabase);
-                    Mockito.when(arangoDatabase.query(any(), eq(Integer.class))).thenReturn(cursor);
+                    arangoConnection.setArangoDatabaseAsync(arangoDatabaseAsync);
                     com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase result = new com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase();
                     result.setConnectionProperties(arangoConnection);
                     return result;
@@ -48,6 +53,13 @@ public class ArangoDatabaseProviderTest {
         );
         DbaaSChainClassifierBuilder classifierBuilder = new ServiceDbaaSClassifierBuilder(null);
         arangoDatabaseProvider = new ArangoDatabaseProvider(databasePool, classifierBuilder, DatabaseConfig.builder().build());
+    }
+
+    @SuppressWarnings("unchecked")
+    private static ArangoCursorAsync<Integer> cursorAsyncReturning(Integer value) {
+        ArangoCursorAsync<Integer> cursor = mock(ArangoCursorAsync.class);
+        when(cursor.getResult()).thenReturn(List.of(value));
+        return cursor;
     }
 
     @Test
@@ -84,47 +96,38 @@ public class ArangoDatabaseProviderTest {
                 .dbNamePrefix("db_prefix_2")
                 .backupDisabled(true)
                 .build();
-        Mockito.when(cursor.next()).thenThrow(new RuntimeException());
         ArangoDatabase firstDb = arangoDatabaseProvider.provide(DB_NAME_1, firstDatabaseConfig);
         ArangoDatabase secondDb = arangoDatabaseProvider.provide(DB_NAME_2, secondDatabaseConfig);
         Assertions.assertNotEquals(firstDb.name(), secondDb.name());
-        Mockito.verify(databasePool, times(2)).getOrCreateDatabase(any(ArangoDBType.class), any(), eq(firstDatabaseConfig));
-        Mockito.verify(databasePool, times(2)).getOrCreateDatabase(any(ArangoDBType.class), any(), eq(secondDatabaseConfig));
+        // Check passes first try, so each physical instance is fetched exactly once.
+        Mockito.verify(databasePool, times(1)).getOrCreateDatabase(any(ArangoDBType.class), any(), eq(firstDatabaseConfig));
+        Mockito.verify(databasePool, times(1)).getOrCreateDatabase(any(ArangoDBType.class), any(), eq(secondDatabaseConfig));
     }
 
     @Test
     void testCheckConnection_Timeout_TreatedAsFailure() {
-        CountDownLatch blockCheck = new CountDownLatch(1);
-        when(cursor.next()).thenAnswer(invocation -> {
-            blockCheck.await();
-            return 42;
-        });
+        checkFuture = new CompletableFuture<>(); // never completes -> get(timeout) times out
         ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
                 databasePool, new ServiceDbaaSClassifierBuilder(null), DatabaseConfig.builder().build(), 0, 0L, 100L);
-        ArangoDatabase db = provider.provide(DB_NAME_1);
-        Assertions.assertNotNull(db);
-        // initial + reconnect (timeout counts as failure)
+        // timeout counts as a failed check; retries=0 -> exhaustion -> throw (decision 11)
+        Assertions.assertThrows(IllegalStateException.class, () -> provider.provide(DB_NAME_1));
+        // initial + reconnect
         verify(databasePool, times(2)).getOrCreateDatabase(any(ArangoDBType.class), any(), any(DatabaseConfig.class));
     }
 
     @Test
-    void testCheckConnection_Interrupted_TreatedAsFailure() {
-        CountDownLatch blockCheck = new CountDownLatch(1);
-        when(cursor.next()).thenAnswer(invocation -> {
-            blockCheck.await();
-            return 42;
-        });
+    void testCheckConnection_Interrupted_Rethrows() {
+        checkFuture = new CompletableFuture<>(); // never completes
         ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
                 databasePool, new ServiceDbaaSClassifierBuilder(null), DatabaseConfig.builder().build(), 0, 0L, 60_000L);
 
         Thread.currentThread().interrupt(); // caller interrupted -> future.get() aborts with InterruptedException
-        ArangoDatabase db = provider.provide(DB_NAME_1);
-
-        Assertions.assertNotNull(db);
-        // flag is re-set only by the InterruptedException branch; verify + clear so it can't leak
+        // decision 13: the base provider restores the flag AND rethrows (abort, don't retry)
+        Assertions.assertThrows(RuntimeException.class, () -> provider.provide(DB_NAME_1));
+        // flag is re-set by the InterruptedException branch; verify + clear so it can't leak
         Assertions.assertTrue(Thread.interrupted());
-        // initial + reconnect (interrupted check counts as failure)
-        verify(databasePool, times(2))
+        // aborted during the very first check -> only the initial getOrCreate happened
+        verify(databasePool, times(1))
                 .getOrCreateDatabase(any(ArangoDBType.class), any(), any(DatabaseConfig.class));
     }
 
@@ -139,8 +142,8 @@ public class ArangoDatabaseProviderTest {
                 .dbNamePrefix("db_prefix_retry")
                 .backupDisabled(true)
                 .build();
-        Mockito.when(cursor.next()).thenThrow(new RuntimeException());
-        databaseProvider.provide(DB_NAME_1, databaseConfig);
+        checkFuture = CompletableFuture.failedFuture(new RuntimeException("check failed"));
+        Assertions.assertThrows(IllegalStateException.class, () -> databaseProvider.provide(DB_NAME_1, databaseConfig));
         int initialInvocationNumber = 1;
         int reconnectInvocationNumber = 1;
         Mockito.verify(databasePool, times(initialInvocationNumber + reconnectInvocationNumber + retries))

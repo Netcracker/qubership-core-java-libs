@@ -5,7 +5,6 @@ import com.netcracker.cloud.dbaas.client.arangodb.classifier.ArangoDBClassifierB
 import com.netcracker.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
 import com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
 import com.netcracker.cloud.dbaas.client.arangodb.test.configuration.TestArangoDBContainer;
-import com.netcracker.cloud.dbaas.client.management.ArangoConnectionChecker;
 import com.netcracker.cloud.dbaas.client.management.ArangoDatabaseProvider;
 import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
 import com.netcracker.cloud.dbaas.client.management.DatabasePool;
@@ -85,6 +84,7 @@ class StaleCachedConnectionHangTest {
 
             ArangoConnection staleConnection = new ArangoConnection();
             staleConnection.setArangoDatabase(driver.db(DB_NAME_1));
+            staleConnection.setArangoDatabaseAsync(driver.async().db(DB_NAME_1));
 
             ArangoDatabase staleDb = new ArangoDatabase();
             staleDb.setName(DB_NAME_1);
@@ -106,61 +106,6 @@ class StaleCachedConnectionHangTest {
                         "ArangoDatabaseProvider.provide() hung on a stale cached connection. " +
                                 "checkConnection() needs an explicit deadline independent of the " +
                                 "driver's socket timeout.");
-            }
-        }
-    }
-
-    @Test
-    void checkExecutor_slot_shouldBeReleasedAfterTimeout() throws Exception {
-        ArangoDB driver = new ArangoDB.Builder()
-                .host("127.0.0.1", proxy.getLocalPort())
-                .user(TEST_USER)
-                .password(TEST_PASSWORD)
-                .timeout(0)
-                .build();
-
-        try (Closeable ignored = driver::shutdown) {
-            driver.db(DB_NAME_1).query("RETURN 1", Integer.class).close();
-            proxy.goSilent();
-
-            ArangoConnection staleConnection = new ArangoConnection();
-            staleConnection.setArangoDatabase(driver.db(DB_NAME_1));
-
-            ArangoDatabase staleDb = new ArangoDatabase();
-            staleDb.setName(DB_NAME_1);
-            staleDb.setConnectionProperties(staleConnection);
-
-            DatabasePool pool = mock(DatabasePool.class);
-            when(pool.getOrCreateDatabase(any(), any(), any())).thenReturn(staleDb);
-
-            ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
-                    pool,
-                    new ArangoDBClassifierBuilder(null),
-                    DatabaseConfig.builder().build(),
-                    0, 0, CHECK_TIMEOUT_MS
-            );
-
-            // Grab EXECUTOR via reflection to observe activeCount
-            java.lang.reflect.Field executorField = ArangoConnectionChecker.class.getDeclaredField("EXECUTOR");
-            executorField.setAccessible(true);
-            ThreadPoolExecutor executor = (ThreadPoolExecutor) executorField.get(null);
-
-            // Trigger checkConnection() in background
-            Thread callerThread = new Thread(() -> {
-                try { provider.provide(); } catch (Exception ignored2) {
-                    // The provide call is expected to fail once the check times out against the
-                    // silent proxy — the test only cares that the CHECK_EXECUTOR slot is released afterward.
-                }
-            }, "test-caller");
-            callerThread.setDaemon(true);
-            callerThread.start();
-
-            // Wait until the worker slot is taken, then wait for it to be released
-            callerThread.join(CHECK_TIMEOUT_MS * 3 + 1000);
-
-            if (executor.getActiveCount() > 0) {
-                fail("ArangoConnectionChecker.EXECUTOR slot was not released after checkConnectionTimeoutMs — " +
-                        "future.cancel(true) failed to interrupt the blocked CompletableFuture.get()");
             }
         }
     }

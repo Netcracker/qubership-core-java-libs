@@ -1,6 +1,10 @@
 package com.netcracker.cloud.dbaas.client.arangodb.service;
 
 import com.arangodb.ArangoCursor;
+import com.arangodb.ArangoCursorAsync;
+import com.arangodb.ArangoDB;
+import com.arangodb.ArangoDBAsync;
+import com.arangodb.ArangoDatabaseAsync;
 import com.arangodb.internal.cursor.ArangoCursorImpl;
 import com.arangodb.springframework.core.ArangoOperations;
 import com.arangodb.springframework.core.template.ArangoTemplate;
@@ -29,7 +33,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class DbaasArangoTemplateTest {
@@ -196,9 +199,11 @@ public class DbaasArangoTemplateTest {
             return null;
         }).when(dbaasArangoTemplate).initArangoTemplate();
 
+        // checkConnection no longer consumes a query stub (it probes via driver().async()),
+        // so the direct call fails, the check fails (unstubbed driver() -> NPE -> false), then
+        // the retry succeeds.
         Mockito.when(arangoTemplate.query(any(), any()))
                 .thenThrow(new RuntimeException("Bad connection for direct call"))
-                .thenThrow(new RuntimeException("Bad connection for check"))
                 .thenAnswer(invocationOnMock -> arangoCursor13);
         ArangoCursor<Integer> query = dbaasArangoTemplate.query("RETURN 13", Integer.class);
         assertEquals(13, query.next());
@@ -231,31 +236,43 @@ public class DbaasArangoTemplateTest {
         configField.setAccessible(true);
         configField.set(dbaasArangoTemplate, config);
 
-        CountDownLatch blockCheck = new CountDownLatch(1);
-        when(arangoTemplate.query(eq("RETURN 42"), any())).thenAnswer(inv -> {
-            blockCheck.await();
-            return arangoCursor42;
-        });
+        // A never-completing future -> get(timeout) times out -> false
+        stubAsyncCheckQuery(arangoTemplate, new CompletableFuture<>());
 
-        // check query outlives the timeout -> future.get times out -> false
         assertFalse(dbaasArangoTemplate.checkConnection(arangoTemplate));
     }
 
     @Test
     public void testCheckConnection_Interrupted_ReturnsFalse() {
-        // The pre-set interrupt makes future.get abort before the worker reaches this query,
-        // so the stubbing is lenient. The latch only keeps the Future in-flight long enough
-        // for get to observe the interrupt.
-        CountDownLatch blockCheck = new CountDownLatch(1);
-        Mockito.lenient().when(arangoTemplate.query(eq("RETURN 42"), any())).thenAnswer(inv -> {
-            blockCheck.await();
-            return arangoCursor42;
-        });
+        // A never-completing future keeps get() blocked; the pre-set interrupt makes it abort
+        // with InterruptedException -> checkConnection returns false.
+        stubAsyncCheckQuery(arangoTemplate, new CompletableFuture<>());
 
         Thread.currentThread().interrupt(); // caller interrupted -> future.get() aborts with InterruptedException
         assertFalse(dbaasArangoTemplate.checkConnection(arangoTemplate));
         // flag is re-set only by the InterruptedException branch; verify + clear so it can't leak
         assertTrue(Thread.interrupted());
+    }
+
+    /**
+     * Wires operations.driver().async().db(any()).query("RETURN 42", Integer.class) to return
+     * the given future, matching how the async checkConnection probes the connection.
+     */
+    private void stubAsyncCheckQuery(ArangoTemplate operations, CompletableFuture<ArangoCursorAsync<Integer>> future) {
+        ArangoDB driver = Mockito.mock(ArangoDB.class);
+        ArangoDBAsync asyncDriver = Mockito.mock(ArangoDBAsync.class);
+        ArangoDatabaseAsync asyncDb = Mockito.mock(ArangoDatabaseAsync.class);
+        Mockito.lenient().when(operations.driver()).thenReturn(driver);
+        Mockito.lenient().when(driver.async()).thenReturn(asyncDriver);
+        Mockito.lenient().when(asyncDriver.db(any())).thenReturn(asyncDb);
+        Mockito.lenient().when(asyncDb.query(eq("RETURN 42"), eq(Integer.class))).thenReturn(future);
+    }
+
+    @SuppressWarnings("unchecked")
+    private ArangoCursorAsync<Integer> cursorAsyncReturning(Integer value) {
+        ArangoCursorAsync<Integer> cursor = Mockito.mock(ArangoCursorAsync.class);
+        Mockito.lenient().when(cursor.getResult()).thenReturn(List.of(value));
+        return cursor;
     }
 
     @Test
@@ -264,7 +281,7 @@ public class DbaasArangoTemplateTest {
         field.setAccessible(true);
         field.set(dbaasArangoTemplate, arangoTemplate);
 
-        Mockito.when(arangoTemplate.query(eq("RETURN 42"), any())).thenReturn(arangoCursor42);
+        stubAsyncCheckQuery(arangoTemplate, CompletableFuture.completedFuture(cursorAsyncReturning(42)));
         Mockito.when(arangoTemplate.query(eq("RETURN 13"), any())).thenThrow(new RuntimeException("Bad request"));
 
         assertThrows(RuntimeException.class, () -> dbaasArangoTemplate.query("RETURN 13", Integer.class));
