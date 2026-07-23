@@ -1,8 +1,6 @@
 package com.netcracker.cloud.dbaas.client.management;
 
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netcracker.cloud.dbaas.client.DbaasClient;
 import com.netcracker.cloud.dbaas.client.DbaasConst;
 import com.netcracker.cloud.dbaas.client.entity.database.AbstractConnectorSettings;
@@ -10,7 +8,6 @@ import com.netcracker.cloud.dbaas.client.entity.database.AbstractDatabase;
 import com.netcracker.cloud.dbaas.client.entity.database.type.DatabaseType;
 import com.netcracker.cloud.dbaas.client.service.LogicalDbProvider;
 import com.netcracker.cloud.dbaas.client.service.mountedsecret.MountedSecretSource;
-import com.netcracker.cloud.dbaas.client.service.mountedsecret.SecretMetadata;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,9 +28,10 @@ public class DatabasePool {
     private final String microserviceName;
     private final String namespace;
     private List<PostConnectProcessor<?>> postProcessors;
+    @SuppressWarnings("java:S5738") // the deprecated definition flow stays until it is removed from the public constructors
     private DatabaseDefinitionHandler databaseDefinitionHandler;
     private final Comparator<Object> postConnectProcessorsOrder;
-    private List<LogicalDbProvider> dbProviders;
+    private List<LogicalDbProvider<?, ?>> dbProviders;
     private Map<Class<? extends AbstractDatabase<?>>, DatabaseClientCreator<?, ?>> mapDatabaseClientCreators = new ConcurrentHashMap<>();
 
     /**
@@ -42,14 +40,6 @@ public class DatabasePool {
      * mounted it returns empty and the pool falls back to REST exactly as before.
      */
     private MountedSecretSource mountedSecretSource = new MountedSecretSource();
-
-    /**
-     * Used to build a typed {@link AbstractDatabase} from a mounted Secret via the synthetic-response
-     * mechanism (a property map converted to {@code DatabaseType#getDatabaseClass()}). Unknown
-     * connection-property keys (e.g. {@code roHost}) are tolerated, matching the REST deserialization.
-     */
-    private final ObjectMapper objectMapper = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     /**
      * L1 cache holds cached databases connections. When client asks for a database, we first look in L1 cache.
@@ -70,6 +60,7 @@ public class DatabasePool {
      */
     private final Map<DatabaseKey<?, ?>, AbstractDatabase<?>> databasesCacheL2 = new ConcurrentHashMap<>();
 
+    @SuppressWarnings("java:S5738") // public API: the deprecated DatabaseDefinitionHandler parameter cannot be dropped compatibly
     public DatabasePool(DbaasClient dbaasClient,
                         String microserviceName,
                         String namespace,
@@ -82,6 +73,7 @@ public class DatabasePool {
     }
 
 
+    @SuppressWarnings({"java:S107", "java:S5738"}) // public API: the parameter list and the deprecated DatabaseDefinitionHandler cannot change compatibly
     public DatabasePool(DbaasClient dbaasClient,
                         String microserviceName,
                         String namespace,
@@ -134,18 +126,28 @@ public class DatabasePool {
         }
     }
 
-    private List<LogicalDbProvider> sortProviders(List<LogicalDbProvider<?, ?>> dbProviders) {
-        return dbProviders.stream().sorted(Comparator.comparingInt(LogicalDbProvider::order)).collect(Collectors.toList());
+    private List<LogicalDbProvider<?, ?>> sortProviders(List<LogicalDbProvider<?, ?>> dbProviders) {
+        return dbProviders.stream()
+                .sorted(Comparator.comparingInt(LogicalDbProvider::order))
+                .toList();
     }
 
     public <T, D extends AbstractDatabase<T>> void removeCachedDatabase(DatabaseType<T, D> dbType,
                                                                         DbaasDbClassifier dbaasDbClassifier) {
         enrichClassifier(dbaasDbClassifier);
-        removeCachedDatabase(new DatabaseKey<>(dbType, dbaasDbClassifier.asMap(), null));
+        removeByKey(new DatabaseKey<>(dbType, dbaasDbClassifier.asMap(), null));
     }
 
-    @Deprecated(forRemoval = true) // do not use this method because the key's classifier may be not enriched
+    /**
+     * @deprecated the key's classifier may be not enriched; use
+     * {@link #removeCachedDatabase(DatabaseType, DbaasDbClassifier)} instead.
+     */
+    @Deprecated(forRemoval = true)
     public <T, D extends AbstractDatabase<T>> void removeCachedDatabase(DatabaseKey<T, D> key) {
+        removeByKey(key);
+    }
+
+    private void removeByKey(DatabaseKey<?, ?> key) {
         if (databasesCacheL2.containsKey(key)) {
             databasesCacheL2.remove(key);
             AbstractDatabase<?> oldDatabase = databasesCacheL1.remove(key);
@@ -198,6 +200,7 @@ public class DatabasePool {
         }
     }
 
+    @SuppressWarnings("java:S5738") // the deprecated definition flow runs until DatabaseDefinitionHandler is removed
     protected <T, D extends AbstractDatabase<T>> D createDatabase(DatabaseKey<T, D> key, DatabaseConfig databaseConfig) {
         Map<String, Object> classifierFromKey = key.getClassifier();
         Map<String, Object> classifier = new HashMap<>(classifierFromKey);
@@ -229,39 +232,8 @@ public class DatabasePool {
                                                                         DatabaseType<T, D> type) {
         String role = databaseConfig != null ? databaseConfig.getUserRole() : null;
         return mountedSecretSource.resolve(classifier, type.getName(), role)
-                .map(resolved -> buildAbstractDatabase(type, classifier, resolved))
+                .map(resolved -> mountedSecretSource.buildDatabase(type.getDatabaseClass(), classifier, resolved))
                 .orElse(null);
-    }
-
-    /**
-     * Builds the typed database from a mounted Secret (synthetic-response): assemble a map mirroring
-     * the dbaas REST response and convert it to {@code type.getDatabaseClass()} with the same
-     * deserialization semantics as the REST path. No provisioning and no REST call happen here.
-     */
-    private <T, D extends AbstractDatabase<T>> D buildAbstractDatabase(DatabaseType<T, D> type,
-                                                                       Map<String, Object> classifier,
-                                                                       MountedSecretSource.Resolved resolved) {
-        SecretMetadata meta = resolved.metadata();
-        Map<String, Object> synthetic = new HashMap<>();
-        synthetic.put("classifier", meta.getClassifier() != null ? meta.getClassifier() : classifier);
-        synthetic.put("connectionProperties", resolved.connectionProperties());
-
-        String name = meta.getName() != null ? meta.getName() : asString(resolved.connectionProperties().get("name"));
-        if (name != null) {
-            synthetic.put("name", name);
-        }
-        String dbNamespace = meta.getNamespace() != null ? meta.getNamespace() : asString(classifier.get(DbaasConst.NAMESPACE));
-        if (dbNamespace != null) {
-            synthetic.put("namespace", dbNamespace);
-        }
-        if (meta.getSettings() != null) {
-            synthetic.put("settings", meta.getSettings());
-        }
-        return objectMapper.convertValue(synthetic, type.getDatabaseClass());
-    }
-
-    private static String asString(Object value) {
-        return value instanceof String s ? s : null;
     }
 
     /**
@@ -281,7 +253,7 @@ public class DatabasePool {
                 .filter(postConnectProcessor -> postConnectProcessor.getSupportedDatabaseType().isInstance(database))
                 .map(postConnectProcessor -> (PostConnectProcessor<D>) postConnectProcessor)
                 .sorted(getComparator())
-                .collect(Collectors.toList());
+                .toList();
 
         if (postProcessorsForConnection.isEmpty()) {
             log.debug("No postprocessor was found for connection of db type: {}. Skip postprocessing for the connection.", database.getClass());
