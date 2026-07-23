@@ -50,7 +50,7 @@ class DbaasArangoTemplateTest {
     private ArangoCursor arangoCursor13;
 
     @BeforeEach
-    public void setup() throws NoSuchFieldException, IllegalAccessException {
+    void setup() throws NoSuchFieldException, IllegalAccessException {
         arangoTemplate = mock(ArangoTemplate.class);
         dbaasArangoTemplate = mock(DbaasArangoTemplate.class, Mockito.CALLS_REAL_METHODS);
         Field field = dbaasArangoTemplate.getClass().getDeclaredField("lock");
@@ -76,7 +76,7 @@ class DbaasArangoTemplateTest {
     }
 
     @Test
-    public void testProxiedMethods() throws InvocationTargetException, IllegalAccessException {
+    void testProxiedMethods() throws InvocationTargetException, IllegalAccessException {
         doReturn(arangoTemplate).when(dbaasArangoTemplate).getArangoTemplate();
         Method[] methods = ArangoOperations.class.getDeclaredMethods();
         for (Method method : methods) {
@@ -87,7 +87,7 @@ class DbaasArangoTemplateTest {
     }
 
     @Test
-    public void testConcurrentSuccess_OneInit() throws InterruptedException, ExecutionException {
+    void testConcurrentSuccess_OneInit() throws InterruptedException, ExecutionException {
         int threadsCount = 10;
         when(arangoTemplate.query(eq("RETURN 13"), any())).thenReturn(arangoCursor13);
         Mockito.doAnswer(invocationOnMock -> {
@@ -111,7 +111,7 @@ class DbaasArangoTemplateTest {
     }
 
     @Test
-    public void testConcurrentFail_BlockNewQueriesDuringInit() throws Exception {
+    void testConcurrentFail_BlockNewQueriesDuringInit() throws Exception {
         when(arangoTemplate.query(any(), any())).thenThrow(new RuntimeException("Bad connection"));
         setArangoTemplate(arangoTemplate);
 
@@ -143,7 +143,7 @@ class DbaasArangoTemplateTest {
     }
 
     @Test
-    public void testConcurrentFail_OneCheckAndOneReinit() throws InterruptedException {
+    void testConcurrentFail_OneCheckAndOneReinit() throws InterruptedException {
         int threadsCount = 10;
         when(arangoTemplate.query(any(), any())).thenThrow(new RuntimeException("Fail all requests"));
 
@@ -183,7 +183,7 @@ class DbaasArangoTemplateTest {
     }
 
     @Test
-    public void testSuccess_CheckAndRetryNotRequired() {
+    void testSuccess_CheckAndRetryNotRequired() {
         Mockito.doAnswer(invocationOnMock -> {
             setArangoTemplate(arangoTemplate);
             return null;
@@ -198,7 +198,7 @@ class DbaasArangoTemplateTest {
     }
 
     @Test
-    public void testSuccess_WithRetry() {
+    void testSuccess_WithRetry() {
         Mockito.doAnswer(invocationOnMock -> {
             setArangoTemplate(arangoTemplate);
             return null;
@@ -217,7 +217,7 @@ class DbaasArangoTemplateTest {
     }
 
     @Test
-    public void testFail_CheckFailAndRetryFail() {
+    void testFail_CheckFailAndRetryFail() {
         Mockito.doAnswer(invocationOnMock -> {
             setArangoTemplate(arangoTemplate);
             return null;
@@ -231,7 +231,7 @@ class DbaasArangoTemplateTest {
     }
 
     @Test
-    public void testCheckConnection_Timeout_ReturnsFalse() throws NoSuchFieldException, IllegalAccessException {
+    void testCheckConnection_Timeout_ReturnsFalse() throws NoSuchFieldException, IllegalAccessException {
         // set a very short timeout via config
         DbaasArangoDBConfigurationProperties config = new DbaasArangoDBConfigurationProperties();
         config.setArangodb(Map.of("timeout", "100"));
@@ -246,7 +246,7 @@ class DbaasArangoTemplateTest {
     }
 
     @Test
-    public void testCheckConnection_Interrupted_ReturnsFalse() {
+    void testCheckConnection_Interrupted_ReturnsFalse() {
         // A never-completing future keeps get() blocked; the pre-set interrupt makes it abort
         // with InterruptedException -> checkConnection returns false.
         stubAsyncCheckQuery(arangoTemplate, new CompletableFuture<>());
@@ -279,7 +279,7 @@ class DbaasArangoTemplateTest {
     }
 
     @Test
-    public void testFail_CheckOkAndWithoutReinitAndWithoutRetry() throws NoSuchFieldException, IllegalAccessException {
+    void testFail_CheckOkAndWithoutReinitAndWithoutRetry() throws NoSuchFieldException, IllegalAccessException {
         setArangoTemplate(arangoTemplate);
 
         stubAsyncCheckQuery(arangoTemplate, CompletableFuture.completedFuture(cursorAsyncReturning(42)));
