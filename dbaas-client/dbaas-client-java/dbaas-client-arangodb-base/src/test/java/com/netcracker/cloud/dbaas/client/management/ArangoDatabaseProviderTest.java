@@ -11,7 +11,6 @@ import com.netcracker.cloud.dbaas.client.management.classifier.ServiceDbaaSClass
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -21,7 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-public class ArangoDatabaseProviderTest {
+class ArangoDatabaseProviderTest {
 
     private static final String DB_NAME_1 = "db-test-name-1";
     private static final String DB_NAME_2 = "db-test-name-2";
@@ -35,14 +34,14 @@ public class ArangoDatabaseProviderTest {
     public void setup() {
         databasePool = mock(DatabasePool.class);
         checkFuture = CompletableFuture.completedFuture(cursorAsyncReturning(42));
-        Mockito.when(databasePool.getOrCreateDatabase(any(ArangoDBType.class), any(DbaasDbClassifier.class), any(DatabaseConfig.class))).thenAnswer(
+        when(databasePool.getOrCreateDatabase(any(ArangoDBType.class), any(DbaasDbClassifier.class), any(DatabaseConfig.class))).thenAnswer(
                 invocationOnMock -> {
                     DbaasDbClassifier dbaasDbClassifier = invocationOnMock.getArgument(1);
                     String dbName = (String) dbaasDbClassifier.asMap().get(DB_ID_CLASSIFIER_PROPERTY);
                     ArangoDatabase arangoDatabase = mock(ArangoDatabase.class);
-                    Mockito.when(arangoDatabase.name()).thenReturn(dbName);
+                    when(arangoDatabase.name()).thenReturn(dbName);
                     ArangoDatabaseAsync arangoDatabaseAsync = mock(ArangoDatabaseAsync.class);
-                    Mockito.when(arangoDatabaseAsync.query(eq("RETURN 42"), eq(Integer.class))).thenReturn(checkFuture);
+                    when(arangoDatabaseAsync.query("RETURN 42", Integer.class)).thenReturn(checkFuture);
                     ArangoConnection arangoConnection = new ArangoConnection();
                     arangoConnection.setArangoDatabase(arangoDatabase);
                     arangoConnection.setArangoDatabaseAsync(arangoDatabaseAsync);
@@ -100,8 +99,8 @@ public class ArangoDatabaseProviderTest {
         ArangoDatabase secondDb = arangoDatabaseProvider.provide(DB_NAME_2, secondDatabaseConfig);
         Assertions.assertNotEquals(firstDb.name(), secondDb.name());
         // Check passes first try, so each physical instance is fetched exactly once.
-        Mockito.verify(databasePool, times(1)).getOrCreateDatabase(any(ArangoDBType.class), any(), eq(firstDatabaseConfig));
-        Mockito.verify(databasePool, times(1)).getOrCreateDatabase(any(ArangoDBType.class), any(), eq(secondDatabaseConfig));
+        verify(databasePool, times(1)).getOrCreateDatabase(any(ArangoDBType.class), any(), eq(firstDatabaseConfig));
+        verify(databasePool, times(1)).getOrCreateDatabase(any(ArangoDBType.class), any(), eq(secondDatabaseConfig));
     }
 
     @Test
@@ -146,7 +145,7 @@ public class ArangoDatabaseProviderTest {
         Assertions.assertThrows(IllegalStateException.class, () -> databaseProvider.provide(DB_NAME_1, databaseConfig));
         int initialInvocationNumber = 1;
         int reconnectInvocationNumber = 1;
-        Mockito.verify(databasePool, times(initialInvocationNumber + reconnectInvocationNumber + retries))
+        verify(databasePool, times(initialInvocationNumber + reconnectInvocationNumber + retries))
                 .getOrCreateDatabase(any(ArangoDBType.class), any(), eq(databaseConfig));
     }
 }

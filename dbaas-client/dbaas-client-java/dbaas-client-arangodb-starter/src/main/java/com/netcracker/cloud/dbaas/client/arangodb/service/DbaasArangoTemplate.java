@@ -25,6 +25,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Supplier;
 
@@ -38,7 +39,7 @@ public class DbaasArangoTemplate extends ArangoTemplate {
     private final DbaasArangoDBConfigurationProperties dbaasArangoConfig;
     private final ApplicationContext applicationContext;
 
-    private volatile ArangoTemplate arangoTemplate;
+    private final AtomicReference<ArangoTemplate> arangoTemplateRef = new AtomicReference<>();
     private volatile String databaseName;
 
     public DbaasArangoTemplate(ArangoDatabaseProvider arangoDatabaseProvider,
@@ -260,6 +261,8 @@ public class DbaasArangoTemplate extends ArangoTemplate {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        // no-op: this instance's applicationContext is fixed at construction time and propagated
+        // to each delegate ArangoTemplate in initArangoTemplate the framework must not overwrite it.
     }
 
     private <T> T wrapWithRetry(final Supplier<T> supplier) {
@@ -267,13 +270,13 @@ public class DbaasArangoTemplate extends ArangoTemplate {
         lock.readLock().lock();
         try {
             return supplier.get();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lock.readLock().unlock();
             lock.writeLock().lock();
             try {
                 if (currentTemplate == getArangoTemplate()) {
                     log.warn("Some exception occurred during request to ArangoDB. Connection will be checked.");
-                    if (checkConnection(arangoTemplate)) {
+                    if (checkConnection(arangoTemplateRef.get())) {
                         log.warn("Connection is ok, no recreation required.");
                         throw e;
                     }
@@ -292,17 +295,20 @@ public class DbaasArangoTemplate extends ArangoTemplate {
     }
 
     protected ArangoTemplate getArangoTemplate() {
-        if (arangoTemplate == null) {
+        ArangoTemplate current = arangoTemplateRef.get();
+        if (current == null) {
             lock.writeLock().lock();
             try {
-                if (arangoTemplate == null) {
+                current = arangoTemplateRef.get();
+                if (current == null) {
                     initArangoTemplate();
+                    current = arangoTemplateRef.get();
                 }
             } finally {
                 lock.writeLock().unlock();
             }
         }
-        return arangoTemplate;
+        return current;
     }
 
     protected boolean checkConnection(ArangoOperations operations) {
@@ -343,11 +349,11 @@ public class DbaasArangoTemplate extends ArangoTemplate {
     }
 
     protected void initArangoTemplate() {
-        ArangoTemplate old = arangoTemplate;
+        ArangoTemplate old = arangoTemplateRef.get();
         ArangoDatabase arangoDatabase = arangoDatabaseProvider.provide(dbaasArangoConfig.getArangodb().getOrDefault("dbId", "default"));
         ArangoTemplate newArangoTemplate = new ArangoTemplate(arangoDatabase.arango(), arangoDatabase.name(), arangoConverter, resolverFactory);
         newArangoTemplate.setApplicationContext(applicationContext);
-        arangoTemplate = newArangoTemplate;
+        arangoTemplateRef.set(newArangoTemplate);
         databaseName = arangoDatabase.name();
         if (old != null && old.driver() != arangoDatabase.arango()) {
             try {
