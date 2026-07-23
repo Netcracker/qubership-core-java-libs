@@ -118,19 +118,23 @@ public class TaskInstanceImpl {
      * independent in-memory copies of the same row, and a completion that loses
      * the version race by milliseconds must not abort — an aborted completion
      * leaves the db-scheduler execution stuck picked until dead-execution
-     * revival. The mutation must be idempotent. Returns the instance that was
-     * actually persisted.
+     * revival. The mutation must be idempotent. This instance is synced with
+     * the persisted state afterwards, so callers keep a clean, current object.
      */
     public TaskInstanceImpl saveResolvingConflict(Consumer<TaskInstanceImpl> reapply) {
         try {
             save();
-            return this;
         } catch (VersionMismatchException e) {
             TaskInstanceImpl fresh = reload();
             reapply.accept(fresh);
             fresh.save();
-            return fresh;
+            setState(fresh.getState());
+            setName(fresh.getName());
+            setType(fresh.getType());
+            setDependsOn(fresh.getDependsOn());
+            setVersion(fresh.getVersion());
         }
+        return this;
     }
 
     /**/

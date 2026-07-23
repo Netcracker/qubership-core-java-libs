@@ -120,7 +120,7 @@ public class TaskExecutorService implements ExecutorService {
                         future.cancel(true);
                         ProcessInstanceImpl processInstance = ProcessOrchestrator.getInstance().getProcessInstance(taskInstance.getProcessID());
                         processInstance.setState(TaskState.FAILED);
-                        processInstance.save();
+                        processInstance.saveResolvingConflict(pi -> pi.setState(TaskState.FAILED));
                         TaskInstanceImpl task = ProcessOrchestrator.getInstance().getTaskInstanceRepository().getTaskInstance(taskId);
                         task.setState(TaskState.FAILED);
                         task.saveResolvingConflict(t -> t.setState(TaskState.FAILED));

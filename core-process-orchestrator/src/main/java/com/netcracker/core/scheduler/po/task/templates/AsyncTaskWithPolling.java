@@ -78,7 +78,7 @@ public abstract class AsyncTaskWithPolling extends AbstractProcessTask {
                 task.setState(TaskState.FAILED);
                 ProcessInstanceImpl processInstance = taskInstance.getData().getProcess();
                 processInstance.setState(TaskState.FAILED);
-                processInstance.save();
+                processInstance.saveResolvingConflict(pi -> pi.setState(TaskState.FAILED));
                 task.saveResolvingConflict(t -> t.setState(TaskState.FAILED));
                 when.accept(null);
             }

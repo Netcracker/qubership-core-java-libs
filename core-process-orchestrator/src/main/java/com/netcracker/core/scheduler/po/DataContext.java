@@ -88,6 +88,15 @@ public class DataContext extends HashMap<String, Object> {
             fresh.setRepository(repository);
             function.accept(fresh);
             fresh.save();
+            // Sync this instance with the persisted state: contents, version, and
+            // a clean dirty flag — otherwise the caller keeps a stale copy and the
+            // very next save() fails again despite apply() having succeeded.
+            // super-level access bypasses the dirty-marking overrides.
+            super.clear();
+            for (Entry<String, Object> entry : fresh.entrySet()) {
+                super.put(entry.getKey(), entry.getValue());
+            }
+            setVersion(fresh.getVersion());
         }
     }
 }

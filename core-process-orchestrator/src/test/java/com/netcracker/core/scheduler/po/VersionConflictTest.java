@@ -130,7 +130,37 @@ class VersionConflictTest {
             TaskInstanceImpl persisted = worker.saveResolvingConflict(t -> t.setState(TaskState.COMPLETED));
 
             Assertions.assertEquals(TaskState.COMPLETED, persisted.getState());
-            Assertions.assertEquals(TaskState.COMPLETED, repository.getTaskInstance("task-1").getState());
+            TaskInstanceImpl stored = repository.getTaskInstance("task-1");
+            Assertions.assertEquals(TaskState.COMPLETED, stored.getState());
+            // The caller's copy is synced with the persisted row, so a later
+            // save on the same object does not fail again.
+            Assertions.assertEquals(stored.getVersion(), worker.getVersion());
+        } finally {
+            orchestrator.stop();
+        }
+    }
+
+    @Test
+    void processSaveResolvingConflictReappliesTheTerminalStateOnAFreshCopy() throws Exception {
+        ProcessOrchestrator orchestrator = new ProcessOrchestrator(dataSource);
+        try {
+            ProcessInstanceRepository repository = orchestrator.getProcessInstanceRepository();
+            ProcessInstanceImpl seed = new ProcessInstanceImpl("Test Instance", "proc-1", "def-1");
+            seed.setState(TaskState.IN_PROGRESS);
+            repository.putProcessInstance(seed);
+
+            ProcessInstanceImpl worker = repository.getProcess("proc-1");
+            ProcessInstanceImpl tick = repository.getProcess("proc-1");
+
+            tick.setStartTime(java.util.Calendar.getInstance().getTime());
+            repository.putProcessInstance(tick);
+
+            worker.setState(TaskState.FAILED);
+            worker.saveResolvingConflict(pi -> pi.setState(TaskState.FAILED));
+
+            ProcessInstanceImpl stored = repository.getProcess("proc-1");
+            Assertions.assertEquals(TaskState.FAILED, stored.getState());
+            Assertions.assertEquals(stored.getVersion(), worker.getVersion(), "the caller's copy must be synced");
         } finally {
             orchestrator.stop();
         }
@@ -157,6 +187,13 @@ class VersionConflictTest {
         DataContext stored = repository.getContext("ctx-1");
         Assertions.assertEquals("Done", stored.get("stateDescription"), "the re-applied mutation must land");
         Assertions.assertEquals("yes", stored.get("tick"), "the concurrent writer's data must survive");
+
+        // The caller's copy is synced after recovery: it sees the merged
+        // contents and its next save() succeeds instead of conflicting again.
+        Assertions.assertEquals("yes", worker.get("tick"));
+        worker.put("after", "recovery");
+        Assertions.assertDoesNotThrow(worker::save);
+        Assertions.assertEquals("recovery", repository.getContext("ctx-1").get("after"));
     }
 
     @Test
