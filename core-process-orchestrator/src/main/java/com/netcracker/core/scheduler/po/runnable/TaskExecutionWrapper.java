@@ -24,7 +24,7 @@ public class TaskExecutionWrapper implements Callable<Boolean> {
         // task's own failure handling is done by the scheduler's failure hooks.
         try {
             task.run();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error("Task execution failed", e);
         } finally {
             callback.run();

@@ -116,6 +116,9 @@ public class TaskExecutorService implements ExecutorService {
                     try {
                         future.get(timeout, TimeUnit.SECONDS);
                     } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                        if (e instanceof InterruptedException) {
+                            Thread.currentThread().interrupt();
+                        }
                         log.info("Task {} execution was interrupted by timeout", taskId);
                         future.cancel(true);
                         ProcessInstanceImpl processInstance = ProcessOrchestrator.getInstance().getProcessInstance(taskInstance.getProcessID());
@@ -135,6 +138,10 @@ public class TaskExecutorService implements ExecutorService {
     }
 
 
+    // Reflection into db-scheduler's lambda internals is the only way to reach the
+    // Execution from the submitted Runnable; on any failure getId degrades to null
+    // and the task runs without the wrapper bookkeeping.
+    @SuppressWarnings("java:S3011")
     @Nullable
     private Execution getId(Runnable task) {
         try {
@@ -159,11 +166,11 @@ public class TaskExecutorService implements ExecutorService {
         }
     }
 
-    public Future<?> terminate(String key) {
+    public Future<Void> terminate(String key) {
         List<Future<Boolean>> fs = tasks
                 .entrySet()
                 .stream()
-                .filter(e -> e.getKey().equals(key))
+                .filter(e -> e.getKey().getTaskId().equals(key))
                 .map(f -> woreService.submit(new TerminateRunnable(f.getValue(), key)))
                 .toList();
         return woreService.submit(() -> {
@@ -171,11 +178,15 @@ public class TaskExecutorService implements ExecutorService {
                         fs.forEach(f -> {
                             try {
                                 f.get();
-                            } catch (InterruptedException | ExecutionException e) {
-                                throw new RuntimeException(e);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                                throw new IllegalStateException(e);
+                            } catch (ExecutionException e) {
+                                throw new IllegalStateException(e);
                             }
                         });
-                }
+                },
+                null
         );
     }
 }

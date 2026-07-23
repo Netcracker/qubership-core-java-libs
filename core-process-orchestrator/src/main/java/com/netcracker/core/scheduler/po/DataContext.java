@@ -18,6 +18,9 @@ import java.util.function.Consumer;
 @Getter
 @JsonSerialize(using = DataContextSerializer.class)
 @JsonDeserialize(using = DataContextDeserializer.class)
+// Content equality inherited from HashMap is intentional: id, version, and the
+// dirty flag are persistence bookkeeping, not part of the context's identity.
+@SuppressWarnings("java:S2160")
 public class DataContext extends HashMap<String, Object> {
 
     @Setter

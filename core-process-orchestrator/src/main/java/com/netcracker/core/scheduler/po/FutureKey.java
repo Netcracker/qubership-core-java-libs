@@ -19,14 +19,9 @@ public class FutureKey implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof String) {
-            return taskId.equals(obj);
-        } else if (obj instanceof UUID) {
-            return uuid.equals(obj);
-        } else if (obj instanceof FutureKey futureKey) {
-            return taskId.equals(futureKey.taskId) && uuid.equals(futureKey.uuid);
-        }
-        return false;
+        return obj instanceof FutureKey futureKey
+                && taskId.equals(futureKey.taskId)
+                && uuid.equals(futureKey.uuid);
     }
 
     @Override

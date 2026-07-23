@@ -30,8 +30,9 @@ public class ProcessTaskFailureHandler implements FailureHandler<TaskExecutionCo
     public void onFailure(ExecutionComplete executionComplete, ExecutionOperations<TaskExecutionContext> executionOperations) {
 
         List<Throwable> list = new ArrayList<>();
-        if (executionComplete.getCause().isPresent()) {
-            Throwable ex = executionComplete.getCause().get();
+        java.util.Optional<Throwable> cause = executionComplete.getCause();
+        if (cause.isPresent()) {
+            Throwable ex = cause.get();
             while (ex != null) {
                 list.add(ex);
                 ex = ex.getCause();
