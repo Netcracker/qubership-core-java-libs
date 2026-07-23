@@ -280,12 +280,13 @@ public class DatabasePoolTest {
             // ignore expected exception
         }
         try {
-            databasePool.getOrCreateDatabase(TestDBType.INSTANCE, classifier); // now should get db from cache
+            databasePool.getOrCreateDatabase(TestDBType.INSTANCE, classifier); // now should get db from dbaasClient
         } catch (RuntimeException e) {
             // ignore expected exception
         }
 
-        Mockito.verify(dbaasClient, times(1)).getOrCreateDatabase(
+        // L2 is not populated on failure, so dbaasClient is called again on retry
+        Mockito.verify(dbaasClient, times(2)).getOrCreateDatabase(
                 eq(TestDBType.INSTANCE),
                 eq(TEST_NAMESPACE),
                 anyMap(),
@@ -293,6 +294,59 @@ public class DatabasePoolTest {
         Mockito.verify(postConnectProcessor, times(2)).process(testDatabase);
     }
 
+    @Test
+    public void testRecoveryAfterPostConnectProcessorFailure() {
+        DatabasePool databasePool = getDatabasePool();
+
+        Mockito.doThrow(new RuntimeException("Expected test exception in postConnectProcessor"))
+                .doNothing()
+                .when(postConnectProcessor).process(any(TestDatabase.class));
+
+        assertThrows(RuntimeException.class, () -> databasePool.getOrCreateDatabase(TestDBType.INSTANCE, classifier));
+
+        // The retry succeeds and populates both caches...
+        assertEquals(testDatabase, databasePool.getOrCreateDatabase(TestDBType.INSTANCE, classifier));
+        // ...so the next call is served from the cache without another DBaaS request.
+        assertEquals(testDatabase, databasePool.getOrCreateDatabase(TestDBType.INSTANCE, classifier));
+
+        Mockito.verify(dbaasClient, times(2)).getOrCreateDatabase(
+                eq(TestDBType.INSTANCE),
+                eq(TEST_NAMESPACE),
+                anyMap(),
+                any(DatabaseConfig.class));
+        Mockito.verify(postConnectProcessor, times(2)).process(testDatabase);
+    }
+
+    @Test
+    public void testConnectionClosedOnDatabaseClientCreatorFailure() {
+        TestDBConnection connection = new TestDBConnection();
+        testDatabase.setConnectionProperties(connection);
+
+        @SuppressWarnings("unchecked")
+        DatabaseClientCreator<TestDatabase, ?> failingCreator = Mockito.mock(DatabaseClientCreator.class);
+        Mockito.when(failingCreator.getSupportedDatabaseType()).thenReturn(TestDatabase.class);
+        Mockito.doThrow(new RuntimeException("Expected test exception in databaseClientCreator"))
+                .when(failingCreator).create(any(TestDatabase.class), any());
+
+        DatabasePool databasePool = new DatabasePool(dbaasClient, TEST_MS_NAME, TEST_NAMESPACE,
+                Collections.singletonList(postConnectProcessor), Mockito.mock(DatabaseDefinitionHandler.class),
+                null, null, Collections.singletonList(failingCreator));
+
+        assertThrows(RuntimeException.class, () -> databasePool.getOrCreateDatabase(TestDBType.INSTANCE, classifier));
+
+        // The database never finished initialization: its connection must be closed,
+        // post-connect processors must not run, and nothing may be cached.
+        assertTrue(connection.isClosed());
+        Mockito.verify(postConnectProcessor, never()).process(any(TestDatabase.class));
+
+        // The next call starts from a fresh DBaaS lookup instead of a cached instance.
+        assertThrows(RuntimeException.class, () -> databasePool.getOrCreateDatabase(TestDBType.INSTANCE, classifier));
+        Mockito.verify(dbaasClient, times(2)).getOrCreateDatabase(
+                eq(TestDBType.INSTANCE),
+                eq(TEST_NAMESPACE),
+                anyMap(),
+                any(DatabaseConfig.class));
+    }
 
     @Test
     public void provideDbByCustomLogicDbProvider() {
