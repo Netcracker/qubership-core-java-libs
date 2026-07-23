@@ -5,6 +5,7 @@ import com.netcracker.cloud.dbaas.client.arangodb.classifier.ArangoDBClassifierB
 import com.netcracker.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
 import com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase;
 import com.netcracker.cloud.dbaas.client.arangodb.test.configuration.TestArangoDBContainer;
+import com.netcracker.cloud.dbaas.client.management.ArangoConnectionChecker;
 import com.netcracker.cloud.dbaas.client.management.ArangoDatabaseProvider;
 import com.netcracker.cloud.dbaas.client.management.DatabaseConfig;
 import com.netcracker.cloud.dbaas.client.management.DatabasePool;
@@ -139,8 +140,8 @@ class StaleCachedConnectionHangTest {
                     0, 0, CHECK_TIMEOUT_MS
             );
 
-            // Grab CHECK_EXECUTOR via reflection to observe activeCount
-            java.lang.reflect.Field executorField = ArangoDatabaseProvider.class.getDeclaredField("CHECK_EXECUTOR");
+            // Grab EXECUTOR via reflection to observe activeCount
+            java.lang.reflect.Field executorField = ArangoConnectionChecker.class.getDeclaredField("EXECUTOR");
             executorField.setAccessible(true);
             ThreadPoolExecutor executor = (ThreadPoolExecutor) executorField.get(null);
 
@@ -158,7 +159,7 @@ class StaleCachedConnectionHangTest {
             callerThread.join(CHECK_TIMEOUT_MS * 3 + 1000);
 
             if (executor.getActiveCount() > 0) {
-                fail("CHECK_EXECUTOR slot was not released after checkConnectionTimeoutMs — " +
+                fail("ArangoConnectionChecker.EXECUTOR slot was not released after checkConnectionTimeoutMs — " +
                         "future.cancel(true) failed to interrupt the blocked CompletableFuture.get()");
             }
         }

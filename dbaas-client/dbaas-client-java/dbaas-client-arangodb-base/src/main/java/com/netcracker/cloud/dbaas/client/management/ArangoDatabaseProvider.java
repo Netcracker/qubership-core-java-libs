@@ -9,15 +9,9 @@ import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSChainClassif
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.*;
-
 @RequiredArgsConstructor
 @Slf4j
 public class ArangoDatabaseProvider {
-
-    public static final ExecutorService CHECK_EXECUTOR = new ThreadPoolExecutor(
-            5, 5, 0L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
-            r -> { Thread t = new Thread(r, "arango-connection-check"); t.setDaemon(true); return t; });
 
     private final DatabasePool pool;
     private final DbaaSChainClassifierBuilder builder;
@@ -81,7 +75,7 @@ public class ArangoDatabaseProvider {
     }
 
     private boolean checkConnection(ArangoConnection connection) {
-        Future<Boolean> future = CHECK_EXECUTOR.submit(() -> {
+        return ArangoConnectionChecker.check(() -> {
             try (ArangoCursor<Integer> cursor = connection.getArangoDatabase().query("RETURN 42", Integer.class)) {
                 Integer checkValue = cursor.next();
                 if (checkValue == null || checkValue != 42)
@@ -89,21 +83,6 @@ public class ArangoDatabaseProvider {
                 log.debug("Connection check succeeded, check value: {}", checkValue);
                 return true;
             }
-        });
-        try {
-            return future.get(connectionCheckTimeoutMs, TimeUnit.MILLISECONDS);
-        } catch (TimeoutException e) {
-            future.cancel(true);
-            log.warn("Connection check timed out after {}ms", connectionCheckTimeoutMs);
-            return false;
-        } catch (InterruptedException e) {
-            future.cancel(true);
-            Thread.currentThread().interrupt();
-            log.debug("Connection check was interrupted", e);
-            return false;
-        } catch (Exception e) {
-            log.debug("Connection check has failed with exception", e);
-            return false;
-        }
+        }, connectionCheckTimeoutMs);
     }
 }
