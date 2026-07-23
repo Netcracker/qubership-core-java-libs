@@ -4,11 +4,11 @@
 
     <groupId>com.netcracker.cloud.plugins</groupId>
     <artifactId>httproutes-generator-maven-plugin</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.6-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <properties>
-        <cloud-core.core-rest-libraries.version>7.3.0</cloud-core.core-rest-libraries.version>
+        <cloud-core.core-rest-libraries.version>7.3.4</cloud-core.core-rest-libraries.version>
     </properties>
 
     <dependencyManagement>
@@ -16,7 +16,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-spring-internal-bom</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>1.0.1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

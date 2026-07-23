@@ -1,12 +1,16 @@
 package com.netcracker.cloud.dbaas.client.management;
 
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netcracker.cloud.dbaas.client.DbaasClient;
 import com.netcracker.cloud.dbaas.client.DbaasConst;
 import com.netcracker.cloud.dbaas.client.entity.database.AbstractConnectorSettings;
 import com.netcracker.cloud.dbaas.client.entity.database.AbstractDatabase;
 import com.netcracker.cloud.dbaas.client.entity.database.type.DatabaseType;
 import com.netcracker.cloud.dbaas.client.service.LogicalDbProvider;
+import com.netcracker.cloud.dbaas.client.service.mountedsecret.MountedSecretSource;
+import com.netcracker.cloud.dbaas.client.service.mountedsecret.SecretMetadata;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,6 +35,22 @@ public class DatabasePool {
     private final Comparator<Object> postConnectProcessorsOrder;
     private List<LogicalDbProvider> dbProviders;
     private Map<Class<? extends AbstractDatabase<?>>, DatabaseClientCreator<?, ?>> mapDatabaseClientCreators = new ConcurrentHashMap<>();
+
+    /**
+     * Reads connection properties from Secrets mounted at {@code /etc/secrets/dbaas-secrets},
+     * consulted before the REST call in {@link #createDatabase}. Always registered; when nothing is
+     * mounted it returns empty and the pool falls back to REST exactly as before.
+     */
+    private MountedSecretSource mountedSecretSource = new MountedSecretSource();
+
+    /**
+     * Used to build a typed {@link AbstractDatabase} from a mounted Secret via the synthetic-response
+     * mechanism (a property map converted to {@code DatabaseType#getDatabaseClass()}). Unknown
+     * connection-property keys (e.g. {@code roHost}) are tolerated, matching the REST deserialization.
+     */
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
     /**
      * L1 cache holds cached databases connections. When client asks for a database, we first look in L1 cache.
      * Databases in this cache are ready-for-use, their post-processors have been already successfully applied.
@@ -38,14 +58,15 @@ public class DatabasePool {
     private final Map<DatabaseKey<?, ?>, AbstractDatabase<?>> databasesCacheL1 = new ConcurrentHashMap<>();
 
     /**
-     * This cache contains connection properties of the databases, that were obtained from DBaaS,
-     * but which post-processors have failed. <br><br>
+     * L2 cache holds databases whose initialization — the database client creator and the
+     * post-connect processors — has fully succeeded. <br><br>
      * <p>
-     * When client comes for a database, if we don't find it in L1 cache, we take database from L2 cache and try to
-     * apply post-processors. If post-processors succeed, we save this database connection in L1 cache. <br><br>
+     * When client comes for a database and it is missing from L1, we take it from here and
+     * re-initialize it instead of requesting DBaaS again. A database whose initialization
+     * failed is closed and deliberately not cached, so the next request starts from a fresh
+     * DBaaS lookup instead of reusing a closed connection. <br><br>
      * <p>
-     * If database is not present in L2, DBaaS Client gets new database from DBaaS and subscribes on notifications
-     * about this database's changes. <br><br>
+     * If database is not present in L2 either, DBaaS Client gets a new database from DBaaS. <br><br>
      */
     private final Map<DatabaseKey<?, ?>, AbstractDatabase<?>> databasesCacheL2 = new ConcurrentHashMap<>();
 
@@ -141,28 +162,39 @@ public class DatabasePool {
                                                                                                                               P settings) {
         AbstractDatabase<?> abstractDatabase;
         try {
-            abstractDatabase = databasesCacheL2.computeIfAbsent(key, dbKey -> createDatabase(key, databaseConfig));
+            abstractDatabase = databasesCacheL2.get(key);
+            if (abstractDatabase == null) {
+                abstractDatabase = createDatabase(key, databaseConfig);
+            }
         } catch (Exception e) {
-            log.error("Error while retrieving database from cache by key {}: {}", key, e);
+            log.error("Error while retrieving database from cache by key {}", key, e);
             throw new RuntimeException("Failed to get or create database", e);
         }
 
         log.info("Created or received existing database: {}", abstractDatabase);
-        DatabaseClientCreator<D, P> databaseClientCreator = (DatabaseClientCreator<D, P>) mapDatabaseClientCreators.get(key.getDbType().getDatabaseClass());
-        if (databaseClientCreator != null) {
-            log.debug("Running database client creators on db {}", abstractDatabase.getName());
-            databaseClientCreator.create((D) abstractDatabase, settings);
-        }
-        log.debug("Running post connect processors on db {}", abstractDatabase.getName());
+        // The client creator runs inside try-with-resources on purpose: it may allocate live
+        // resources (e.g. a connection pool) before failing, and a database that did not finish
+        // initialization must be closed and must not reach the cache.
         try (AbstractDatabase<?> database = abstractDatabase) {
             database.setDoClose(true);
+            DatabaseClientCreator<D, P> databaseClientCreator = (DatabaseClientCreator<D, P>) mapDatabaseClientCreators.get(key.getDbType().getDatabaseClass());
+            if (databaseClientCreator != null) {
+                log.debug("Running database client creators on db {}", database.getName());
+                databaseClientCreator.create((D) database, settings);
+            }
+            log.debug("Running post connect processors on db {}", database.getName());
             applyPostConnectProcessors(database);
             database.setDoClose(false);
 
+            // The put deliberately comes last: an entry added before the creator and the
+            // processors have succeeded would survive a failed initialization, and every
+            // retry would then reuse a closed, half-initialized database from the cache.
+            databasesCacheL2.put(key, abstractDatabase);
+
             return database;
         } catch (Exception e) {
-            log.error("One of postprocessors has failed with error", e);
-            throw new RuntimeException("PostProcessor error", e);
+            log.error("Database client creator or post-connect processor failed; the connection is closed and not cached", e);
+            throw new RuntimeException("Database initialization error", e);
         }
     }
 
@@ -178,12 +210,65 @@ public class DatabasePool {
             return logDb;
         }
 
+        D mountedDb = getDbFromMountedSecret(classifier, databaseConfig, key.getDbType());
+        if (mountedDb != null) {
+            log.debug("Logical database was obtained from mounted secret. Classifier: {}, type {}", classifier, key.getDbType());
+            return mountedDb;
+        }
+
         databaseDefinitionHandler.applyDefinitionProcess(key.getDbType(), databaseConfig, classifier, namespace);
         return dbaasClient.getOrCreateDatabase(
                 key.getDbType(),
                 namespace,
                 classifier,
                 databaseConfig);
+    }
+
+    private <T, D extends AbstractDatabase<T>> D getDbFromMountedSecret(Map<String, Object> classifier,
+                                                                        DatabaseConfig databaseConfig,
+                                                                        DatabaseType<T, D> type) {
+        String role = databaseConfig != null ? databaseConfig.getUserRole() : null;
+        return mountedSecretSource.resolve(classifier, type.getName(), role)
+                .map(resolved -> buildAbstractDatabase(type, classifier, resolved))
+                .orElse(null);
+    }
+
+    /**
+     * Builds the typed database from a mounted Secret (synthetic-response): assemble a map mirroring
+     * the dbaas REST response and convert it to {@code type.getDatabaseClass()} with the same
+     * deserialization semantics as the REST path. No provisioning and no REST call happen here.
+     */
+    private <T, D extends AbstractDatabase<T>> D buildAbstractDatabase(DatabaseType<T, D> type,
+                                                                       Map<String, Object> classifier,
+                                                                       MountedSecretSource.Resolved resolved) {
+        SecretMetadata meta = resolved.metadata();
+        Map<String, Object> synthetic = new HashMap<>();
+        synthetic.put("classifier", meta.getClassifier() != null ? meta.getClassifier() : classifier);
+        synthetic.put("connectionProperties", resolved.connectionProperties());
+
+        String name = meta.getName() != null ? meta.getName() : asString(resolved.connectionProperties().get("name"));
+        if (name != null) {
+            synthetic.put("name", name);
+        }
+        String dbNamespace = meta.getNamespace() != null ? meta.getNamespace() : asString(classifier.get(DbaasConst.NAMESPACE));
+        if (dbNamespace != null) {
+            synthetic.put("namespace", dbNamespace);
+        }
+        if (meta.getSettings() != null) {
+            synthetic.put("settings", meta.getSettings());
+        }
+        return objectMapper.convertValue(synthetic, type.getDatabaseClass());
+    }
+
+    private static String asString(Object value) {
+        return value instanceof String s ? s : null;
+    }
+
+    /**
+     * Test seam: package-private so unit tests can point the mounted-secret source at a temp directory.
+     */
+    void setMountedSecretSource(MountedSecretSource mountedSecretSource) {
+        this.mountedSecretSource = mountedSecretSource;
     }
 
     private Comparator<Object> getComparator() {

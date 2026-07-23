@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud.maas.declarative</groupId>
     <artifactId>maas-declarative-kafka-client-spring-bom</artifactId>
-    <version>7.1.5-SNAPSHOT</version>
+    <version>7.1.7-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -26,9 +26,9 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
 
-        <cloud-core.maas-declarative-client-commons.version>6.1.4</cloud-core.maas-declarative-client-commons.version>
-        <cloud-core.maas-declarative-client-spring.version>9.1.4</cloud-core.maas-declarative-client-spring.version>
-        <cloud-core.core-blue-green-state-monitor.version>2.1.4</cloud-core.core-blue-green-state-monitor.version>
+        <cloud-core.maas-declarative-client-commons.version>6.1.6</cloud-core.maas-declarative-client-commons.version>
+        <cloud-core.maas-declarative-client-spring.version>9.1.6</cloud-core.maas-declarative-client-spring.version>
+        <cloud-core.core-blue-green-state-monitor.version>2.1.6</cloud-core.core-blue-green-state-monitor.version>
     </properties>
 
     <dependencyManagement>
@@ -36,7 +36,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-spring-internal-bom</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>1.0.1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

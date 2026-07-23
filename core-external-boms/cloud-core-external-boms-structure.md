@@ -46,7 +46,6 @@ core-external-bom
 core-spring-external-bom
 ├── core-external-bom
 ├── framework-extension-bom
-│   └── core-spring-internal-bom   [internal, via parent]
 └── rest-legacy-bom
 
 core-quarkus-external-bom

@@ -15,6 +15,7 @@ import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.Assertions;
@@ -23,12 +24,14 @@ import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
 import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -218,6 +221,40 @@ class BGKafkaConsumerUnitTest {
 
             Optional<RecordsBatch<String, String>> bgRecords2 = consumerCandidate.poll(Duration.ofSeconds(1));
             assertTrue(bgRecords2.isEmpty());
+        }
+    }
+
+    @Test
+    void partitionsAssignedListenerIsCalledAfterRebalance() {
+        var connectionProperties = Map.<String, Object>of("group.id", TEST_GROUP_NAME);
+        InMemoryBlueGreenStatePublisher statePublisher = new InMemoryBlueGreenStatePublisher(NAMESPACE_1);
+        Consumer consumer = Mockito.mock(Consumer.class);
+        ConsumerRebalanceListener[] rebalanceListener = new ConsumerRebalanceListener[1];
+        Mockito.doAnswer(i -> {
+            rebalanceListener[0] = i.getArgument(1);
+            return null;
+        }).when(consumer).subscribe(Mockito.any(Collection.class), Mockito.any(ConsumerRebalanceListener.class));
+
+        AdminAdapter adminAdapter = Mockito.mock(AdminAdapter.class);
+        Mockito.when(adminAdapter.listConsumerGroup()).thenReturn(List.of());
+        Mockito.when(consumer.partitionsFor(TEST_TOPIC_NAME)).thenReturn(List.of(partitionInfo(0)));
+        Mockito.when(consumer.offsetsForTimes(Mockito.any())).thenReturn(Map.of());
+        Mockito.when(consumer.endOffsets(Mockito.any())).thenReturn(topicOffsetLongMap(topicOffsetLong(0, 1)));
+
+        Mockito.when(consumer.poll(Mockito.any())).thenReturn(new ConsumerRecords<>(Map.of()));
+
+        try (BGKafkaConsumer<String, String> bgConsumer = new BGKafkaConsumerImpl<>(BGKafkaConsumerConfig.builder(connectionProperties,
+                        TEST_TOPIC_NAME, M2M_TOKEN_SUPPLIER, statePublisher)
+                .deserializers(new StringDeserializer(), new StringDeserializer())
+                .consistencyMode(ConsumerConsistencyMode.GUARANTEE_CONSUMPTION)
+                .consumerSupplier(props -> consumer)
+                .adminAdapterSupplier(props -> adminAdapter).build())) {
+
+            var called = new AtomicBoolean();
+            bgConsumer.setPartitionsAssignedListener(partitions -> called.set(true));
+            bgConsumer.poll(Duration.ofMillis(10));
+            rebalanceListener[0].onPartitionsAssigned(List.of(new TopicPartition(TEST_TOPIC_NAME, 0)));
+            assertTrue(called.get());
         }
     }
 

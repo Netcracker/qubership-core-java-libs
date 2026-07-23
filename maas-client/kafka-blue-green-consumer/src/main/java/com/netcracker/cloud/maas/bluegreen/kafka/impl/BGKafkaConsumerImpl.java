@@ -6,6 +6,7 @@ import com.netcracker.cloud.bluegreen.api.model.State;
 import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
 import com.netcracker.cloud.maas.bluegreen.kafka.BGKafkaConsumer;
 import com.netcracker.cloud.maas.bluegreen.kafka.CommitMarker;
+import com.netcracker.cloud.maas.bluegreen.kafka.PartitionsAssignedListener;
 import com.netcracker.cloud.maas.bluegreen.kafka.Record;
 import com.netcracker.cloud.maas.bluegreen.kafka.RecordsBatch;
 import com.netcracker.cloud.maas.bluegreen.versiontracker.impl.VersionFilterConstructor;
@@ -24,6 +25,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.netcracker.cloud.framework.contexts.xversion.XVersionContextObject.X_VERSION_SERIALIZATION_NAME;
+import static com.netcracker.cloud.framework.contexts.xversionname.XVersionNameContextObject.X_VERSION_NAME_SERIALIZATION_NAME;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG;
 
@@ -35,9 +37,11 @@ public class BGKafkaConsumerImpl<K, V> implements BGKafkaConsumer<K, V> {
 
     private Consumer<K, V> kafkaConsumer;
     private Predicate<String> filter = v -> true;
+    private Predicate<String> versionNameFilter = v -> true;
 
     private BlueGreenState activeState;
     private final AtomicReference<BlueGreenState> bgStateRef = new AtomicReference<>();
+    private PartitionsAssignedListener partitionsAssignedListener;
 
     public BGKafkaConsumerImpl(BGKafkaConsumerConfig config) {
         this.config = config;
@@ -92,9 +96,11 @@ public class BGKafkaConsumerImpl<K, V> implements BGKafkaConsumer<K, V> {
             CommitMarker marker = null;
             for (ConsumerRecord<K, V> record : records) {
                 String xVersion = extractVersionHeader(record);
+                String xVersionName = extractVersionNameHeader(record);
 
-                log.debug("Record's topic: {}, partition: {}, offset: {}, header: {}='{}'",
-                        record.topic(), record.partition(), record.offset(), X_VERSION_SERIALIZATION_NAME, xVersion);
+                log.debug("Record's topic: {}, partition: {}, offset: {}, headers: {}='{}', {}='{}'",
+                        record.topic(), record.partition(), record.offset(),
+                        X_VERSION_NAME_SERIALIZATION_NAME, xVersionName, X_VERSION_SERIALIZATION_NAME, xVersion);
 
                 position.put(new TopicPartition(record.topic(), record.partition()),
                         new OffsetAndMetadata(record.offset() + 1));
@@ -102,11 +108,17 @@ public class BGKafkaConsumerImpl<K, V> implements BGKafkaConsumer<K, V> {
                 // create marker with clone of position
                 marker = new CommitMarker(activeState.getCurrent(), new HashMap<>(position));
 
-                if (config.isIgnoreFilter() || filter.test(xVersion)) {
+                // prefer the version-name header; fall back to the legacy version-number filter when it is absent
+                boolean accepted = xVersionName.isBlank()
+                        ? filter.test(xVersion)
+                        : versionNameFilter.test(xVersionName);
+
+                if (config.isIgnoreFilter() || accepted) {
                     log.debug("Accept consumer record: {}", record);
                     result.add(new Record<>(record, marker));
                 } else {
-                    log.debug("Skip message due to unmatched header ({}='{}')", X_VERSION_SERIALIZATION_NAME, xVersion);
+                    log.debug("Skip message due to unmatched header ({}='{}', {}='{}')",
+                            X_VERSION_NAME_SERIALIZATION_NAME, xVersionName, X_VERSION_SERIALIZATION_NAME, xVersion);
                 }
             }
             return Optional.of(new RecordsBatch<>(result, marker));
@@ -123,6 +135,11 @@ public class BGKafkaConsumerImpl<K, V> implements BGKafkaConsumer<K, V> {
         } else {
             log.warn("Skip commits for non active consumer for: {}", marker.getVersion());
         }
+    }
+
+    @Override
+    public void setPartitionsAssignedListener(PartitionsAssignedListener listener) {
+        this.partitionsAssignedListener = listener;
     }
 
     @SneakyThrows
@@ -209,20 +226,32 @@ public class BGKafkaConsumerImpl<K, V> implements BGKafkaConsumer<K, V> {
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
                 log.debug("Adjusting current consumer offsets to: {}", alignedOffsets);
                 alignedOffsets.forEach(((topicPartition, offsetAndMetadata) -> kafkaConsumer.seek(topicPartition, offsetAndMetadata)));
+                if (partitionsAssignedListener != null) {
+                    partitionsAssignedListener.onPartitionsAssigned(partitions);
+                }
             }
         };
         log.debug("Subscribing kafka consumer to the topics: {}", config.getTopics().stream().sorted().toList());
         kafkaConsumer.subscribe(config.getTopics(), rebalanceListener);
 
-        // update filter according to BG state
+        // update filters according to BG state
         filter = VersionFilterConstructor.constructVersionFilter(bgState);
-        log.info("Version filter updated to: {}", filter);
+        versionNameFilter = VersionFilterConstructor.constructVersionNameFilter(bgState);
+        log.info("Version filter updated to: {}, version-name filter updated to: {}", filter, versionNameFilter);
         return bgState;
     }
 
-    public static String extractVersionHeader(ConsumerRecord record) {
-        return Arrays.stream(record.headers().toArray())
-                .filter(h -> h.key().equalsIgnoreCase(X_VERSION_SERIALIZATION_NAME))
+    public static String extractVersionHeader(ConsumerRecord consumerRecord) {
+        return extractHeader(consumerRecord, X_VERSION_SERIALIZATION_NAME);
+    }
+
+    public static String extractVersionNameHeader(ConsumerRecord consumerRecord) {
+        return extractHeader(consumerRecord, X_VERSION_NAME_SERIALIZATION_NAME);
+    }
+
+    private static String extractHeader(ConsumerRecord consumerRecord, String key) {
+        return Arrays.stream(consumerRecord.headers().toArray())
+                .filter(h -> h.key().equalsIgnoreCase(key))
                 .findFirst()
                 .map(h -> new String(h.value(), StandardCharsets.UTF_8))
                 .orElse("");
