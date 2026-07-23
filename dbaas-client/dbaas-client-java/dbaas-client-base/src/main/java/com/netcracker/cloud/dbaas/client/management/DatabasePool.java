@@ -28,9 +28,10 @@ public class DatabasePool {
     private final String microserviceName;
     private final String namespace;
     private List<PostConnectProcessor<?>> postProcessors;
+    @SuppressWarnings("java:S5738") // the deprecated definition flow stays until it is removed from the public constructors
     private DatabaseDefinitionHandler databaseDefinitionHandler;
     private final Comparator<Object> postConnectProcessorsOrder;
-    private List<LogicalDbProvider> dbProviders;
+    private List<LogicalDbProvider<?, ?>> dbProviders;
     private Map<Class<? extends AbstractDatabase<?>>, DatabaseClientCreator<?, ?>> mapDatabaseClientCreators = new ConcurrentHashMap<>();
 
     /**
@@ -59,6 +60,7 @@ public class DatabasePool {
      */
     private final Map<DatabaseKey<?, ?>, AbstractDatabase<?>> databasesCacheL2 = new ConcurrentHashMap<>();
 
+    @SuppressWarnings("java:S5738") // public API: the deprecated DatabaseDefinitionHandler parameter cannot be dropped compatibly
     public DatabasePool(DbaasClient dbaasClient,
                         String microserviceName,
                         String namespace,
@@ -71,6 +73,7 @@ public class DatabasePool {
     }
 
 
+    @SuppressWarnings({"java:S107", "java:S5738"}) // public API: the parameter list and the deprecated DatabaseDefinitionHandler cannot change compatibly
     public DatabasePool(DbaasClient dbaasClient,
                         String microserviceName,
                         String namespace,
@@ -123,18 +126,28 @@ public class DatabasePool {
         }
     }
 
-    private List<LogicalDbProvider> sortProviders(List<LogicalDbProvider<?, ?>> dbProviders) {
-        return dbProviders.stream().sorted(Comparator.comparingInt(LogicalDbProvider::order)).collect(Collectors.toList());
+    private List<LogicalDbProvider<?, ?>> sortProviders(List<LogicalDbProvider<?, ?>> dbProviders) {
+        return dbProviders.stream()
+                .sorted(Comparator.comparingInt(LogicalDbProvider::order))
+                .toList();
     }
 
     public <T, D extends AbstractDatabase<T>> void removeCachedDatabase(DatabaseType<T, D> dbType,
                                                                         DbaasDbClassifier dbaasDbClassifier) {
         enrichClassifier(dbaasDbClassifier);
-        removeCachedDatabase(new DatabaseKey<>(dbType, dbaasDbClassifier.asMap(), null));
+        removeByKey(new DatabaseKey<>(dbType, dbaasDbClassifier.asMap(), null));
     }
 
-    @Deprecated(forRemoval = true) // do not use this method because the key's classifier may be not enriched
+    /**
+     * @deprecated the key's classifier may be not enriched; use
+     * {@link #removeCachedDatabase(DatabaseType, DbaasDbClassifier)} instead.
+     */
+    @Deprecated(forRemoval = true)
     public <T, D extends AbstractDatabase<T>> void removeCachedDatabase(DatabaseKey<T, D> key) {
+        removeByKey(key);
+    }
+
+    private void removeByKey(DatabaseKey<?, ?> key) {
         if (databasesCacheL2.containsKey(key)) {
             databasesCacheL2.remove(key);
             AbstractDatabase<?> oldDatabase = databasesCacheL1.remove(key);
@@ -187,6 +200,7 @@ public class DatabasePool {
         }
     }
 
+    @SuppressWarnings("java:S5738") // the deprecated definition flow runs until DatabaseDefinitionHandler is removed
     protected <T, D extends AbstractDatabase<T>> D createDatabase(DatabaseKey<T, D> key, DatabaseConfig databaseConfig) {
         Map<String, Object> classifierFromKey = key.getClassifier();
         Map<String, Object> classifier = new HashMap<>(classifierFromKey);
@@ -239,7 +253,7 @@ public class DatabasePool {
                 .filter(postConnectProcessor -> postConnectProcessor.getSupportedDatabaseType().isInstance(database))
                 .map(postConnectProcessor -> (PostConnectProcessor<D>) postConnectProcessor)
                 .sorted(getComparator())
-                .collect(Collectors.toList());
+                .toList();
 
         if (postProcessorsForConnection.isEmpty()) {
             log.debug("No postprocessor was found for connection of db type: {}. Skip postprocessing for the connection.", database.getClass());
