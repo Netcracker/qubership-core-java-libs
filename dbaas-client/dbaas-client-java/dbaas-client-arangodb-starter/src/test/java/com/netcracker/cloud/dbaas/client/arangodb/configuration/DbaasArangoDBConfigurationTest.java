@@ -104,8 +104,9 @@ class DbaasArangoDBConfigurationTest {
     void checkIfDatabaseTypeIsArangoDBInServiceClient() {
         // arango database is not up -> every check fails -> retries exhausted -> throw
         Assertions.assertThrows(IllegalStateException.class, () -> serviceArango.provide("default"));
-        // 2 Invocations expected: initial attempt and retry because arango database is not up
-        verify(databasePool, times(2)).getOrCreateDatabase(eq(ArangoDBType.INSTANCE), any(), any());
+        // 7 invocations expected: initial attempt, one more right after it fails, then one per
+        // retry (DbaasApiProperties.retryAttempts defaults to 5 when not configured)
+        verify(databasePool, times(7)).getOrCreateDatabase(eq(ArangoDBType.INSTANCE), any(), any());
         Mockito.clearInvocations(databasePool);
     }
 
@@ -114,8 +115,9 @@ class DbaasArangoDBConfigurationTest {
         TenantContext.set("test-tenant");
         // arango database is not up -> every check fails -> retries exhausted -> throw
         Assertions.assertThrows(IllegalStateException.class, () -> tenantArango.provide("default"));
-        // 2 Invocations expected: initial attempt and retry because arango database is not up
-        verify(databasePool, times(2)).getOrCreateDatabase(eq(ArangoDBType.INSTANCE), any(), any());
+        // 7 invocations expected: initial attempt, one more right after it fails, then one per
+        // retry (DbaasApiProperties.retryAttempts defaults to 5 when not configured)
+        verify(databasePool, times(7)).getOrCreateDatabase(eq(ArangoDBType.INSTANCE), any(), any());
         Mockito.clearInvocations(databasePool);
     }
 

@@ -5,6 +5,7 @@ import com.arangodb.Protocol;
 import com.arangodb.config.ArangoConfigProperties;
 import com.arangodb.config.HostDescription;
 import com.arangodb.entity.LoadBalancingStrategy;
+import com.netcracker.cloud.dbaas.client.management.ArangoDatabaseProvider;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
@@ -16,7 +17,8 @@ import java.util.Optional;
 @AllArgsConstructor
 public class DbaasArangoConfigPropertiesImpl implements ArangoConfigProperties {
 
-    public static final Integer DEFAULT_TIMEOUT_MS = 60000;
+    /** Reuses the single default defined in dbaas-client-arangodb-base. */
+    public static final Integer DEFAULT_TIMEOUT_MS = (int) ArangoDatabaseProvider.DEFAULT_CONNECTION_CHECK_TIMEOUT_MS;
 
     @NonNull
     private Map<String, String> properties;

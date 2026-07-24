@@ -1,7 +1,6 @@
 package com.netcracker.cloud.dbaas.client.arangodb.service;
 
 import com.arangodb.ArangoCursor;
-import com.arangodb.ArangoCursorAsync;
 import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDatabase;
 import com.arangodb.entity.*;
@@ -21,10 +20,6 @@ import org.springframework.dao.DataAccessException;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Supplier;
@@ -312,38 +307,16 @@ public class DbaasArangoTemplate extends ArangoTemplate {
     }
 
     protected boolean checkConnection(ArangoOperations operations) {
+        // Probe the same database the operations use (not _system — a tenant user may lack
+        // access to it). The async API bounds our own wait; the request runs on the driver's
+        // event-loop threads, so there is no app-managed thread pool to exhaust.
         try {
-            // Probe the same database the operations use (not _system — a tenant user may lack
-            // access to it). The async API bounds our own wait; the request runs on the driver's
-            // event-loop threads, so there is no app-managed thread pool to exhaust.
-            CompletableFuture<ArangoCursorAsync<Integer>> future =
-                    operations.driver().async().db(databaseName).query("RETURN 42", Integer.class);
-            // Best-effort release of a cursor arriving after we've given up. close() is async
-            // (returns a CompletableFuture and doesn't block); we drop that future on purpose —
-            // awaiting it could block on the same silent socket.
-            future.whenComplete((cursor, err) -> {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            });
-            ArangoCursorAsync<Integer> cursor = future.get(dbaasArangoConfig.checkConnectionTimeoutMs(), TimeUnit.MILLISECONDS);
-            Integer checkValue = cursor.getResult().iterator().next();
-            boolean ok = checkValue != null && checkValue == 42;
-            if (ok) {
-                log.debug("Connection check succeeded, check value: {}", checkValue);
-            } else {
-                log.warn("Wrong check query result: {}", checkValue);
-            }
-            return ok;
-        } catch (TimeoutException e) {
-            log.warn("Connection check timed out after {}ms", dbaasArangoConfig.checkConnectionTimeoutMs());
-            return false;
+            return ArangoConnectionChecker.checkConnection(
+                    () -> operations.driver().async().db(databaseName).query("RETURN 42", Integer.class),
+                    dbaasArangoConfig.checkConnectionTimeoutMs());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.debug("Connection check was interrupted", e);
-            return false;
-        } catch (ExecutionException | RuntimeException e) {
-            log.debug("Connection check failed", e);
             return false;
         }
     }
