@@ -19,13 +19,11 @@ public class TenantDbaasArangoConfiguration {
     @ConditionalOnMissingBean(name = TENANT_ARANGODB_PROVIDER)
     public ArangoDatabaseProvider tenantArangoDatabaseProvider(DatabasePool databasePool,
                                                                DbaasClassifierFactory classifierFactory,
-                                                               DbaasApiProperties arangodbDbaasApiProperties,
-                                                               DbaasArangoDBConfigurationProperties arangoProperties) {
+                                                               DbaasApiProperties arangodbDbaasApiProperties) {
         DatabaseConfig databaseConfig = DatabaseConfig.builder()
                 .userRole(arangodbDbaasApiProperties.getRuntimeUserRole())
                 .dbNamePrefix(arangodbDbaasApiProperties.getDbPrefix())
                 .build();
-        long checkConnectionTimeoutMs = arangoProperties.checkConnectionTimeoutMs();
-        return new ArangoDatabaseProvider(databasePool, classifierFactory.newTenantClassifierBuilder(), databaseConfig, arangodbDbaasApiProperties.getRetryAttempts(), arangodbDbaasApiProperties.getRetryDelay(), checkConnectionTimeoutMs);
+        return new ArangoDatabaseProvider(databasePool, classifierFactory.newTenantClassifierBuilder(), databaseConfig, arangodbDbaasApiProperties.getRetryAttempts(), arangodbDbaasApiProperties.getRetryDelay());
     }
 }
