@@ -54,6 +54,9 @@ class CheckConnectionTimeoutTest {
 
     private static final int HANG_DETECTION_SECONDS = 10;
     private static final String DB_NAME = "nonexistent";
+    // Independent of props.checkConnectionTimeoutMs() (now decoupled from dbaas.arangodb.timeout)
+    // so these provider tests stay fast regardless of the production default.
+    private static final long PROVIDER_CHECK_TIMEOUT_MS = 100;
 
     @Autowired
     private DbaasArangoDBConfigurationProperties props;
@@ -112,7 +115,6 @@ class CheckConnectionTimeoutTest {
         connection.setPort(blackHoleServer.getLocalPort());
         connection.setDbName(DB_NAME);
         connection.setArangoDatabase(driver.db(DB_NAME));
-        connection.setArangoDatabaseAsync(driver.async().db(DB_NAME));
 
         ArangoDatabase arangoDatabase = new ArangoDatabase();
         arangoDatabase.setName(DB_NAME);
@@ -121,14 +123,13 @@ class CheckConnectionTimeoutTest {
         DatabasePool pool = mock(DatabasePool.class);
         when(pool.getOrCreateDatabase(any(), any(), any())).thenReturn(arangoDatabase);
 
-        long timeoutMs = props.checkConnectionTimeoutMs();
-        // retries=1, retryDelay=1: 0 would fall back to the provider's defaults (5 retries,
-        // 5s delay) and blow past the hang-detection window used below.
+        // retries=1, retryDelay=1: small but non-zero so a real retry happens without waiting
+        // on the production retry delay.
         ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
                 pool,
                 new ArangoDBClassifierBuilder(null),
                 DatabaseConfig.builder().build(),
-                1, 1, timeoutMs
+                1, 1, PROVIDER_CHECK_TIMEOUT_MS
         );
 
         try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
@@ -149,7 +150,6 @@ class CheckConnectionTimeoutTest {
         connection.setPort(blackHoleServer.getLocalPort());
         connection.setDbName(DB_NAME);
         connection.setArangoDatabase(driver.db(DB_NAME));
-        connection.setArangoDatabaseAsync(driver.async().db(DB_NAME));
 
         ArangoDatabase arangoDatabase = new ArangoDatabase();
         arangoDatabase.setName(DB_NAME);
@@ -158,12 +158,13 @@ class CheckConnectionTimeoutTest {
         DatabasePool pool = mock(DatabasePool.class);
         when(pool.getOrCreateDatabase(any(), any(), any())).thenReturn(arangoDatabase);
 
-        // retries=1, retryDelay=1: 0 would fall back to the provider's defaults (5 retries, 5s delay)
+        // retries=1, retryDelay=1: small but non-zero so a real retry happens without waiting
+        // on the production retry delay.
         ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
                 pool,
                 new ArangoDBClassifierBuilder(null),
                 DatabaseConfig.builder().build(),
-                1, 1, props.checkConnectionTimeoutMs()
+                1, 1, PROVIDER_CHECK_TIMEOUT_MS
         );
 
         // the check always times out against the black hole -> retries exhausted -> throw
