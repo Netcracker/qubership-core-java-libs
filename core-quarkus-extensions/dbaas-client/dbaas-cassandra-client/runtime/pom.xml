@@ -11,7 +11,7 @@
     <artifactId>dbaas-cassandra-client</artifactId>
 
     <properties>
-        <datastax.cassandra.driver.version>4.19.3</datastax.cassandra.driver.version>
+        <datastax.cassandra.driver.version>4.19.2</datastax.cassandra.driver.version>
     </properties>
 
     <dependencies>
