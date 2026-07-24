@@ -106,19 +106,22 @@ class ArangoDatabaseProviderTest {
     @Test
     void testCheckConnection_Timeout_TreatedAsFailure() {
         checkFuture = new CompletableFuture<>(); // never completes -> get(timeout) times out
+        // retries=1, retryDelay=1L: 0 would fall back to the defaults (5 retries, 5s delay),
+        // which is real production behavior (see ArangoDatabaseProvider ctor) but would make
+        // this test slow; 1/1 keeps it fast while still exercising a real retry + exhaustion.
         ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
-                databasePool, new ServiceDbaaSClassifierBuilder(null), DatabaseConfig.builder().build(), 0, 0L, 100L);
-        // timeout counts as a failed check; retries=0 -> exhaustion -> throw (decision 11)
+                databasePool, new ServiceDbaaSClassifierBuilder(null), DatabaseConfig.builder().build(), 1, 1L, 100L);
+        // timeout counts as a failed check; retries exhausted -> throw (decision 11)
         Assertions.assertThrows(IllegalStateException.class, () -> provider.provide(DB_NAME_1));
-        // initial + reconnect
-        verify(databasePool, times(2)).getOrCreateDatabase(any(ArangoDBType.class), any(), any(DatabaseConfig.class));
+        // initial + reconnect + 1 retry
+        verify(databasePool, times(3)).getOrCreateDatabase(any(ArangoDBType.class), any(), any(DatabaseConfig.class));
     }
 
     @Test
     void testCheckConnection_Interrupted_Rethrows() {
         checkFuture = new CompletableFuture<>(); // never completes
         ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
-                databasePool, new ServiceDbaaSClassifierBuilder(null), DatabaseConfig.builder().build(), 0, 0L, 60_000L);
+                databasePool, new ServiceDbaaSClassifierBuilder(null), DatabaseConfig.builder().build(), 1, 1L, 60_000L);
 
         Thread.currentThread().interrupt(); // caller interrupted -> future.get() aborts with InterruptedException
         // decision 13: the base provider restores the flag AND rethrows (abort, don't retry)
