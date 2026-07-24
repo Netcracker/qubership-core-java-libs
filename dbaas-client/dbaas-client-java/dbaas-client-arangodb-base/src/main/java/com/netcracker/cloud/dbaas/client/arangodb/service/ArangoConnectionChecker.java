@@ -15,11 +15,10 @@ import java.util.function.Supplier;
  * independent of the driver's own socket timeout (which does not apply to in-flight
  * requests over pre-existing pooled connections).
  * <p>
- * Interrupt handling is left to the caller: this method propagates {@link InterruptedException}
- * without restoring the interrupt flag or converting it to a boolean result. Both current callers
- * treat an interrupt the same as any other failed check — matching pre-existing behavior, where
- * any exception during the check was swallowed and treated as unhealthy — and restore the flag
- * themselves so it stays observable by their own retry/orchestration logic afterward.
+ * An interrupt during the wait is treated the same as any other failed check — matching
+ * pre-existing behavior, where any exception during the check was swallowed and treated as
+ * unhealthy — restoring the interrupt flag so it stays observable by the caller's own
+ * retry/orchestration logic afterward.
  */
 @Slf4j
 public final class ArangoConnectionChecker {
@@ -27,7 +26,7 @@ public final class ArangoConnectionChecker {
     private ArangoConnectionChecker() {
     }
 
-    public static boolean checkConnection(Supplier<CompletableFuture<ArangoCursorAsync<Integer>>> queryProbe, long timeoutMs) throws InterruptedException {
+    public static boolean checkConnection(Supplier<CompletableFuture<ArangoCursorAsync<Integer>>> queryProbe, long timeoutMs) {
         try {
             CompletableFuture<ArangoCursorAsync<Integer>> future = queryProbe.get();
             // Best-effort release of a cursor that arrives after we've given up. close() is async
@@ -49,6 +48,10 @@ public final class ArangoConnectionChecker {
             return ok;
         } catch (TimeoutException e) {
             log.warn("Connection check timed out after {}ms", timeoutMs);
+            return false;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.debug("Connection check was interrupted", e);
             return false;
         } catch (ExecutionException | RuntimeException e) {
             log.debug("Connection check failed", e);
