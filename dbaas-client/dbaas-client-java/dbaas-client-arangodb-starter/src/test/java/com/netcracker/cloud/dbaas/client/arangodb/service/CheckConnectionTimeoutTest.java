@@ -122,11 +122,13 @@ class CheckConnectionTimeoutTest {
         when(pool.getOrCreateDatabase(any(), any(), any())).thenReturn(arangoDatabase);
 
         long timeoutMs = props.checkConnectionTimeoutMs();
+        // retries=1, retryDelay=1: 0 would fall back to the provider's defaults (5 retries,
+        // 5s delay) and blow past the hang-detection window used below.
         ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
                 pool,
                 new ArangoDBClassifierBuilder(null),
                 DatabaseConfig.builder().build(),
-                0, 0, timeoutMs
+                1, 1, timeoutMs
         );
 
         try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
@@ -156,14 +158,15 @@ class CheckConnectionTimeoutTest {
         DatabasePool pool = mock(DatabasePool.class);
         when(pool.getOrCreateDatabase(any(), any(), any())).thenReturn(arangoDatabase);
 
+        // retries=1, retryDelay=1: 0 would fall back to the provider's defaults (5 retries, 5s delay)
         ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
                 pool,
                 new ArangoDBClassifierBuilder(null),
                 DatabaseConfig.builder().build(),
-                0, 0, props.checkConnectionTimeoutMs()
+                1, 1, props.checkConnectionTimeoutMs()
         );
 
-        // retries=0 and the check always times out against the black hole -> exhaustion -> throw
+        // the check always times out against the black hole -> retries exhausted -> throw
         assertThrows(IllegalStateException.class, provider::provide);
     }
 

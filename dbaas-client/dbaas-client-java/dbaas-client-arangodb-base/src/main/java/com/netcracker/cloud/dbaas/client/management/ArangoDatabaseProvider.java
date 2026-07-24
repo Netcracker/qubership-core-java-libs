@@ -9,13 +9,13 @@ import com.netcracker.cloud.dbaas.client.management.classifier.DbaaSChainClassif
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.netcracker.cloud.dbaas.client.entity.DbaasApiProperties.DEFAULT_RETRIES;
-import static com.netcracker.cloud.dbaas.client.entity.DbaasApiProperties.DEFAULT_RETRY_DELAY_MS;
 
 @RequiredArgsConstructor
 @Slf4j
 public class ArangoDatabaseProvider {
 
+    public static final int DEFAULT_RETRIES = 5;
+    public static final long DEFAULT_RETRY_DELAY_MS = 5_000L;
     public static final long DEFAULT_CONNECTION_CHECK_TIMEOUT_MS = 60_000L;
 
     private final DatabasePool pool;
@@ -31,8 +31,8 @@ public class ArangoDatabaseProvider {
         this.pool = pool;
         this.builder = builder;
         this.databaseConfig = databaseConfig;
-        this.retries = retries;
-        this.retryDelay = retryDelay;
+        this.retries = retries == 0 ? DEFAULT_RETRIES : retries;
+        this.retryDelay = retryDelay == 0 ? DEFAULT_RETRY_DELAY_MS : retryDelay;
         this.connectionCheckTimeoutMs = connectionCheckTimeoutMs;
     }
 

@@ -93,11 +93,13 @@ class StaleCachedConnectionHangTest {
             DatabasePool pool = mock(DatabasePool.class);
             when(pool.getOrCreateDatabase(any(), any(), any())).thenReturn(staleDb);
 
+            // retries=1, retryDelay=1: 0 would fall back to the provider's defaults (5 retries,
+            // 5s delay) and blow past the hang-detection window used below.
             ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
                     pool,
                     new ArangoDBClassifierBuilder(null),
                     DatabaseConfig.builder().build(),
-                    0, 0, CHECK_TIMEOUT_MS
+                    1, 1, CHECK_TIMEOUT_MS
             );
 
             try (ExecutorService executor = Executors.newSingleThreadExecutor()) {

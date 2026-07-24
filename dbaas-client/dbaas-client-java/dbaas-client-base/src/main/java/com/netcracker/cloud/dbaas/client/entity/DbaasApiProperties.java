@@ -6,13 +6,10 @@ import java.util.Map;
 
 @Data
 public class DbaasApiProperties {
-    public static final int DEFAULT_RETRIES = 5;
-    public static final long DEFAULT_RETRY_DELAY_MS = 5_000L;
-
     private String runtimeUserRole;
     private String dbPrefix;
-    private int retryAttempts = DEFAULT_RETRIES;
-    private long retryDelay = DEFAULT_RETRY_DELAY_MS;
+    private int retryAttempts = 0;
+    private long retryDelay = 0;
 
 
     private Map<String, Object> databaseSettings;
