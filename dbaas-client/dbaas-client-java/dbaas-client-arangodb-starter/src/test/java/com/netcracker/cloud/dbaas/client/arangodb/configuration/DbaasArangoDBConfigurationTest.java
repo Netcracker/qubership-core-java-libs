@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static com.netcracker.cloud.dbaas.client.arangodb.configuration.ServiceArangoTemplateConfiguration.*;
 import static com.netcracker.cloud.dbaas.client.arangodb.configuration.ServiceDbaasArangoConfiguration.*;
 import static com.netcracker.cloud.dbaas.client.arangodb.configuration.TenantArangoTemplateConfiguration.*;
@@ -100,23 +102,29 @@ class DbaasArangoDBConfigurationTest {
 
     @Test
     void checkIfDatabaseTypeIsArangoDBInServiceClient() {
-        serviceArango.provide("default");
-        // 2 Invocations expected: initial attempt and retry because arango database is not up
-        Mockito.verify(databasePool, Mockito.times(2)).getOrCreateDatabase(eq(ArangoDBType.INSTANCE), any(), any());
+        // arango database is not up -> every check fails -> retries exhausted -> throw
+        Assertions.assertThrows(IllegalStateException.class, () -> serviceArango.provide("default"));
+        // 2 invocations expected: initial attempt, then a single recreate-and-check
+        // (DbaasApiProperties.retryAttempts defaults to 0 when not configured, and the
+        // ArangoDatabaseProvider constructor now takes retries literally -> no further retries)
+        verify(databasePool, times(2)).getOrCreateDatabase(eq(ArangoDBType.INSTANCE), any(), any());
         Mockito.clearInvocations(databasePool);
     }
 
     @Test
     void checkIfDatabaseTypeIsArangoDBInTenantClient() {
         TenantContext.set("test-tenant");
-        tenantArango.provide("default");
-        // 2 Invocations expected: initial attempt and retry because arango database is not up
-        Mockito.verify(databasePool, Mockito.times(2)).getOrCreateDatabase(eq(ArangoDBType.INSTANCE), any(), any());
+        // arango database is not up -> every check fails -> retries exhausted -> throw
+        Assertions.assertThrows(IllegalStateException.class, () -> tenantArango.provide("default"));
+        // 2 invocations expected: initial attempt, then a single recreate-and-check
+        // (DbaasApiProperties.retryAttempts defaults to 0 when not configured, and the
+        // ArangoDatabaseProvider constructor now takes retries literally -> no further retries)
+        verify(databasePool, times(2)).getOrCreateDatabase(eq(ArangoDBType.INSTANCE), any(), any());
         Mockito.clearInvocations(databasePool);
     }
 
     @Test
-    public void checkArangoApiProperties() {
+    void checkArangoApiProperties() {
         Assertions.assertEquals("admin", arangodbDbaasApiProperties.getRuntimeUserRole());
         Assertions.assertEquals("test-prefix", arangodbDbaasApiProperties.getDbPrefix());
     }

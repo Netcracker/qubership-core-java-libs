@@ -20,6 +20,7 @@ import org.springframework.dao.DataAccessException;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Supplier;
 
@@ -33,7 +34,8 @@ public class DbaasArangoTemplate extends ArangoTemplate {
     private final DbaasArangoDBConfigurationProperties dbaasArangoConfig;
     private final ApplicationContext applicationContext;
 
-    private volatile ArangoTemplate arangoTemplate;
+    private final AtomicReference<ArangoTemplate> arangoTemplateRef = new AtomicReference<>();
+    private volatile String databaseName;
 
     public DbaasArangoTemplate(ArangoDatabaseProvider arangoDatabaseProvider,
                                ArangoConverter arangoConverter,
@@ -254,6 +256,8 @@ public class DbaasArangoTemplate extends ArangoTemplate {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        // no-op: this instance's applicationContext is fixed at construction time and propagated
+        // to each delegate ArangoTemplate in initArangoTemplate; the framework must not overwrite it.
     }
 
     private <T> T wrapWithRetry(final Supplier<T> supplier) {
@@ -261,18 +265,25 @@ public class DbaasArangoTemplate extends ArangoTemplate {
         lock.readLock().lock();
         try {
             return supplier.get();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lock.readLock().unlock();
             lock.writeLock().lock();
             try {
                 if (currentTemplate == getArangoTemplate()) {
                     log.warn("Some exception occurred during request to ArangoDB. Connection will be checked.");
-                    if (checkConnection(arangoTemplate)) {
+                    if (checkConnection(arangoTemplateRef.get())) {
                         log.warn("Connection is ok, no recreation required.");
                         throw e;
                     }
                     log.warn("Arango connection check failed. Will attempt to create new connection.");
-                    initArangoTemplate();
+                    try {
+                        initArangoTemplate();
+                    } catch (RuntimeException recreateFailure) {
+                        // e is what the request actually hit and triggered this recovery attempt;
+                        // don't let it get lost behind the (possibly unrelated) recreate failure.
+                        recreateFailure.addSuppressed(e);
+                        throw recreateFailure;
+                    }
                 }
             } finally {
                 lock.readLock().lock();
@@ -286,39 +297,40 @@ public class DbaasArangoTemplate extends ArangoTemplate {
     }
 
     protected ArangoTemplate getArangoTemplate() {
-        if (arangoTemplate == null) {
+        ArangoTemplate current = arangoTemplateRef.get();
+        if (current == null) {
             lock.writeLock().lock();
             try {
-                if (arangoTemplate == null) {
+                current = arangoTemplateRef.get();
+                if (current == null) {
                     initArangoTemplate();
+                    current = arangoTemplateRef.get();
                 }
             } finally {
                 lock.writeLock().unlock();
             }
         }
-        return arangoTemplate;
+        return current;
     }
 
     protected boolean checkConnection(ArangoOperations operations) {
-        try {
-            Integer checkValue;
-            try (ArangoCursor<Integer> query = operations.query("RETURN 42", Integer.class)) {
-                checkValue = query.next();
-                if (checkValue == null || checkValue != 42)
-                    throw new RuntimeException("Wrong check query result: " + checkValue);
-            }
-            log.debug("Connection check succeeded, check value: {}", checkValue);
-        } catch (Exception e) {
-            log.debug("Connection check failed with exception", e);
-            return false;
-        }
-        return true;
+        // Probe the same database the operations use (not _system — a tenant user may lack
+        // access to it). The async API bounds our own wait; the request runs on the driver's
+        // event-loop threads, so there is no app-managed thread pool to exhaust.
+        return ArangoConnectionChecker.checkConnection(
+                () -> operations.driver().async().db(databaseName).query("RETURN 42", Integer.class),
+                dbaasArangoConfig.checkConnectionTimeoutMs());
     }
 
     protected void initArangoTemplate() {
+        // No manual shutdown of the previous driver here: arangoDatabaseProvider.provide()
+        // already evicts the stale connection through DatabasePool.removeCachedDatabase(), which
+        // owns and closes it. Closing it again here risked shutting down a driver the pool still
+        // considers cached (e.g. shared by another consumer of the same classifier).
         ArangoDatabase arangoDatabase = arangoDatabaseProvider.provide(dbaasArangoConfig.getArangodb().getOrDefault("dbId", "default"));
         ArangoTemplate newArangoTemplate = new ArangoTemplate(arangoDatabase.arango(), arangoDatabase.name(), arangoConverter, resolverFactory);
         newArangoTemplate.setApplicationContext(applicationContext);
-        arangoTemplate = newArangoTemplate;
+        arangoTemplateRef.set(newArangoTemplate);
+        databaseName = arangoDatabase.name();
     }
 }
