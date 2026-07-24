@@ -203,8 +203,7 @@ class ArangoDatabaseProviderTest {
 
     @Test
     void testRetries_ZeroMeansZero_NoFallbackToDefault() {
-        // The 6-arg constructor takes retries/retryDelay literally: 0 means "no retries", not
-        // "unset -> use DEFAULT_RETRIES". Passing 0 must NOT silently become 5.
+        // The 6-arg constructor takes retries/retryDelay literally: 0 means "no retries".
         ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
                 databasePool, new ServiceDbaaSClassifierBuilder(null), DatabaseConfig.builder().build(), 0, 0L, 100L);
         checkFuture = CompletableFuture.failedFuture(new RuntimeException("check failed"));

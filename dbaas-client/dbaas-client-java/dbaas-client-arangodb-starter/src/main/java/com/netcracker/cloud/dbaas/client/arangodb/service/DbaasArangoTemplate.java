@@ -28,11 +28,7 @@ import java.util.function.Supplier;
 public class DbaasArangoTemplate extends ArangoTemplate {
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
-    // Bounded variant of the injected provider: initArangoTemplate() always runs under this
-    // template's write lock (both on first init and on recovery below), so every other operation
-    // queues behind it. Reconnecting must fail fast here regardless of the retry policy the
-    // caller configured for direct ArangoDatabaseProvider.provide() calls elsewhere.
-    private final ArangoDatabaseProvider recoveryArangoDatabaseProvider;
+    private final ArangoDatabaseProvider arangoDatabaseProvider;
     private final ArangoConverter arangoConverter;
     private final ResolverFactory resolverFactory;
     private final DbaasArangoDBConfigurationProperties dbaasArangoConfig;
@@ -48,8 +44,7 @@ public class DbaasArangoTemplate extends ArangoTemplate {
                                ApplicationContext applicationContext) {
         super(null, "", null, null);
         this.applicationContext = applicationContext;
-        this.recoveryArangoDatabaseProvider = arangoDatabaseProvider == null ? null : arangoDatabaseProvider.withRetryPolicy(
-                0, 0, ArangoDatabaseProvider.DEFAULT_CONNECTION_CHECK_TIMEOUT_MS);
+        this.arangoDatabaseProvider = arangoDatabaseProvider;
         this.arangoConverter = arangoConverter;
         this.resolverFactory = resolverFactory;
         this.dbaasArangoConfig = dbaasArangoConfig;
@@ -328,11 +323,11 @@ public class DbaasArangoTemplate extends ArangoTemplate {
     }
 
     protected void initArangoTemplate() {
-        // No manual shutdown of the previous driver here: recoveryArangoDatabaseProvider.provide()
+        // No manual shutdown of the previous driver here: arangoDatabaseProvider.provide()
         // already evicts the stale connection through DatabasePool.removeCachedDatabase(), which
         // owns and closes it. Closing it again here risked shutting down a driver the pool still
         // considers cached (e.g. shared by another consumer of the same classifier).
-        ArangoDatabase arangoDatabase = recoveryArangoDatabaseProvider.provide(dbaasArangoConfig.getArangodb().getOrDefault("dbId", "default"));
+        ArangoDatabase arangoDatabase = arangoDatabaseProvider.provide(dbaasArangoConfig.getArangodb().getOrDefault("dbId", "default"));
         ArangoTemplate newArangoTemplate = new ArangoTemplate(arangoDatabase.arango(), arangoDatabase.name(), arangoConverter, resolverFactory);
         newArangoTemplate.setApplicationContext(applicationContext);
         arangoTemplateRef.set(newArangoTemplate);
