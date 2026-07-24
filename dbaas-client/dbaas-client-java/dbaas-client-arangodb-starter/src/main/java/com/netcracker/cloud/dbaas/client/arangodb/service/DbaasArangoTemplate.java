@@ -28,7 +28,11 @@ import java.util.function.Supplier;
 public class DbaasArangoTemplate extends ArangoTemplate {
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
-    private final ArangoDatabaseProvider arangoDatabaseProvider;
+    // Bounded variant of the injected provider: initArangoTemplate() always runs under this
+    // template's write lock (both on first init and on recovery below), so every other operation
+    // queues behind it. Reconnecting must fail fast here regardless of the retry policy the
+    // caller configured for direct ArangoDatabaseProvider.provide() calls elsewhere.
+    private final ArangoDatabaseProvider recoveryArangoDatabaseProvider;
     private final ArangoConverter arangoConverter;
     private final ResolverFactory resolverFactory;
     private final DbaasArangoDBConfigurationProperties dbaasArangoConfig;
@@ -44,7 +48,8 @@ public class DbaasArangoTemplate extends ArangoTemplate {
                                ApplicationContext applicationContext) {
         super(null, "", null, null);
         this.applicationContext = applicationContext;
-        this.arangoDatabaseProvider = arangoDatabaseProvider;
+        this.recoveryArangoDatabaseProvider = arangoDatabaseProvider == null ? null : arangoDatabaseProvider.withRetryPolicy(
+                0, 0, ArangoDatabaseProvider.DEFAULT_CONNECTION_CHECK_TIMEOUT_MS);
         this.arangoConverter = arangoConverter;
         this.resolverFactory = resolverFactory;
         this.dbaasArangoConfig = dbaasArangoConfig;
@@ -257,7 +262,7 @@ public class DbaasArangoTemplate extends ArangoTemplate {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         // no-op: this instance's applicationContext is fixed at construction time and propagated
-        // to each delegate ArangoTemplate in initArangoTemplate the framework must not overwrite it.
+        // to each delegate ArangoTemplate in initArangoTemplate; the framework must not overwrite it.
     }
 
     private <T> T wrapWithRetry(final Supplier<T> supplier) {
@@ -276,7 +281,14 @@ public class DbaasArangoTemplate extends ArangoTemplate {
                         throw e;
                     }
                     log.warn("Arango connection check failed. Will attempt to create new connection.");
-                    initArangoTemplate();
+                    try {
+                        initArangoTemplate();
+                    } catch (RuntimeException recreateFailure) {
+                        // e is what the request actually hit and triggered this recovery attempt;
+                        // don't let it get lost behind the (possibly unrelated) recreate failure.
+                        recreateFailure.addSuppressed(e);
+                        throw recreateFailure;
+                    }
                 }
             } finally {
                 lock.readLock().lock();
@@ -322,18 +334,14 @@ public class DbaasArangoTemplate extends ArangoTemplate {
     }
 
     protected void initArangoTemplate() {
-        ArangoTemplate old = arangoTemplateRef.get();
-        ArangoDatabase arangoDatabase = arangoDatabaseProvider.provide(dbaasArangoConfig.getArangodb().getOrDefault("dbId", "default"));
+        // No manual shutdown of the previous driver here: recoveryArangoDatabaseProvider.provide()
+        // already evicts the stale connection through DatabasePool.removeCachedDatabase(), which
+        // owns and closes it. Closing it again here risked shutting down a driver the pool still
+        // considers cached (e.g. shared by another consumer of the same classifier).
+        ArangoDatabase arangoDatabase = recoveryArangoDatabaseProvider.provide(dbaasArangoConfig.getArangodb().getOrDefault("dbId", "default"));
         ArangoTemplate newArangoTemplate = new ArangoTemplate(arangoDatabase.arango(), arangoDatabase.name(), arangoConverter, resolverFactory);
         newArangoTemplate.setApplicationContext(applicationContext);
         arangoTemplateRef.set(newArangoTemplate);
         databaseName = arangoDatabase.name();
-        if (old != null && old.driver() != arangoDatabase.arango()) {
-            try {
-                old.driver().shutdown();
-            } catch (Exception e) {
-                log.warn("Failed to shut down old ArangoDB driver", e);
-            }
-        }
     }
 }

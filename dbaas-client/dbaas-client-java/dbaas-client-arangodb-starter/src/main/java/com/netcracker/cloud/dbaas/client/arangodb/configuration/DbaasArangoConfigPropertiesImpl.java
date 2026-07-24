@@ -5,7 +5,6 @@ import com.arangodb.Protocol;
 import com.arangodb.config.ArangoConfigProperties;
 import com.arangodb.config.HostDescription;
 import com.arangodb.entity.LoadBalancingStrategy;
-import com.netcracker.cloud.dbaas.client.management.ArangoDatabaseProvider;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
@@ -17,8 +16,13 @@ import java.util.Optional;
 @AllArgsConstructor
 public class DbaasArangoConfigPropertiesImpl implements ArangoConfigProperties {
 
-    /** Reuses the single default defined in dbaas-client-arangodb-base. */
-    public static final Integer DEFAULT_TIMEOUT_MS = (int) ArangoDatabaseProvider.DEFAULT_CONNECTION_CHECK_TIMEOUT_MS;
+    /**
+     * Default connect & request timeout for the ArangoDB driver itself. Deliberately independent
+     * of {@link com.netcracker.cloud.dbaas.client.management.ArangoDatabaseProvider#DEFAULT_CONNECTION_CHECK_TIMEOUT_MS}:
+     * that one bounds a lightweight liveness probe and multiplies by every retry, while this one
+     * needs enough headroom for real, potentially slow queries.
+     */
+    public static final Integer DEFAULT_TIMEOUT_MS = 60_000;
 
     @NonNull
     private Map<String, String> properties;

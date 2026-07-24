@@ -15,10 +15,11 @@ import java.util.function.Supplier;
  * independent of the driver's own socket timeout (which does not apply to in-flight
  * requests over pre-existing pooled connections).
  * <p>
- * Interrupt handling is intentionally left to the caller: this method propagates
- * {@link InterruptedException} without restoring the interrupt flag or converting it to a
- * boolean result, since the two callers disagree on the right response (abort vs. treat as a
- * failed check).
+ * Interrupt handling is left to the caller: this method propagates {@link InterruptedException}
+ * without restoring the interrupt flag or converting it to a boolean result. Both current callers
+ * treat an interrupt the same as any other failed check — matching pre-existing behavior, where
+ * any exception during the check was swallowed and treated as unhealthy — and restore the flag
+ * themselves so it stays observable by their own retry/orchestration logic afterward.
  */
 @Slf4j
 public final class ArangoConnectionChecker {

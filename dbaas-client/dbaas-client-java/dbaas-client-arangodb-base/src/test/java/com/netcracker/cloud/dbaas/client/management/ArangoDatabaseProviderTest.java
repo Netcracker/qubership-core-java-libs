@@ -1,6 +1,8 @@
 package com.netcracker.cloud.dbaas.client.management;
 
 import com.arangodb.ArangoCursorAsync;
+import com.arangodb.ArangoDB;
+import com.arangodb.ArangoDBAsync;
 import com.arangodb.ArangoDatabase;
 import com.arangodb.ArangoDatabaseAsync;
 import com.netcracker.cloud.dbaas.client.arangodb.entity.connection.ArangoConnection;
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.netcracker.cloud.dbaas.client.arangodb.classifier.ArangoDBClassifierBuilder.DB_ID_CLASSIFIER_PROPERTY;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,13 +41,7 @@ class ArangoDatabaseProviderTest {
                 invocationOnMock -> {
                     DbaasDbClassifier dbaasDbClassifier = invocationOnMock.getArgument(1);
                     String dbName = (String) dbaasDbClassifier.asMap().get(DB_ID_CLASSIFIER_PROPERTY);
-                    ArangoDatabase arangoDatabase = mock(ArangoDatabase.class);
-                    when(arangoDatabase.name()).thenReturn(dbName);
-                    ArangoDatabaseAsync arangoDatabaseAsync = mock(ArangoDatabaseAsync.class);
-                    when(arangoDatabaseAsync.query("RETURN 42", Integer.class)).thenReturn(checkFuture);
-                    ArangoConnection arangoConnection = new ArangoConnection();
-                    arangoConnection.setArangoDatabase(arangoDatabase);
-                    arangoConnection.setArangoDatabaseAsync(arangoDatabaseAsync);
+                    ArangoConnection arangoConnection = mockArangoConnection(dbName, checkFuture);
                     com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase result = new com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase();
                     result.setConnectionProperties(arangoConnection);
                     return result;
@@ -59,6 +56,25 @@ class ArangoDatabaseProviderTest {
         ArangoCursorAsync<Integer> cursor = mock(ArangoCursorAsync.class);
         when(cursor.getResult()).thenReturn(List.of(value));
         return cursor;
+    }
+
+    // The probe now derives the async handle as arangoDatabase.arango().async().db(dbName)
+    // (see ArangoDatabaseProvider.checkConnection), so the sync ArangoDatabase mock has to wire
+    // that whole chain instead of a directly-settable async field.
+    private static ArangoConnection mockArangoConnection(String dbName, CompletableFuture<ArangoCursorAsync<Integer>> future) {
+        ArangoDatabaseAsync arangoDatabaseAsync = mock(ArangoDatabaseAsync.class);
+        when(arangoDatabaseAsync.query("RETURN 42", Integer.class)).thenReturn(future);
+        ArangoDBAsync arangoDBAsync = mock(ArangoDBAsync.class);
+        when(arangoDBAsync.db(dbName)).thenReturn(arangoDatabaseAsync);
+        ArangoDB arangoDB = mock(ArangoDB.class);
+        when(arangoDB.async()).thenReturn(arangoDBAsync);
+        ArangoDatabase arangoDatabase = mock(ArangoDatabase.class);
+        when(arangoDatabase.name()).thenReturn(dbName);
+        when(arangoDatabase.arango()).thenReturn(arangoDB);
+        ArangoConnection arangoConnection = new ArangoConnection();
+        arangoConnection.setDbName(dbName);
+        arangoConnection.setArangoDatabase(arangoDatabase);
+        return arangoConnection;
     }
 
     @Test
@@ -106,30 +122,63 @@ class ArangoDatabaseProviderTest {
     @Test
     void testCheckConnection_Timeout_TreatedAsFailure() {
         checkFuture = new CompletableFuture<>(); // never completes -> get(timeout) times out
-        // retries=1, retryDelay=1L: 0 would fall back to the defaults (5 retries, 5s delay),
-        // which is real production behavior (see ArangoDatabaseProvider ctor) but would make
-        // this test slow; 1/1 keeps it fast while still exercising a real retry + exhaustion.
+        // retries=1, retryDelay=1L: small but non-zero so the test still exercises a real
+        // retry + exhaustion without waiting on the production retry delay.
         ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
                 databasePool, new ServiceDbaaSClassifierBuilder(null), DatabaseConfig.builder().build(), 1, 1L, 100L);
         // timeout counts as a failed check; retries exhausted -> throw (decision 11)
         Assertions.assertThrows(IllegalStateException.class, () -> provider.provide(DB_NAME_1));
-        // initial + reconnect + 1 retry
+        // initial + reconnect + 1 retry recreate; every one of these 3 connections is checked
+        // (including the last retry recreate) before exhaustion is declared
         verify(databasePool, times(3)).getOrCreateDatabase(any(ArangoDBType.class), any(), any(DatabaseConfig.class));
     }
 
     @Test
-    void testCheckConnection_Interrupted_Rethrows() {
-        checkFuture = new CompletableFuture<>(); // never completes
-        ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
-                databasePool, new ServiceDbaaSClassifierBuilder(null), DatabaseConfig.builder().build(), 1, 1L, 60_000L);
+    void testCheckConnection_LastRetryRecreateHealthy_ReturnsIt() {
+        // Reproduces the bug where the connection recreated right before exhaustion was thrown
+        // away unchecked: with retries=1 there are 3 getOrCreateDatabase calls (initial, reconnect,
+        // 1 retry recreate). Only the 3rd (the final retry recreate) is healthy here; provide()
+        // must check it and return it instead of throwing.
+        AtomicInteger callCount = new AtomicInteger();
+        when(databasePool.getOrCreateDatabase(any(ArangoDBType.class), any(DbaasDbClassifier.class), any(DatabaseConfig.class))).thenAnswer(
+                invocationOnMock -> {
+                    DbaasDbClassifier dbaasDbClassifier = invocationOnMock.getArgument(1);
+                    String dbName = (String) dbaasDbClassifier.asMap().get(DB_ID_CLASSIFIER_PROPERTY);
+                    boolean healthy = callCount.incrementAndGet() == 3;
+                    CompletableFuture<ArangoCursorAsync<Integer>> future = healthy
+                            ? CompletableFuture.completedFuture(cursorAsyncReturning(42))
+                            : CompletableFuture.failedFuture(new RuntimeException("check failed"));
+                    ArangoConnection arangoConnection = mockArangoConnection(dbName, future);
+                    com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase result = new com.netcracker.cloud.dbaas.client.arangodb.entity.database.ArangoDatabase();
+                    result.setConnectionProperties(arangoConnection);
+                    return result;
+                }
+        );
 
-        Thread.currentThread().interrupt(); // caller interrupted -> future.get() aborts with InterruptedException
-        // decision 13: the base provider restores the flag AND rethrows (abort, don't retry)
-        Assertions.assertThrows(RuntimeException.class, () -> provider.provide(DB_NAME_1));
-        // flag is re-set by the InterruptedException branch; verify + clear so it can't leak
+        ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
+                databasePool, new ServiceDbaaSClassifierBuilder(null), DatabaseConfig.builder().build(), 1, 1L, 100L);
+
+        ArangoDatabase db = provider.provide(DB_NAME_1);
+        Assertions.assertNotNull(db);
+        // no wasted 4th recreate after the successful check
+        verify(databasePool, times(3)).getOrCreateDatabase(any(ArangoDBType.class), any(), any(DatabaseConfig.class));
+    }
+
+    @Test
+    void testCheckConnection_Interrupted_TreatedAsFailure() {
+        checkFuture = new CompletableFuture<>(); // never completes -> get(timeout) aborts with InterruptedException
+        ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
+                databasePool, new ServiceDbaaSClassifierBuilder(null), DatabaseConfig.builder().build(), 0, 0L, 60_000L);
+
+        Thread.currentThread().interrupt(); // caller interrupted before the check even starts
+        // interrupt is treated the same as any other failed check, matching DbaasArangoTemplate
+        // and pre-existing (pre-PR) behavior -> exhausts the single recreate-and-check attempt, then throws
+        Assertions.assertThrows(IllegalStateException.class, () -> provider.provide(DB_NAME_1));
+        // flag is restored by the InterruptedException branch; verify + clear so it can't leak
         Assertions.assertTrue(Thread.interrupted());
-        // aborted during the very first check -> only the initial getOrCreate happened
-        verify(databasePool, times(1))
+        // initial + a single recreate-and-check attempt, both short-circuited by the still-set
+        // interrupt flag (Future.get() throws immediately when the calling thread is already interrupted)
+        verify(databasePool, times(2))
                 .getOrCreateDatabase(any(ArangoDBType.class), any(), any(DatabaseConfig.class));
     }
 
@@ -150,5 +199,17 @@ class ArangoDatabaseProviderTest {
         int reconnectInvocationNumber = 1;
         verify(databasePool, times(initialInvocationNumber + reconnectInvocationNumber + retries))
                 .getOrCreateDatabase(any(ArangoDBType.class), any(), eq(databaseConfig));
+    }
+
+    @Test
+    void testRetries_ZeroMeansZero_NoFallbackToDefault() {
+        // The 6-arg constructor takes retries/retryDelay literally: 0 means "no retries", not
+        // "unset -> use DEFAULT_RETRIES". Passing 0 must NOT silently become 5.
+        ArangoDatabaseProvider provider = new ArangoDatabaseProvider(
+                databasePool, new ServiceDbaaSClassifierBuilder(null), DatabaseConfig.builder().build(), 0, 0L, 100L);
+        checkFuture = CompletableFuture.failedFuture(new RuntimeException("check failed"));
+        Assertions.assertThrows(IllegalStateException.class, () -> provider.provide(DB_NAME_1));
+        // initial + a single recreate-and-check attempt, no retries beyond that
+        verify(databasePool, times(2)).getOrCreateDatabase(any(ArangoDBType.class), any(), any(DatabaseConfig.class));
     }
 }

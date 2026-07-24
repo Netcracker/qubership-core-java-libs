@@ -104,10 +104,10 @@ class DbaasArangoDBConfigurationTest {
     void checkIfDatabaseTypeIsArangoDBInServiceClient() {
         // arango database is not up -> every check fails -> retries exhausted -> throw
         Assertions.assertThrows(IllegalStateException.class, () -> serviceArango.provide("default"));
-        // 7 invocations expected: initial attempt, one more right after it fails, then one per
-        // retry (DbaasApiProperties.retryAttempts defaults to 0 when not configured, and
-        // ArangoDatabaseProvider substitutes its own default of 5 retries in that case)
-        verify(databasePool, times(7)).getOrCreateDatabase(eq(ArangoDBType.INSTANCE), any(), any());
+        // 2 invocations expected: initial attempt, then a single recreate-and-check
+        // (DbaasApiProperties.retryAttempts defaults to 0 when not configured, and the
+        // ArangoDatabaseProvider constructor now takes retries literally -> no further retries)
+        verify(databasePool, times(2)).getOrCreateDatabase(eq(ArangoDBType.INSTANCE), any(), any());
         Mockito.clearInvocations(databasePool);
     }
 
@@ -116,10 +116,10 @@ class DbaasArangoDBConfigurationTest {
         TenantContext.set("test-tenant");
         // arango database is not up -> every check fails -> retries exhausted -> throw
         Assertions.assertThrows(IllegalStateException.class, () -> tenantArango.provide("default"));
-        // 7 invocations expected: initial attempt, one more right after it fails, then one per
-        // retry (DbaasApiProperties.retryAttempts defaults to 0 when not configured, and
-        // ArangoDatabaseProvider substitutes its own default of 5 retries in that case)
-        verify(databasePool, times(7)).getOrCreateDatabase(eq(ArangoDBType.INSTANCE), any(), any());
+        // 2 invocations expected: initial attempt, then a single recreate-and-check
+        // (DbaasApiProperties.retryAttempts defaults to 0 when not configured, and the
+        // ArangoDatabaseProvider constructor now takes retries literally -> no further retries)
+        verify(databasePool, times(2)).getOrCreateDatabase(eq(ArangoDBType.INSTANCE), any(), any());
         Mockito.clearInvocations(databasePool);
     }
 

@@ -231,6 +231,26 @@ class DbaasArangoTemplateTest {
     }
 
     @Test
+    void testFail_RecreateThrows_OriginalExceptionAttachedAsSuppressed() throws NoSuchFieldException, IllegalAccessException {
+        setArangoTemplate(arangoTemplate);
+        RuntimeException originalFailure = new RuntimeException("Bad connection");
+        when(arangoTemplate.query(any(), any())).thenThrow(originalFailure);
+
+        // checkConnection fails (unstubbed driver() -> NPE -> false), so wrapWithRetry attempts
+        // initArangoTemplate() to recreate the connection; simulate ArangoDatabaseProvider.provide()
+        // exhausting its retries and throwing instead of producing a healthy connection.
+        IllegalStateException recreateFailure = new IllegalStateException("No healthy connection after retries");
+        Mockito.doThrow(recreateFailure).when(dbaasArangoTemplate).initArangoTemplate();
+
+        RuntimeException thrown = assertThrows(RuntimeException.class,
+                () -> dbaasArangoTemplate.query("RETURN 13", Integer.class));
+        // the recreate failure surfaces, but the original request failure that triggered
+        // recovery must not be lost
+        assertEquals(recreateFailure, thrown);
+        assertTrue(List.of(thrown.getSuppressed()).contains(originalFailure));
+    }
+
+    @Test
     void testCheckConnection_Timeout_ReturnsFalse() throws NoSuchFieldException, IllegalAccessException {
         // set a very short timeout via config
         DbaasArangoDBConfigurationProperties config = new DbaasArangoDBConfigurationProperties();
