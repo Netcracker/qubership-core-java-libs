@@ -261,18 +261,12 @@ public class DbaasArangoTemplate extends ArangoTemplate {
     }
 
     protected boolean checkConnection(ArangoOperations operations) {
-        try {
-            Integer checkValue;
-            try (ArangoCursor<Integer> query = operations.query("RETURN 42", Integer.class)) {
-                checkValue = query.next();
-                if (checkValue == null || checkValue != 42) throw new RuntimeException("Wrong check query result: " + checkValue);
-            }
-            log.debug("Connection check succeeded, check value: {}", checkValue);
-        } catch (Exception e) {
-            log.debug("Connection check failed with exception", e);
-            return false;
-        }
-        return true;
+        // Probe the same database the operations use (not _system — a tenant user may lack
+        // access to it). The async API bounds our own wait; the request runs on the driver's
+        // event-loop threads, so there is no app-managed thread pool to exhaust.
+        return ArangoConnectionChecker.checkConnection(
+                () -> operations.driver().async().db(dbName).query("RETURN 42", Integer.class),
+                dbaasArangoConfig.checkConnectionTimeoutMs());
     }
 
     protected void initArangoTemplate() {
