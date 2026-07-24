@@ -6,10 +6,14 @@ import java.util.Map;
 
 @Data
 public class DbaasApiProperties {
+    public static final int DEFAULT_RETRIES = 5;
+    public static final long DEFAULT_RETRY_DELAY_MS = 5_000L;
+
     private String runtimeUserRole;
     private String dbPrefix;
-    private int retryAttempts;
-    private long retryDelay;
+    private int retryAttempts = DEFAULT_RETRIES;
+    private long retryDelay = DEFAULT_RETRY_DELAY_MS;
+
 
     private Map<String, Object> databaseSettings;
     private DbScopeProperties service = new DbScopeProperties();
