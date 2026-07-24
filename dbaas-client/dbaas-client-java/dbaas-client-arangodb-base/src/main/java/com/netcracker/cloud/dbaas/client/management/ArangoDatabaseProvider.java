@@ -90,7 +90,7 @@ public class ArangoDatabaseProvider {
                     throw new RuntimeException(e);
                 }
             }
-            log.debug("Retry #{}/{}", retry + 1, retries);
+            log.debug("Retry #{}/{}", retry, retries);
             pool.removeCachedDatabase(ArangoDBType.INSTANCE, classifier);
             connectionProperties = pool.getOrCreateDatabase(ArangoDBType.INSTANCE, classifier, databaseConfig).getConnectionProperties();
             if (checkConnection(connectionProperties)) {
@@ -104,7 +104,7 @@ public class ArangoDatabaseProvider {
 
     private boolean checkConnection(ArangoConnection connection) {
         return ArangoConnectionChecker.checkConnection(
-                () -> connection.getArangoDatabase().arango().async().db(connection.getDbName())
+                () -> connection.getArangoDatabase().arango().async().db(connection.getArangoDatabase().name())
                         .query("RETURN 42", Integer.class),
                 connectionCheckTimeoutMs);
     }

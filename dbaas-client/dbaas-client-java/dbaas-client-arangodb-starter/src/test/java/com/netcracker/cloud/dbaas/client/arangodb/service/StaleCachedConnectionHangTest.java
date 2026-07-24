@@ -238,8 +238,7 @@ class StaleCachedConnectionHangTest {
         try {
             driver.shutdown();
         } catch (Exception ignored) {
-            // Already shut down by DbaasArangoTemplate's own reconnect cleanup (initArangoTemplate
-            // shuts down the driver it's replacing) — a double shutdown is not a test failure.
+            // shutdown() may fail if the connection is already broken or closed; cleanup failure must not mask the test result
         }
     }
 

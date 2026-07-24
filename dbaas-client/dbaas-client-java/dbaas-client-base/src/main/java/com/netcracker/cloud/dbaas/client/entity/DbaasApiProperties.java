@@ -11,7 +11,6 @@ public class DbaasApiProperties {
     private int retryAttempts = 0;
     private long retryDelay = 0;
 
-
     private Map<String, Object> databaseSettings;
     private DbScopeProperties service = new DbScopeProperties();
     private DbScopeProperties tenant = new DbScopeProperties();
