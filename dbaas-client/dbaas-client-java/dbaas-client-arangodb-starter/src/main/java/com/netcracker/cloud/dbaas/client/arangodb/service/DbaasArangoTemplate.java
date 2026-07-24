@@ -322,15 +322,9 @@ public class DbaasArangoTemplate extends ArangoTemplate {
         // Probe the same database the operations use (not _system — a tenant user may lack
         // access to it). The async API bounds our own wait; the request runs on the driver's
         // event-loop threads, so there is no app-managed thread pool to exhaust.
-        try {
-            return ArangoConnectionChecker.checkConnection(
-                    () -> operations.driver().async().db(databaseName).query("RETURN 42", Integer.class),
-                    dbaasArangoConfig.checkConnectionTimeoutMs());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.debug("Connection check was interrupted", e);
-            return false;
-        }
+        return ArangoConnectionChecker.checkConnection(
+                () -> operations.driver().async().db(databaseName).query("RETURN 42", Integer.class),
+                dbaasArangoConfig.checkConnectionTimeoutMs());
     }
 
     protected void initArangoTemplate() {

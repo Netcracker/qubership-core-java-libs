@@ -117,19 +117,9 @@ public class ArangoDatabaseProvider {
     }
 
     private boolean checkConnection(ArangoConnection connection) {
-        try {
-            return ArangoConnectionChecker.checkConnection(
-                    () -> connection.getArangoDatabase().arango().async().db(connection.getDbName())
-                            .query("RETURN 42", Integer.class),
-                    connectionCheckTimeoutMs);
-        } catch (InterruptedException e) {
-            // Matches DbaasArangoTemplate.checkConnection() and pre-existing (pre-PR) behavior,
-            // where any exception during the check — interrupt included — was swallowed and
-            // treated as unhealthy. The flag is restored so it stays observable by provide()'s
-            // own retry loop (e.g. the Thread.sleep() between retries aborts immediately).
-            Thread.currentThread().interrupt();
-            log.debug("Connection check was interrupted", e);
-            return false;
-        }
+        return ArangoConnectionChecker.checkConnection(
+                () -> connection.getArangoDatabase().arango().async().db(connection.getDbName())
+                        .query("RETURN 42", Integer.class),
+                connectionCheckTimeoutMs);
     }
 }
