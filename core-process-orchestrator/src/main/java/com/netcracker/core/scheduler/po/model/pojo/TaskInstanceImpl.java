@@ -2,6 +2,7 @@ package com.netcracker.core.scheduler.po.model.pojo;
 
 import com.netcracker.core.scheduler.po.DataContext;
 import com.netcracker.core.scheduler.po.ProcessOrchestrator;
+import com.netcracker.core.scheduler.po.repository.VersionMismatchException;
 import com.netcracker.core.scheduler.po.task.NamedTask;
 import com.netcracker.core.scheduler.po.task.TaskState;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import lombok.Getter;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 
 public class TaskInstanceImpl {
@@ -106,6 +108,33 @@ public class TaskInstanceImpl {
 
     public TaskInstanceImpl reload() {
         return ProcessOrchestrator.getInstance().getTaskInstanceRepository().getTaskInstance(id);
+    }
+
+    /**
+     * Saves, and on a version conflict reloads the row, re-applies the mutation
+     * to the fresh copy, and saves that copy. Meant for must-win writes such as
+     * the terminal COMPLETED/FAILED transitions: several actors (the process
+     * tick, the executing task, the failure handler, the timeout watchdog) hold
+     * independent in-memory copies of the same row, and a completion that loses
+     * the version race by milliseconds must not abort — an aborted completion
+     * leaves the db-scheduler execution stuck picked until dead-execution
+     * revival. The mutation must be idempotent. This instance is synced with
+     * the persisted state afterwards, so callers keep a clean, current object.
+     */
+    public TaskInstanceImpl saveResolvingConflict(Consumer<TaskInstanceImpl> reapply) {
+        try {
+            save();
+        } catch (VersionMismatchException e) {
+            TaskInstanceImpl fresh = reload();
+            reapply.accept(fresh);
+            fresh.save();
+            setState(fresh.getState());
+            setName(fresh.getName());
+            setType(fresh.getType());
+            setDependsOn(fresh.getDependsOn());
+            setVersion(fresh.getVersion());
+        }
+        return this;
     }
 
     /**/

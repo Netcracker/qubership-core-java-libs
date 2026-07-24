@@ -53,7 +53,7 @@ public abstract class AbstractProcessTask extends CustomTask<TaskExecutionContex
         if(!TERMINATED.equals(task.getState())) {
             task.setEndTime(Calendar.getInstance().getTime());
             task.setState(TaskState.COMPLETED);
-            task.save();
+            task.saveResolvingConflict(t -> t.setState(TaskState.COMPLETED));
             logger.info("Task {} with id {} completed.", getTaskName(), taskInstance.getId());
         }
         return (executionComplete, executionOperations) -> executionOperations.remove();

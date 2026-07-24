@@ -37,17 +37,20 @@ public class ProcessInstanceRepositoryImpl extends AbstractRepository implements
         if (version == null) {
             insertInstance(processInstance);
         } else {
-            if (version.equals(processInstance.getVersion())) {
-                processInstance.setVersion(version + 1);
-
-                updateInstance(processInstance);
-            } else throw new VersionMismatchException("Current version are less than saved");
-
+            // The version check must live in the UPDATE itself: a check-then-act
+            // compare leaves a window where a concurrent writer slips between the
+            // SELECT above and the UPDATE, silently losing one of the writes. The
+            // in-memory version is bumped only after the guarded UPDATE succeeded.
+            int expectedVersion = processInstance.getVersion();
+            if (updateInstance(processInstance, expectedVersion) == 0) {
+                throw new VersionMismatchException("Current version are less than saved");
+            }
+            processInstance.setVersion(expectedVersion + 1);
         }
     }
 
-    private void updateInstance(ProcessInstanceImpl processInstance) {
-        jdbcRunner.execute(
+    private int updateInstance(ProcessInstanceImpl processInstance, int expectedVersion) {
+        return jdbcRunner.execute(
                 "update " +
                 tableName +
                 " set " +
@@ -55,7 +58,7 @@ public class ProcessInstanceRepositoryImpl extends AbstractRepository implements
                 "   start_time=?," +
                 "   end_time=?," +
                 "   version=?" +
-                " where pi_id=?"
+                " where pi_id=? and version=?"
                 ,
                 (PreparedStatement p) -> {
                     p.setString(1, processInstance.getState().toString());
@@ -67,9 +70,10 @@ public class ProcessInstanceRepositoryImpl extends AbstractRepository implements
                     if (processInstance.getEndTime() != null) {
                         p.setLong(3, processInstance.getEndTime().getTime());
                     } else p.setLong(3, 0L);
-                    p.setInt(4, processInstance.getVersion());
+                    p.setInt(4, expectedVersion + 1);
 
                     p.setString(5, processInstance.getId());
+                    p.setInt(6, expectedVersion);
                 }
         );
     }

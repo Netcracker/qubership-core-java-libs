@@ -3,11 +3,13 @@ package com.netcracker.core.scheduler.po.model.pojo;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.netcracker.core.scheduler.po.DataContext;
 import com.netcracker.core.scheduler.po.ProcessOrchestrator;
+import com.netcracker.core.scheduler.po.repository.VersionMismatchException;
 import com.netcracker.core.scheduler.po.repository.TaskInstanceRepository;
 import com.netcracker.core.scheduler.po.task.TaskState;
 import lombok.Getter;
 
 import java.util.Date;
+import java.util.function.Consumer;
 import java.util.List;
 import java.util.Objects;
 
@@ -85,6 +87,28 @@ public class ProcessInstanceImpl {
     @Override
     public int hashCode() {
         return Objects.hash(getName(), getId(), getProcessDefinitionID(), getStartTime(), getEndTime(), getState(), getVersion());
+    }
+
+    /**
+     * Saves, and on a version conflict reloads the row, re-applies the mutation
+     * to the fresh copy, saves it, and syncs this instance with the persisted
+     * state — so callers (and any later raw save()) keep working with a clean,
+     * current object. Meant for must-win writes such as the terminal
+     * COMPLETED/FAILED transitions; the mutation must be idempotent.
+     */
+    public ProcessInstanceImpl saveResolvingConflict(Consumer<ProcessInstanceImpl> reapply) {
+        try {
+            save();
+        } catch (VersionMismatchException e) {
+            ProcessInstanceImpl fresh = reload();
+            reapply.accept(fresh);
+            fresh.save();
+            setState(fresh.getState());
+            setStartTime(fresh.getStartTime());
+            setEndTime(fresh.getEndTime());
+            setVersion(fresh.getVersion());
+        }
+        return this;
     }
 
     public void save() {

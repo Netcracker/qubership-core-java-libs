@@ -56,7 +56,7 @@ public class Process extends CustomTask<ProcessContext> {
                     logger.info("Process {} are failed", taskInstance.getId());
                     taskInstance.getData().getProcess().setState(TaskState.FAILED);
                     executionOperations.remove();
-                    taskInstance.getData().getProcess().save();
+                    taskInstance.getData().getProcess().saveResolvingConflict(pi -> pi.setState(TaskState.FAILED));
                     return;
                 }
                 completed = completed && task.getState() == TaskState.COMPLETED;
@@ -65,9 +65,13 @@ public class Process extends CustomTask<ProcessContext> {
                 executionOperations.reschedule(executionComplete, Instant.now().plusSeconds(2), taskInstance.getData());
             else {
                 logger.info("Process {} are completed", taskInstance.getId());
-                taskInstance.getData().getProcess().setEndTime(Calendar.getInstance().getTime());
+                java.util.Date endTime = Calendar.getInstance().getTime();
+                taskInstance.getData().getProcess().setEndTime(endTime);
                 taskInstance.getData().getProcess().setState(TaskState.COMPLETED);
-                taskInstance.getData().getProcess().save();
+                taskInstance.getData().getProcess().saveResolvingConflict(pi -> {
+                    pi.setEndTime(endTime);
+                    pi.setState(TaskState.COMPLETED);
+                });
                 executionOperations.remove();
             }
             taskInstance.getData().getProcess().save();
