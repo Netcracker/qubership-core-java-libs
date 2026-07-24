@@ -254,7 +254,7 @@ class DbaasArangoTemplateTest {
     void testCheckConnection_Timeout_ReturnsFalse() throws NoSuchFieldException, IllegalAccessException {
         // set a very short timeout via config
         DbaasArangoDBConfigurationProperties config = new DbaasArangoDBConfigurationProperties();
-        config.setArangodb(Map.of("timeout", "100"));
+        config.setArangodb(Map.of("connectionCheckTimeout", "100"));
         Field configField = dbaasArangoTemplate.getClass().getDeclaredField("dbaasArangoConfig");
         configField.setAccessible(true);
         configField.set(dbaasArangoTemplate, config);

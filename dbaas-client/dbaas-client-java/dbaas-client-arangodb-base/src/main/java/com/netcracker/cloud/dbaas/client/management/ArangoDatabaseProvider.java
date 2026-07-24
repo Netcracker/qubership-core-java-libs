@@ -13,10 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class ArangoDatabaseProvider {
-
-    public static final int DEFAULT_RETRIES = 5;
-    public static final long DEFAULT_RETRY_DELAY_MS = 5_000L;
-
     /**
      * Deadline for the "RETURN 42" liveness probe, independent of the driver's own connect/request
      * timeout (see {@code dbaas.arangodb.timeout}) which is tuned for real, potentially slow queries.
@@ -29,8 +25,8 @@ public class ArangoDatabaseProvider {
     private final DbaaSChainClassifierBuilder builder;
     private final DatabaseConfig databaseConfig;
 
-    private int retries = DEFAULT_RETRIES;
-    private long retryDelay = DEFAULT_RETRY_DELAY_MS;
+    private int retries = 0;
+    private long retryDelay = 0;
     private long connectionCheckTimeoutMs = DEFAULT_CONNECTION_CHECK_TIMEOUT_MS;
 
     public ArangoDatabaseProvider(DatabasePool pool, DbaaSChainClassifierBuilder builder, DatabaseConfig databaseConfig,
@@ -51,16 +47,6 @@ public class ArangoDatabaseProvider {
     public ArangoDatabaseProvider(DatabasePool pool, DbaaSChainClassifierBuilder builder,
                                   DatabaseConfig databaseConfig, int retries, long retryDelay) {
         this(pool, builder, databaseConfig, retries, retryDelay, DEFAULT_CONNECTION_CHECK_TIMEOUT_MS);
-    }
-
-    /**
-     * Derives a variant of this provider with a different retry policy, sharing the same pool,
-     * classifier builder and database config. Useful for callers that hold a lock or otherwise
-     * need a bounded worst-case wait (e.g. {@code DbaasArangoTemplate}'s write-lock-holding
-     * reconnect), independent of the retry policy configured for direct {@link #provide()} calls.
-     */
-    public ArangoDatabaseProvider withRetryPolicy(int retries, long retryDelay, long connectionCheckTimeoutMs) {
-        return new ArangoDatabaseProvider(pool, builder, databaseConfig, retries, retryDelay, connectionCheckTimeoutMs);
     }
 
     /**
