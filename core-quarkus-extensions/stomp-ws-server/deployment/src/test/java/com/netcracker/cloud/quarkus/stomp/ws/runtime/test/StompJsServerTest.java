@@ -45,7 +45,7 @@ class StompJsServerTest {
     StompJsInfoService stompJsInfoService;
 
     String expectedMessage = "unique-message-with-uuid " + UUID.randomUUID();
-    String webSocketURL = "ws://localhost:9015/stomp";
+    String webSocketURL = "ws://localhost:9073/stomp";
 
     String EXPECTED_INFO_RESPONSE = "{\"websocket\":true}";
     String CONNECTION_REQUEST = "[\"CONNECT\\naccept-version:1.0,1.1,2.0\\nhost:local-host\\n\\n\\u0000\"]";
@@ -108,7 +108,7 @@ class StompJsServerTest {
     }
 
 
-    @RegisterRestClient(baseUri = "http://localhost:9015")
+    @RegisterRestClient(baseUri = "http://localhost:9073")
     public interface StompJsInfoService {
         @GET
         @Path("/stomp/info")
