@@ -8,8 +8,8 @@ import java.util.Map;
 public class DbaasApiProperties {
     private String runtimeUserRole;
     private String dbPrefix;
-    private int retryAttempts;
-    private long retryDelay;
+    private int retryAttempts = 0;
+    private long retryDelay = 0;
 
     private Map<String, Object> databaseSettings;
     private DbScopeProperties service = new DbScopeProperties();
