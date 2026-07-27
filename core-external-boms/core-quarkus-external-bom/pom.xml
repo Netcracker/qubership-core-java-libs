@@ -27,12 +27,12 @@
     <properties>
         <!-- Imported sub-BOMs -->
         <cloud-core.java-bom.version>1.0.7-SNAPSHOT</cloud-core.java-bom.version>
-        <cloud-core.maas-client-quarkus.version>11.0.7</cloud-core.maas-client-quarkus.version>
-        <cloud-core.maas-declarative-client-quarkus.version>9.0.7</cloud-core.maas-declarative-client-quarkus.version>
-        <cloud-core.context-propagation-quarkus.version>9.1.6</cloud-core.context-propagation-quarkus.version>
+        <cloud-core.maas-client-quarkus.version>11.0.8-SNAPSHOT</cloud-core.maas-client-quarkus.version>
+        <cloud-core.maas-declarative-client-quarkus.version>9.0.8-SNAPSHOT</cloud-core.maas-declarative-client-quarkus.version>
+        <cloud-core.context-propagation-quarkus.version>9.1.7-SNAPSHOT</cloud-core.context-propagation-quarkus.version>
 
-        <cloud-core.quarkus-extensions.version>10.1.5</cloud-core.quarkus-extensions.version>
-        <cloud-core.blue-green-monitor-quarkus.version>4.0.7</cloud-core.blue-green-monitor-quarkus.version>
+        <cloud-core.quarkus-extensions.version>10.1.6-SNAPSHOT</cloud-core.quarkus-extensions.version>
+        <cloud-core.blue-green-monitor-quarkus.version>4.0.8-SNAPSHOT</cloud-core.blue-green-monitor-quarkus.version>
     </properties>
 
     <dependencyManagement>
