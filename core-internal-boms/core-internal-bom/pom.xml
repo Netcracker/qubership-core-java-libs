@@ -65,7 +65,7 @@
         <guava.version>33.5.0-jre</guava.version>
         <rxjava.version>2.2.21</rxjava.version>
         <hikaricp.version>7.0.2</hikaricp.version>
-        <undertow.version>2.3.25.Final</undertow.version>
+        <undertow.version>2.3.26.Final</undertow.version>
         <reflections.version>0.10.2</reflections.version>
         <awaitility.version>4.3.0</awaitility.version>
 
