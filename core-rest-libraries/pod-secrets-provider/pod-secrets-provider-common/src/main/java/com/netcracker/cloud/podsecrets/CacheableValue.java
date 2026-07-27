@@ -38,6 +38,10 @@ public class CacheableValue<T> {
         this.timeProvider = timeProvider;
     }
 
+    public T getCurrent() {
+        return value.get();
+    }
+
     public T get() {
         if (expiredAt.get() <= timeProvider.get()) {
             synchronized (this) {

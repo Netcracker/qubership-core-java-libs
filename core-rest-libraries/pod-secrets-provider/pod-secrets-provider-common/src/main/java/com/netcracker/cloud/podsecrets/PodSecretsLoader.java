@@ -24,28 +24,34 @@ public class PodSecretsLoader {
 
     private Map<String, String> reloadSecrets() {
         log.debug("Load secrets from: {}", config.getBaseDir());
-        if (Files.isDirectory(config.getBaseDir())) {
-            try (Stream<Path> stream = Files.list(config.getBaseDir())) {
-                return stream
-                        .filter(p -> !Files.isDirectory(p))
-                        .peek(s -> log.debug("process: {}", s))
-                        .flatMap(path -> loadSecretValue(path)
+        if (!Files.isDirectory(config.getBaseDir())) {
+            log.debug("Secrets folder not found by: {}", config.getBaseDir());
+            return Map.of();
+        }
+
+        Map<String, String> result;
+        try (Stream<Path> stream = Files.list(config.getBaseDir())) {
+            result = stream
+                    .filter(p -> !Files.isDirectory(p))
+                    .peek(s -> log.debug("process: {}", s))
+                    .flatMap(path -> loadSecretValue(path)
                             .map(value -> Map.entry(path.getFileName().toString(), value))
                             .stream())
-                        .flatMap(this::variator)
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a));
-            } catch (IOException e) {
-                log.error("Error during secrets folder processing", e);
-                throw new UncheckedIOException(e);
-            }
-        } else {
-            log.debug("Secrets folder not found by: {}", config.getBaseDir());
+                    .flatMap(this::variator)
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
-        return Map.of();
+
+        Map<String, String> merged = new HashMap<>(result);
+        secrets.getCurrent().forEach(merged::putIfAbsent);
+
+        log.debug("Pod-secrets key names: {} (dir={})", result.keySet(), config.getBaseDir());
+        return Map.copyOf(merged);
     }
 
     private Stream<Map.Entry<String, String>> variator(Map.Entry<String, String> e) {
-        // now we should add key aliases, so user would find value by:
+        // add key aliases so user can look up value by:
         // - `DB_PASSWORD`
         // - `db_password`
         // - `db.password`
@@ -61,7 +67,7 @@ public class PodSecretsLoader {
             log.debug("Load secret data from: {}", path);
             return Optional.of(Files.readString(path));
         } catch (IOException e) {
-            log.error("Error load secret value from: {}", path, e);
+            log.warn("Cannot read pod-secret file {}", path.getFileName(), e);
             return Optional.empty();
         }
     }
