@@ -1,6 +1,6 @@
 package com.netcracker.cloud.security.core.utils.k8s;
 
-@Priority(10)
+@Priority(1000)
 public class TestTokenSourceHighPriorityImpl implements TokenSource {
     @Override
     public String getToken(String audience) {
