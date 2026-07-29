@@ -1,1 +1,2 @@
+com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevTokenSource
 com.netcracker.cloud.security.core.utils.k8s.impl.CachingTokenSource
