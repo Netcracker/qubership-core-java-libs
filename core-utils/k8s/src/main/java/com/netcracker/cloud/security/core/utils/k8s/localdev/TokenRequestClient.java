@@ -1,5 +1,6 @@
 package com.netcracker.cloud.security.core.utils.k8s.localdev;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -108,7 +109,7 @@ public class TokenRequestClient {
         }
     }
 
-    private static String buildRequestBody(String audience) throws Exception {
+    private static String buildRequestBody(String audience) {
         ObjectNode root = MAPPER.createObjectNode();
         root.put("apiVersion", TOKEN_REQUEST_API_VERSION);
         root.put("kind", TOKEN_REQUEST_KIND);
@@ -116,7 +117,11 @@ public class TokenRequestClient {
         ArrayNode audiences = spec.putArray(TOKEN_REQUEST_SPEC_AUDIENCES);
         audiences.add(audience);
         spec.put(TOKEN_REQUEST_SPEC_EXPIRATION_SECONDS, TOKEN_REQUEST_EXPIRATION_SECONDS);
-        return MAPPER.writeValueAsString(root);
+        try {
+            return MAPPER.writeValueAsString(root);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Failed to build local-dev TokenRequest body", e);
+        }
     }
 
     private static Instant parseExpiration(String expirationTimestamp) {

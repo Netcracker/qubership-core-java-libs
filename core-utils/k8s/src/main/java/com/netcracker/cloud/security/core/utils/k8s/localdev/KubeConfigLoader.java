@@ -124,10 +124,29 @@ public final class KubeConfigLoader {
     }
 
     private static String runExecCredential(JsonNode exec) {
+        String command = requireExecCommand(exec);
+        List<String> commandLine = buildExecCommandLine(exec, command);
+        log.debug("Resolving kubeconfig credentials via exec: {}", commandLine);
+        try {
+            String output = runExecProcess(exec, commandLine, command);
+            return parseExecToken(output);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Kubeconfig exec interrupted", e);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to run kubeconfig exec command: " + command, e);
+        }
+    }
+
+    private static String requireExecCommand(JsonNode exec) {
         String command = getTextField(exec, KubeConfigFields.COMMAND);
         if (StringUtils.isBlank(command)) {
             throw new IllegalStateException("Kubeconfig exec.command is empty");
         }
+        return command;
+    }
+
+    private static List<String> buildExecCommandLine(JsonNode exec, String command) {
         List<String> commandLine = new ArrayList<>();
         commandLine.add(command);
         JsonNode args = exec.path(KubeConfigFields.ARGS);
@@ -136,43 +155,48 @@ public final class KubeConfigLoader {
                 commandLine.add(arg.asText());
             }
         }
+        return commandLine;
+    }
 
-        log.debug("Resolving kubeconfig credentials via exec: {}", commandLine);
-        try {
-            ProcessBuilder processBuilder = new ProcessBuilder(commandLine);
-            processBuilder.redirectErrorStream(true);
-            JsonNode env = exec.path(KubeConfigFields.ENV);
-            if (env.isArray()) {
-                for (JsonNode envVar : env) {
-                    String name = getTextField(envVar, KubeConfigFields.NAME);
-                    String value = getTextField(envVar, KubeConfigFields.VALUE);
-                    if (StringUtils.isNotBlank(name)) {
-                        processBuilder.environment().put(name, value == null ? "" : value);
-                    }
-                }
-            }
-            Process process = processBuilder.start();
-            boolean finished = process.waitFor(EXEC_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            if (!finished) {
-                process.destroyForcibly();
-                throw new IllegalStateException("Kubeconfig exec timed out after " + EXEC_TIMEOUT_SECONDS + "s: " + command);
-            }
-            String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-            if (process.exitValue() != 0) {
-                throw new IllegalStateException("Kubeconfig exec failed (exit " + process.exitValue() + "): " + output);
-            }
-            JsonNode credential = JSON_MAPPER.readTree(output);
-            String token = getTextField(credential.path(KubeConfigFields.STATUS), KubeConfigFields.TOKEN);
-            if (StringUtils.isBlank(token)) {
-                throw new IllegalStateException("Kubeconfig exec did not return status.token");
-            }
-            return token;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new IllegalStateException("Kubeconfig exec interrupted", e);
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to run kubeconfig exec command: " + command, e);
+    private static void applyExecEnvironment(ProcessBuilder processBuilder, JsonNode exec) {
+        JsonNode env = exec.path(KubeConfigFields.ENV);
+        if (!env.isArray()) {
+            return;
         }
+        for (JsonNode envVar : env) {
+            String name = getTextField(envVar, KubeConfigFields.NAME);
+            String value = getTextField(envVar, KubeConfigFields.VALUE);
+            if (StringUtils.isNotBlank(name)) {
+                processBuilder.environment().put(name, value == null ? "" : value);
+            }
+        }
+    }
+
+    private static String runExecProcess(JsonNode exec, List<String> commandLine, String command)
+            throws IOException, InterruptedException {
+        ProcessBuilder processBuilder = new ProcessBuilder(commandLine);
+        processBuilder.redirectErrorStream(true);
+        applyExecEnvironment(processBuilder, exec);
+        Process process = processBuilder.start();
+        boolean finished = process.waitFor(EXEC_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        if (!finished) {
+            process.destroyForcibly();
+            throw new IllegalStateException("Kubeconfig exec timed out after " + EXEC_TIMEOUT_SECONDS + "s: " + command);
+        }
+        String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        if (process.exitValue() != 0) {
+            throw new IllegalStateException("Kubeconfig exec failed (exit " + process.exitValue() + "): " + output);
+        }
+        return output;
+    }
+
+    private static String parseExecToken(String output) throws IOException {
+        JsonNode credential = JSON_MAPPER.readTree(output);
+        String token = getTextField(credential.path(KubeConfigFields.STATUS), KubeConfigFields.TOKEN);
+        if (StringUtils.isBlank(token)) {
+            throw new IllegalStateException("Kubeconfig exec did not return status.token");
+        }
+        return token;
     }
 
     private static JsonNode findKubeConfigEntryByName(JsonNode array, String name) {
@@ -189,7 +213,7 @@ public final class KubeConfigLoader {
 
     private static byte[] decodeOptionalBase64(String value) {
         if (StringUtils.isBlank(value)) {
-            return null;
+            return new byte[0];
         }
         return Base64.getDecoder().decode(value.replaceAll("\\s", ""));
     }

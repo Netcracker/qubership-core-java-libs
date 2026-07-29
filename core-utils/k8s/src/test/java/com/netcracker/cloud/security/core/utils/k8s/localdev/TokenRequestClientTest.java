@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -77,5 +78,53 @@ class TokenRequestClientTest {
                 () -> client.requestToken("ns1", "my-sa", "netcracker"));
         assertTrue(ex.getMessage().contains("unauthorized") || ex.getMessage().contains("403"));
         assertTrue(ex.getMessage().contains("RBAC"));
+    }
+
+    @Test
+    void requestTokenFailsOnServerError() {
+        responseStatus = 500;
+        responseBody = "{\"message\":\"server error\"}";
+        TokenRequestClient client = new TokenRequestClient(baseUrl, "kube-user-token", HttpClient.newHttpClient());
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class,
+                () -> client.requestToken("ns1", "my-sa", "netcracker"));
+        assertTrue(ex.getMessage().contains("failed"));
+    }
+
+    @Test
+    void requestTokenFailsWhenResponseHasNoToken() {
+        responseBody = "{\"status\":{}}";
+        TokenRequestClient client = new TokenRequestClient(baseUrl, "kube-user-token", HttpClient.newHttpClient());
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class,
+                () -> client.requestToken("ns1", "my-sa", "netcracker"));
+        assertTrue(ex.getMessage().contains("status.token"));
+    }
+
+    @Test
+    void requestTokenUsesDefaultExpirationWhenTimestampMissing() {
+        responseBody = """
+            {
+              "status": {
+                "token": "minted-token"
+              }
+            }
+            """;
+        TokenRequestClient client = new TokenRequestClient(baseUrl, "kube-user-token", HttpClient.newHttpClient());
+        TokenRequestClient.TokenRequestResult result = client.requestToken("ns1", "my-sa", "netcracker");
+        assertEquals("minted-token", result.token());
+        assertNotNull(result.expiresAt());
+    }
+
+    @Test
+    void constructorFromCredentialsUsesKubeConfigHttpClient() {
+        KubeConfigCredentials credentials = KubeConfigCredentials.builder()
+                .serverUrl(baseUrl)
+                .userToken("kube-user-token")
+                .insecureSkipTlsVerify(true)
+                .build();
+        TokenRequestClient client = new TokenRequestClient(credentials);
+        TokenRequestClient.TokenRequestResult result = client.requestToken("ns1", "my-sa", "netcracker");
+        assertEquals("minted-token", result.token());
     }
 }

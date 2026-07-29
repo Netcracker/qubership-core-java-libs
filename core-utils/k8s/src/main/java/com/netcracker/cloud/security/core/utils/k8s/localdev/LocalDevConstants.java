@@ -24,9 +24,6 @@ final class LocalDevConstants {
 
     static final String WELL_KNOWN_OPENID_CONFIGURATION_PATH = "/.well-known/openid-configuration";
 
-    static final String DEFAULT_KUBERNETES_ISSUER = "https://kubernetes.default.svc";
-    static final String JWKS_PATH = "/openid/v1/jwks";
-
     static final Duration HTTP_REQUEST_TIMEOUT = Duration.ofSeconds(30);
     static final long TOKEN_REQUEST_EXPIRATION_SECONDS = 28800L; // 8 hours
 
