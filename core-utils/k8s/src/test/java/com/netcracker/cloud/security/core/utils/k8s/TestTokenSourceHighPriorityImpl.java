@@ -9,6 +9,7 @@ public class TestTokenSourceHighPriorityImpl implements TokenSource {
 
     @Override
     public void close() {
+        // Test TokenSource: no resources to release.
     }
 }
 

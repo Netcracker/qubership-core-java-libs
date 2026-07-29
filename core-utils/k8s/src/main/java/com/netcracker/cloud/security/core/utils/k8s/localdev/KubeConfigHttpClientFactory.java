@@ -5,7 +5,9 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.http.HttpClient;
+import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.security.cert.Certificate;
@@ -42,7 +44,7 @@ final class KubeConfigHttpClientFactory {
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, new TrustManager[]{new InsecureTrustManager()}, new SecureRandom());
             return sslContext;
-        } catch (Exception e) {
+        } catch (GeneralSecurityException e) {
             throw new IllegalStateException("Failed to create insecure SSL context for local-dev IdP", e);
         }
     }
@@ -79,18 +81,24 @@ final class KubeConfigHttpClientFactory {
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, trustManagerFactory.getTrustManagers(), new SecureRandom());
             return sslContext;
-        } catch (Exception e) {
+        } catch (GeneralSecurityException | IOException e) {
             throw new IllegalStateException("Failed to create SSL context from kubeconfig CA", e);
         }
     }
 
+    /**
+     * Local-dev only: accepts any server certificate when kubeconfig sets insecure-skip-tls-verify
+     * or the IdP uses a private CA not in the JVM trust store.
+     */
     private static final class InsecureTrustManager implements X509TrustManager {
         @Override
         public void checkClientTrusted(X509Certificate[] chain, String authType) {
+            // Local-dev: client certificates are not used for TokenRequest / OIDC discovery.
         }
 
         @Override
         public void checkServerTrusted(X509Certificate[] chain, String authType) {
+            // Local-dev: kubeconfig insecure-skip-tls-verify or private IdP CA — validation intentionally skipped.
         }
 
         @Override

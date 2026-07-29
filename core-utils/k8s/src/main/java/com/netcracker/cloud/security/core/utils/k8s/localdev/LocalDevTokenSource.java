@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 @Slf4j
@@ -23,7 +24,7 @@ public class LocalDevTokenSource implements TokenSource {
     private final Supplier<TokenRequestClient> clientSupplier;
     private final ConcurrentMap<String, CachedToken> cache = new ConcurrentHashMap<>();
 
-    private volatile TokenRequestClient client;
+    private final AtomicReference<TokenRequestClient> client = new AtomicReference<>();
 
     public LocalDevTokenSource() {
         this(new CachingTokenSource(), () -> new TokenRequestClient(KubeConfigLoader.load()));
@@ -65,15 +66,17 @@ public class LocalDevTokenSource implements TokenSource {
     }
 
     private TokenRequestClient client() {
-        TokenRequestClient existing = client;
+        TokenRequestClient existing = client.get();
         if (existing != null) {
             return existing;
         }
         synchronized (this) {
-            if (client == null) {
-                client = clientSupplier.get();
+            TokenRequestClient resolved = client.get();
+            if (resolved == null) {
+                resolved = clientSupplier.get();
+                client.set(resolved);
             }
-            return client;
+            return resolved;
         }
     }
 

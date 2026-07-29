@@ -13,7 +13,7 @@ import java.time.Instant;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -55,7 +55,7 @@ class LocalDevTokenSourceTest {
 
         TokenSource fallback = mock(TokenSource.class);
         TokenRequestClient client = mock(TokenRequestClient.class);
-        when(client.requestToken(eq("my-ns"), eq("my-sa"), eq("netcracker")))
+        when(client.requestToken("my-ns", "my-sa", "netcracker"))
                 .thenReturn(new TokenRequestClient.TokenRequestResult(
                         "minted", Instant.now().plusSeconds(3600)));
 
@@ -68,7 +68,26 @@ class LocalDevTokenSourceTest {
             assertEquals("minted", source.getToken("netcracker"));
         }
 
-        verify(client, times(1)).requestToken(eq("my-ns"), eq("my-sa"), eq("netcracker"));
+        verify(client, times(1)).requestToken("my-ns", "my-sa", "netcracker");
         assertEquals(1, supplierCalls.get());
+    }
+
+    @Test
+    void throwsWhenAudienceIsNull() throws Exception {
+        systemProperties.set(LocalDevMode.ENABLED_PROPERTY, "true");
+        systemProperties.set(LocalDevMode.MICROSERVICE_NAME_PROPERTY, "my-sa");
+        environmentVariables.set(LocalDevMode.NAMESPACE_ENV, "my-ns");
+
+        try (LocalDevTokenSource source = new LocalDevTokenSource(mock(TokenSource.class), () -> mock(TokenRequestClient.class))) {
+            assertThrows(NullPointerException.class, () -> source.getToken(null));
+        }
+    }
+
+    @Test
+    void closeClearsCacheAndClosesFallback() throws Exception {
+        TokenSource fallback = mock(TokenSource.class);
+        LocalDevTokenSource source = new LocalDevTokenSource(fallback, () -> mock(TokenRequestClient.class));
+        source.close();
+        verify(fallback).close();
     }
 }

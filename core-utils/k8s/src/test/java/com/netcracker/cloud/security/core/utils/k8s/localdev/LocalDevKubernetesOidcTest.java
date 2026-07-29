@@ -107,5 +107,81 @@ class LocalDevKubernetesOidcTest {
     void isKubernetesIssuerDetectsDefaultHosts() {
         assertTrue(LocalDevKubernetesOidc.isKubernetesIssuer("https://kubernetes.default.svc"));
         assertTrue(LocalDevKubernetesOidc.isKubernetesIssuer("https://kubernetes.default.svc.cluster.local/openid/v1/jwks"));
+        assertFalse(LocalDevKubernetesOidc.isKubernetesIssuer("https://accounts.google.com"));
+        assertFalse(LocalDevKubernetesOidc.isKubernetesIssuer(""));
+    }
+
+    @Test
+    void resolveIssuerFallsBackToDefaultOnDiscoveryFailure() throws Exception {
+        server.stop(0);
+        server = HttpServer.create(new InetSocketAddress(0), 0);
+        server.createContext("/", exchange -> {
+            exchange.sendResponseHeaders(500, -1);
+            exchange.close();
+        });
+        server.start();
+        String failingUrl = "http://127.0.0.1:" + server.getAddress().getPort();
+
+        Path kubeConfig = tempDir.resolve("config");
+        Files.writeString(kubeConfig, """
+                apiVersion: v1
+                kind: Config
+                current-context: test-ctx
+                contexts:
+                  - name: test-ctx
+                    context:
+                      cluster: test-cluster
+                      user: test-user
+                clusters:
+                  - name: test-cluster
+                    cluster:
+                      server: %s
+                      insecure-skip-tls-verify: true
+                users:
+                  - name: test-user
+                    user:
+                      token: kube-user-token
+                """.formatted(failingUrl));
+        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
+        systemProperties.set(LocalDevMode.ENABLED_PROPERTY, "true");
+
+        assertEquals(LocalDevKubernetesOidc.DEFAULT_KUBERNETES_ISSUER,
+                LocalDevKubernetesOidc.resolveIssuerClaimFromDiscovery());
+    }
+
+    @Test
+    void isPublicOidcEndpointHandlesInvalidUrl() {
+        assertFalse(LocalDevKubernetesOidc.isPublicOidcEndpoint(""));
+        assertTrue(LocalDevKubernetesOidc.isPublicOidcEndpoint("not-a-valid-uri:///.well-known/openid-configuration"));
+    }
+
+    @Test
+    void apiServerUrlIsCachedUntilReset() throws Exception {
+        Path kubeConfig = tempDir.resolve("config");
+        Files.writeString(kubeConfig, """
+                apiVersion: v1
+                kind: Config
+                current-context: test-ctx
+                contexts:
+                  - name: test-ctx
+                    context:
+                      cluster: test-cluster
+                      user: test-user
+                clusters:
+                  - name: test-cluster
+                    cluster:
+                      server: %s
+                      insecure-skip-tls-verify: true
+                users:
+                  - name: test-user
+                    user:
+                      token: kube-user-token
+                """.formatted(baseUrl));
+        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
+
+        assertEquals(baseUrl, LocalDevKubernetesOidc.apiServerUrl());
+        assertEquals(baseUrl, LocalDevKubernetesOidc.apiServerUrl());
+        LocalDevKubernetesOidc.resetCache();
+        assertEquals(baseUrl, LocalDevKubernetesOidc.apiServerUrl());
     }
 }

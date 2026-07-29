@@ -14,14 +14,13 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.ACCEPT_HEADER;
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.APPLICATION_JSON;
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.AUTHORIZATION_HEADER;
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.BEARER_PREFIX;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.DEFAULT_KUBERNETES_ISSUER;
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.HTTP_REQUEST_TIMEOUT;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.JWKS_PATH;
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.OIDC_DISCOVERY_ISSUER;
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.WELL_KNOWN_OPENID_CONFIGURATION_PATH;
 
@@ -32,16 +31,16 @@ import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevCons
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LocalDevKubernetesOidc {
 
-    /** @see LocalDevConstants#DEFAULT_KUBERNETES_ISSUER */
-    public static final String DEFAULT_KUBERNETES_ISSUER = LocalDevConstants.DEFAULT_KUBERNETES_ISSUER;
-    /** @see LocalDevConstants#JWKS_PATH */
-    public static final String JWKS_PATH = LocalDevConstants.JWKS_PATH;
+    /** Default Kubernetes issuer when OIDC discovery is unavailable. */
+    public static final String DEFAULT_KUBERNETES_ISSUER = "https://kubernetes.default.svc";
+    /** JWKS path on the Kubernetes API server. */
+    public static final String JWKS_PATH = "/openid/v1/jwks";
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final Object LOCK = new Object();
 
-    private static volatile KubeConfigCredentials cachedCredentials;
-    private static volatile HttpClient cachedHttpClient;
+    private static final AtomicReference<KubeConfigCredentials> cachedCredentials = new AtomicReference<>();
+    private static final AtomicReference<HttpClient> cachedHttpClient = new AtomicReference<>();
 
     public static boolean isKubernetesIssuer(String issuerOrUrl) {
         if (StringUtils.isBlank(issuerOrUrl)) {
@@ -77,8 +76,7 @@ public final class LocalDevKubernetesOidc {
                 return false;
             }
             return path.endsWith(WELL_KNOWN_OPENID_CONFIGURATION_PATH)
-                    || path.endsWith(JWKS_PATH)
-                    || path.contains("/openid/v1/jwks");
+                    || path.contains(JWKS_PATH);
         } catch (IllegalArgumentException e) {
             return url.contains(WELL_KNOWN_OPENID_CONFIGURATION_PATH) || url.contains(JWKS_PATH);
         }
@@ -95,31 +93,28 @@ public final class LocalDevKubernetesOidc {
             if (StringUtils.isNotBlank(issuer)) {
                 return issuer;
             }
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException | IllegalStateException e) {
             log.warn("Failed to resolve Kubernetes issuer from discovery at {} in local-dev, using default {}",
                     discoveryUrl, DEFAULT_KUBERNETES_ISSUER, e);
         }
         return DEFAULT_KUBERNETES_ISSUER;
     }
 
-    private static String get(String url) throws Exception {
-        return getWithRetry(url, true);
+    private static String get(String url) throws IOException, InterruptedException {
+        return getWithRetry(url);
     }
 
-    private static String getWithRetry(String url, boolean retryOnIo) throws Exception {
+    private static String getWithRetry(String url) throws IOException, InterruptedException {
         try {
             return sendGet(url);
         } catch (IOException e) {
-            if (retryOnIo) {
-                log.debug("Retrying Kubernetes OIDC request after I/O failure for {}", url, e);
-                resetHttpClient();
-                return sendGet(url);
-            }
-            throw e;
+            log.debug("Retrying Kubernetes OIDC request after I/O failure for {}", url, e);
+            resetHttpClient();
+            return sendGet(url);
         }
     }
 
-    private static String sendGet(String url) throws Exception {
+    private static String sendGet(String url) throws IOException, InterruptedException {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .timeout(HTTP_REQUEST_TIMEOUT)
@@ -136,16 +131,18 @@ public final class LocalDevKubernetesOidc {
     }
 
     private static KubeConfigCredentials credentials() {
-        KubeConfigCredentials existing = cachedCredentials;
+        KubeConfigCredentials existing = cachedCredentials.get();
         if (existing != null) {
             return existing;
         }
         synchronized (LOCK) {
-            if (cachedCredentials == null) {
-                cachedCredentials = KubeConfigLoader.load();
-                log.info("Local-dev kubeconfig: API server {}", cachedCredentials.getServerUrl());
+            KubeConfigCredentials resolved = cachedCredentials.get();
+            if (resolved == null) {
+                resolved = KubeConfigLoader.load();
+                cachedCredentials.set(resolved);
+                log.info("Local-dev kubeconfig: API server {}", resolved.getServerUrl());
             }
-            return cachedCredentials;
+            return resolved;
         }
     }
 
@@ -154,29 +151,31 @@ public final class LocalDevKubernetesOidc {
      * Not used in try-with-resources: the client is long-lived and shared across OIDC calls.
      */
     private static HttpClient httpClient() {
-        HttpClient existing = cachedHttpClient;
+        HttpClient existing = cachedHttpClient.get();
         if (existing != null) {
             return existing;
         }
         synchronized (LOCK) {
-            if (cachedHttpClient == null) {
-                cachedHttpClient = KubeConfigHttpClientFactory.create(credentials());
+            HttpClient resolved = cachedHttpClient.get();
+            if (resolved == null) {
+                resolved = KubeConfigHttpClientFactory.create(credentials());
+                cachedHttpClient.set(resolved);
             }
-            return cachedHttpClient;
+            return resolved;
         }
     }
 
     @VisibleForTesting
     static void resetCache() {
         synchronized (LOCK) {
-            cachedCredentials = null;
-            cachedHttpClient = null;
+            cachedCredentials.set(null);
+            cachedHttpClient.set(null);
         }
     }
 
     private static void resetHttpClient() {
         synchronized (LOCK) {
-            cachedHttpClient = null;
+            cachedHttpClient.set(null);
         }
     }
 }

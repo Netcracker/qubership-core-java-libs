@@ -65,9 +65,21 @@ class LocalDevModeTest {
     }
 
     @Test
-    void requireNamespaceFromEnv() throws Exception {
+    void requireNamespaceFromEnv() {
         environmentVariables.set(LocalDevMode.NAMESPACE_ENV, "my-ns");
         assertEquals("my-ns", LocalDevMode.requireNamespace());
+    }
+
+    @Test
+    void enabledByEnvVariable() {
+        environmentVariables.set(LocalDevMode.ENABLED_ENV, "true");
+        assertTrue(LocalDevMode.isEnabled());
+    }
+
+    @Test
+    void requireMicroserviceNameFromEnv() {
+        environmentVariables.set(LocalDevMode.MICROSERVICE_NAME_ENV, "env-service");
+        assertEquals("env-service", LocalDevMode.requireMicroserviceName());
     }
 
     @Test
