@@ -7,9 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LocalDevMode {
 
-    public static final String ENABLED_PROPERTY = "security.local-dev.enabled";
-    public static final String ENABLED_ENV = "SECURITY_LOCAL_DEV_ENABLED";
-
     public static final String MICROSERVICE_NAME_PROPERTY = "cloud.microservice.name";
     public static final String MICROSERVICE_NAME_ENV = "CLOUD_MICROSERVICE_NAME";
 
@@ -24,9 +21,6 @@ public final class LocalDevMode {
     public static final String DEV_PROFILE = "dev";
 
     public static boolean isEnabled() {
-        if (isTrue(firstNonBlank(System.getProperty(ENABLED_PROPERTY), System.getenv(ENABLED_ENV)))) {
-            return true;
-        }
         if (DEV_PROFILE.equalsIgnoreCase(firstNonBlank(
                 System.getProperty(QUARKUS_PROFILE_PROPERTY),
                 System.getenv(QUARKUS_PROFILE_ENV)))) {
@@ -71,10 +65,6 @@ public final class LocalDevMode {
             }
         }
         return false;
-    }
-
-    private static boolean isTrue(String value) {
-        return "true".equalsIgnoreCase(value) || "1".equals(value);
     }
 
     private static String firstNonBlank(String first, String second) {

@@ -62,7 +62,7 @@ class LocalDevKubernetesOidcTest {
     void tearDown() {
         server.stop(0);
         LocalDevKubernetesOidc.resetCache();
-        System.clearProperty(LocalDevMode.ENABLED_PROPERTY);
+        System.clearProperty(LocalDevMode.QUARKUS_PROFILE_PROPERTY);
     }
 
     @Test
@@ -88,7 +88,7 @@ class LocalDevKubernetesOidcTest {
                       token: kube-user-token
                 """.formatted(baseUrl));
         environmentVariables.set("KUBECONFIG", kubeConfig.toString());
-        systemProperties.set(LocalDevMode.ENABLED_PROPERTY, "true");
+        systemProperties.set(LocalDevMode.QUARKUS_PROFILE_PROPERTY, "dev");
 
         assertEquals("https://kubernetes.default.svc", LocalDevKubernetesOidc.resolveIssuerClaimFromDiscovery());
         assertEquals(null, lastAuth.get());
@@ -143,7 +143,7 @@ class LocalDevKubernetesOidcTest {
                       token: kube-user-token
                 """.formatted(failingUrl));
         environmentVariables.set("KUBECONFIG", kubeConfig.toString());
-        systemProperties.set(LocalDevMode.ENABLED_PROPERTY, "true");
+        systemProperties.set(LocalDevMode.QUARKUS_PROFILE_PROPERTY, "dev");
 
         assertEquals(LocalDevKubernetesOidc.DEFAULT_KUBERNETES_ISSUER,
                 LocalDevKubernetesOidc.resolveIssuerClaimFromDiscovery());
