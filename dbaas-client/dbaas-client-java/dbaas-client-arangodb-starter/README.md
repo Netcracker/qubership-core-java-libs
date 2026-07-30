@@ -87,6 +87,7 @@ They may be set in application.properties/application.yml file.
 | dbaas.api.arangodb.runtime-user-role | Allows to configure connection user role for both service and tenant database | admin         |
 | dbaas.api.arangodb.retry-attempts    | Number of reconnection retry attempts on connection failure                   | 0             |
 | dbaas.api.arangodb.retry-delay       | Delay between retry attempts in milliseconds                                  | 0             |
+| dbaas.arangodb.connectionCheckTimeout | Deadline (ms) for the liveness probe used before a connection is considered unhealthy and retried. Separate from `dbaas.arangodb.timeout` — this value multiplies by every retry attempt | 5000 |
 
 
 ### Usage of Spring beans created by library
@@ -172,6 +173,13 @@ private ArangoDatabaseProvider arangoTenantDatabaseProvider;
 
 These beans have methods `ArangoDatabase provide()`, `ArangoDatabase provide(String dbId)` and `ArangoDatabase provide(String dbId, DatabaseConfig customDatabaseConfig)`.
 They return fully built `ArangoDatabase` instance with credentials from dbaas for specified dbId.
+
+> **Note:** if the connection fails its health check and all reconnect retries (see
+> `dbaas.api.arangodb.retry-attempts`/`retry-delay` above) are exhausted, `provide()` throws
+> `IllegalStateException` instead of returning an unhealthy connection. `retries`/`retryDelay` are
+> taken literally — `0` means no retries beyond a single recreate-and-check, not "use a default".
+> This applies to the Spring-managed beans above, which read `0`/`0` when the properties are left
+> unset.
 Through `DatabaseConfig` in `ArangoDatabase provide(String dbId, DatabaseConfig customDatabaseConfig)` method, it is possible to specify the required physicalDatabaseId and get or create a database on a specific physical ArangoDB instance.
 You can also specify a dbPrefix and userRole through DatabaseConfig.
 Use case:
