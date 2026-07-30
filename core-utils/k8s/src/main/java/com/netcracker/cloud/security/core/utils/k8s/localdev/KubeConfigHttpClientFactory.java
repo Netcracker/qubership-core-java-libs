@@ -92,12 +92,12 @@ final class KubeConfigHttpClientFactory {
      */
     private static final class InsecureTrustManager implements X509TrustManager {
         @Override
-        public void checkClientTrusted(X509Certificate[] chain, String authType) {
+        public void checkClientTrusted(X509Certificate[] chain, String authType) { // NOSONAR
             // Local-dev: client certificates are not used for TokenRequest / OIDC discovery.
         }
 
         @Override
-        public void checkServerTrusted(X509Certificate[] chain, String authType) {
+        public void checkServerTrusted(X509Certificate[] chain, String authType) { // NOSONAR
             // Local-dev: kubeconfig insecure-skip-tls-verify or private IdP CA — validation intentionally skipped.
         }
 

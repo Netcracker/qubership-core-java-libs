@@ -93,7 +93,7 @@ public final class LocalDevKubernetesOidc {
             if (StringUtils.isNotBlank(issuer)) {
                 return issuer;
             }
-        } catch (IOException | InterruptedException | IllegalStateException e) {
+        } catch (IOException | InterruptedException | IllegalStateException e) { // NOSONAR
             log.warn("Failed to resolve Kubernetes issuer from discovery at {} in local-dev, using default {}",
                     discoveryUrl, DEFAULT_KUBERNETES_ISSUER, e);
         }
