@@ -24,7 +24,6 @@ class LocalDevModeTest {
 
     @AfterEach
     void clear() {
-        System.clearProperty(LocalDevMode.ENABLED_PROPERTY);
         System.clearProperty(LocalDevMode.QUARKUS_PROFILE_PROPERTY);
         System.clearProperty(LocalDevMode.SPRING_PROFILES_ACTIVE_PROPERTY);
         System.clearProperty(LocalDevMode.MICROSERVICE_NAME_PROPERTY);
@@ -36,20 +35,26 @@ class LocalDevModeTest {
     }
 
     @Test
-    void enabledByExplicitProperty() {
-        systemProperties.set(LocalDevMode.ENABLED_PROPERTY, "true");
-        assertTrue(LocalDevMode.isEnabled());
-    }
-
-    @Test
-    void enabledByQuarkusProfile() {
+    void enabledByQuarkusProfileProperty() {
         systemProperties.set(LocalDevMode.QUARKUS_PROFILE_PROPERTY, "dev");
         assertTrue(LocalDevMode.isEnabled());
     }
 
     @Test
-    void enabledBySpringProfilesActive() {
+    void enabledByQuarkusProfileEnv() {
+        environmentVariables.set(LocalDevMode.QUARKUS_PROFILE_ENV, "dev");
+        assertTrue(LocalDevMode.isEnabled());
+    }
+
+    @Test
+    void enabledBySpringProfilesActiveProperty() {
         systemProperties.set(LocalDevMode.SPRING_PROFILES_ACTIVE_PROPERTY, "local,dev");
+        assertTrue(LocalDevMode.isEnabled());
+    }
+
+    @Test
+    void enabledBySpringProfilesActiveEnv() {
+        environmentVariables.set(LocalDevMode.SPRING_PROFILES_ACTIVE_ENV, "local,dev");
         assertTrue(LocalDevMode.isEnabled());
     }
 
@@ -68,12 +73,6 @@ class LocalDevModeTest {
     void requireNamespaceFromEnv() {
         environmentVariables.set(LocalDevMode.NAMESPACE_ENV, "my-ns");
         assertEquals("my-ns", LocalDevMode.requireNamespace());
-    }
-
-    @Test
-    void enabledByEnvVariable() {
-        environmentVariables.set(LocalDevMode.ENABLED_ENV, "true");
-        assertTrue(LocalDevMode.isEnabled());
     }
 
     @Test

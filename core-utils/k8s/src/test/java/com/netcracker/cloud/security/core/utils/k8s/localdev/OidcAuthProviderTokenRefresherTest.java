@@ -166,26 +166,26 @@ class OidcAuthProviderTokenRefresherTest {
 
     @Test
     void createHttpClientUsesInsecureFactoryWhenLocalDevEnabled() {
-        System.setProperty(LocalDevMode.ENABLED_PROPERTY, "true");
+        System.setProperty(LocalDevMode.QUARKUS_PROFILE_PROPERTY, "dev");
         try {
             ObjectNode config = MAPPER.createObjectNode();
             config.put("id-token", jwtWithExp(java.time.Instant.now().plusSeconds(3600)));
             assertNotNull(OidcAuthProviderTokenRefresher.resolveToken(config));
         } finally {
-            System.clearProperty(LocalDevMode.ENABLED_PROPERTY);
+            System.clearProperty(LocalDevMode.QUARKUS_PROFILE_PROPERTY);
         }
     }
 
     @Test
     void createHttpClientUsesDefaultSslWhenInsecureIdpTlsDisabled() {
-        System.setProperty(LocalDevMode.ENABLED_PROPERTY, "true");
+        System.setProperty(LocalDevMode.QUARKUS_PROFILE_PROPERTY, "dev");
         System.setProperty(INSECURE_IDP_TLS_PROPERTY, "false");
         try {
             ObjectNode config = MAPPER.createObjectNode();
             config.put("id-token", jwtWithExp(Instant.now().plusSeconds(3600)));
             assertNotNull(OidcAuthProviderTokenRefresher.resolveToken(config));
         } finally {
-            System.clearProperty(LocalDevMode.ENABLED_PROPERTY);
+            System.clearProperty(LocalDevMode.QUARKUS_PROFILE_PROPERTY);
             System.clearProperty(INSECURE_IDP_TLS_PROPERTY);
         }
     }

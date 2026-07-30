@@ -30,7 +30,6 @@ class LocalDevTokenSourceTest {
 
     @AfterEach
     void clear() {
-        System.clearProperty(LocalDevMode.ENABLED_PROPERTY);
         System.clearProperty(LocalDevMode.MICROSERVICE_NAME_PROPERTY);
         System.clearProperty(LocalDevMode.QUARKUS_PROFILE_PROPERTY);
     }
@@ -49,7 +48,7 @@ class LocalDevTokenSourceTest {
 
     @Test
     void requestsAndCachesTokenWhenEnabled() throws Exception {
-        systemProperties.set(LocalDevMode.ENABLED_PROPERTY, "true");
+        systemProperties.set(LocalDevMode.QUARKUS_PROFILE_PROPERTY, "dev");
         systemProperties.set(LocalDevMode.MICROSERVICE_NAME_PROPERTY, "my-sa");
         environmentVariables.set(LocalDevMode.NAMESPACE_ENV, "my-ns");
 
@@ -74,7 +73,7 @@ class LocalDevTokenSourceTest {
 
     @Test
     void throwsWhenAudienceIsNull() throws Exception {
-        systemProperties.set(LocalDevMode.ENABLED_PROPERTY, "true");
+        systemProperties.set(LocalDevMode.QUARKUS_PROFILE_PROPERTY, "dev");
         systemProperties.set(LocalDevMode.MICROSERVICE_NAME_PROPERTY, "my-sa");
         environmentVariables.set(LocalDevMode.NAMESPACE_ENV, "my-ns");
 
