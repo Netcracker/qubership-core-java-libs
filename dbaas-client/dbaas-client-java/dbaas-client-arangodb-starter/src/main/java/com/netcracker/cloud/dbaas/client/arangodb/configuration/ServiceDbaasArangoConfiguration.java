@@ -15,8 +15,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 
-import java.util.Optional;
-
 @Configuration
 public class ServiceDbaasArangoConfiguration {
 
@@ -33,11 +31,13 @@ public class ServiceDbaasArangoConfiguration {
     @ConditionalOnMissingBean(name = SERVICE_ARANGODB_PROVIDER)
     public ArangoDatabaseProvider serviceArangoDatabaseProvider(DatabasePool databasePool,
                                                                 DbaasClassifierFactory classifierFactory,
-                                                                DbaasApiProperties arangodbDbaasApiProperties) {
+                                                                DbaasApiProperties arangodbDbaasApiProperties,
+                                                                DbaasArangoDBConfigurationProperties arangoProperties) {
         DatabaseConfig databaseConfig = DatabaseConfig.builder()
                 .userRole(arangodbDbaasApiProperties.getRuntimeUserRole())
                 .dbNamePrefix(arangodbDbaasApiProperties.getDbPrefix())
                 .build();
-        return new ArangoDatabaseProvider(databasePool, classifierFactory.newServiceClassifierBuilder(), databaseConfig, arangodbDbaasApiProperties.getRetryAttempts(), arangodbDbaasApiProperties.getRetryDelay());
+        long checkConnectionTimeoutMs = arangoProperties.checkConnectionTimeoutMs();
+        return new ArangoDatabaseProvider(databasePool, classifierFactory.newServiceClassifierBuilder(), databaseConfig, arangodbDbaasApiProperties.getRetryAttempts(), arangodbDbaasApiProperties.getRetryDelay(), checkConnectionTimeoutMs);
     }
 }
