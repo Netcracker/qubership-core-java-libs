@@ -27,7 +27,7 @@
         <maven.compiler.target>21</maven.compiler.target>
 
         <cloud-core.maas-declarative-client-commons.version>6.1.8</cloud-core.maas-declarative-client-commons.version>
-        <cloud-core.maas-declarative-client-spring.version>9.1.8</cloud-core.maas-declarative-client-spring.version>
+        <cloud-core.maas-client-spring.version>9.1.8</cloud-core.maas-client-spring.version>
         <cloud-core.core-blue-green-state-monitor.version>2.1.8</cloud-core.core-blue-green-state-monitor.version>
     </properties>
 
@@ -48,7 +48,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud.maas.client</groupId>
                 <artifactId>maas-client-spring</artifactId>
-                <version>${cloud-core.maas-declarative-client-spring.version}</version>
+                <version>${cloud-core.maas-client-spring.version}</version>
             </dependency>
 <!--
 specifying opentelemetry version here exactly to match open telemetry which is used by spring boot to avoid conflicts
