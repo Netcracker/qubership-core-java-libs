@@ -100,7 +100,7 @@ public final class M2MInterceptor implements Interceptor {
             throw new IllegalStateException("M2M auth header is empty.");
         }
         HttpUrl targetUrl = initialRequest.url();
-        if(k8sM2mEnabled && useFallbackUrl && fallbackBaseUrl != null) {
+        if(useFallbackUrl && fallbackBaseUrl != null) {
              targetUrl = rebaseUrl(initialRequest.url(), fallbackBaseUrl);
         }
         return initialRequest.newBuilder()
