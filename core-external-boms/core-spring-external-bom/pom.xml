@@ -27,16 +27,16 @@
     <properties>
         <!-- Imported sub-BOMs -->
         <cloud-core.java-bom.version>1.0.8-SNAPSHOT</cloud-core.java-bom.version>
-        <cloud-core.maas-declarative-client-spring.version>7.1.8</cloud-core.maas-declarative-client-spring.version>
-        <cloud-core.framework-extensions.version>7.1.6</cloud-core.framework-extensions.version>
-        <cloud-core.dbaas-client.version>9.1.8</cloud-core.dbaas-client.version>
-        <cloud-core.context-propagation.version>8.2.7</cloud-core.context-propagation.version>
-        <cloud-core.mongo-evolution.version>8.1.6</cloud-core.mongo-evolution.version>
-        <cloud-core.restclient.version>7.1.8</cloud-core.restclient.version>
-        <cloud-core.rest-libraries.version>7.3.6</cloud-core.rest-libraries.version>
-        <cloud-core.blue-green-monitor.version>2.1.8</cloud-core.blue-green-monitor.version>
-        <cloud-core.maas-client-spring.version>9.1.8</cloud-core.maas-client-spring.version>
-        <cloud-core.microservice-framework.version>8.1.8</cloud-core.microservice-framework.version>
+        <cloud-core.maas-declarative-client-spring.version>7.1.9</cloud-core.maas-declarative-client-spring.version>
+        <cloud-core.framework-extensions.version>7.1.7</cloud-core.framework-extensions.version>
+        <cloud-core.dbaas-client.version>9.1.9</cloud-core.dbaas-client.version>
+        <cloud-core.context-propagation.version>8.2.8</cloud-core.context-propagation.version>
+        <cloud-core.mongo-evolution.version>8.1.7</cloud-core.mongo-evolution.version>
+        <cloud-core.restclient.version>7.1.9</cloud-core.restclient.version>
+        <cloud-core.rest-libraries.version>7.3.7</cloud-core.rest-libraries.version>
+        <cloud-core.blue-green-monitor.version>2.1.9</cloud-core.blue-green-monitor.version>
+        <cloud-core.maas-client-spring.version>9.1.9</cloud-core.maas-client-spring.version>
+        <cloud-core.microservice-framework.version>8.1.9</cloud-core.microservice-framework.version>
     </properties>
 
     <dependencyManagement>
