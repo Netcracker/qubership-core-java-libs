@@ -25,6 +25,13 @@ import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
+/**
+ * Pins the invariant that {@link KafkaMaaSClientImpl#close()} leaves no {@code watchTopicCreate} thread behind.
+ *
+ * <p>The stub server replaces MockServer on purpose: it answers the watch endpoint slowly and successfully, so a
+ * regression fails this assertion instead of flooding the MockServer instance that {@link KafkaMaaSClientImplTest}
+ * shares across its tests.
+ */
 class KafkaMaaSClientCloseTest {
 
     private static final String WATCH_THREAD_NAME = "watchTopicCreate";
