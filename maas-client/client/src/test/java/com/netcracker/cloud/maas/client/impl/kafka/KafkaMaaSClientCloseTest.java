@@ -11,9 +11,7 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,36 +31,29 @@ class KafkaMaaSClientCloseTest {
     private static final String WATCHED_TOPIC = "orders";
     private static final String NAMESPACE = "cloud-dev";
     private static final long LONG_POLL_DELAY_MILLIS = 200;
-    private static final String NO_TOPICS_YET = "[]";
     private static final String WATCHED_TOPIC_CREATED = "[{"
             + "\"name\": \"maas.core-dev.orders\","
             + "\"classifier\": {\"name\": \"" + WATCHED_TOPIC + "\", \"namespace\": \"" + NAMESPACE + "\"},"
             + "\"addresses\": {\"PLAINTEXT\": [\"localhost:9092\"]}"
             + "}]";
 
+    private final CountDownLatch watchPolled = new CountDownLatch(1);
+    private final CountDownLatch topicDelivered = new CountDownLatch(1);
+    private volatile boolean topicIsCreated;
     private HttpServer agentStub;
-    private CountDownLatch watchPolled;
-    private CountDownLatch topicDelivered;
-    private final AtomicBoolean topicIsCreated = new AtomicBoolean();
     private Thread watchThread;
 
     @BeforeEach
     void startAgentStub() throws IOException {
-        watchPolled = new CountDownLatch(1);
-        topicDelivered = new CountDownLatch(1);
-        topicIsCreated.set(false);
-        watchThread = null;
-
         agentStub = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
         agentStub.createContext("/api-version", exchange -> respond(exchange, "{\"major\": 2, \"minor\": 8}"));
         agentStub.createContext("/api/v2/kafka/topic/watch-create", this::answerWatchPoll);
-        agentStub.setExecutor(Executors.newCachedThreadPool());
         agentStub.start();
     }
 
     @AfterEach
     void releaseWatchThreadAndStopStub() throws InterruptedException {
-        topicIsCreated.set(true);
+        topicIsCreated = true;
         if (watchThread != null && watchThread.isAlive()) {
             topicDelivered.await(10, TimeUnit.SECONDS);
             watchThread.interrupt();
@@ -114,7 +105,7 @@ class KafkaMaaSClientCloseTest {
 
     private void answerWatchPoll(HttpExchange exchange) throws IOException {
         watchPolled.countDown();
-        if (topicIsCreated.get()) {
+        if (topicIsCreated) {
             respond(exchange, WATCHED_TOPIC_CREATED);
             return;
         }
@@ -123,7 +114,7 @@ class KafkaMaaSClientCloseTest {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        respond(exchange, NO_TOPICS_YET);
+        respond(exchange, "[]");
     }
 
     private static void respond(HttpExchange exchange, String body) throws IOException {
