@@ -43,6 +43,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     private final Duration watchTimeout = Duration.ofSeconds(60);
     // there is no need in highly concurrent map/lists implementation, we will wait for network responses most of the time
     private final Map<Classifier, List<Consumer<TopicAddress>>> topicCreateListeners = Collections.synchronizedMap(new HashMap<>());
+    private volatile boolean closed = false;
     private final Lazy<Thread> watchThread = new Lazy<>(() -> {
         Thread exec = new Thread(this::watchTenantCreateTopics, "watchTopicCreate");
         exec.setDaemon(true);
@@ -111,8 +112,8 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     private void watchTenantCreateTopics() {
         TypeReference<List<TopicInfo>> typeRef = new TypeReference<>() {
         };
-        while (true) {
-            while (!topicCreateListeners.isEmpty()) {
+        while (!closed) {
+            while (!closed && !topicCreateListeners.isEmpty()) {
                 String url = apiProvider.getKafkaTopicWatchCreateUrl(watchTimeout);
                 List<TopicInfo> found = Collections.emptyList();
                 try {
@@ -141,6 +142,10 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
                         }
                     }
                 }
+            }
+
+            if (closed) {
+                return;
             }
 
             try {
@@ -223,6 +228,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
 
     @Override
     public void close() {
+        closed = true;
         if (watchThread.isInitialized()) {
             watchThread.get().interrupt();
             try {
