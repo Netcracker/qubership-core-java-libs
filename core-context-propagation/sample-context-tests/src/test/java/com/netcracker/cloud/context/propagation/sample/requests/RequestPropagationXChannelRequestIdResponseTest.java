@@ -20,15 +20,14 @@ import org.springframework.web.context.WebApplicationContext;
 import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPostAuthnContextProviderFilter;
 import com.netcracker.cloud.context.propagation.spring.common.filter.SpringPreAuthnContextProviderFilter;
-import com.netcracker.cloud.framework.contexts.xchannelrequestid.HeaderPropagationConfiguration;
 
-@Disabled
 @SpringBootTest
 @ContextConfiguration(classes = {
         TestController.class, RequestPropagationTestConfig.class})
 @TestPropertySource(properties = {
         "headers.allowed=custom-header",
-        "cloud-core.context-propagation.url=/test_url/v111/test"
+        "cloud-core.context-propagation.url=/test_url/v111/test",
+        "context.propagation.headers.enable.optional="
 })
 class RequestPropagationXChannelRequestIdResponseTest {
 
@@ -52,15 +51,11 @@ class RequestPropagationXChannelRequestIdResponseTest {
 
     @BeforeAll
     static void beforeAll() {
-        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
-        HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
     }
 
     @AfterAll
     static void afterAll() {
-        System.clearProperty(HeaderPropagationConfiguration.ENABLE_OPTIONAL_PROPERTY);
-        HeaderPropagationConfiguration.resetCache();
         ContextManager.reinitialize();
     }
 
