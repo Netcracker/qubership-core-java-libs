@@ -32,7 +32,7 @@ permissions:
 
 jobs:
   maven-deploy:
-    uses: Netcracker/qubership-core-infra/.github/workflows/maven-deploy-branch-snapshot.yml@feat/consistent-snapshots
+    uses: Netcracker/qubership-core-infra/.github/workflows/maven-deploy-branch-snapshot.yml@75e193f58f0c209d19eda526b2a5137cdb3bc557 # feat/consistent-snapshots
     with:
       branch: ${{ inputs.branch }}
       skip-tests: ${{ inputs.skip-tests }}
