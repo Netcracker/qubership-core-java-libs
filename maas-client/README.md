@@ -58,6 +58,47 @@ MaaSClient client = new MaaSAPIClientImpl(() -> M2MManager.getInstance().getToke
 ```
    
 
+## Retry behaviour and configuration
+
+Every call to maas-agent is retried before giving up, bounded by a single
+setting: the maximum total duration of the call.
+
+| Property | Default | Meaning |
+|---|---|---|
+| `maas.http.timeout` | `30` (seconds) | connect/read/write timeout of a **single** attempt |
+| `maas.http.retry.max-total-duration-ms` | `60000` | how long one call may take in **total**, retries included |
+
+`max-total-duration-ms` is the only retry knob. The number of attempts and the
+growth of the pauses between them are derived from it, so there is nothing to
+keep consistent by hand: the first pause is 1s, each next one doubles, and the
+cap is a quarter of the total. With the default 60s that gives pauses of
+1s, 2s, 4s, 8s, 15s, 15s — roughly six attempts before giving up.
+
+The default of 60s is chosen to outlast a database leader switchover, which is
+the case these retries exist for, while still failing fast enough for a caller
+to react to a real outage.
+
+Backoff is exponential with +/-20% jitter, so concurrent callers do not retry in
+lockstep against a recovering agent.
+
+The watch endpoint (`watch-create`) is deliberately excluded: it is a long poll with
+its own loop, so retrying inside the call would nest two policies and block the watch
+for the whole duration. That loop has its own linear, capped backoff instead.
+
+Which responses are retried:
+
+| Response | Retried | Why |
+|---|---|---|
+| `IOException` | yes | connection refused/reset while the agent is being rescheduled |
+| 5xx | yes | includes the `500` maas-agent returns when it cannot reach maas-service at all |
+| 429 | yes | throttling |
+| **405** | **yes** | maas-service maps PostgreSQL error `25006` (READ ONLY SQL TRANSACTION) to `405`, so a write against a demoted Patroni node during a leader switchover arrives as `405`, not as `5xx` |
+| **401** | **yes** | the M2M token is supplied per request, so an expired token or a briefly unavailable token provider clears itself on the next attempt |
+| other 4xx | no | permanent client errors, failed on the first attempt |
+
+The two 4xx entries are deliberate. Applying the usual "retry 5xx, fail fast on
+4xx" rule here means not surviving a database leader switchover.
+
 ## Kafka client usage example
 All MaaS operations for Kafka is collected in [KafkaMaaSClient](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/com/netcracker/cloud/maas/client/api/kafka/KafkaMaaSClient.java). To obtain *new* instance of MaaS Kafka client just call: 
 ```java

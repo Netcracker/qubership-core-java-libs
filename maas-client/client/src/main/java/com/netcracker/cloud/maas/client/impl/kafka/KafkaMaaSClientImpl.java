@@ -41,6 +41,8 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     private final ApiUrlProvider apiProvider;
 
     private final Duration watchTimeout = Duration.ofSeconds(60);
+    private static final Duration WATCH_RETRY_INTERVAL = Duration.ofSeconds(1);
+    private static final Duration WATCH_MAX_RETRY_INTERVAL = Duration.ofSeconds(30);
     // there is no need in highly concurrent map/lists implementation, we will wait for network responses most of the time
     private final Map<Classifier, List<Consumer<TopicAddress>>> topicCreateListeners = Collections.synchronizedMap(new HashMap<>());
     private volatile boolean closed = false;
@@ -110,6 +112,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     }
 
     private void watchTenantCreateTopics() {
+        int failures = 0;
         TypeReference<List<TopicInfo>> typeRef = new TypeReference<>() {
         };
         while (!closed) {
@@ -120,10 +123,21 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
                     found = httpClient.request(url)
                             .post(topicCreateListeners.keySet())
                             .expect(200)
+                            .noRetry()
                             .sendAndReceive(typeRef)
                             .orElse(Collections.emptyList());
+                    failures = 0;
                 } catch (Exception e) {
-                    log.error("Error execute request to {}", url, e);
+                    // `closed` is the reliable stop signal: an interrupt can be swallowed by
+                    // the HTTP/JSON layers before it reaches us, the flag cannot.
+                    if (closed || Thread.currentThread().isInterrupted()) {
+                        return; // shutting down, not a failure worth reporting
+                    }
+                    failures++;
+                    log.warn("Error execute request to {}. Attempt {}, will back off before retrying", url, failures, e);
+                    if (!sleepWatchBackoff(failures)) {
+                        return; // interrupted while backing off
+                    }
                 }
 
                 for (TopicInfo addr : found) {
@@ -157,6 +171,24 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
             } catch (InterruptedException e) {
                 return; // exit loop
             }
+        }
+    }
+
+    /**
+     * Linear, capped backoff between failed watch polls, reset on every success.
+     *
+     * @return false if the thread was interrupted while waiting, meaning the caller should stop
+     */
+    private static boolean sleepWatchBackoff(int failures) {
+        long delayMillis = Math.min(
+                failures * WATCH_RETRY_INTERVAL.toMillis(),
+                WATCH_MAX_RETRY_INTERVAL.toMillis());
+        try {
+            Thread.sleep(delayMillis);
+            return true;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
         }
     }
 
