@@ -7,9 +7,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,16 +37,11 @@ class KafkaMaaSClientWatchBackoffTest {
     private static final String WATCHED_TOPIC = "orders";
     private static final String NAMESPACE = "cloud-dev";
 
-    /**
-     * The backoff is linear at one second per consecutive failure, so this window admits the
-     * first poll, a 1s pause, the second poll and a 2s pause. Anything much above that means
-     * the loop is not backing off at all.
-     */
-    private static final long OBSERVATION_WINDOW_MILLIS = 2_500;
-    private static final int MAX_EXPECTED_POLLS = 5;
+    /** Three polls are enough to see the pause between them grow. */
+    private static final int OBSERVED_POLLS = 3;
 
-    private final AtomicInteger watchPolls = new AtomicInteger();
-    private final CountDownLatch firstPoll = new CountDownLatch(1);
+    private final List<Long> pollMillis = Collections.synchronizedList(new ArrayList<>());
+    private final CountDownLatch pollsObserved = new CountDownLatch(OBSERVED_POLLS);
     private HttpServer agentStub;
     private KafkaMaaSClientImpl client;
 
@@ -72,17 +69,18 @@ class KafkaMaaSClientWatchBackoffTest {
                 client = createKafkaClient(agentUrl);
                 client.watchTopicCreate(WATCHED_TOPIC, addr -> { /* never created in this test */ });
 
-                assertTrue(firstPoll.await(10, TimeUnit.SECONDS),
-                        "the watch thread never reached the agent stub, so nothing was measured");
-                Thread.sleep(OBSERVATION_WINDOW_MILLIS);
+                assertTrue(pollsObserved.await(30, TimeUnit.SECONDS),
+                        "the watch loop reached the agent stub only " + pollMillis.size()
+                                + " times out of " + OBSERVED_POLLS + ", so nothing was measured");
 
-                int polls = watchPolls.get();
-                // The lower bound matters as much as the upper one: without it the assertion
-                // would also pass when the loop never ran and nothing was verified.
-                assertTrue(polls >= 1, "watch loop did not poll at all, the test would pass vacuously");
-                assertTrue(polls <= MAX_EXPECTED_POLLS,
-                        "expected the watch loop to back off between failures, but it polled " + polls
-                                + " times in " + OBSERVATION_WINDOW_MILLIS + "ms (limit " + MAX_EXPECTED_POLLS + ")");
+                long firstPause = pollMillis.get(1) - pollMillis.get(0);
+                long secondPause = pollMillis.get(2) - pollMillis.get(1);
+                // A hot loop would show pauses near zero; a fixed delay would show two equal ones.
+                assertTrue(firstPause > 500,
+                        "expected the watch loop to pause after a failure, but it polled again in " + firstPause + "ms");
+                assertTrue(secondPause > firstPause,
+                        "expected the pause to grow with consecutive failures, but got "
+                                + firstPause + "ms then " + secondPause + "ms");
             });
         });
     }
@@ -93,13 +91,15 @@ class KafkaMaaSClientWatchBackoffTest {
         var serverApiVersion = new ServerApiVersion(httpClient, agentUrl);
         System.clearProperty(M2MClientFactory.MAAS_AGENT_URL_PROP);
 
-        return new KafkaMaaSClientImpl(httpClient, null, new ApiUrlProvider(serverApiVersion, agentUrl));
+        return new KafkaMaaSClientImpl(httpClient,
+                () -> { throw new UnsupportedOperationException("tenant manager is not used in this test"); },
+                new ApiUrlProvider(serverApiVersion, agentUrl));
     }
 
     /** Answers every poll with 500, the code maas-agent returns when it cannot reach maas-service. */
     private void failWatchPoll(HttpExchange exchange) throws IOException {
-        watchPolls.incrementAndGet();
-        firstPoll.countDown();
+        pollMillis.add(System.currentTimeMillis());
+        pollsObserved.countDown();
         respond(exchange, 500, "{\"error\":\"error proxying request: maas-service unavailable\"}");
     }
 

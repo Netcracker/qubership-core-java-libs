@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netcracker.cloud.maas.client.api.MaaSHttpException;
 import com.netcracker.cloud.maas.client.impl.Env;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
@@ -199,7 +200,7 @@ public class HttpExecution {
             Thread.sleep(Math.min(backoffMillis(attempt, maxTotalMillis), remaining));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Interrupted while waiting to retry maas-agent request", e);
+            throw new MaaSHttpException("Interrupted while waiting to retry maas-agent request", e);
         }
     }
 
@@ -258,7 +259,7 @@ public class HttpExecution {
         while (true) {
             long remainingMs = remainingMillis(deadlineNanos);
             if (remainingMs <= 0) {
-                throw new RuntimeException("Gave up on " + compiledReq + " after " + attempt
+                throw new MaaSHttpException("Gave up on " + compiledReq + " after " + attempt
                         + " retries: the " + maxTotalMillis + "ms budget is spent");
             }
 
@@ -282,7 +283,7 @@ public class HttpExecution {
                         sleepBackoff(attempt, maxTotalMillis, deadlineNanos);
                         continue;
                     }
-                    throw new RuntimeException("Unexpected status code " + response.code()
+                    throw new MaaSHttpException("Unexpected status code " + response.code()
                             + " for request: " + compiledReq
                             + giveUpSuffix(attempt)
                             + "\n\tResponse body: " + errorBody);
@@ -293,7 +294,7 @@ public class HttpExecution {
                 return Optional.of(body);
             } catch (IOException e) {
                 if (!canRetry(deadlineNanos)) {
-                    throw new RuntimeException("Error executing " + compiledReq + giveUpSuffix(attempt), e);
+                    throw new MaaSHttpException("Error executing " + compiledReq + giveUpSuffix(attempt), e);
                 }
                 attempt++;
                 log.warn("Error execute http request: {}, Retry {}, within {}ms total",

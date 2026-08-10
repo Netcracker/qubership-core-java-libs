@@ -7,6 +7,7 @@ import org.testcontainers.consul.ConsulContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -29,12 +30,39 @@ class AbstractBGTest {
 
     String consulUrl;
 
+    private static final Duration NODE_REGISTRATION_TIMEOUT = Duration.ofSeconds(30);
+
     @Container
     ConsulContainer consulContainer = new ConsulContainer("hashicorp/consul:1.16");
 
     @BeforeEach
     void before() {
         consulUrl = String.format("http://%s:%d", consulContainer.getHost(), consulContainer.getMappedPort(8500));
+        awaitNodeRegistered();
+    }
+
+    /**
+     * The agent answers on its port before it has registered itself in the catalog, and a session
+     * cannot be bound to a node that is not there yet: consul replies 500 "Missing node registration".
+     */
+    private void awaitNodeRegistered() {
+        Instant deadline = Instant.now().plus(NODE_REGISTRATION_TIMEOUT);
+        String lastSeen = "no response";
+        while (Instant.now().isBefore(deadline)) {
+            try {
+                String nodes = client.invoke(req -> req.uri(URI.create(consulUrl + "/v1/catalog/nodes")).GET(),
+                        String.class).sendAndGet();
+                lastSeen = nodes;
+                if (nodes != null && !nodes.isBlank() && !nodes.strip().equals("[]")) {
+                    return;
+                }
+            } catch (Exception e) {
+                lastSeen = e.toString();
+            }
+            run(() -> Thread.sleep(100));
+        }
+        throw new IllegalStateException("Consul node was not registered in the catalog within "
+                + NODE_REGISTRATION_TIMEOUT + ", last response: " + lastSeen);
     }
 
     @SneakyThrows

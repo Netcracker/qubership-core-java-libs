@@ -1,6 +1,7 @@
 package com.netcracker.cloud.maas.client.impl.rabbit;
 
 import com.netcracker.cloud.maas.client.api.Classifier;
+import com.netcracker.cloud.maas.client.api.MaaSHttpException;
 import com.netcracker.cloud.maas.client.api.rabbit.VHost;
 import com.netcracker.cloud.maas.client.impl.ApiUrlProvider;
 import com.netcracker.cloud.maas.client.impl.Env;
@@ -18,6 +19,7 @@ import org.mockserver.verify.VerificationTimes;
 
 import static com.netcracker.cloud.maas.client.Utils.withProp;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
@@ -103,8 +105,8 @@ class RabbitFailoverTest {
         withProp(Env.PROP_NAMESPACE, "core-dev", () ->
                 withFastRetries(() -> {
                     RabbitMaaSClientImpl client = createRabbitClient("http://localhost:" + mockServer.getPort());
-                    org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class,
-                            () -> client.getOrCreateVirtualHost(new Classifier("commands")));
+                    Classifier classifier = new Classifier("commands");
+                    assertThrows(MaaSHttpException.class, () -> client.getOrCreateVirtualHost(classifier));
                 }));
 
         mockServer.verify(request().withMethod("POST").withPath(PATH), VerificationTimes.exactly(1));
