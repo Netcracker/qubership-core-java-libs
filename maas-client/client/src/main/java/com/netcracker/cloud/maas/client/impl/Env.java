@@ -106,13 +106,9 @@ public class Env {
     }
 
     /**
-     * How long one call to maas-agent may take in total, retries included. This is the
-     * only retry knob: the number of attempts and the growth of the backoff are derived
-     * from it, so there is nothing to keep consistent by hand.
-     * <p>
-     * The default of 60s is chosen to outlast a database leader switchover — the case the
-     * retries exist for — while still failing fast enough for a caller to react to a real
-     * outage.
+     * How long one call to maas-agent may take in total, retries included. The only retry
+     * knob: attempt count and backoff growth are derived from it. The 60s default outlasts
+     * a database leader switchover.
      */
     public static Duration httpRetryMaxTotalDuration() {
         return Duration.ofMillis(

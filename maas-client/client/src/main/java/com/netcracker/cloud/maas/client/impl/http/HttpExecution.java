@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -70,9 +71,7 @@ public class HttpExecution {
         return this;
     }
 
-    /**
-     * Performs a single attempt and lets the caller decide what to do with a failure.
-     */
+    /** Performs a single attempt. For callers that own a retry loop, such as a long poll. */
     public HttpExecution noRetry() {
         this.retryEnabled = false;
         return this;
@@ -104,44 +103,70 @@ public class HttpExecution {
         return sendAndReceive().map(der(responseDeserializer));
     }
 
+    /** Code carried by every maas-service TMF error envelope. */
+    private static final String MAAS_ERROR_CODE = "MAAS-0600";
+
     /**
-     * Two 4xx codes are deliberately retryable. Both are transient in this specific chain
-     * rather than permanent client errors:
-     * <ul>
-     *   <li>405 - maas-service maps PG error 25006 (READ ONLY SQL TRANSACTION) to
-     *       {@code StatusMethodNotAllowed}, so a write against a demoted Patroni node
-     *       during a leader switchover arrives here as 405, not as 5xx.</li>
-     *   <li>401 - the M2M token is supplied per request by the OkHttp interceptor, so an
-     *       expired token or a briefly unavailable token provider resolves itself on the
-     *       next attempt.</li>
-     * </ul>
+     * Two 4xx are transient here rather than permanent: 405 is how maas-service reports a
+     * read-only Postgres during a leader switchover, and 401 clears when the token is
+     * re-supplied on the next attempt.
+     * <p>
+     * The 405 case is gated on the response body, because a plain 405 — a route removed on
+     * the server, an ingress rejecting the method — is permanent and must fail fast.
      */
-    private static boolean isRetryableStatus(int code) {
+    private static boolean isRetryableStatus(int code, String body) {
         if (code >= 500) {
             return true;
         }
-        return code == 429 || code == 405 || code == 401;
+        if (code == 429 || code == 401) {
+            return true;
+        }
+        return code == 405 && isDatabaseUnavailable(body);
     }
 
-    /** First backoff pause. Not configurable*/
-    private static final long BASE_DELAY_MILLIS = 1_000L;
+    /**
+     * Recognises the 405 that maas-service returns for PostgreSQL error 25006, mapped from
+     * {@code DatabaseIsReadonlyError} / {@code DatabaseIsNotActiveError}. Matched on the
+     * reason text because the TMF code is the same for every maas-service error.
+     */
+    private static boolean isDatabaseUnavailable(String body) {
+        if (body == null || !body.contains(MAAS_ERROR_CODE)) {
+            return false;
+        }
+        return body.contains("read-only") || body.contains("not in 'active' mode");
+    }
 
     /**
-     * The cap on a single pause is derived from the total duration rather than configured
-     * separately. A quarter keeps the growth useful at both ends of the range: with the
-     * default 60s the pauses run 1s, 2s, 4s, 8s, 15s, 15s (~6 attempts), and with a 5s
-     * total they run 1s, 1.25s, 1.25s, 1.25s (~4 attempts). Either way the caller gets
-     * several tries without hammering an agent that is coming back up.
+     * How many times a single call retries a 401. One is enough: it covers a token that
+     * expired in flight. A token the supplier still considers valid but the server rejects
+     * comes back identical on every further attempt.
      */
+    static final int MAX_AUTH_RETRIES = 1;
+
+    private int authAttempts = 0;
+
+    private boolean canRetryStatus(int code, String body, long deadlineNanos) {
+        if (!isRetryableStatus(code, body) || !canRetry(deadlineNanos)) {
+            return false;
+        }
+        if (code == 401) {
+            return ++authAttempts <= MAX_AUTH_RETRIES;
+        }
+        return true;
+    }
+
+    /** First backoff pause. */
+    private static final long BASE_DELAY_MILLIS = 1_000L;
+
+    /** A single pause is capped at this fraction of the total duration. */
     private static final int MAX_DELAY_FRACTION_OF_TOTAL = 4;
 
     /**
-     * Delay before jitter: doubles per attempt, capped at the derived maximum.
-     * Doubling is done in integer arithmetic and saturates at the cap, so a large attempt
-     * count cannot overflow into a negative delay.
+     * Delay before jitter: doubles per attempt, capped. Integer arithmetic saturating at
+     * the cap, so a large attempt count cannot overflow.
      */
-    static long cappedDelayMillis(int attempt) {
-        long max = Math.max(1L, Env.httpRetryMaxTotalDuration().toMillis() / MAX_DELAY_FRACTION_OF_TOTAL);
+    static long cappedDelayMillis(int attempt, long maxTotalMillis) {
+        long max = Math.max(1L, maxTotalMillis / MAX_DELAY_FRACTION_OF_TOTAL);
         long delay = Math.min(BASE_DELAY_MILLIS, max);
         for (int i = 1; i < attempt && delay < max; i++) {
             delay = delay > max / 2 ? max : delay * 2;
@@ -150,42 +175,77 @@ public class HttpExecution {
     }
 
     // Exponential backoff with jitter between retries.
-    private static long backoffMillis(int attempt) {
-        long capped = cappedDelayMillis(attempt);
+    private static long backoffMillis(int attempt, long maxTotalMillis) {
+        long capped = cappedDelayMillis(attempt, maxTotalMillis);
         double jitterFactor = 0.8 + ThreadLocalRandom.current().nextDouble() * 0.4;
         return Math.max(1L, (long) (capped * jitterFactor));
     }
 
-    // The total duration is the only stop condition: there is no attempt counter to
-    // disagree with it. Callers that own a retry loop opt out entirely via noRetry().
+    // The total duration is the only stop condition, unless noRetry() was used.
     private boolean canRetry(long deadlineNanos) {
         return retryEnabled && System.nanoTime() < deadlineNanos;
     }
 
     /**
-     * Waits before the next retry. The delay is clamped to whatever is left of the max
-     * total duration, otherwise a backoff started just before the deadline would overshoot
-     * it by up to the configured max delay. Restores the interrupt flag and aborts if
-     * interrupted.
+     * Waits before the next retry, clamped to what is left of the total duration so the
+     * backoff cannot overshoot it. Restores the interrupt flag and aborts if interrupted.
      */
-    private static void sleepBackoff(int attempt, long deadlineNanos) {
-        long remainingMillis = TimeUnit.NANOSECONDS.toMillis(deadlineNanos - System.nanoTime());
-        if (remainingMillis <= 0) {
+    private static void sleepBackoff(int attempt, long maxTotalMillis, long deadlineNanos) {
+        long remaining = remainingMillis(deadlineNanos);
+        if (remaining <= 0) {
             return;
         }
         try {
-            Thread.sleep(Math.min(backoffMillis(attempt), remainingMillis));
+            Thread.sleep(Math.min(backoffMillis(attempt, maxTotalMillis), remaining));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Interrupted while waiting to retry maas-agent request", e);
         }
     }
 
-    // OkHttp declares Response.body() as nullable; treat a missing body as empty rather
-    // than dereferencing it. Keeps throwing IOException so the caller's retry loop sees it.
+    // Response.body() is nullable in OkHttp; a missing body reads as empty.
     private static String bodyAsString(Response response) throws IOException {
         ResponseBody body = response.body();
         return body == null ? "" : body.string();
+    }
+
+    /**
+     * Body of a non-2xx response, for the retry decision and the error message. Never throws:
+     * a body that cannot be read must not turn a permanent status into a retry.
+     */
+    private static String errorBodyOrPlaceholder(Response response) {
+        try {
+            return bodyAsString(response);
+        } catch (IOException e) {
+            log.debug("Could not read error response body", e);
+            return "<unreadable: " + e.getMessage() + ">";
+        }
+    }
+
+    private static long remainingMillis(long deadlineNanos) {
+        return TimeUnit.NANOSECONDS.toMillis(deadlineNanos - System.nanoTime());
+    }
+
+    private static String giveUpSuffix(int attempt) {
+        return attempt == 0 ? "" : ", gave up after " + attempt + " retries";
+    }
+
+    /**
+     * Client for one attempt, bounded by what is left of the total duration. Without it an
+     * attempt starting just before the deadline still runs for the full
+     * {@code maas.http.timeout} and the call overruns its budget.
+     * <p>
+     * Not applied under {@link #noRetry()}: there the caller owns the lifecycle, and the
+     * watch long poll legitimately runs as long as the budget itself.
+     */
+    private OkHttpClient clientForAttempt(long remainingMs) {
+        if (!retryEnabled) {
+            return httpClient;
+        }
+        // newBuilder shares the connection pool and dispatcher, so this is cheap
+        return httpClient.newBuilder()
+                .callTimeout(Duration.ofMillis(remainingMs))
+                .build();
     }
 
     private Optional<String> sendAndReceive() {
@@ -193,10 +253,16 @@ public class HttpExecution {
         log.debug("Send request: {}", compiledReq);
 
         long maxTotalMillis = Env.httpRetryMaxTotalDuration().toMillis();
-        long deadlineNanos = System.nanoTime() + Env.httpRetryMaxTotalDuration().toNanos();
+        long deadlineNanos = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(maxTotalMillis);
         int attempt = 0;
         while (true) {
-            try (Response response = httpClient.newCall(compiledReq).execute()) {
+            long remainingMs = remainingMillis(deadlineNanos);
+            if (remainingMs <= 0) {
+                throw new RuntimeException("Gave up on " + compiledReq + " after " + attempt
+                        + " retries: the " + maxTotalMillis + "ms budget is spent");
+            }
+
+            try (Response response = clientForAttempt(remainingMs).newCall(compiledReq).execute()) {
                 // check response codes against acceptable list
                 log.debug("Received status code: {}, expected codes: {}", response.code(), expectedCodes);
 
@@ -206,17 +272,20 @@ public class HttpExecution {
                 }
 
                 if (!expectedCodes.contains(response.code())) {
-                    if (isRetryableStatus(response.code()) && canRetry(deadlineNanos)) {
+                    // read once, without throwing: a body that cannot be read must not turn a
+                    // permanent status into a retry
+                    String errorBody = errorBodyOrPlaceholder(response);
+                    if (canRetryStatus(response.code(), errorBody, deadlineNanos)) {
                         attempt++;
                         log.warn("Retryable status code {} for request: {}. Retry {}, within {}ms total",
                                 response.code(), compiledReq, attempt, maxTotalMillis);
-                        sleepBackoff(attempt, deadlineNanos);
+                        sleepBackoff(attempt, maxTotalMillis, deadlineNanos);
                         continue;
                     }
                     throw new RuntimeException("Unexpected status code " + response.code()
                             + " for request: " + compiledReq
-                            + ", gave up after " + attempt + " retries"
-                            + "\n\tResponse body: " + bodyAsString(response));
+                            + giveUpSuffix(attempt)
+                            + "\n\tResponse body: " + errorBody);
                 }
 
                 String body = bodyAsString(response);
@@ -224,13 +293,12 @@ public class HttpExecution {
                 return Optional.of(body);
             } catch (IOException e) {
                 if (!canRetry(deadlineNanos)) {
-                    throw new RuntimeException("Error executing " + compiledReq
-                            + ", gave up after " + attempt + " retries", e);
+                    throw new RuntimeException("Error executing " + compiledReq + giveUpSuffix(attempt), e);
                 }
                 attempt++;
                 log.warn("Error execute http request: {}, Retry {}, within {}ms total",
                         e.getMessage(), attempt, maxTotalMillis);
-                sleepBackoff(attempt, deadlineNanos);
+                sleepBackoff(attempt, maxTotalMillis, deadlineNanos);
             }
         }
     }

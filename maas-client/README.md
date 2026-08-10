@@ -68,22 +68,22 @@ setting: the maximum total duration of the call.
 | `maas.http.timeout` | `30` (seconds) | connect/read/write timeout of a **single** attempt |
 | `maas.http.retry.max-total-duration-ms` | `60000` | how long one call may take in **total**, retries included |
 
-`max-total-duration-ms` is the only retry knob. The number of attempts and the
-growth of the pauses between them are derived from it, so there is nothing to
-keep consistent by hand: the first pause is 1s, each next one doubles, and the
-cap is a quarter of the total. With the default 60s that gives pauses of
-1s, 2s, 4s, 8s, 15s, 15s — roughly six attempts before giving up.
+`max-total-duration-ms` is the only retry knob: the attempt count and the pauses
+between attempts are derived from it. The first pause is 1s, each next one
+doubles, and the cap is a quarter of the total — with the default 60s that gives
+1s, 2s, 4s, 8s, 15s, 15s, roughly six attempts when each attempt fails fast. If
+attempts hang instead, fewer of them fit into the same budget. Backoff carries
++/-20% jitter so concurrent callers do not retry in lockstep.
 
-The default of 60s is chosen to outlast a database leader switchover, which is
-the case these retries exist for, while still failing fast enough for a caller
-to react to a real outage.
+Each attempt is additionally bounded by what is left of the total duration, so
+the worst case a caller sees is the budget itself rather than the budget plus one
+`maas.http.timeout`.
 
-Backoff is exponential with +/-20% jitter, so concurrent callers do not retry in
-lockstep against a recovering agent.
+The 60s default is meant to outlast a database leader switchover while still
+failing fast enough to react to a real outage.
 
-The watch endpoint (`watch-create`) is deliberately excluded: it is a long poll with
-its own loop, so retrying inside the call would nest two policies and block the watch
-for the whole duration. That loop has its own linear, capped backoff instead.
+The watch endpoint (`watch-create`) is excluded: it is a long poll with its own
+loop and its own backoff.
 
 Which responses are retried:
 
@@ -92,12 +92,12 @@ Which responses are retried:
 | `IOException` | yes | connection refused/reset while the agent is being rescheduled |
 | 5xx | yes | includes the `500` maas-agent returns when it cannot reach maas-service at all |
 | 429 | yes | throttling |
-| **405** | **yes** | maas-service maps PostgreSQL error `25006` (READ ONLY SQL TRANSACTION) to `405`, so a write against a demoted Patroni node during a leader switchover arrives as `405`, not as `5xx` |
-| **401** | **yes** | the M2M token is supplied per request, so an expired token or a briefly unavailable token provider clears itself on the next attempt |
+| **405** | **only with a maas-service error body** | maas-service maps PostgreSQL error `25006` (READ ONLY SQL TRANSACTION) to `405`, so a write against a demoted Patroni node during a switchover arrives as `405`, not as `5xx`. A plain `405` — a route removed on the server, an ingress rejecting the method — is permanent and fails fast |
+| **401** | **once** | covers a token that expired in flight. Further attempts re-send the same token, since the supplier cannot be told it was rejected |
 | other 4xx | no | permanent client errors, failed on the first attempt |
 
-The two 4xx entries are deliberate. Applying the usual "retry 5xx, fail fast on
-4xx" rule here means not surviving a database leader switchover.
+The two 4xx entries are deliberate: the usual "retry 5xx, fail fast on 4xx" rule
+does not survive a database leader switchover here.
 
 ## Kafka client usage example
 All MaaS operations for Kafka is collected in [KafkaMaaSClient](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/com/netcracker/cloud/maas/client/api/kafka/KafkaMaaSClient.java). To obtain *new* instance of MaaS Kafka client just call: 
