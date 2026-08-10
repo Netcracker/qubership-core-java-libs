@@ -22,6 +22,8 @@
     instead of swallowing `InterruptedException`.
   - `KafkaMaaSClient.watchTopicCreate` throws `IllegalStateException` after `close()`, instead of
     registering a callback that can never fire.
+  - Failed calls to maas-agent now throw `MaaSHttpException` instead of a bare `RuntimeException`.
+    It extends `MaaSException`, which is a `RuntimeException`, so existing `catch` blocks keep working.
 
 ## 10.0.0
 * `Features`

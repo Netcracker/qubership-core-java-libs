@@ -177,20 +177,100 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
             if (closed) {
                 return;
             }
-
-            try {
-                log.info("Nothing to watch, sleep thread.");
-                synchronized (watchLock) {
-                    // guarded wait: a bare wait() would also return on a spurious wakeup
-                    while (!closed && topicCreateListeners.isEmpty()) {
-                        watchLock.wait();
-                    }
-                }
-                log.info("Woke up!");
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return; // exit loop
+            if (closed || !parkUntilThereIsSomethingToWatch()) {
+                return;
             }
+        }
+    }
+
+    /**
+     * Polls the watch endpoint until nothing is being watched any more.
+     *
+     * @return false if the thread must stop
+     */
+    private boolean pollWhileThereIsSomethingToWatch() {
+        int failures = 0;
+        while (!closed && !topicCreateListeners.isEmpty()) {
+            String url = apiProvider.getKafkaTopicWatchCreateUrl(watchTimeout);
+            List<TopicInfo> found;
+            try {
+                found = poll(url);
+                failures = 0;
+            } catch (Exception e) {
+                // `closed` is checked too: an interrupt can be swallowed further down
+                if (closed) {
+                    return false; // shutting down, not a failure worth reporting
+                }
+                if (Thread.currentThread().isInterrupted()) {
+                    log.warn("Watch thread interrupted without close(), stopping to watch {}", url, e);
+                    return false;
+                }
+                failures++;
+                log.warn("Error execute request to {}. Attempt {}, will back off before retrying", url, failures, e);
+                if (!sleepWatchBackoff(failures)) {
+                    return false; // interrupted while backing off
+                }
+                continue; // nothing was received, nothing to deliver
+            }
+            deliver(found);
+        }
+        return true;
+    }
+
+    /** One long poll for topics created since the previous call. */
+    private List<TopicInfo> poll(String url) {
+        TypeReference<List<TopicInfo>> typeRef = new TypeReference<>() {
+        };
+        return httpClient.request(url)
+                .post(topicCreateListeners.keySet())
+                .expect(200)
+                .noRetry()
+                .sendAndReceive(typeRef)
+                .orElse(Collections.emptyList());
+    }
+
+    /** Hands each created topic to the callbacks registered for it, removing them as it goes. */
+    private void deliver(List<TopicInfo> found) {
+        for (TopicInfo addr : found) {
+            List<Consumer<TopicAddress>> callbacks = topicCreateListeners.remove(addr.getClassifier());
+            if (callbacks == null) {
+                // this is unexpected situation in theory, but with this, code will be a little safer
+                continue;
+            }
+            for (Consumer<TopicAddress> callback : callbacks) {
+                notifyCallback(addr, callback);
+            }
+        }
+    }
+
+    private void notifyCallback(TopicInfo addr, Consumer<TopicAddress> callback) {
+        try {
+            log.info("Topic create event for {} received, execute callback {}", addr.getClassifier(), callback);
+            callback.accept(new TopicAddressImpl(addr));
+        } catch (Exception e) {
+            log.error("Error execute callback {}", callback, e);
+        }
+    }
+
+    /**
+     * Parks the thread while no topic is being watched.
+     *
+     * @return false if the thread was interrupted and must stop
+     */
+    private boolean parkUntilThereIsSomethingToWatch() {
+        try {
+            log.info("Nothing to watch, sleep thread.");
+            synchronized (watchLock) {
+                // guarded wait: a bare wait() would also return on a spurious wakeup
+                while (!closed && topicCreateListeners.isEmpty()) {
+                    watchLock.wait();
+                }
+            }
+            log.info("Woke up!");
+            return true;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
         }
     }
 

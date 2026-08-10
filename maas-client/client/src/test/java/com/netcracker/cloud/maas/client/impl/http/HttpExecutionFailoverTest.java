@@ -1,5 +1,6 @@
 package com.netcracker.cloud.maas.client.impl.http;
 
+import com.netcracker.cloud.maas.client.api.MaaSHttpException;
 import com.netcracker.cloud.maas.client.impl.Env;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -15,7 +16,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.netcracker.cloud.maas.client.Utils.withProp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockserver.model.HttpRequest.request;
@@ -102,10 +103,7 @@ class HttpExecutionFailoverTest {
         mockServer.when(request().withPath(PATH), Times.unlimited())
                 .respond(response().withStatusCode(401).withBody("{\"error\":\"unauthorized\"}"));
 
-        withFastRetries(() ->
-                assertTrue(assertThrows(RuntimeException.class,
-                        () -> execution(mockServer).expect(200).sendAndReceive(String.class)
-                ).getMessage().contains("401")));
+        withFastRetries(() -> assertMessageContains("401", execution(mockServer).expect(200)));
 
         mockServer.verify(request().withPath(PATH),
                 VerificationTimes.exactly(HttpExecution.MAX_AUTH_RETRIES + 1));
@@ -121,10 +119,7 @@ class HttpExecutionFailoverTest {
         mockServer.when(request().withPath(PATH), Times.unlimited())
                 .respond(response().withStatusCode(405).withBody("Method Not Allowed"));
 
-        withFastRetries(() ->
-                assertTrue(assertThrows(RuntimeException.class,
-                        () -> execution(mockServer).expect(200).sendAndReceive(String.class)
-                ).getMessage().contains("405")));
+        withFastRetries(() -> assertMessageContains("405", execution(mockServer).expect(200)));
 
         mockServer.verify(request().withPath(PATH), VerificationTimes.exactly(1));
     }
@@ -134,46 +129,27 @@ class HttpExecutionFailoverTest {
      * agent cannot stretch the call past it.
      */
     @Test
-    void testMaxTotalDuration_BoundsAHangingAttempt() throws Exception {
+    void testMaxTotalDuration_BoundsAHangingAttempt() throws IOException {
         // accepts the connection and never answers, unlike a refused connect which fails fast
         try (ServerSocket silentServer = new ServerSocket(0)) {
-            List<Socket> accepted = Collections.synchronizedList(new ArrayList<>());
-            Thread acceptor = new Thread(() -> {
-                try {
-                    while (!silentServer.isClosed()) {
-                        accepted.add(silentServer.accept());
-                    }
-                } catch (IOException e) {
-                    // the socket was closed, the test is over
-                }
-            }, "silent-server");
-            acceptor.setDaemon(true);
-            acceptor.start();
+            startAcceptor(silentServer, socket -> { /* hold the connection open and stay silent */ });
 
-            try {
-                withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, "1000", () -> {
-                    OkHttpClient client = new OkHttpClient.Builder()
-                            .readTimeout(Duration.ofMinutes(1))
-                            .build();
-                    Request.Builder req = new Request.Builder()
-                            .url("http://127.0.0.1:" + silentServer.getLocalPort() + PATH)
-                            .get();
-                    HttpExecution execution = new HttpExecution(client, req).expect(200);
+            withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, "1000", () -> {
+                OkHttpClient client = new OkHttpClient.Builder()
+                        .readTimeout(Duration.ofMinutes(1))
+                        .build();
+                Request.Builder req = new Request.Builder()
+                        .url("http://127.0.0.1:" + silentServer.getLocalPort() + PATH)
+                        .get();
+                HttpExecution execution = new HttpExecution(client, req).expect(200);
 
-                    long start = System.currentTimeMillis();
-                    assertThrows(RuntimeException.class, () -> execution.sendAndReceive(String.class));
-                    long elapsedMs = System.currentTimeMillis() - start;
-                    assertTrue(elapsedMs < 20_000,
-                            "expected the call to be bounded by its 1000ms budget rather than by the "
-                                    + "one minute read timeout, took " + elapsedMs + "ms");
-                });
-            } finally {
-                synchronized (accepted) {
-                    for (Socket socket : accepted) {
-                        socket.close();
-                    }
-                }
-            }
+                long start = System.currentTimeMillis();
+                assertThrows(MaaSHttpException.class, () -> execution.sendAndReceive(String.class));
+                long elapsedMs = System.currentTimeMillis() - start;
+                assertTrue(elapsedMs < 20_000,
+                        "expected the call to be bounded by its 1000ms budget rather than by the "
+                                + "one minute read timeout, took " + elapsedMs + "ms");
+            });
         }
     }
 
@@ -183,49 +159,55 @@ class HttpExecutionFailoverTest {
         mockServer.when(request().withPath(PATH), Times.unlimited())
                 .respond(response().withStatusCode(400).withBody("{\"error\":\"bad request\"}"));
 
-        withFastRetries(() ->
-                assertTrue(assertThrows(RuntimeException.class,
-                        () -> execution(mockServer).expect(200).sendAndReceive(String.class)
-                ).getMessage().contains("400")));
+        withFastRetries(() -> assertMessageContains("400", execution(mockServer).expect(200)));
 
         mockServer.verify(request().withPath(PATH), VerificationTimes.exactly(1));
     }
 
     @Test
-    void testInterrupt_RestoresFlagAndAbortsRetryLoop() throws Exception {
-        // A long total duration keeps the retry wait long enough for the interrupt to land in it.
-        withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, "600000", () -> {
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .connectTimeout(Duration.ofMillis(300))
-                    .build();
-            Request.Builder req = new Request.Builder().url("http://127.0.0.1:1/unreachable").get();
-            HttpExecution execution = new HttpExecution(client, req);
-            execution.expect(200);
+    void testInterrupt_RestoresFlagAndAbortsRetryLoop() throws IOException {
+        // A server that drops every connection: the attempt fails at once and the loop moves
+        // into its backoff wait, which is where the interrupt has to land.
+        try (ServerSocket rudeServer = new ServerSocket(0)) {
+            CountDownLatch firstAttemptFailed = new CountDownLatch(1);
+            startAcceptor(rudeServer, socket -> {
+                socket.close();
+                firstAttemptFailed.countDown();
+            });
 
-            AtomicBoolean interruptedAfter = new AtomicBoolean();
-            AtomicReference<Throwable> thrown = new AtomicReference<>();
-            CountDownLatch started = new CountDownLatch(1);
+            // A long total duration keeps the retry wait long enough for the interrupt to land in it.
+            withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, "600000", () -> {
+                Request.Builder req = new Request.Builder()
+                        .url("http://127.0.0.1:" + rudeServer.getLocalPort() + PATH)
+                        .get();
+                HttpExecution execution = new HttpExecution(new OkHttpClient(), req).expect(200);
 
-            Thread worker = new Thread(() -> {
-                started.countDown();
-                try {
-                    execution.sendAndReceive(String.class);
-                } catch (Throwable t) {
-                    thrown.set(t);
-                } finally {
-                    interruptedAfter.set(Thread.currentThread().isInterrupted());
-                }
-            }, "http-execution-interrupt-test");
-            worker.start();
+                AtomicBoolean interruptedAfter = new AtomicBoolean();
+                AtomicReference<Throwable> thrown = new AtomicReference<>();
 
-            assertTrue(started.await(2, TimeUnit.SECONDS));
-            Thread.sleep(500);
-            worker.interrupt();
-            worker.join(5000);
+                Thread worker = new Thread(() -> {
+                    try {
+                        execution.sendAndReceive(String.class);
+                    } catch (Exception e) {
+                        thrown.set(e);
+                    } finally {
+                        interruptedAfter.set(Thread.currentThread().isInterrupted());
+                    }
+                }, "http-execution-interrupt-test");
+                worker.start();
 
-            assertFalse(worker.isAlive(), "worker should abort instead of continuing to retry after interrupt");
-            assertTrue(interruptedAfter.get(), "interrupt flag must be restored after an interrupted retry wait");
-        });
+                assertTrue(firstAttemptFailed.await(10, TimeUnit.SECONDS), "the first attempt never reached the server");
+                worker.interrupt();
+                worker.join(10_000);
+
+                assertFalse(worker.isAlive(), "worker should abort instead of continuing to retry after interrupt");
+                assertTrue(interruptedAfter.get(), "interrupt flag must be restored after an interrupted retry wait");
+                assertInstanceOf(MaaSHttpException.class, thrown.get(),
+                        "the interrupt must surface as a maas exception, not as an unrelated failure");
+                assertTrue(thrown.get().getMessage().contains("Interrupted while waiting to retry"),
+                        "unexpected message: " + thrown.get().getMessage());
+            });
+        }
     }
 
     // Delay must grow between attempts and saturate at a quarter of the total duration.
@@ -252,9 +234,9 @@ class HttpExecutionFailoverTest {
                 .respond(response().withStatusCode(500).withBody("{\"error\":\"agent down\"}"));
 
         withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, "200", () -> {
+            HttpExecution execution = execution(mockServer).expect(200);
             long start = System.currentTimeMillis();
-            assertThrows(RuntimeException.class,
-                    () -> execution(mockServer).expect(200).sendAndReceive(String.class));
+            assertThrows(MaaSHttpException.class, () -> execution.sendAndReceive(String.class));
             long elapsedMs = System.currentTimeMillis() - start;
             assertTrue(elapsedMs < 800,
                     "expected retry loop to abort near the 200ms max total duration, took " + elapsedMs + "ms");
@@ -273,5 +255,43 @@ class HttpExecutionFailoverTest {
                 .url("http://localhost:" + mockServer.getPort() + PATH)
                 .get();
         return new HttpExecution(client, req);
+    }
+
+    private static void assertMessageContains(String expected, HttpExecution execution) {
+        MaaSHttpException e = assertThrows(MaaSHttpException.class, () -> execution.sendAndReceive(String.class));
+        assertTrue(e.getMessage().contains(expected), "unexpected message: " + e.getMessage());
+    }
+
+    @FunctionalInterface
+    private interface SocketHandler {
+        void handle(Socket socket) throws IOException;
+    }
+
+    /** Serves the socket on a daemon thread until it is closed, then releases what it accepted. */
+    private static void startAcceptor(ServerSocket server, SocketHandler handler) {
+        Thread acceptor = new Thread(() -> {
+            List<Socket> accepted = new ArrayList<>();
+            try {
+                while (!server.isClosed()) {
+                    Socket socket = server.accept();
+                    accepted.add(socket);
+                    handler.handle(socket);
+                }
+            } catch (IOException e) {
+                // the server socket was closed, the test is over
+            } finally {
+                accepted.forEach(HttpExecutionFailoverTest::closeQuietly);
+            }
+        }, "test-acceptor-" + server.getLocalPort());
+        acceptor.setDaemon(true);
+        acceptor.start();
+    }
+
+    private static void closeQuietly(Socket socket) {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            // nothing useful to do while tearing a test down
+        }
     }
 }

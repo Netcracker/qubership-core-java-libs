@@ -216,10 +216,11 @@ public class Env {
             Object config = getConfig.invoke(null);
             Method getOptionalValue = config.getClass().getMethod("getOptionalValue", String.class, Class.class);
             return (Optional<String>) getOptionalValue.invoke(config, key, String.class);
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
+            // MicroProfile Config is an optional dependency
             return Optional.empty();
-        } catch (Throwable e) {
-            log.trace("MicroProfile Config not available or lookup failed for '{}'", key, e);
+        } catch (Exception e) {
+            log.trace("MicroProfile Config lookup failed for '{}'", key, e);
             return Optional.empty();
         }
     }
