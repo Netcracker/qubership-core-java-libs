@@ -113,15 +113,15 @@ public class KubernetesTokenVerifier {
 ### Local-dev TokenRequest (`LocalDevTokenSource`)
 
 When application profile is `dev` (Quarkus: `-Dquarkus.profile=dev`, Spring: `--spring.profiles.active=dev`),
-`LocalDevTokenSource` mints real SA tokens via Kubernetes TokenRequest API using the developer kubeconfig
-instead of projected-volume files.
+`CachingTokenSource` delegates to `LocalDevTokenSource`, which mints real SA tokens via Kubernetes TokenRequest API
+using the developer kubeconfig instead of projected-volume files.
 
 | requirement | value |
 |---|---|
 | Profile | `dev` |
 | SA name | `cloud.microservice.name` (contract, no override) |
 | Namespace | env `CLOUD_NAMESPACE` |
-| Kube access | `KUBECONFIG` or `~/.kube/config` (static `token`, OIDC `auth-provider` with refresh via `idp-issuer-url`, or `exec` auth). IdP TLS uses trust-all in local-dev by default (`security.local-dev.insecure-idp-tls=false` to disable). |
+| Kube access | `KUBECONFIG` or `~/.kube/config` (static `token`, OIDC `auth-provider` with refresh via `idp-issuer-url`, or `exec` auth). IdP TLS uses trust-all in local-dev. |
 | Token TTL | 8 hours (`expirationSeconds=28800`) |
 | Audience | value passed to `KubernetesAudienceToken.getToken(audience)` |
 

@@ -94,18 +94,18 @@ public class TokenRequestClient {
                                                    String serviceAccountName,
                                                    String namespace) {
         int status = response.statusCode();
-        if (LocalDevHttpUtils.isUnauthorized(status)) {
+        if (status == 401 || status == 403) {
             throw new IllegalStateException(
                     "Local-dev TokenRequest unauthorized (HTTP " + status + ") for SA '"
                             + serviceAccountName + "' in namespace '" + namespace
-                            + "'. Check RBAC: permission to create serviceaccounts/token. Response: "
-                            + LocalDevJsonUtils.truncateResponseBody(response.body()));
+                            + "'. Check RBAC for serviceaccounts/token. Response: "
+                            + LocalDevUtils.truncateResponseBody(response.body()));
         }
-        if (LocalDevHttpUtils.isFailed(status)) {
+        if (LocalDevUtils.isFailed(status)) {
             throw new IllegalStateException(
                     "Local-dev TokenRequest failed (HTTP " + status + ") for SA '"
                             + serviceAccountName + "' in namespace '" + namespace
-                            + "'. Response: " + LocalDevJsonUtils.truncateResponseBody(response.body()));
+                            + "'. Response: " + LocalDevUtils.truncateResponseBody(response.body()));
         }
     }
 

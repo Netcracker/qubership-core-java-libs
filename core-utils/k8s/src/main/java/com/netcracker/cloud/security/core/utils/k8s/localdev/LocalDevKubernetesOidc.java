@@ -126,7 +126,7 @@ public final class LocalDevKubernetesOidc {
         HttpRequest request = requestBuilder.build();
         // HttpClient is cached and reused (connection pool); not closed per request (see httpClient()).
         HttpResponse<String> response = httpClient().send(request, HttpResponse.BodyHandlers.ofString());
-        LocalDevHttpUtils.ensureSuccessful(response, "Local-dev Kubernetes OIDC request for " + url);
+        LocalDevUtils.ensureSuccessful(response, "Local-dev Kubernetes OIDC request for " + url);
         return response.body();
     }
 

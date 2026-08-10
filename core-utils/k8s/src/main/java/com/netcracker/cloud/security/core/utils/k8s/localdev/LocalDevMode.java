@@ -13,22 +13,16 @@ public final class LocalDevMode {
     public static final String NAMESPACE_ENV = "CLOUD_NAMESPACE";
 
     public static final String QUARKUS_PROFILE_PROPERTY = "quarkus.profile";
-    public static final String QUARKUS_PROFILE_ENV = "QUARKUS_PROFILE";
 
     public static final String SPRING_PROFILES_ACTIVE_PROPERTY = "spring.profiles.active";
-    public static final String SPRING_PROFILES_ACTIVE_ENV = "SPRING_PROFILES_ACTIVE";
 
     public static final String DEV_PROFILE = "dev";
 
     public static boolean isEnabled() {
-        if (DEV_PROFILE.equalsIgnoreCase(firstNonBlank(
-                System.getProperty(QUARKUS_PROFILE_PROPERTY),
-                System.getenv(QUARKUS_PROFILE_ENV)))) {
+        if (DEV_PROFILE.equalsIgnoreCase(System.getProperty(QUARKUS_PROFILE_PROPERTY, ""))) {
             return true;
         }
-        return containsProfile(firstNonBlank(
-                System.getProperty(SPRING_PROFILES_ACTIVE_PROPERTY),
-                System.getenv(SPRING_PROFILES_ACTIVE_ENV)), DEV_PROFILE);
+        return containsProfile(System.getProperty(SPRING_PROFILES_ACTIVE_PROPERTY, ""), DEV_PROFILE);
     }
 
     public static String requireMicroserviceName() {
@@ -68,6 +62,6 @@ public final class LocalDevMode {
     }
 
     private static String firstNonBlank(String first, String second) {
-        return LocalDevJsonUtils.firstNonBlank(first, second);
+        return LocalDevUtils.firstNonBlank(first, second);
     }
 }

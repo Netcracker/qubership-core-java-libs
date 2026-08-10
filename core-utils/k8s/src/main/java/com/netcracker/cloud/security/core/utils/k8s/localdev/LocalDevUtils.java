@@ -5,10 +5,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
+import java.net.http.HttpResponse;
 import java.util.Base64;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class LocalDevJsonUtils {
+final class LocalDevUtils {
 
     /**
      * Reads a string field from a JSON node; returns {@code null} if missing, null, or blank.
@@ -51,5 +52,18 @@ final class LocalDevJsonUtils {
             return base64Url;
         }
         return base64Url + "====".substring(remainder);
+    }
+
+    static boolean isFailed(int statusCode) {
+        return statusCode / 100 != 2;
+    }
+
+    static void ensureSuccessful(HttpResponse<String> response, String operationDescription) {
+        int status = response.statusCode();
+        if (isFailed(status)) {
+            throw new IllegalStateException(
+                    operationDescription + " failed (HTTP " + status + "). Response: "
+                            + truncateResponseBody(response.body()));
+        }
     }
 }

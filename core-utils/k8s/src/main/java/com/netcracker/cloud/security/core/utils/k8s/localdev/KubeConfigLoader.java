@@ -19,7 +19,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.KubeConfigFields;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevJsonUtils.*;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevUtils.firstNonBlank;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevUtils.getTextField;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

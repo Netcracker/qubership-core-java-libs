@@ -1,8 +1,5 @@
 package com.netcracker.cloud.security.core.utils.k8s.localdev;
 
-import com.netcracker.cloud.security.core.utils.k8s.Priority;
-import com.netcracker.cloud.security.core.utils.k8s.TokenSource;
-import com.netcracker.cloud.security.core.utils.k8s.impl.CachingTokenSource;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -15,32 +12,25 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 @Slf4j
-@Priority(100)
-public class LocalDevTokenSource implements TokenSource {
+public class LocalDevTokenSource {
 
     private static final Duration EXPIRY_SKEW = Duration.ofMinutes(5);
 
-    private final TokenSource fallback;
     private final Supplier<TokenRequestClient> clientSupplier;
     private final ConcurrentMap<String, CachedToken> cache = new ConcurrentHashMap<>();
 
     private final AtomicReference<TokenRequestClient> client = new AtomicReference<>();
 
     public LocalDevTokenSource() {
-        this(new CachingTokenSource(), () -> new TokenRequestClient(KubeConfigLoader.load()));
+        this(() -> new TokenRequestClient(KubeConfigLoader.load()));
     }
 
     @VisibleForTesting
-    LocalDevTokenSource(TokenSource fallback, Supplier<TokenRequestClient> clientSupplier) {
-        this.fallback = Objects.requireNonNull(fallback, "fallback");
+    LocalDevTokenSource(Supplier<TokenRequestClient> clientSupplier) {
         this.clientSupplier = Objects.requireNonNull(clientSupplier, "clientSupplier");
     }
 
-    @Override
     public String getToken(String audience) {
-        if (!LocalDevMode.isEnabled()) {
-            return fallback.getToken(audience);
-        }
         Objects.requireNonNull(audience, "audience");
         CachedToken cached = cache.get(audience);
         if (cached != null && cached.isValid()) {
@@ -80,10 +70,9 @@ public class LocalDevTokenSource implements TokenSource {
         }
     }
 
-    @Override
-    public void close() throws Exception {
+    public void close() {
         cache.clear();
-        fallback.close();
+        client.set(null);
     }
 
     private record CachedToken(String token, Instant refreshAfter) {

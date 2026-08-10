@@ -44,8 +44,6 @@ final class OidcAuthProviderTokenRefresher {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final Duration EXPIRY_SKEW = Duration.ofSeconds(60);
-    private static final String INSECURE_IDP_TLS_PROPERTY = "security.local-dev.insecure-idp-tls";
-    private static final String INSECURE_IDP_TLS_ENV = "SECURITY_LOCAL_DEV_INSECURE_IDP_TLS";
 
     static String resolveToken(JsonNode authProviderConfig) {
         return resolveToken(authProviderConfig, createHttpClient());
@@ -56,18 +54,18 @@ final class OidcAuthProviderTokenRefresher {
         Objects.requireNonNull(authProviderConfig, "authProviderConfig");
         Objects.requireNonNull(httpClient, "httpClient");
 
-        String cachedIdToken = LocalDevJsonUtils.firstNonBlank(
-                LocalDevJsonUtils.getTextField(authProviderConfig, ID_TOKEN),
-                LocalDevJsonUtils.getTextField(authProviderConfig, ACCESS_TOKEN));
+        String cachedIdToken = LocalDevUtils.firstNonBlank(
+                LocalDevUtils.getTextField(authProviderConfig, ID_TOKEN),
+                LocalDevUtils.getTextField(authProviderConfig, ACCESS_TOKEN));
         if (StringUtils.isNotBlank(cachedIdToken) && !isExpired(cachedIdToken)) {
             log.debug("Using non-expired OIDC id-token from kubeconfig auth-provider");
             return cachedIdToken;
         }
 
-        String issuerUrl = LocalDevJsonUtils.getTextField(authProviderConfig, IDP_ISSUER_URL);
-        String refreshToken = LocalDevJsonUtils.getTextField(authProviderConfig, REFRESH_TOKEN);
-        String clientId = LocalDevJsonUtils.getTextField(authProviderConfig, CLIENT_ID);
-        String clientSecret = LocalDevJsonUtils.getTextField(authProviderConfig, CLIENT_SECRET);
+        String issuerUrl = LocalDevUtils.getTextField(authProviderConfig, IDP_ISSUER_URL);
+        String refreshToken = LocalDevUtils.getTextField(authProviderConfig, REFRESH_TOKEN);
+        String clientId = LocalDevUtils.getTextField(authProviderConfig, CLIENT_ID);
+        String clientSecret = LocalDevUtils.getTextField(authProviderConfig, CLIENT_SECRET);
 
         if (StringUtils.isAnyBlank(issuerUrl, refreshToken, clientId)) {
             if (StringUtils.isNotBlank(cachedIdToken)) {
@@ -93,23 +91,13 @@ final class OidcAuthProviderTokenRefresher {
     }
 
     private static HttpClient createHttpClient() {
-        if (LocalDevMode.isEnabled() && isInsecureIdpTlsEnabled()) {
+        if (LocalDevMode.isEnabled()) {
             return KubeConfigHttpClientFactory.createInsecureForLocalDev();
         }
         return HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(HTTP_REQUEST_TIMEOUT)
                 .build();
-    }
-
-    private static boolean isInsecureIdpTlsEnabled() {
-        String configured = LocalDevJsonUtils.firstNonBlank(
-                System.getProperty(INSECURE_IDP_TLS_PROPERTY),
-                System.getenv(INSECURE_IDP_TLS_ENV));
-        if (StringUtils.isBlank(configured)) {
-            return true;
-        }
-        return !"false".equalsIgnoreCase(configured) && !"0".equals(configured);
     }
 
     private static String discoverTokenEndpoint(HttpClient httpClient, String issuerUrl) {
@@ -122,9 +110,9 @@ final class OidcAuthProviderTokenRefresher {
                     .GET()
                     .build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            LocalDevHttpUtils.ensureSuccessful(response, "OIDC discovery for " + discoveryUrl);
+            LocalDevUtils.ensureSuccessful(response, "OIDC discovery for " + discoveryUrl);
 
-            String tokenEndpoint = LocalDevJsonUtils.getTextField(
+            String tokenEndpoint = LocalDevUtils.getTextField(
                     MAPPER.readTree(response.body()), OIDC_DISCOVERY_TOKEN_ENDPOINT);
             if (StringUtils.isBlank(tokenEndpoint)) {
                 throw new IllegalStateException("OIDC discovery response has no token_endpoint: " + discoveryUrl);
@@ -162,12 +150,12 @@ final class OidcAuthProviderTokenRefresher {
                     .POST(HttpRequest.BodyPublishers.ofString(form.toString()))
                     .build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            LocalDevHttpUtils.ensureSuccessful(response, "OIDC refresh_token grant for " + tokenEndpoint);
+            LocalDevUtils.ensureSuccessful(response, "OIDC refresh_token grant for " + tokenEndpoint);
 
             JsonNode body = MAPPER.readTree(response.body());
-            String token = LocalDevJsonUtils.firstNonBlank(
-                    LocalDevJsonUtils.getTextField(body, OIDC_TOKEN_ID_TOKEN),
-                    LocalDevJsonUtils.getTextField(body, OIDC_TOKEN_ACCESS_TOKEN));
+            String token = LocalDevUtils.firstNonBlank(
+                    LocalDevUtils.getTextField(body, OIDC_TOKEN_ID_TOKEN),
+                    LocalDevUtils.getTextField(body, OIDC_TOKEN_ACCESS_TOKEN));
             if (StringUtils.isBlank(token)) {
                 throw new IllegalStateException(
                         "OIDC token response has neither id_token nor access_token: " + tokenEndpoint);
@@ -193,7 +181,7 @@ final class OidcAuthProviderTokenRefresher {
             if (parts.length < 2) {
                 return true;
             }
-            byte[] payload = Base64.getUrlDecoder().decode(LocalDevJsonUtils.padBase64Url(parts[1]));
+            byte[] payload = Base64.getUrlDecoder().decode(LocalDevUtils.padBase64Url(parts[1]));
             JsonNode claims = MAPPER.readTree(payload);
             JsonNode expNode = claims.path("exp");
             if (!expNode.isNumber()) {

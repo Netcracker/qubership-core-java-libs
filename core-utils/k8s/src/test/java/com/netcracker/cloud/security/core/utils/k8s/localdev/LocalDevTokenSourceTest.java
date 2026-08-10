@@ -1,6 +1,5 @@
 package com.netcracker.cloud.security.core.utils.k8s.localdev;
 
-import com.netcracker.cloud.security.core.utils.k8s.TokenSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,58 +34,39 @@ class LocalDevTokenSourceTest {
     }
 
     @Test
-    void delegatesToFallbackWhenDisabled() throws Exception {
-        TokenSource fallback = mock(TokenSource.class);
-        when(fallback.getToken("netcracker")).thenReturn("file-token");
-        TokenRequestClient client = mock(TokenRequestClient.class);
-
-        try (LocalDevTokenSource source = new LocalDevTokenSource(fallback, () -> client)) {
-            assertEquals("file-token", source.getToken("netcracker"));
-        }
-        verify(fallback).getToken("netcracker");
-    }
-
-    @Test
-    void requestsAndCachesTokenWhenEnabled() throws Exception {
+    void requestsAndCachesToken() throws Exception {
         systemProperties.set(LocalDevMode.QUARKUS_PROFILE_PROPERTY, "dev");
         systemProperties.set(LocalDevMode.MICROSERVICE_NAME_PROPERTY, "my-sa");
         environmentVariables.set(LocalDevMode.NAMESPACE_ENV, "my-ns");
 
-        TokenSource fallback = mock(TokenSource.class);
         TokenRequestClient client = mock(TokenRequestClient.class);
         when(client.requestToken("my-ns", "my-sa", "netcracker"))
                 .thenReturn(new TokenRequestClient.TokenRequestResult(
                         "minted", Instant.now().plusSeconds(3600)));
 
         AtomicInteger supplierCalls = new AtomicInteger();
-        try (LocalDevTokenSource source = new LocalDevTokenSource(fallback, () -> {
+        LocalDevTokenSource source = new LocalDevTokenSource(() -> {
             supplierCalls.incrementAndGet();
             return client;
-        })) {
-            assertEquals("minted", source.getToken("netcracker"));
-            assertEquals("minted", source.getToken("netcracker"));
-        }
+        });
+        assertEquals("minted", source.getToken("netcracker"));
+        assertEquals("minted", source.getToken("netcracker"));
+        source.close();
 
         verify(client, times(1)).requestToken("my-ns", "my-sa", "netcracker");
         assertEquals(1, supplierCalls.get());
     }
 
     @Test
-    void throwsWhenAudienceIsNull() throws Exception {
-        systemProperties.set(LocalDevMode.QUARKUS_PROFILE_PROPERTY, "dev");
-        systemProperties.set(LocalDevMode.MICROSERVICE_NAME_PROPERTY, "my-sa");
-        environmentVariables.set(LocalDevMode.NAMESPACE_ENV, "my-ns");
-
-        try (LocalDevTokenSource source = new LocalDevTokenSource(mock(TokenSource.class), () -> mock(TokenRequestClient.class))) {
-            assertThrows(NullPointerException.class, () -> source.getToken(null));
-        }
+    void throwsWhenAudienceIsNull() {
+        LocalDevTokenSource source = new LocalDevTokenSource(() -> mock(TokenRequestClient.class));
+        assertThrows(NullPointerException.class, () -> source.getToken(null));
+        source.close();
     }
 
     @Test
-    void closeClearsCacheAndClosesFallback() throws Exception {
-        TokenSource fallback = mock(TokenSource.class);
-        LocalDevTokenSource source = new LocalDevTokenSource(fallback, () -> mock(TokenRequestClient.class));
+    void closeClearsCache() {
+        LocalDevTokenSource source = new LocalDevTokenSource(() -> mock(TokenRequestClient.class));
         source.close();
-        verify(fallback).close();
     }
 }

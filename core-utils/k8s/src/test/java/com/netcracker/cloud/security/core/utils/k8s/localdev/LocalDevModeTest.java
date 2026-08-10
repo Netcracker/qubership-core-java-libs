@@ -41,21 +41,16 @@ class LocalDevModeTest {
     }
 
     @Test
-    void enabledByQuarkusProfileEnv() {
-        environmentVariables.set(LocalDevMode.QUARKUS_PROFILE_ENV, "dev");
-        assertTrue(LocalDevMode.isEnabled());
-    }
-
-    @Test
     void enabledBySpringProfilesActiveProperty() {
         systemProperties.set(LocalDevMode.SPRING_PROFILES_ACTIVE_PROPERTY, "local,dev");
         assertTrue(LocalDevMode.isEnabled());
     }
 
     @Test
-    void enabledBySpringProfilesActiveEnv() {
-        environmentVariables.set(LocalDevMode.SPRING_PROFILES_ACTIVE_ENV, "local,dev");
-        assertTrue(LocalDevMode.isEnabled());
+    void profileEnvVarsDoNotEnableWithoutSystemProperty() {
+        environmentVariables.set("QUARKUS_PROFILE", "dev");
+        environmentVariables.set("SPRING_PROFILES_ACTIVE", "dev");
+        assertFalse(LocalDevMode.isEnabled());
     }
 
     @Test
