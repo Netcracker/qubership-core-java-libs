@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class SwaggerSecurityConfiguratorTest {
     public static final String IDP_TOKEN_URL = "/api/v1/identity-provider/auth/realms/cloud-common/protocol/openid-connect/token";
     private static final String CLIENT_ID = "testuser";
-    private static final String CLIENT_SECRET = "tigerword";
+    private static final String CLIENT_SECRET = "testpassword";
 
     @Autowired
     SwaggerSecurityConfigurator configurator;
