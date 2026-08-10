@@ -62,7 +62,7 @@
         <commons-collections4.version>4.5.0</commons-collections4.version>
 
         <!-- HTTP clients (Apache) -->
-        <apache.httpclient5.version>5.5.2</apache.httpclient5.version>
+        <apache.httpclient5.version>5.6.1</apache.httpclient5.version>
 
         <!-- Other compile/runtime -->
         <guava.version>33.5.0-jre</guava.version>
@@ -73,7 +73,7 @@
         <awaitility.version>4.3.0</awaitility.version>
 
         <!-- Messaging -->
-        <rabbitmq.version>5.28.0</rabbitmq.version>
+        <rabbitmq.version>5.30.0</rabbitmq.version>
         <rabbitmq-mock.version>1.2.0</rabbitmq-mock.version>
 
         <!-- Test -->
