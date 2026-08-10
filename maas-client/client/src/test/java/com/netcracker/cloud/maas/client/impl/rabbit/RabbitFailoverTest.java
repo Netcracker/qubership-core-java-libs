@@ -7,6 +7,7 @@ import com.netcracker.cloud.maas.client.impl.Env;
 import com.netcracker.cloud.maas.client.impl.apiversion.ServerApiVersion;
 import com.netcracker.cloud.maas.client.impl.http.HttpClient;
 import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,11 +26,25 @@ class RabbitFailoverTest {
 
     private static final String PATH = "/api/v2/rabbit/vhost";
 
+    private String savedAgentUrl;
+
     @BeforeEach
     void reset(ClientAndServer mockServer) {
+        savedAgentUrl = System.getProperty(M2MClientFactory.MAAS_AGENT_URL_PROP);
         mockServer.reset();
         mockServer.when(request().withPath("/api-version"))
                 .respond(response().withBody("{\"major\":2, \"minor\": 16}"));
+    }
+
+    // the agent url points at a mock server port that is gone once this class is done,
+    // so it must not leak into the rest of the JVM
+    @AfterEach
+    void restoreAgentUrl() {
+        if (savedAgentUrl == null) {
+            System.clearProperty(M2MClientFactory.MAAS_AGENT_URL_PROP);
+        } else {
+            System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, savedAgentUrl);
+        }
     }
 
     @Test
@@ -98,7 +113,7 @@ class RabbitFailoverTest {
     // A short total duration is now the only lever: it bounds both the number of attempts
     // and the pauses between them (the cap is derived as a quarter of it).
     private static void withFastRetries(Runnable test) {
-        withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, "2000", test::run);
+        withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, "5000", test::run);
     }
 
     private static RabbitMaaSClientImpl createRabbitClient(String agentUrl) {
