@@ -66,24 +66,26 @@ setting: the maximum total duration of the call.
 | Property | Default | Meaning |
 |---|---|---|
 | `maas.http.timeout` | `30` (seconds) | connect/read/write timeout of a **single** attempt |
-| `maas.http.retry.max-total-duration-ms` | `60000` | how long one call may take in **total**, retries included |
+| `maas.http.retry.max-total-duration-ms` | `60000` | how long one call may take in **total**, retries included. `0` disables retries |
 
 `max-total-duration-ms` is the only retry knob: the attempt count and the pauses
 between attempts are derived from it. The first pause is 1s, each next one
 doubles, and the cap is a quarter of the total — with the default 60s that gives
 1s, 2s, 4s, 8s, 15s, 15s, roughly six attempts when each attempt fails fast. If
-attempts hang instead, fewer of them fit into the same budget. Backoff carries
+attempts hang instead, fewer of them fit into the same duration. Backoff carries
 +/-20% jitter so concurrent callers do not retry in lockstep.
 
 Each attempt is additionally bounded by what is left of the total duration, so
-the worst case a caller sees is the budget itself rather than the budget plus one
-`maas.http.timeout`.
+the worst case a caller sees is that total duration itself rather than the total
+duration plus one `maas.http.timeout`.
 
 The 60s default is meant to outlast a database leader switchover while still
 failing fast enough to react to a real outage.
 
 The watch endpoint (`watch-create`) is excluded: it is a long poll with its own
-loop and its own backoff.
+loop and its own backoff. Its window is derived from `maas.http.timeout` and stays
+below it — maas-service holds the request open for the whole window and then answers
+with an empty list, which the client has to be able to receive.
 
 Which responses are retried:
 
