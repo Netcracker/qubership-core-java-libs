@@ -23,6 +23,9 @@
         <java.version>21</java.version>
         <mongodb.version>5.6.5</mongodb.version>
         <jacoco.plugin.version>0.8.15</jacoco.plugin.version>
+
+        <cloud-core.core-internal-boms.version>1.1.0-SNAPSHOT</cloud-core.core-internal-boms.version>
+
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../mongo-evolution-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -33,7 +36,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-internal-bom</artifactId>
-                <version>1.0.3</version>
+                <version>${cloud-core.core-internal-boms.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

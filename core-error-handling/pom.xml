@@ -32,6 +32,9 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <cloud-core.core-internal-boms.version>1.1.0-SNAPSHOT</cloud-core.core-internal-boms.version>
+
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../core-error-handling-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -42,7 +45,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-internal-bom</artifactId>
-                <version>1.0.3</version>
+                <version>${cloud-core.core-internal-boms.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

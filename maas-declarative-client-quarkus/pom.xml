@@ -36,6 +36,7 @@
         <cloud-core.maas-client-quarkus.version>11.0.8</cloud-core.maas-client-quarkus.version>
         <cloud-core.core-blue-green-state-monitor-quarkus.version>4.0.8</cloud-core.core-blue-green-state-monitor-quarkus.version>
         <cloud-core.core-utils.version>3.1.8</cloud-core.core-utils.version>
+        <cloud-core.core-internal-boms.version>1.1.0-SNAPSHOT</cloud-core.core-internal-boms.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../maas-kafka-quarkus-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
@@ -52,7 +53,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-quarkus-internal-bom</artifactId>
-                <version>1.0.3</version>
+                <version>${cloud-core.core-internal-boms.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

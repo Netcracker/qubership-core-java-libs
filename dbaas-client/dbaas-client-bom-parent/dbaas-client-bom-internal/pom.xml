@@ -21,9 +21,9 @@
         <jedis.client.version>7.0.0</jedis.client.version>
         <flyway.version>11.20.3</flyway.version>
         <shedlock.version>7.7.0</shedlock.version>
-        <qubership-spring-internal-bom.version>1.1.0-SNAPSHOT</qubership-spring-internal-bom.version>
 
         <!--Qubership's libs-->
+        <cloud-core.core-internal-boms.version>1.1.0-SNAPSHOT</cloud-core.core-internal-boms.version>
         <cloud-core.core-rest-libraries.version>7.3.6</cloud-core.core-rest-libraries.version>
         <cloud-core.core-restclient.version>7.1.8</cloud-core.core-restclient.version>
         <cloud-core.core-context-propagation.version>8.2.7</cloud-core.core-context-propagation.version>
@@ -35,7 +35,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-spring-internal-bom</artifactId>
-                <version>${qubership-spring-internal-bom.version}</version>
+                <version>${cloud-core.core-internal-boms.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
