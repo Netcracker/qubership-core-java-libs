@@ -49,9 +49,12 @@
         <jsonpath.version>2.10.0</jsonpath.version>
 
         <!-- Jakarta EE APIs -->
+        <!-- This block explicitly pins Jakarta EE API versions to override the ones brought in by the
+             Spring and Quarkus BOMs, keeping them aligned across both platforms inside the monorepo. -->
         <jakarta.ws.rs-api.version>4.0.0</jakarta.ws.rs-api.version>
         <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
+        <hibernate-validator.version>9.1.0.Final</hibernate-validator.version>
 
         <!-- Apache Commons -->
         <commons-lang3.version>3.20.0</commons-lang3.version>
@@ -84,7 +87,6 @@
         <logcaptor.version>2.12.6</logcaptor.version>
         <mockserver.version>5.15.0</mockserver.version>
         <mongo-java-server.version>1.47.0</mongo-java-server.version>
-        <hibernate-validator.version>8.0.3.Final</hibernate-validator.version>
         <docker-java.version>3.7.1</docker-java.version>
     </properties>
 
