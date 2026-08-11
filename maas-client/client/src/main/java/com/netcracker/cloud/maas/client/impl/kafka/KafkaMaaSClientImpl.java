@@ -23,6 +23,7 @@ import com.netcracker.cloud.maas.client.api.kafka.SearchCriteria;
 import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
 import com.netcracker.cloud.maas.client.api.kafka.TopicCreateOptions;
 import com.netcracker.cloud.maas.client.impl.ApiUrlProvider;
+import com.netcracker.cloud.maas.client.impl.Env;
 import com.netcracker.cloud.maas.client.impl.Lazy;
 import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicDeleteRequest;
 import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicDeleteResponse;
@@ -40,7 +41,20 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     private final Lazy<TenantManagerConnector> tenantManagerConnector;
     private final ApiUrlProvider apiProvider;
 
-    private final Duration watchTimeout = Duration.ofSeconds(60);
+    /**
+     * How long maas-service is asked to hold a watch poll open. It must stay below the client's
+     * own read timeout, otherwise every quiet poll dies locally instead of returning an empty
+     * 200 — which counts as a failure and walks the backoff up to its cap, delaying the next
+     * real topic-create event. maas-service caps the window at 120s in any case.
+     */
+    private final Duration watchTimeout = watchTimeout(Env.httpTimeout());
+
+    static Duration watchTimeout(Duration httpTimeout) {
+        Duration margin = Duration.ofSeconds(5);
+        Duration window = httpTimeout.minus(margin);
+        return window.compareTo(margin) < 0 ? margin : window;
+    }
+
     private static final Duration WATCH_RETRY_INTERVAL = Duration.ofSeconds(1);
     private static final Duration WATCH_MAX_RETRY_INTERVAL = Duration.ofSeconds(30);
     // there is no need in highly concurrent map/lists implementation, we will wait for network responses most of the time
@@ -217,15 +231,16 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
         return true;
     }
 
+    private static final TypeReference<List<TopicInfo>> TOPIC_LIST = new TypeReference<>() {
+    };
+
     /** One long poll for topics created since the previous call. */
     private List<TopicInfo> poll(String url) {
-        TypeReference<List<TopicInfo>> typeRef = new TypeReference<>() {
-        };
         return httpClient.request(url)
                 .post(topicCreateListeners.keySet())
                 .expect(200)
                 .noRetry()
-                .sendAndReceive(typeRef)
+                .sendAndReceive(TOPIC_LIST)
                 .orElse(Collections.emptyList());
     }
 

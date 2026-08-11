@@ -110,18 +110,39 @@ public class Env {
         );
     }
 
+    static final long DEFAULT_HTTP_RETRY_MAX_TOTAL_DURATION_MS = 60_000L;
+
     /**
      * How long one call to maas-agent may take in total, retries included. The only retry
      * knob: attempt count and backoff growth are derived from it. The 60s default outlasts
      * a database leader switchover.
+     * <p>
+     * Zero disables retries, leaving a single attempt. An unreadable or negative value falls
+     * back to the default with a warning, rather than failing the call that happens to be first.
      */
     public static Duration httpRetryMaxTotalDuration() {
         return Duration.ofMillis(
                 stringProperty(PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS)
-                        .map(Long::parseLong)
-                        .filter(ms -> ms > 0)
-                        .orElse(60_000L)
+                        .map(Env::parseRetryDurationMillis)
+                        .orElse(DEFAULT_HTTP_RETRY_MAX_TOTAL_DURATION_MS)
         );
+    }
+
+    private static long parseRetryDurationMillis(String raw) {
+        long millis;
+        try {
+            millis = Long.parseLong(raw.trim());
+        } catch (NumberFormatException e) {
+            log.warn("Ignoring '{}={}': not a number of milliseconds, using {}ms",
+                    PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, raw, DEFAULT_HTTP_RETRY_MAX_TOTAL_DURATION_MS);
+            return DEFAULT_HTTP_RETRY_MAX_TOTAL_DURATION_MS;
+        }
+        if (millis < 0) {
+            log.warn("Ignoring '{}={}': negative, using {}ms",
+                    PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, raw, DEFAULT_HTTP_RETRY_MAX_TOTAL_DURATION_MS);
+            return DEFAULT_HTTP_RETRY_MAX_TOTAL_DURATION_MS;
+        }
+        return millis;
     }
 
     public static String url2ws(String url) {

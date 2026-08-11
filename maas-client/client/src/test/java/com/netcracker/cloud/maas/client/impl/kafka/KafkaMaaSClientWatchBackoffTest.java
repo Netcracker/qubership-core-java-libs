@@ -1,9 +1,11 @@
 package com.netcracker.cloud.maas.client.impl.kafka;
 
 import static com.netcracker.cloud.maas.client.Utils.withProp;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
@@ -59,6 +61,21 @@ class KafkaMaaSClientWatchBackoffTest {
             client.close();
         }
         agentStub.stop(0);
+    }
+
+    /**
+     * maas-service holds a watch poll open for the whole requested window and then answers 200
+     * with an empty list. If the window outlasts the client read timeout, that answer never
+     * arrives: every quiet poll fails locally, walks the backoff up to its 30s cap and delays
+     * the next real topic-create event.
+     */
+    @Test
+    void watchWindowStaysBelowTheReadTimeout() {
+        assertTrue(KafkaMaaSClientImpl.watchTimeout(Duration.ofSeconds(30)).compareTo(Duration.ofSeconds(30)) < 0,
+                "the watch window must leave the read timeout room to receive the answer");
+        assertEquals(Duration.ofSeconds(25), KafkaMaaSClientImpl.watchTimeout(Duration.ofSeconds(30)));
+        // a read timeout too small to leave a margin still yields a usable window
+        assertEquals(Duration.ofSeconds(5), KafkaMaaSClientImpl.watchTimeout(Duration.ofSeconds(2)));
     }
 
     @Test

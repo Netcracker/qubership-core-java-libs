@@ -94,7 +94,7 @@ class HttpExecutionFailoverTest {
     /**
      * A 401 that keeps coming back means the supplier is handing out a token the server
      * rejects, and it has no way of being told so. Further attempts resend the same token,
-     * so the budget is deliberately tighter than the overall duration: a wrong secret must
+     * so retrying it is deliberately capped tighter than the total duration: a wrong secret must
      * fail fast instead of hanging for the whole minute.
      */
     @Test
@@ -125,7 +125,7 @@ class HttpExecutionFailoverTest {
     }
 
     /**
-     * The per-attempt budget is clamped to what is left of the total duration, so a hanging
+     * Each attempt is clamped to what is left of the total duration, so a hanging
      * agent cannot stretch the call past it.
      */
     @Test
@@ -146,11 +146,60 @@ class HttpExecutionFailoverTest {
                 long start = System.currentTimeMillis();
                 assertThrows(MaaSHttpException.class, () -> execution.sendAndReceive(String.class));
                 long elapsedMs = System.currentTimeMillis() - start;
-                assertTrue(elapsedMs < 20_000,
-                        "expected the call to be bounded by its 1000ms budget rather than by the "
+                assertTrue(elapsedMs < 5_000,
+                        "expected the call to be bounded by its 1000ms total duration rather than by the "
                                 + "one minute read timeout, took " + elapsedMs + "ms");
             });
         }
+    }
+
+    @Test
+    void testFailover_429Retried(ClientAndServer mockServer) {
+        mockServer.reset();
+        mockServer.when(request().withPath(PATH), Times.exactly(1))
+                .respond(response().withStatusCode(429).withBody("{\"error\":\"slow down\"}"));
+        mockServer.when(request().withPath(PATH), Times.unlimited())
+                .respond(response().withStatusCode(200).withBody("\"ok\""));
+
+        withFastRetries(() -> {
+            Optional<String> body = execution(mockServer).expect(200).sendAndReceive(String.class);
+            assertEquals("ok", body.orElseThrow());
+        });
+
+        mockServer.verify(request().withPath(PATH), VerificationTimes.exactly(2));
+    }
+
+    /** The watch long poll owns its own loop, so its execution must send the request exactly once. */
+    @Test
+    void testNoRetry_SendsExactlyOneAttempt(ClientAndServer mockServer) {
+        mockServer.reset();
+        mockServer.when(request().withPath(PATH), Times.unlimited())
+                .respond(response().withStatusCode(500).withBody("{\"error\":\"agent down\"}"));
+
+        withFastRetries(() -> {
+            HttpExecution execution = execution(mockServer).expect(200).noRetry();
+            assertThrows(MaaSHttpException.class, () -> execution.sendAndReceive(String.class));
+        });
+
+        mockServer.verify(request().withPath(PATH), VerificationTimes.exactly(1));
+    }
+
+    /**
+     * A zero total duration is the config-level off switch: one attempt, no retries, and no
+     * per-attempt clamp that would cut that attempt short.
+     */
+    @Test
+    void testZeroTotalDuration_SendsOneAttemptAndDoesNotRetry(ClientAndServer mockServer) {
+        mockServer.reset();
+        mockServer.when(request().withPath(PATH), Times.unlimited())
+                .respond(response().withStatusCode(500).withBody("{\"error\":\"agent down\"}"));
+
+        withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, "0", () -> {
+            HttpExecution execution = execution(mockServer).expect(200);
+            assertThrows(MaaSHttpException.class, () -> execution.sendAndReceive(String.class));
+        });
+
+        mockServer.verify(request().withPath(PATH), VerificationTimes.exactly(1));
     }
 
     @Test
@@ -210,19 +259,43 @@ class HttpExecutionFailoverTest {
         }
     }
 
+    /**
+     * Running out of time is the usual way a failover call ends, so the exception has to say what
+     * kept failing. Without the cause the trace shows only that a minute went by.
+     */
+    @Test
+    void testTotalDurationExceeded_CarriesTheLastFailureAsCause() throws IOException {
+        try (ServerSocket rudeServer = new ServerSocket(0)) {
+            startAcceptor(rudeServer, Socket::close);
+
+            withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, "1500", () -> {
+                Request.Builder req = new Request.Builder()
+                        .url("http://127.0.0.1:" + rudeServer.getLocalPort() + PATH)
+                        .get();
+                HttpExecution execution = new HttpExecution(new OkHttpClient(), req).expect(200);
+
+                MaaSHttpException e = assertThrows(MaaSHttpException.class,
+                        () -> execution.sendAndReceive(String.class));
+                assertTrue(e.getMessage().contains("ran out of its"), "unexpected message: " + e.getMessage());
+                assertInstanceOf(IOException.class, e.getCause(),
+                        "the transport failure that consumed the time must be the cause");
+            });
+        }
+    }
+
     // Delay must grow between attempts and saturate at a quarter of the total duration.
     @Test
     void testBackoffMillis_GrowsAndSaturatesAtTheCap() {
         long[] expectedFor60s = {1_000, 2_000, 4_000, 8_000, 15_000, 15_000};
         for (int attempt = 1; attempt <= expectedFor60s.length; attempt++) {
             assertEquals(expectedFor60s[attempt - 1], HttpExecution.cappedDelayMillis(attempt, 60_000),
-                    "attempt " + attempt + " of a 60s budget");
+                    "attempt " + attempt + " of a 60s total duration");
         }
 
         long[] expectedFor5s = {1_000, 1_250, 1_250};
         for (int attempt = 1; attempt <= expectedFor5s.length; attempt++) {
             assertEquals(expectedFor5s[attempt - 1], HttpExecution.cappedDelayMillis(attempt, 5_000),
-                    "attempt " + attempt + " of a 5s budget");
+                    "attempt " + attempt + " of a 5s total duration");
         }
     }
 

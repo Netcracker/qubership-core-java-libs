@@ -127,14 +127,16 @@ public class HttpExecution {
 
     /**
      * Recognises the 405 that maas-service returns for PostgreSQL error 25006, mapped from
-     * {@code DatabaseIsReadonlyError} / {@code DatabaseIsNotActiveError}. Matched on the
-     * reason text because the TMF code is the same for every maas-service error.
+     * {@code DatabaseIsReadonlyError} ("database is in read-only mode") and
+     * {@code DatabaseIsNotActiveError} ("database is not in 'active' mode"), both declared in
+     * maas-service and mapped to 405.
      */
     private static boolean isDatabaseUnavailable(String body) {
         if (body == null || !body.contains(MAAS_ERROR_CODE)) {
             return false;
         }
-        return body.contains("read-only") || body.contains("not in 'active' mode");
+        String reason = body.toLowerCase(Locale.ROOT);
+        return reason.contains("read-only") || reason.contains("read only") || reason.contains("active");
     }
 
     /**
@@ -146,7 +148,8 @@ public class HttpExecution {
 
     private int authAttempts = 0;
 
-    private boolean canRetryStatus(int code, String body, long deadlineNanos) {
+    /** Decides on a retry and counts the 401 attempt, so it is called once per response. */
+    private boolean takeRetrySlotFor(int code, String body, long deadlineNanos) {
         if (!isRetryableStatus(code, body) || !canRetry(deadlineNanos)) {
             return false;
         }
@@ -234,13 +237,14 @@ public class HttpExecution {
     /**
      * Client for one attempt, bounded by what is left of the total duration. Without it an
      * attempt starting just before the deadline still runs for the full
-     * {@code maas.http.timeout} and the call overruns its budget.
+     * {@code maas.http.timeout} and the call overruns its total duration.
      * <p>
      * Not applied under {@link #noRetry()}: there the caller owns the lifecycle, and the
-     * watch long poll legitimately runs as long as the budget itself.
+     * watch long poll legitimately runs as long as the total duration itself.
      */
     private OkHttpClient clientForAttempt(long remainingMs) {
-        if (!retryEnabled) {
+        if (!retryEnabled || remainingMs <= 0) {
+            // no retries, or a zero total duration: the single attempt keeps the client's own timeouts
             return httpClient;
         }
         // newBuilder shares the connection pool and dispatcher, so this is cheap
@@ -256,11 +260,16 @@ public class HttpExecution {
         long maxTotalMillis = Env.httpRetryMaxTotalDuration().toMillis();
         long deadlineNanos = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(maxTotalMillis);
         int attempt = 0;
+        authAttempts = 0;
+        // what made the previous attempt fail, so that giving up reports the cause and not
+        // just the elapsed time
+        Throwable lastFailure = null;
+        String lastStatusAndBody = null;
         while (true) {
             long remainingMs = remainingMillis(deadlineNanos);
-            if (remainingMs <= 0) {
-                throw new MaaSHttpException("Gave up on " + compiledReq + " after " + attempt
-                        + " retries: the " + maxTotalMillis + "ms budget is spent");
+            // the total duration bounds retries, not the call: the first attempt always goes out
+            if (attempt > 0 && remainingMs <= 0) {
+                throw totalDurationExceeded(compiledReq, attempt, maxTotalMillis, lastStatusAndBody, lastFailure);
             }
 
             try (Response response = clientForAttempt(remainingMs).newCall(compiledReq).execute()) {
@@ -276,8 +285,10 @@ public class HttpExecution {
                     // read once, without throwing: a body that cannot be read must not turn a
                     // permanent status into a retry
                     String errorBody = errorBodyOrPlaceholder(response);
-                    if (canRetryStatus(response.code(), errorBody, deadlineNanos)) {
+                    if (takeRetrySlotFor(response.code(), errorBody, deadlineNanos)) {
                         attempt++;
+                        lastFailure = null;
+                        lastStatusAndBody = "status " + response.code() + ", body: " + errorBody;
                         log.warn("Retryable status code {} for request: {}. Retry {}, within {}ms total",
                                 response.code(), compiledReq, attempt, maxTotalMillis);
                         sleepBackoff(attempt, maxTotalMillis, deadlineNanos);
@@ -297,10 +308,28 @@ public class HttpExecution {
                     throw new MaaSHttpException("Error executing " + compiledReq + giveUpSuffix(attempt), e);
                 }
                 attempt++;
+                lastFailure = e;
+                lastStatusAndBody = null;
                 log.warn("Error execute http request: {}, Retry {}, within {}ms total",
                         e.getMessage(), attempt, maxTotalMillis);
                 sleepBackoff(attempt, maxTotalMillis, deadlineNanos);
             }
         }
+    }
+
+    /**
+     * The usual terminal failure: the backoff is clamped to the time left, so a call that keeps
+     * failing lands exactly on the deadline. Carries what the last attempt saw, otherwise the
+     * trace says only that a minute went by.
+     */
+    private static MaaSHttpException totalDurationExceeded(Request req, int attempt, long maxTotalMillis,
+                                               String lastStatusAndBody, Throwable lastFailure) {
+        String message = "Gave up on " + req + " after " + attempt + " retries: ran out of its "
+                + maxTotalMillis + "ms total duration."
+                + "\n\tLast attempt: " + (lastStatusAndBody != null ? lastStatusAndBody
+                : lastFailure != null ? lastFailure.toString() : "unknown");
+        return lastFailure != null
+                ? new MaaSHttpException(message, lastFailure)
+                : new MaaSHttpException(message);
     }
 }
