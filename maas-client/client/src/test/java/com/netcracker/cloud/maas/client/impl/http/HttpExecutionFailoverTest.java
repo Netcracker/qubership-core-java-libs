@@ -6,6 +6,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.junit.jupiter.MockServerExtension;
 import org.mockserver.matchers.Times;
@@ -22,6 +25,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import static com.netcracker.cloud.maas.client.Utils.withProp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
@@ -109,33 +114,29 @@ class HttpExecutionFailoverTest {
                 VerificationTimes.exactly(HttpExecution.MAX_AUTH_RETRIES + 1));
     }
 
-    /**
-     * A 405 without a maas-service error envelope is an ordinary "method not allowed" —
-     * a route or an ingress rejecting the request — and must fail fast.
-     */
-    @Test
-    void testFailover_405WithoutMaasEnvelopeNotRetried(ClientAndServer mockServer) {
-        mockServer.reset();
-        mockServer.when(request().withPath(PATH), Times.unlimited())
-                .respond(response().withStatusCode(405).withBody("Method Not Allowed"));
-
-        withFastRetries(() -> assertMessageContains("405", execution(mockServer).expect(200)));
-
-        mockServer.verify(request().withPath(PATH), VerificationTimes.exactly(1));
+    /** Responses that are permanent, so the call must fail on its first attempt. */
+    static Stream<Arguments> permanentResponses() {
+        return Stream.of(
+                arguments("a plain client error", 400, "{\"error\":\"bad request\"}"),
+                // 405 is transient only for a read-only database; a route removed on the server
+                // or an ingress rejecting the method is not
+                arguments("405 without a maas-service envelope", 405, "Method Not Allowed"),
+                // every maas-service error carries MAAS-0600, so the envelope alone means nothing:
+                // the reason has to name the read-only database, not merely contain its words
+                arguments("405 whose maas-service reason is unrelated", 405,
+                        "{\"code\":\"MAAS-0600\",\"reason\":\"topic 'active-orders' is inactive\"}")
+        );
     }
 
-    /**
-     * The envelope alone does not make a 405 transient: every maas-service error carries the same
-     * code, so the reason has to name the read-only database and not merely contain its words.
-     */
-    @Test
-    void testFailover_405WithUnrelatedMaasReasonNotRetried(ClientAndServer mockServer) {
+    @ParameterizedTest(name = "{0} is not retried")
+    @MethodSource("permanentResponses")
+    void testFailover_PermanentResponseNotRetried(String description, int status, String body,
+                                                  ClientAndServer mockServer) {
         mockServer.reset();
         mockServer.when(request().withPath(PATH), Times.unlimited())
-                .respond(response().withStatusCode(405)
-                        .withBody("{\"code\":\"MAAS-0600\",\"reason\":\"topic 'active-orders' is inactive\"}"));
+                .respond(response().withStatusCode(status).withBody(body));
 
-        withFastRetries(() -> assertMessageContains("405", execution(mockServer).expect(200)));
+        withFastRetries(() -> assertMessageContains(String.valueOf(status), execution(mockServer).expect(200)));
 
         mockServer.verify(request().withPath(PATH), VerificationTimes.exactly(1));
     }
@@ -214,17 +215,6 @@ class HttpExecutionFailoverTest {
             HttpExecution execution = execution(mockServer).expect(200);
             assertThrows(MaaSHttpException.class, () -> execution.sendAndReceive(String.class));
         });
-
-        mockServer.verify(request().withPath(PATH), VerificationTimes.exactly(1));
-    }
-
-    @Test
-    void testFailover_400NotRetried(ClientAndServer mockServer) {
-        mockServer.reset();
-        mockServer.when(request().withPath(PATH), Times.unlimited())
-                .respond(response().withStatusCode(400).withBody("{\"error\":\"bad request\"}"));
-
-        withFastRetries(() -> assertMessageContains("400", execution(mockServer).expect(200)));
 
         mockServer.verify(request().withPath(PATH), VerificationTimes.exactly(1));
     }
