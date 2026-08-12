@@ -1,4 +1,4 @@
-package com.netcracker.cloud.security.core.utils.k8s.localdev;
+package com.netcracker.cloud.security.core.utils.k8s.localdev.impl;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -22,9 +22,11 @@ class KubeConfigHttpClientFactoryTest {
     @TempDir
     Path tempDir;
 
+    private final KubeConfigHttpClientFactory factory = new KubeConfigHttpClientFactory();
+
     @Test
     void createInsecureForLocalDevBuildsHttpClient() {
-        HttpClient client = KubeConfigHttpClientFactory.createInsecureForLocalDev();
+        HttpClient client = factory.createInsecureForLocalDev();
         assertNotNull(client);
     }
 
@@ -35,7 +37,7 @@ class KubeConfigHttpClientFactoryTest {
                 .userToken("token")
                 .insecureSkipTlsVerify(true)
                 .build();
-        assertNotNull(KubeConfigHttpClientFactory.create(credentials));
+        assertNotNull(factory.create(credentials));
     }
 
     @Test
@@ -45,7 +47,7 @@ class KubeConfigHttpClientFactoryTest {
                 .userToken("token")
                 .certificateAuthorityData(new byte[0])
                 .build();
-        assertNotNull(KubeConfigHttpClientFactory.create(credentials));
+        assertNotNull(factory.create(credentials));
     }
 
     @Test
@@ -55,7 +57,7 @@ class KubeConfigHttpClientFactoryTest {
                 .userToken("token")
                 .certificateAuthorityData("not-a-certificate".getBytes(StandardCharsets.UTF_8))
                 .build();
-        assertThrows(IllegalStateException.class, () -> KubeConfigHttpClientFactory.create(credentials));
+        assertThrows(IllegalStateException.class, () -> factory.create(credentials));
     }
 
     @Test
@@ -64,7 +66,7 @@ class KubeConfigHttpClientFactoryTest {
         server.start();
         try {
             server.enqueue(new MockResponse().setBody("ok"));
-            HttpClient client = KubeConfigHttpClientFactory.createInsecureForLocalDev();
+            HttpClient client = factory.createInsecureForLocalDev();
             HttpRequest request = HttpRequest.newBuilder(server.url("/").uri()).GET().build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             assertEquals(200, response.statusCode());
@@ -95,7 +97,7 @@ class KubeConfigHttpClientFactoryTest {
                 .userToken("token")
                 .certificateAuthorityData(caPem)
                 .build();
-        assertNotNull(KubeConfigHttpClientFactory.create(credentials));
+        assertNotNull(factory.create(credentials));
     }
 
     private static void runKeytool(String[] args) throws Exception {

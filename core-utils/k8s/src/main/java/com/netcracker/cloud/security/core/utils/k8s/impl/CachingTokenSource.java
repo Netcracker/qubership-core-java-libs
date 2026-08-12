@@ -2,8 +2,6 @@ package com.netcracker.cloud.security.core.utils.k8s.impl;
 
 import com.netcracker.cloud.security.core.utils.k8s.Priority;
 import com.netcracker.cloud.security.core.utils.k8s.TokenSource;
-import com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevMode;
-import com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevTokenSource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,7 +31,6 @@ public class CachingTokenSource implements TokenSource {
     private static final Pattern TOKEN_PATH_MATCHER = Pattern.compile("([^./\\\\]+)[/\\\\]token");
 
     private final CacheRefresher<HashMap<String, Try<String>>> cacheRefresher;
-    private volatile LocalDevTokenSource localDevTokenSource;
 
     // default constructor for service-loader
     public CachingTokenSource() {
@@ -61,30 +58,14 @@ public class CachingTokenSource implements TokenSource {
      */
     @Override
     public String getToken(String audience) {
-        if (LocalDevMode.isEnabled()) {
-            return localDevTokenSource().getToken(audience);
-        }
         return cacheRefresher.getCache().getOrDefault(
                 audience,
                 Try.failure(new IllegalArgumentException("Unknown token audience: " + audience))
         ).getOrThrow();
     }
 
-    private LocalDevTokenSource localDevTokenSource() {
-        LocalDevTokenSource existing = localDevTokenSource;
-        if (existing != null) {
-            return existing;
-        }
-        synchronized (this) {
-            if (localDevTokenSource == null) {
-                localDevTokenSource = new LocalDevTokenSource();
-            }
-            return localDevTokenSource;
-        }
-    }
-
-    private HashMap<String,Try<String>> updateCache(final HashMap<String,Try<String>> cache, Path storageRoot) {
-        final HashMap<String,Try<String>> updatedCache = (cache == null) ? new HashMap<>() : cache;
+    private HashMap<String, Try<String>> updateCache(final HashMap<String, Try<String>> cache, Path storageRoot) {
+        final HashMap<String, Try<String>> updatedCache = (cache == null) ? new HashMap<>() : cache;
 
         try (var stream = Files.walk(storageRoot, FileVisitOption.FOLLOW_LINKS)) {
             updatedCache.clear(); // avoiding additional load to GC during update fairly stable buckets structure
@@ -94,7 +75,7 @@ public class CachingTokenSource implements TokenSource {
                     .map(TOKEN_PATH_MATCHER::matcher)
                     .filter(Matcher::matches)
                     .map(m -> m.group(1))
-                    .forEach(audience ->  {
+                    .forEach(audience -> {
                         log.debug("Update cache for audience: {}", audience);
                         var tokenPath = storageRoot.resolve(audience).resolve("token");
                         var token = Try.of(() -> Files.readString(tokenPath));
@@ -109,8 +90,6 @@ public class CachingTokenSource implements TokenSource {
 
     @Override
     public void close() {
-        if (localDevTokenSource != null) {
-            localDevTokenSource.close();
-        }
+        // nothing to do
     }
 }

@@ -1,12 +1,13 @@
-package com.netcracker.cloud.security.core.utils.k8s.localdev;
+package com.netcracker.cloud.security.core.utils.k8s.localdev.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import java.net.http.HttpResponse;
 
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.MAX_ERROR_BODY_LENGTH;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.MAX_ERROR_BODY_LENGTH;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -35,9 +36,9 @@ class LocalDevUtilsTest {
 
     @Test
     void firstNonBlankReturnsFirstNonBlankValue() {
-        assertEquals("first", LocalDevUtils.firstNonBlank("first", "second"));
-        assertEquals("second", LocalDevUtils.firstNonBlank(null, "second"));
-        assertNull(LocalDevUtils.firstNonBlank(null, null));
+        assertEquals("first", StringUtils.firstNonBlank("first", "second"));
+        assertEquals("second", StringUtils.firstNonBlank(null, "second"));
+        assertNull(StringUtils.firstNonBlank(null, null));
     }
 
     @Test

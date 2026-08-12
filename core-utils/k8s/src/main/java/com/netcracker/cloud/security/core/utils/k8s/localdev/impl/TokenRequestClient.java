@@ -1,4 +1,4 @@
-package com.netcracker.cloud.security.core.utils.k8s.localdev;
+package com.netcracker.cloud.security.core.utils.k8s.localdev.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.VisibleForTesting;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -15,27 +14,23 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Instant;
 
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.ACCEPT_HEADER;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.APPLICATION_JSON;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.AUTHORIZATION_HEADER;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.BEARER_PREFIX;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.CONTENT_TYPE_HEADER;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.HTTP_REQUEST_TIMEOUT;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.K8S_TOKEN_STATUS_EXPIRATION;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.K8S_TOKEN_STATUS_TOKEN;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.TOKEN_REQUEST_API_VERSION;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.TOKEN_REQUEST_EXPIRATION_SECONDS;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.TOKEN_REQUEST_KIND;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.TOKEN_REQUEST_SPEC_AUDIENCES;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.TOKEN_REQUEST_SPEC_EXPIRATION_SECONDS;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.KubeConfigFields.STATUS;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.ACCEPT_HEADER;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.APPLICATION_JSON;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.AUTHORIZATION_HEADER;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.BEARER_PREFIX;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.CONTENT_TYPE_HEADER;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.HTTP_REQUEST_TIMEOUT;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.K8S_TOKEN_STATUS_EXPIRATION;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.K8S_TOKEN_STATUS_TOKEN;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.KubeConfigFields.STATUS;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.TOKEN_REQUEST_API_VERSION;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.TOKEN_REQUEST_EXPIRATION_SECONDS;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.TOKEN_REQUEST_KIND;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.TOKEN_REQUEST_SPEC_AUDIENCES;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.TOKEN_REQUEST_SPEC_EXPIRATION_SECONDS;
 
 @Slf4j
 public class TokenRequestClient {
-
-    /** @see LocalDevConstants#TOKEN_REQUEST_EXPIRATION_SECONDS */
-    public static final long DEFAULT_EXPIRATION_SECONDS = LocalDevConstants.TOKEN_REQUEST_EXPIRATION_SECONDS;
-
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final HttpClient httpClient;
@@ -43,10 +38,9 @@ public class TokenRequestClient {
     private final String userToken;
 
     public TokenRequestClient(KubeConfigCredentials credentials) {
-        this(credentials.getServerUrl(), credentials.getUserToken(), KubeConfigHttpClientFactory.create(credentials));
+        this(credentials.getServerUrl(), credentials.getUserToken(), new KubeConfigHttpClientFactory().create(credentials));
     }
 
-    @VisibleForTesting
     TokenRequestClient(String serverUrl, String userToken, HttpClient httpClient) {
         this.serverUrl = StringUtils.stripEnd(serverUrl, "/");
         this.userToken = userToken;
@@ -90,9 +84,9 @@ public class TokenRequestClient {
         }
     }
 
-    private static void handleTokenRequestResponse(HttpResponse<String> response,
-                                                   String serviceAccountName,
-                                                   String namespace) {
+    private void handleTokenRequestResponse(HttpResponse<String> response,
+                                            String serviceAccountName,
+                                            String namespace) {
         int status = response.statusCode();
         if (status == 401 || status == 403) {
             throw new IllegalStateException(
@@ -109,7 +103,7 @@ public class TokenRequestClient {
         }
     }
 
-    private static String buildRequestBody(String audience) {
+    private String buildRequestBody(String audience) {
         ObjectNode root = MAPPER.createObjectNode();
         root.put("apiVersion", TOKEN_REQUEST_API_VERSION);
         root.put("kind", TOKEN_REQUEST_KIND);
@@ -124,7 +118,7 @@ public class TokenRequestClient {
         }
     }
 
-    private static Instant parseExpiration(String expirationTimestamp) {
+    private Instant parseExpiration(String expirationTimestamp) {
         if (StringUtils.isNotBlank(expirationTimestamp)) {
             return Instant.parse(expirationTimestamp);
         }

@@ -1,10 +1,8 @@
-package com.netcracker.cloud.security.core.utils.k8s.localdev;
+package com.netcracker.cloud.security.core.utils.k8s.localdev.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -16,21 +14,49 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.KubeConfigFields;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevUtils.firstNonBlank;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevUtils.getTextField;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.KubeConfigFields;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevUtils.getTextField;
+import static org.apache.commons.lang3.StringUtils.firstNonBlank;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class KubeConfigLoader {
+class KubeConfigLoader {
 
     private static final ObjectMapper YAML_MAPPER = new ObjectMapper(new YAMLFactory());
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
     private static final long EXEC_TIMEOUT_SECONDS = 30;
 
-    public static KubeConfigCredentials load() {
+    private final OidcAuthProviderTokenRefresher oidcAuthProviderTokenRefresher;
+    private final Supplier<String> kubeConfigEnvSupplier;
+    private final Supplier<String> userHomeSupplier;
+
+    KubeConfigLoader() {
+        this(new OidcAuthProviderTokenRefresher());
+    }
+
+    KubeConfigLoader(OidcAuthProviderTokenRefresher oidcAuthProviderTokenRefresher) {
+        this(
+                oidcAuthProviderTokenRefresher,
+                () -> System.getenv("KUBECONFIG"),
+                () -> System.getProperty("user.home"));
+    }
+
+    KubeConfigLoader(Supplier<String> kubeConfigEnvSupplier, Supplier<String> userHomeSupplier) {
+        this(new OidcAuthProviderTokenRefresher(), kubeConfigEnvSupplier, userHomeSupplier);
+    }
+
+    KubeConfigLoader(OidcAuthProviderTokenRefresher oidcAuthProviderTokenRefresher,
+                     Supplier<String> kubeConfigEnvSupplier,
+                     Supplier<String> userHomeSupplier) {
+        this.oidcAuthProviderTokenRefresher = Objects.requireNonNull(oidcAuthProviderTokenRefresher, "oidcAuthProviderTokenRefresher");
+        this.kubeConfigEnvSupplier = Objects.requireNonNull(kubeConfigEnvSupplier, "kubeConfigEnvSupplier");
+        this.userHomeSupplier = Objects.requireNonNull(userHomeSupplier, "userHomeSupplier");
+    }
+
+    KubeConfigCredentials load() {
         Path kubeConfigPath = resolveKubeConfigPath();
         if (!Files.isRegularFile(kubeConfigPath)) {
             throw new IllegalStateException("Kubeconfig not found at " + kubeConfigPath
@@ -73,17 +99,17 @@ public final class KubeConfigLoader {
         }
     }
 
-    static Path resolveKubeConfigPath() {
-        String kubeConfig = System.getenv("KUBECONFIG");
+    Path resolveKubeConfigPath() {
+        String kubeConfig = kubeConfigEnvSupplier.get();
         if (StringUtils.isNotBlank(kubeConfig)) {
             // KUBECONFIG may be a list; use the first entry
             String first = kubeConfig.split(java.io.File.pathSeparator)[0].trim();
             return Path.of(first);
         }
-        return Path.of(System.getProperty("user.home"), ".kube", "config");
+        return Path.of(userHomeSupplier.get(), ".kube", "config");
     }
 
-    private static String resolveUserToken(JsonNode user) {
+    private String resolveUserToken(JsonNode user) {
         String token = getTextField(user, KubeConfigFields.TOKEN);
         if (StringUtils.isNotBlank(token)) {
             return token;
@@ -107,7 +133,7 @@ public final class KubeConfigLoader {
                         + "Local-dev TokenRequest supports static token, OIDC auth-provider refresh, and exec auth.");
     }
 
-    private static String resolveAuthProviderToken(JsonNode authProvider) {
+    private String resolveAuthProviderToken(JsonNode authProvider) {
         if (authProvider.isMissingNode() || authProvider.isNull()) {
             return null;
         }
@@ -117,14 +143,14 @@ public final class KubeConfigLoader {
         }
         String providerName = getTextField(authProvider, KubeConfigFields.NAME);
         if (LocalDevConstants.OIDC_AUTH_PROVIDER_NAME.equalsIgnoreCase(providerName)) {
-            return OidcAuthProviderTokenRefresher.resolveToken(config);
+            return oidcAuthProviderTokenRefresher.resolveToken(config);
         }
         return firstNonBlank(
                 getTextField(config, KubeConfigFields.ID_TOKEN),
                 getTextField(config, KubeConfigFields.ACCESS_TOKEN));
     }
 
-    private static String runExecCredential(JsonNode exec) {
+    private String runExecCredential(JsonNode exec) {
         String command = requireExecCommand(exec);
         List<String> commandLine = buildExecCommandLine(exec, command);
         log.debug("Resolving kubeconfig credentials via exec: {}", commandLine);
@@ -139,7 +165,7 @@ public final class KubeConfigLoader {
         }
     }
 
-    private static String requireExecCommand(JsonNode exec) {
+    private String requireExecCommand(JsonNode exec) {
         String command = getTextField(exec, KubeConfigFields.COMMAND);
         if (StringUtils.isBlank(command)) {
             throw new IllegalStateException("Kubeconfig exec.command is empty");
@@ -147,7 +173,7 @@ public final class KubeConfigLoader {
         return command;
     }
 
-    private static List<String> buildExecCommandLine(JsonNode exec, String command) {
+    private List<String> buildExecCommandLine(JsonNode exec, String command) {
         List<String> commandLine = new ArrayList<>();
         commandLine.add(command);
         JsonNode args = exec.path(KubeConfigFields.ARGS);
@@ -159,7 +185,7 @@ public final class KubeConfigLoader {
         return commandLine;
     }
 
-    private static void applyExecEnvironment(ProcessBuilder processBuilder, JsonNode exec) {
+    private void applyExecEnvironment(ProcessBuilder processBuilder, JsonNode exec) {
         JsonNode env = exec.path(KubeConfigFields.ENV);
         if (!env.isArray()) {
             return;
@@ -173,7 +199,7 @@ public final class KubeConfigLoader {
         }
     }
 
-    private static String runExecProcess(JsonNode exec, List<String> commandLine, String command)
+    private String runExecProcess(JsonNode exec, List<String> commandLine, String command)
             throws IOException, InterruptedException {
         ProcessBuilder processBuilder = new ProcessBuilder(commandLine);
         processBuilder.redirectErrorStream(true);
@@ -191,7 +217,7 @@ public final class KubeConfigLoader {
         return output;
     }
 
-    private static String parseExecToken(String output) throws IOException {
+    private String parseExecToken(String output) throws IOException {
         JsonNode credential = JSON_MAPPER.readTree(output);
         String token = getTextField(credential.path(KubeConfigFields.STATUS), KubeConfigFields.TOKEN);
         if (StringUtils.isBlank(token)) {
@@ -200,7 +226,7 @@ public final class KubeConfigLoader {
         return token;
     }
 
-    private static JsonNode findKubeConfigEntryByName(JsonNode array, String name) {
+    private JsonNode findKubeConfigEntryByName(JsonNode array, String name) {
         if (array != null && array.isArray()) {
             for (Iterator<JsonNode> it = array.elements(); it.hasNext(); ) {
                 JsonNode item = it.next();
@@ -212,7 +238,7 @@ public final class KubeConfigLoader {
         throw new IllegalStateException("Kubeconfig entry not found: " + name);
     }
 
-    private static byte[] decodeOptionalBase64(String value) {
+    private byte[] decodeOptionalBase64(String value) {
         if (StringUtils.isBlank(value)) {
             return new byte[0];
         }

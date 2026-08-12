@@ -1,4 +1,4 @@
-package com.netcracker.cloud.security.core.utils.k8s.localdev;
+package com.netcracker.cloud.security.core.utils.k8s.localdev.impl;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -16,14 +16,11 @@ import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.Collection;
 
-final class KubeConfigHttpClientFactory {
+class KubeConfigHttpClientFactory {
 
     private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(30);
 
-    private KubeConfigHttpClientFactory() {
-    }
-
-    static HttpClient create(KubeConfigCredentials credentials) {
+    HttpClient create(KubeConfigCredentials credentials) {
         return HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(CONNECT_TIMEOUT)
@@ -31,7 +28,7 @@ final class KubeConfigHttpClientFactory {
                 .build();
     }
 
-    static HttpClient createInsecureForLocalDev() {
+    HttpClient createInsecureForLocalDev() {
         return HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(CONNECT_TIMEOUT)
@@ -39,7 +36,7 @@ final class KubeConfigHttpClientFactory {
                 .build();
     }
 
-    private static SSLContext createInsecureSslContext() {
+    private SSLContext createInsecureSslContext() {
         try {
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, new TrustManager[]{new InsecureTrustManager()}, new SecureRandom());
@@ -49,7 +46,7 @@ final class KubeConfigHttpClientFactory {
         }
     }
 
-    private static SSLContext createSslContext(KubeConfigCredentials credentials) {
+    private SSLContext createSslContext(KubeConfigCredentials credentials) {
         try {
             if (credentials.isInsecureSkipTlsVerify()) {
                 TrustManager[] trustAll = new TrustManager[]{new InsecureTrustManager()};

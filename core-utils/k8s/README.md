@@ -133,7 +133,7 @@ On HTTP 401/403 from TokenRequest the error message explains missing RBAC on `se
 For inbound validation, consumers rewrite the JWKS URL to `LocalDevKubernetesOidc.jwksUrl()`
 (kube API + `/openid/v1/jwks`). Discovery and JWKS on the API server are public (no Bearer).
 When a projected SA token is missing, `resolveIssuerClaimFromDiscovery()` reads the issuer from
-kube OIDC discovery. TokenRequest and other protected API calls still use `userToken()`.
+kube OIDC discovery.
 
 ### Custom TokenSource
 

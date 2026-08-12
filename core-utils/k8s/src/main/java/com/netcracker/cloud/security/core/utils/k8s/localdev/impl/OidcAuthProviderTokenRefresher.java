@@ -1,9 +1,8 @@
-package com.netcracker.cloud.security.core.utils.k8s.localdev;
+package com.netcracker.cloud.security.core.utils.k8s.localdev.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevMode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,43 +17,51 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Objects;
 
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.ACCEPT_HEADER;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.APPLICATION_FORM_URLENCODED;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.APPLICATION_JSON;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.CONTENT_TYPE_HEADER;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.OIDC_DISCOVERY_TOKEN_ENDPOINT;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.OIDC_FORM_CLIENT_ID;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.OIDC_FORM_CLIENT_SECRET;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.OIDC_FORM_GRANT_TYPE;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.OIDC_GRANT_REFRESH_TOKEN;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.OIDC_TOKEN_ACCESS_TOKEN;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.OIDC_TOKEN_ID_TOKEN;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.WELL_KNOWN_OPENID_CONFIGURATION_PATH;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.KubeConfigFields.CLIENT_ID;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.KubeConfigFields.CLIENT_SECRET;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.KubeConfigFields.IDP_ISSUER_URL;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.KubeConfigFields.ID_TOKEN;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.KubeConfigFields.ACCESS_TOKEN;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.HTTP_REQUEST_TIMEOUT;
-import static com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevConstants.KubeConfigFields.REFRESH_TOKEN;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.ACCEPT_HEADER;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.APPLICATION_FORM_URLENCODED;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.APPLICATION_JSON;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.CONTENT_TYPE_HEADER;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.HTTP_REQUEST_TIMEOUT;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.KubeConfigFields.ACCESS_TOKEN;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.KubeConfigFields.CLIENT_ID;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.KubeConfigFields.CLIENT_SECRET;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.KubeConfigFields.IDP_ISSUER_URL;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.KubeConfigFields.ID_TOKEN;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.KubeConfigFields.REFRESH_TOKEN;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.OIDC_DISCOVERY_TOKEN_ENDPOINT;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.OIDC_FORM_CLIENT_ID;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.OIDC_FORM_CLIENT_SECRET;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.OIDC_FORM_GRANT_TYPE;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.OIDC_GRANT_REFRESH_TOKEN;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.OIDC_TOKEN_ACCESS_TOKEN;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.OIDC_TOKEN_ID_TOKEN;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.WELL_KNOWN_OPENID_CONFIGURATION_PATH;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class OidcAuthProviderTokenRefresher {
+class OidcAuthProviderTokenRefresher {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final Duration EXPIRY_SKEW = Duration.ofSeconds(60);
 
-    static String resolveToken(JsonNode authProviderConfig) {
+    private final KubeConfigHttpClientFactory httpClientFactory;
+
+    OidcAuthProviderTokenRefresher() {
+        this(new KubeConfigHttpClientFactory());
+    }
+
+    OidcAuthProviderTokenRefresher(KubeConfigHttpClientFactory httpClientFactory) {
+        this.httpClientFactory = httpClientFactory;
+    }
+
+    String resolveToken(JsonNode authProviderConfig) {
         return resolveToken(authProviderConfig, createHttpClient());
     }
 
-    // visible for tests
-    static String resolveToken(JsonNode authProviderConfig, HttpClient httpClient) {
+    String resolveToken(JsonNode authProviderConfig, HttpClient httpClient) {
         Objects.requireNonNull(authProviderConfig, "authProviderConfig");
         Objects.requireNonNull(httpClient, "httpClient");
 
-        String cachedIdToken = LocalDevUtils.firstNonBlank(
+        String cachedIdToken = StringUtils.firstNonBlank(
                 LocalDevUtils.getTextField(authProviderConfig, ID_TOKEN),
                 LocalDevUtils.getTextField(authProviderConfig, ACCESS_TOKEN));
         if (StringUtils.isNotBlank(cachedIdToken) && !isExpired(cachedIdToken)) {
@@ -90,9 +97,9 @@ final class OidcAuthProviderTokenRefresher {
         }
     }
 
-    private static HttpClient createHttpClient() {
+    private HttpClient createHttpClient() {
         if (LocalDevMode.isEnabled()) {
-            return KubeConfigHttpClientFactory.createInsecureForLocalDev();
+            return httpClientFactory.createInsecureForLocalDev();
         }
         return HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
@@ -100,7 +107,7 @@ final class OidcAuthProviderTokenRefresher {
                 .build();
     }
 
-    private static String discoverTokenEndpoint(HttpClient httpClient, String issuerUrl) {
+    private String discoverTokenEndpoint(HttpClient httpClient, String issuerUrl) {
         String discoveryUrl = StringUtils.stripEnd(issuerUrl, "/") + WELL_KNOWN_OPENID_CONFIGURATION_PATH;
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -128,11 +135,11 @@ final class OidcAuthProviderTokenRefresher {
         }
     }
 
-    private static String refreshIdToken(HttpClient httpClient,
-                                         String tokenEndpoint,
-                                         String clientId,
-                                         String clientSecret,
-                                         String refreshToken) {
+    private String refreshIdToken(HttpClient httpClient,
+                                   String tokenEndpoint,
+                                   String clientId,
+                                   String clientSecret,
+                                   String refreshToken) {
         try {
             StringBuilder form = new StringBuilder();
             appendForm(form, OIDC_FORM_GRANT_TYPE, OIDC_GRANT_REFRESH_TOKEN);
@@ -153,7 +160,7 @@ final class OidcAuthProviderTokenRefresher {
             LocalDevUtils.ensureSuccessful(response, "OIDC refresh_token grant for " + tokenEndpoint);
 
             JsonNode body = MAPPER.readTree(response.body());
-            String token = LocalDevUtils.firstNonBlank(
+            String token = StringUtils.firstNonBlank(
                     LocalDevUtils.getTextField(body, OIDC_TOKEN_ID_TOKEN),
                     LocalDevUtils.getTextField(body, OIDC_TOKEN_ACCESS_TOKEN));
             if (StringUtils.isBlank(token)) {
@@ -175,7 +182,7 @@ final class OidcAuthProviderTokenRefresher {
      * Checks JWT {@code exp} by decoding the payload segment only (no signature verification).
      * jose4j is on the classpath but a minimal parse avoids full JWT validation for a kubeconfig cache hint.
      */
-    private static boolean isExpired(String jwt) {
+    private boolean isExpired(String jwt) {
         try {
             String[] parts = jwt.split("\\.");
             if (parts.length < 2) {
@@ -195,7 +202,7 @@ final class OidcAuthProviderTokenRefresher {
         }
     }
 
-    private static void appendForm(StringBuilder form, String key, String value) {
+    private void appendForm(StringBuilder form, String key, String value) {
         if (!form.isEmpty()) {
             form.append('&');
         }

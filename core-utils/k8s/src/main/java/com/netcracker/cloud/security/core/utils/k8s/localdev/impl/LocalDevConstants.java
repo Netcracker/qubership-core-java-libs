@@ -1,4 +1,4 @@
-package com.netcracker.cloud.security.core.utils.k8s.localdev;
+package com.netcracker.cloud.security.core.utils.k8s.localdev.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -13,6 +13,10 @@ import java.time.Duration;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class LocalDevConstants {
+
+    static final String MICROSERVICE_NAME_PROPERTY = "cloud.microservice.name";
+    static final String MICROSERVICE_NAME_ENV = "CLOUD_MICROSERVICE_NAME";
+    static final String NAMESPACE_ENV = "CLOUD_NAMESPACE";
 
     static final String APPLICATION_JSON = "application/json";
     static final String APPLICATION_FORM_URLENCODED = "application/x-www-form-urlencoded";

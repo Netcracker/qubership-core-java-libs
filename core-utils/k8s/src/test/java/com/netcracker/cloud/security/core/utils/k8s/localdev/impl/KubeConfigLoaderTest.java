@@ -1,11 +1,7 @@
-package com.netcracker.cloud.security.core.utils.k8s.localdev;
+package com.netcracker.cloud.security.core.utils.k8s.localdev.impl;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
-import uk.org.webcompere.systemstubs.jupiter.SystemStub;
-import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -17,14 +13,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ExtendWith(SystemStubsExtension.class)
 class KubeConfigLoaderTest {
-
-    @SystemStub
-    private EnvironmentVariables environmentVariables;
 
     @TempDir
     Path tempDir;
+
+    private KubeConfigLoader loaderForKubeConfigEnv(String kubeConfigEnv) {
+        return new KubeConfigLoader(() -> kubeConfigEnv, () -> System.getProperty("user.home"));
+    }
 
     @Test
     void loadsTokenAndCaFromKubeConfig() throws Exception {
@@ -50,9 +46,7 @@ class KubeConfigLoaderTest {
                       token: user-token-123
                 """.formatted(ca));
 
-        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
-
-        KubeConfigCredentials credentials = KubeConfigLoader.load();
+        KubeConfigCredentials credentials = loaderForKubeConfigEnv(kubeConfig.toString()).load();
         assertEquals("https://127.0.0.1:6443", credentials.getServerUrl());
         assertEquals("user-token-123", credentials.getUserToken());
         assertNotNull(credentials.getCertificateAuthorityData());
@@ -89,9 +83,7 @@ class KubeConfigLoaderTest {
                           id-token: oidc-id-token-123
                 """);
 
-        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
-
-        KubeConfigCredentials credentials = KubeConfigLoader.load();
+        KubeConfigCredentials credentials = loaderForKubeConfigEnv(kubeConfig.toString()).load();
         assertEquals("oidc-id-token-123", credentials.getUserToken());
     }
 
@@ -116,9 +108,8 @@ class KubeConfigLoaderTest {
                     user:
                       access-token: direct-access-token
                 """);
-        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
 
-        assertEquals("direct-access-token", KubeConfigLoader.load().getUserToken());
+        assertEquals("direct-access-token", loaderForKubeConfigEnv(kubeConfig.toString()).load().getUserToken());
     }
 
     @Test
@@ -145,9 +136,8 @@ class KubeConfigLoaderTest {
                         config:
                           access-token: provider-access-token
                 """);
-        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
 
-        assertEquals("provider-access-token", KubeConfigLoader.load().getUserToken());
+        assertEquals("provider-access-token", loaderForKubeConfigEnv(kubeConfig.toString()).load().getUserToken());
     }
 
     @Test
@@ -160,7 +150,7 @@ class KubeConfigLoaderTest {
         String execArg;
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
             execCommand = "cmd";
-            execArg = "/c type " + tokenJson.toString();
+            execArg = "/c type " + tokenJson;
         } else {
             execCommand = "cat";
             execArg = tokenJson.toString();
@@ -186,23 +176,22 @@ class KubeConfigLoaderTest {
                         args:
                           - %s
                 """.formatted(execCommand, execArg));
-        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
 
-        assertEquals("exec-token", KubeConfigLoader.load().getUserToken());
+        assertEquals("exec-token", loaderForKubeConfigEnv(kubeConfig.toString()).load().getUserToken());
     }
 
     @Test
     void resolveKubeConfigPathUsesFirstEntryFromList() {
         Path first = tempDir.resolve("first-config");
         Path second = tempDir.resolve("second-config");
-        environmentVariables.set("KUBECONFIG", first + java.io.File.pathSeparator + second);
-        assertEquals(first, KubeConfigLoader.resolveKubeConfigPath());
+        String kubeConfigList = first + java.io.File.pathSeparator + second;
+        assertEquals(first, loaderForKubeConfigEnv(kubeConfigList).resolveKubeConfigPath());
     }
 
     @Test
     void failsWhenKubeconfigMissing() {
-        environmentVariables.set("KUBECONFIG", tempDir.resolve("missing").toString());
-        assertThrows(IllegalStateException.class, KubeConfigLoader::load);
+        assertThrows(IllegalStateException.class,
+                loaderForKubeConfigEnv(tempDir.resolve("missing").toString())::load);
     }
 
     @Test
@@ -215,8 +204,7 @@ class KubeConfigLoaderTest {
                 clusters: []
                 users: []
                 """);
-        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
-        assertThrows(IllegalStateException.class, KubeConfigLoader::load);
+        assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
     }
 
     @Test
@@ -239,15 +227,13 @@ class KubeConfigLoaderTest {
                     user:
                       token: token
                 """);
-        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
-        assertThrows(IllegalStateException.class, KubeConfigLoader::load);
+        assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
     }
 
     @Test
     void resolveKubeConfigPathUsesDefaultWhenUnset() {
-        environmentVariables.remove("KUBECONFIG");
-        assertEquals(Path.of(System.getProperty("user.home"), ".kube", "config"),
-                KubeConfigLoader.resolveKubeConfigPath());
+        KubeConfigLoader loader = new KubeConfigLoader(() -> null, () -> System.getProperty("user.home"));
+        assertEquals(Path.of(System.getProperty("user.home"), ".kube", "config"), loader.resolveKubeConfigPath());
     }
 
     @Test
@@ -271,8 +257,7 @@ class KubeConfigLoaderTest {
                     user:
                       token: token
                 """);
-        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
-        assertEquals("https://127.0.0.1:6443", KubeConfigLoader.load().getServerUrl());
+        assertEquals("https://127.0.0.1:6443", loaderForKubeConfigEnv(kubeConfig.toString()).load().getServerUrl());
     }
 
     @Test
@@ -295,8 +280,7 @@ class KubeConfigLoaderTest {
                     user:
                       token: token
                 """);
-        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
-        assertThrows(IllegalStateException.class, KubeConfigLoader::load);
+        assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
     }
 
     @Test
@@ -320,16 +304,14 @@ class KubeConfigLoaderTest {
                     user:
                       token: token
                 """);
-        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
-        assertThrows(IllegalStateException.class, KubeConfigLoader::load);
+        assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
     }
 
     @Test
     void failsWhenKubeconfigIsInvalid() throws Exception {
         Path kubeConfig = tempDir.resolve("config");
         Files.writeString(kubeConfig, "{ not valid yaml [[[");
-        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
-        assertThrows(IllegalStateException.class, KubeConfigLoader::load);
+        assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
     }
 
     @Test
@@ -352,8 +334,7 @@ class KubeConfigLoaderTest {
                   - name: test-user
                     user: {}
                 """);
-        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
-        assertThrows(IllegalStateException.class, KubeConfigLoader::load);
+        assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
     }
 
     @Test
@@ -379,8 +360,7 @@ class KubeConfigLoaderTest {
                         name: oidc
                       id-token: direct-id-token
                 """);
-        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
-        assertEquals("direct-id-token", KubeConfigLoader.load().getUserToken());
+        assertEquals("direct-id-token", loaderForKubeConfigEnv(kubeConfig.toString()).load().getUserToken());
     }
 
     @Test
@@ -405,8 +385,7 @@ class KubeConfigLoaderTest {
                       exec:
                         command: ""
                 """);
-        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
-        assertThrows(IllegalStateException.class, KubeConfigLoader::load);
+        assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
     }
 
     @Test
@@ -435,8 +414,7 @@ class KubeConfigLoaderTest {
                         args:
                           - %s
                 """.formatted(execCommand, execArg));
-        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
-        assertThrows(IllegalStateException.class, KubeConfigLoader::load);
+        assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
     }
 
     @Test
@@ -467,8 +445,7 @@ class KubeConfigLoaderTest {
                         args:
                           - %s
                 """.formatted(execCommand, execArg));
-        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
-        assertThrows(IllegalStateException.class, KubeConfigLoader::load);
+        assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
     }
 
     @Test
@@ -481,7 +458,7 @@ class KubeConfigLoaderTest {
         String execArg;
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
             execCommand = "cmd";
-            execArg = "/c type " + tokenJson.toString();
+            execArg = "/c type " + tokenJson;
         } else {
             execCommand = "cat";
             execArg = tokenJson.toString();
@@ -511,8 +488,7 @@ class KubeConfigLoaderTest {
                             value: marker
                           - name: EMPTY_VALUE
                 """.formatted(execCommand, execArg));
-        environmentVariables.set("KUBECONFIG", kubeConfig.toString());
 
-        assertEquals("env-exec-token", KubeConfigLoader.load().getUserToken());
+        assertEquals("env-exec-token", loaderForKubeConfigEnv(kubeConfig.toString()).load().getUserToken());
     }
 }

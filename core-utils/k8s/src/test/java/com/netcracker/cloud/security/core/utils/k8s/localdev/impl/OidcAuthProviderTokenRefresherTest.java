@@ -1,5 +1,6 @@
-package com.netcracker.cloud.security.core.utils.k8s.localdev;
+package com.netcracker.cloud.security.core.utils.k8s.localdev.impl;
 
+import com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevMode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import okhttp3.mockwebserver.MockResponse;
@@ -28,6 +29,8 @@ class OidcAuthProviderTokenRefresherTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
+    private final OidcAuthProviderTokenRefresher refresher = new OidcAuthProviderTokenRefresher();
+
     private MockWebServer server;
     private HttpClient httpClient;
 
@@ -53,7 +56,7 @@ class OidcAuthProviderTokenRefresherTest {
         config.put("refresh-token", "refresh");
         config.put("client-id", "kubernetes");
 
-        String token = OidcAuthProviderTokenRefresher.resolveToken(config, httpClient);
+        String token = refresher.resolveToken(config, httpClient);
         assertEquals(config.get("id-token").asText(), token);
         assertEquals(0, server.getRequestCount());
     }
@@ -79,7 +82,7 @@ class OidcAuthProviderTokenRefresherTest {
         config.put("client-id", "kubernetes");
         config.put("client-secret", "secret-value");
 
-        String token = OidcAuthProviderTokenRefresher.resolveToken(config, httpClient);
+        String token = refresher.resolveToken(config, httpClient);
         assertEquals("fresh-id-token", token);
 
         RecordedRequest discovery = server.takeRequest(1, TimeUnit.SECONDS);
@@ -102,7 +105,7 @@ class OidcAuthProviderTokenRefresherTest {
         config.put("refresh-token", "refresh");
         config.put("client-id", "kubernetes");
 
-        String token = OidcAuthProviderTokenRefresher.resolveToken(config, HttpClient.newBuilder()
+        String token = refresher.resolveToken(config, HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .build());
         assertEquals(config.get("id-token").asText(), token);
@@ -123,14 +126,14 @@ class OidcAuthProviderTokenRefresherTest {
         config.put("refresh-token", "refresh");
         config.put("client-id", "kubernetes");
 
-        assertEquals("only-access", OidcAuthProviderTokenRefresher.resolveToken(config, httpClient));
+        assertEquals("only-access", refresher.resolveToken(config, httpClient));
     }
 
     @Test
     void returnsNullWhenRefreshFieldsMissingAndNoCachedToken() {
         ObjectNode config = MAPPER.createObjectNode();
         config.put("idp-issuer-url", server.url("/").toString());
-        assertNull(OidcAuthProviderTokenRefresher.resolveToken(config, httpClient));
+        assertNull(refresher.resolveToken(config, httpClient));
     }
 
     @Test
@@ -143,7 +146,7 @@ class OidcAuthProviderTokenRefresherTest {
         config.put("client-id", "kubernetes");
 
         assertThrows(IllegalStateException.class,
-                () -> OidcAuthProviderTokenRefresher.resolveToken(config, httpClient));
+                () -> refresher.resolveToken(config, httpClient));
     }
 
     @Test
@@ -159,16 +162,16 @@ class OidcAuthProviderTokenRefresherTest {
         config.put("client-id", "kubernetes");
 
         assertThrows(IllegalStateException.class,
-                () -> OidcAuthProviderTokenRefresher.resolveToken(config, httpClient));
+                () -> refresher.resolveToken(config, httpClient));
     }
 
     @Test
     void createHttpClientUsesInsecureFactoryWhenLocalDevEnabled() {
-        System.setProperty(LocalDevMode.QUARKUS_PROFILE_PROPERTY, "dev");
+        System.setProperty(LocalDevMode.QUARKUS_PROFILE_PROPERTY, LocalDevMode.DEV_PROFILE);
         try {
             ObjectNode config = MAPPER.createObjectNode();
             config.put("id-token", jwtWithExp(java.time.Instant.now().plusSeconds(3600)));
-            assertNotNull(OidcAuthProviderTokenRefresher.resolveToken(config));
+            assertNotNull(refresher.resolveToken(config));
         } finally {
             System.clearProperty(LocalDevMode.QUARKUS_PROFILE_PROPERTY);
         }
@@ -184,11 +187,11 @@ class OidcAuthProviderTokenRefresherTest {
         config.put("client-id", "kubernetes");
 
         assertThrows(IllegalStateException.class,
-                () -> OidcAuthProviderTokenRefresher.resolveToken(config, httpClient));
+                () -> refresher.resolveToken(config, httpClient));
     }
 
     @Test
-    void treatsJwtWithoutExpAsExpired() throws Exception {
+    void treatsJwtWithoutExpAsExpired() {
         String issuer = server.url("/realms/kubernetes").toString().replaceAll("/$", "");
         String tokenEndpoint = server.url("/realms/kubernetes/token").toString();
         server.enqueue(new MockResponse().setBody("{\"token_endpoint\":\"" + tokenEndpoint + "\"}"));
@@ -200,11 +203,11 @@ class OidcAuthProviderTokenRefresherTest {
         config.put("refresh-token", "refresh");
         config.put("client-id", "kubernetes");
 
-        assertEquals("jwt-without-exp", OidcAuthProviderTokenRefresher.resolveToken(config, httpClient));
+        assertEquals("jwt-without-exp", refresher.resolveToken(config, httpClient));
     }
 
     @Test
-    void treatsUnparseableJwtAsExpired() throws Exception {
+    void treatsUnparseableJwtAsExpired() {
         String issuer = server.url("/realms/kubernetes").toString().replaceAll("/$", "");
         String tokenEndpoint = server.url("/realms/kubernetes/token").toString();
         server.enqueue(new MockResponse().setBody("{\"token_endpoint\":\"" + tokenEndpoint + "\"}"));
@@ -216,7 +219,7 @@ class OidcAuthProviderTokenRefresherTest {
         config.put("refresh-token", "refresh");
         config.put("client-id", "kubernetes");
 
-        assertEquals("fresh-after-bad-jwt", OidcAuthProviderTokenRefresher.resolveToken(config, httpClient));
+        assertEquals("fresh-after-bad-jwt", refresher.resolveToken(config, httpClient));
     }
 
     private static String jwtWithoutExp() {
