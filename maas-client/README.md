@@ -85,7 +85,8 @@ failing fast enough to react to a real outage.
 The watch endpoint (`watch-create`) is excluded: it is a long poll with its own
 loop and its own backoff. Its window is derived from `maas.http.timeout` and stays
 below it — maas-service holds the request open for the whole window and then answers
-with an empty list, which the client has to be able to receive.
+with an empty list, which the client has to be able to receive. With the default 30s
+timeout the window is 25s.
 
 Which responses are retried:
 

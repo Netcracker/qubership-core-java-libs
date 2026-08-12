@@ -125,6 +125,22 @@ class HttpExecutionFailoverTest {
     }
 
     /**
+     * The envelope alone does not make a 405 transient: every maas-service error carries the same
+     * code, so the reason has to name the read-only database and not merely contain its words.
+     */
+    @Test
+    void testFailover_405WithUnrelatedMaasReasonNotRetried(ClientAndServer mockServer) {
+        mockServer.reset();
+        mockServer.when(request().withPath(PATH), Times.unlimited())
+                .respond(response().withStatusCode(405)
+                        .withBody("{\"code\":\"MAAS-0600\",\"reason\":\"topic 'active-orders' is inactive\"}"));
+
+        withFastRetries(() -> assertMessageContains("405", execution(mockServer).expect(200)));
+
+        mockServer.verify(request().withPath(PATH), VerificationTimes.exactly(1));
+    }
+
+    /**
      * Each attempt is clamped to what is left of the total duration, so a hanging
      * agent cannot stretch the call past it.
      */

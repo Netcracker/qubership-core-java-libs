@@ -2,6 +2,7 @@ package com.netcracker.cloud.bluegreen;
 
 import com.netcracker.cloud.bluegreen.impl.http.HttpClientAdapter;
 import lombok.SneakyThrows;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.consul.ConsulContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -15,8 +16,9 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
+/** Shared fixture: a Consul container per test method, plus small waiting helpers. */
 @Testcontainers
-class AbstractBGTest {
+abstract class AbstractBGTest {
 
     String ns1 = "ns-1";
     String ns2 = "ns-2";
@@ -50,23 +52,17 @@ class AbstractBGTest {
      * cannot be bound to a node that is not there yet: consul replies 500 "Missing node registration".
      */
     private void awaitNodeRegistered() {
-        Instant deadline = Instant.now().plus(NODE_REGISTRATION_TIMEOUT);
-        String lastSeen = "no response";
-        while (Instant.now().isBefore(deadline)) {
-            try {
-                String nodes = client.invoke(req -> req.uri(URI.create(consulUrl + "/v1/catalog/nodes")).GET(),
-                        String.class).sendAndGet();
-                lastSeen = nodes;
-                if (nodes != null && !nodes.isBlank() && !nodes.strip().equals("[]")) {
-                    return;
-                }
-            } catch (Exception e) {
-                lastSeen = e.toString();
-            }
-            run(() -> Thread.sleep(100));
-        }
-        throw new IllegalStateException("Consul node was not registered in the catalog within "
-                + NODE_REGISTRATION_TIMEOUT + ", last response: " + lastSeen);
+        Awaitility.await("consul node registered in the catalog")
+                .atMost(NODE_REGISTRATION_TIMEOUT)
+                .pollInterval(Duration.ofMillis(100))
+                .ignoreExceptions()
+                .until(this::catalogHasNodes);
+    }
+
+    private boolean catalogHasNodes() {
+        String nodes = client.invoke(req -> req.uri(URI.create(consulUrl + "/v1/catalog/nodes")).GET(),
+                String.class).sendAndGet();
+        return nodes != null && !nodes.isBlank() && !nodes.strip().equals("[]");
     }
 
     @SneakyThrows
