@@ -136,7 +136,8 @@ public class HttpExecution {
             return false;
         }
         String reason = body.toLowerCase(Locale.ROOT);
-        return reason.contains("read-only") || reason.contains("read only") || reason.contains("active");
+        return reason.contains("read-only") || reason.contains("read only")
+                || reason.contains("not in 'active' mode");
     }
 
     /**
@@ -259,17 +260,12 @@ public class HttpExecution {
 
         long maxTotalMillis = Env.httpRetryMaxTotalDuration().toMillis();
         long deadlineNanos = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(maxTotalMillis);
-        int attempt = 0;
+        Attempts attempts = new Attempts();
         authAttempts = 0;
-        // what made the previous attempt fail, so that giving up reports the cause and not
-        // just the elapsed time
-        Throwable lastFailure = null;
-        String lastStatusAndBody = null;
         while (true) {
             long remainingMs = remainingMillis(deadlineNanos);
-            // the total duration bounds retries, not the call: the first attempt always goes out
-            if (attempt > 0 && remainingMs <= 0) {
-                throw totalDurationExceeded(compiledReq, attempt, maxTotalMillis, lastStatusAndBody, lastFailure);
+            if (attempts.outOfTime(remainingMs)) {
+                throw totalDurationExceeded(compiledReq, attempts, maxTotalMillis);
             }
 
             try (Response response = clientForAttempt(remainingMs).newCall(compiledReq).execute()) {
@@ -282,22 +278,8 @@ public class HttpExecution {
                 }
 
                 if (!expectedCodes.contains(response.code())) {
-                    // read once, without throwing: a body that cannot be read must not turn a
-                    // permanent status into a retry
-                    String errorBody = errorBodyOrPlaceholder(response);
-                    if (takeRetrySlotFor(response.code(), errorBody, deadlineNanos)) {
-                        attempt++;
-                        lastFailure = null;
-                        lastStatusAndBody = "status " + response.code() + ", body: " + errorBody;
-                        log.warn("Retryable status code {} for request: {}. Retry {}, within {}ms total",
-                                response.code(), compiledReq, attempt, maxTotalMillis);
-                        sleepBackoff(attempt, maxTotalMillis, deadlineNanos);
-                        continue;
-                    }
-                    throw new MaaSHttpException("Unexpected status code " + response.code()
-                            + " for request: " + compiledReq
-                            + giveUpSuffix(attempt)
-                            + "\n\tResponse body: " + errorBody);
+                    retryOrFail(response, compiledReq, attempts, deadlineNanos, maxTotalMillis);
+                    continue;
                 }
 
                 String body = bodyAsString(response);
@@ -305,15 +287,65 @@ public class HttpExecution {
                 return Optional.of(body);
             } catch (IOException e) {
                 if (!canRetry(deadlineNanos)) {
-                    throw new MaaSHttpException("Error executing " + compiledReq + giveUpSuffix(attempt), e);
+                    throw new MaaSHttpException("Error executing " + compiledReq + giveUpSuffix(attempts.count), e);
                 }
-                attempt++;
-                lastFailure = e;
-                lastStatusAndBody = null;
+                attempts.afterTransportError(e);
                 log.warn("Error execute http request: {}, Retry {}, within {}ms total",
-                        e.getMessage(), attempt, maxTotalMillis);
-                sleepBackoff(attempt, maxTotalMillis, deadlineNanos);
+                        e.getMessage(), attempts.count, maxTotalMillis);
+                sleepBackoff(attempts.count, maxTotalMillis, deadlineNanos);
             }
+        }
+    }
+
+    /**
+     * Handles a status the caller did not expect: waits before the next attempt, or throws when
+     * the status is terminal.
+     */
+    private void retryOrFail(Response response, Request compiledReq, Attempts attempts,
+                             long deadlineNanos, long maxTotalMillis) {
+        // read once, without throwing: a body that cannot be read must not turn a permanent
+        // status into a retry
+        String errorBody = errorBodyOrPlaceholder(response);
+        if (!takeRetrySlotFor(response.code(), errorBody, deadlineNanos)) {
+            throw new MaaSHttpException("Unexpected status code " + response.code()
+                    + " for request: " + compiledReq
+                    + giveUpSuffix(attempts.count)
+                    + "\n\tResponse body: " + errorBody);
+        }
+        attempts.afterStatus(response.code(), errorBody);
+        log.warn("Retryable status code {} for request: {}. Retry {}, within {}ms total",
+                response.code(), compiledReq, attempts.count, maxTotalMillis);
+        sleepBackoff(attempts.count, maxTotalMillis, deadlineNanos);
+    }
+
+    /** How many attempts went out and what the last one failed with. */
+    private static final class Attempts {
+        private int count;
+        private Throwable lastFailure;
+        private String lastStatusAndBody;
+
+        /** The total duration bounds retries, not the call: the first attempt always goes out. */
+        boolean outOfTime(long remainingMs) {
+            return count > 0 && remainingMs <= 0;
+        }
+
+        void afterStatus(int code, String body) {
+            count++;
+            lastFailure = null;
+            lastStatusAndBody = "status " + code + ", body: " + body;
+        }
+
+        void afterTransportError(IOException e) {
+            count++;
+            lastFailure = e;
+            lastStatusAndBody = null;
+        }
+
+        String describeLast() {
+            if (lastStatusAndBody != null) {
+                return lastStatusAndBody;
+            }
+            return lastFailure != null ? lastFailure.toString() : "unknown";
         }
     }
 
@@ -322,14 +354,12 @@ public class HttpExecution {
      * failing lands exactly on the deadline. Carries what the last attempt saw, otherwise the
      * trace says only that a minute went by.
      */
-    private static MaaSHttpException totalDurationExceeded(Request req, int attempt, long maxTotalMillis,
-                                               String lastStatusAndBody, Throwable lastFailure) {
-        String message = "Gave up on " + req + " after " + attempt + " retries: ran out of its "
+    private static MaaSHttpException totalDurationExceeded(Request req, Attempts attempts, long maxTotalMillis) {
+        String message = "Gave up on " + req + " after " + attempts.count + " retries: ran out of its "
                 + maxTotalMillis + "ms total duration."
-                + "\n\tLast attempt: " + (lastStatusAndBody != null ? lastStatusAndBody
-                : lastFailure != null ? lastFailure.toString() : "unknown");
-        return lastFailure != null
-                ? new MaaSHttpException(message, lastFailure)
+                + "\n\tLast attempt: " + attempts.describeLast();
+        return attempts.lastFailure != null
+                ? new MaaSHttpException(message, attempts.lastFailure)
                 : new MaaSHttpException(message);
     }
 }

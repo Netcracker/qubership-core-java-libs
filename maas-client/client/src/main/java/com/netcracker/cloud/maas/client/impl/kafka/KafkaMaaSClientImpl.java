@@ -49,10 +49,18 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
      */
     private final Duration watchTimeout = watchTimeout(Env.httpTimeout());
 
+    /** Largest gap left between the watch window and the read timeout. */
+    private static final long MAX_WATCH_MARGIN_SECONDS = 5;
+
+    /**
+     * The margin is clamped rather than subtracted outright, so that a small read timeout
+     * narrows the window instead of pushing it past the timeout. Whole seconds, because that
+     * is how the window travels in the query string.
+     */
     static Duration watchTimeout(Duration httpTimeout) {
-        Duration margin = Duration.ofSeconds(5);
-        Duration window = httpTimeout.minus(margin);
-        return window.compareTo(margin) < 0 ? margin : window;
+        long timeoutSeconds = httpTimeout.getSeconds();
+        long marginSeconds = Math.min(MAX_WATCH_MARGIN_SECONDS, timeoutSeconds / 2);
+        return Duration.ofSeconds(Math.max(1, timeoutSeconds - marginSeconds));
     }
 
     private static final Duration WATCH_RETRY_INTERVAL = Duration.ofSeconds(1);

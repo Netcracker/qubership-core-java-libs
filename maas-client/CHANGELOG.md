@@ -24,6 +24,12 @@
     registering a callback that can never fire.
   - Failed calls to maas-agent now throw `MaaSHttpException` instead of a bare `RuntimeException`.
     It extends `MaaSException`, which is a `RuntimeException`, so existing `catch` blocks keep working.
+    Note the widening: `catch (MaaSException)` used to mean a MaaS business error and now also
+    catches transport failures, such as the agent being unreachable for the whole minute.
+  - `maas.http.retry.max-total-duration-ms=0` disables retries, leaving a single attempt. An
+    unreadable or negative value logs a warning and falls back to the 60s default.
+  - The Kafka watch poll window is derived from `maas.http.timeout` (25s with the defaults) instead
+    of a fixed 60s that outlasted the read timeout, so tuning `maas.http.timeout` now also moves it.
 
 ## 10.0.0
 * `Features`

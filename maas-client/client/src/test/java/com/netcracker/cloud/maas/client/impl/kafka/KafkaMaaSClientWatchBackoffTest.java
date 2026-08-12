@@ -71,11 +71,16 @@ class KafkaMaaSClientWatchBackoffTest {
      */
     @Test
     void watchWindowStaysBelowTheReadTimeout() {
-        assertTrue(KafkaMaaSClientImpl.watchTimeout(Duration.ofSeconds(30)).compareTo(Duration.ofSeconds(30)) < 0,
-                "the watch window must leave the read timeout room to receive the answer");
-        assertEquals(Duration.ofSeconds(25), KafkaMaaSClientImpl.watchTimeout(Duration.ofSeconds(30)));
-        // a read timeout too small to leave a margin still yields a usable window
-        assertEquals(Duration.ofSeconds(5), KafkaMaaSClientImpl.watchTimeout(Duration.ofSeconds(2)));
+        // the invariant, checked across the range rather than at one point
+        for (long readTimeoutSeconds : new long[]{2, 5, 6, 10, 30, 60, 120}) {
+            Duration window = KafkaMaaSClientImpl.watchTimeout(Duration.ofSeconds(readTimeoutSeconds));
+            assertTrue(window.getSeconds() < readTimeoutSeconds,
+                    "a " + readTimeoutSeconds + "s read timeout must leave room for the answer, got " + window);
+            assertTrue(window.getSeconds() >= 1,
+                    "the window travels in whole seconds, so it must not round down to zero: " + window);
+        }
+        assertEquals(Duration.ofSeconds(25), KafkaMaaSClientImpl.watchTimeout(Duration.ofSeconds(30)),
+                "the default read timeout should keep the full margin");
     }
 
     @Test
