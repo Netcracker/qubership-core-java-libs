@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class KubeConfigLoaderTest {
 
@@ -93,20 +94,8 @@ class KubeConfigLoaderTest {
     }
 
     @Test
-    void loadsTokenViaExecCredential() throws Exception {
-        Path tokenJson = tempDir.resolve("token.json");
-        Files.writeString(tokenJson, "{\"status\":{\"token\":\"exec-token\"}}");
-
+    void rejectsExecAuthentication() throws Exception {
         Path kubeConfig = tempDir.resolve("config");
-        String execCommand;
-        String execArg;
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            execCommand = "cmd";
-            execArg = "/c type " + tokenJson;
-        } else {
-            execCommand = "cat";
-            execArg = tokenJson.toString();
-        }
         Files.writeString(kubeConfig, """
                 apiVersion: v1
                 kind: Config
@@ -124,12 +113,16 @@ class KubeConfigLoaderTest {
                   - name: test-user
                     user:
                       exec:
-                        command: %s
+                        command: kubectl
                         args:
-                          - %s
-                """.formatted(execCommand, execArg));
+                          - oidc-login
+                          - get-token
+                """);
 
-        assertEquals("exec-token", loaderForKubeConfigEnv(kubeConfig.toString()).load().getUserToken());
+        IllegalStateException ex = assertThrows(IllegalStateException.class,
+                loaderForKubeConfigEnv(kubeConfig.toString())::load);
+        assertTrue(ex.getMessage().contains("exec"));
+        assertTrue(ex.getMessage().contains("not supported"));
     }
 
     @Test
@@ -308,134 +301,5 @@ class KubeConfigLoaderTest {
                       id-token: direct-id-token
                 """);
         assertEquals("direct-id-token", loaderForKubeConfigEnv(kubeConfig.toString()).load().getUserToken());
-    }
-
-    @Test
-    void failsWhenExecCommandEmpty() throws Exception {
-        Path kubeConfig = tempDir.resolve("config");
-        Files.writeString(kubeConfig, """
-                apiVersion: v1
-                kind: Config
-                current-context: test-ctx
-                contexts:
-                  - name: test-ctx
-                    context:
-                      cluster: test-cluster
-                      user: test-user
-                clusters:
-                  - name: test-cluster
-                    cluster:
-                      server: https://127.0.0.1:6443
-                users:
-                  - name: test-user
-                    user:
-                      exec:
-                        command: ""
-                """);
-        assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
-    }
-
-    @Test
-    void failsWhenExecReturnsNonZeroExitCode() throws Exception {
-        Path kubeConfig = tempDir.resolve("config");
-        String execCommand = System.getProperty("os.name").toLowerCase().contains("win") ? "cmd" : "sh";
-        String execArg = System.getProperty("os.name").toLowerCase().contains("win") ? "/c exit 1" : "-c exit 1";
-        Files.writeString(kubeConfig, """
-                apiVersion: v1
-                kind: Config
-                current-context: test-ctx
-                contexts:
-                  - name: test-ctx
-                    context:
-                      cluster: test-cluster
-                      user: test-user
-                clusters:
-                  - name: test-cluster
-                    cluster:
-                      server: https://127.0.0.1:6443
-                users:
-                  - name: test-user
-                    user:
-                      exec:
-                        command: %s
-                        args:
-                          - %s
-                """.formatted(execCommand, execArg));
-        assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
-    }
-
-    @Test
-    void failsWhenExecReturnsNoToken() throws Exception {
-        Path kubeConfig = tempDir.resolve("config");
-        String execCommand = System.getProperty("os.name").toLowerCase().contains("win") ? "cmd" : "echo";
-        String execArg = System.getProperty("os.name").toLowerCase().contains("win")
-                ? "/c echo {}"
-                : "{}";
-        Files.writeString(kubeConfig, """
-                apiVersion: v1
-                kind: Config
-                current-context: test-ctx
-                contexts:
-                  - name: test-ctx
-                    context:
-                      cluster: test-cluster
-                      user: test-user
-                clusters:
-                  - name: test-cluster
-                    cluster:
-                      server: https://127.0.0.1:6443
-                users:
-                  - name: test-user
-                    user:
-                      exec:
-                        command: %s
-                        args:
-                          - %s
-                """.formatted(execCommand, execArg));
-        assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
-    }
-
-    @Test
-    void loadsTokenViaExecWithEnvVars() throws Exception {
-        Path tokenJson = tempDir.resolve("token.json");
-        Files.writeString(tokenJson, "{\"status\":{\"token\":\"env-exec-token\"}}");
-
-        Path kubeConfig = tempDir.resolve("config");
-        String execCommand;
-        String execArg;
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            execCommand = "cmd";
-            execArg = "/c type " + tokenJson;
-        } else {
-            execCommand = "cat";
-            execArg = tokenJson.toString();
-        }
-        Files.writeString(kubeConfig, """
-                apiVersion: v1
-                kind: Config
-                current-context: test-ctx
-                contexts:
-                  - name: test-ctx
-                    context:
-                      cluster: test-cluster
-                      user: test-user
-                clusters:
-                  - name: test-cluster
-                    cluster:
-                      server: https://127.0.0.1:6443
-                users:
-                  - name: test-user
-                    user:
-                      exec:
-                        command: %s
-                        args:
-                          - %s
-                        env:
-                          - name: LOCAL_DEV_TEST
-                            value: marker
-                          - name: EMPTY_VALUE
-                """.formatted(execCommand, execArg));
-
-        assertEquals("env-exec-token", loaderForKubeConfigEnv(kubeConfig.toString()).load().getUserToken());
     }
 }

@@ -121,7 +121,7 @@ using the developer kubeconfig instead of projected-volume files.
 | Profile | `dev` |
 | SA name | `cloud.microservice.name` (contract, no override) |
 | Namespace | env `CLOUD_NAMESPACE` |
-| Kube access | `KUBECONFIG` or `~/.kube/config` (static `token`, OIDC `auth-provider` with refresh via `idp-issuer-url`, or `exec` auth). IdP TLS uses trust-all in local-dev. |
+| Kube access | `KUBECONFIG` or `~/.kube/config` (static `token` or OIDC `auth-provider` with refresh via `idp-issuer-url`). `exec` auth is not supported. IdP TLS uses trust-all in local-dev. |
 | Token TTL | 8 hours (`expirationSeconds=28800`) |
 | Audience | value passed to `KubernetesAudienceToken.getToken(audience)` |
 

@@ -69,10 +69,6 @@ final class LocalDevConstants {
         static final String INSECURE_SKIP_TLS_VERIFY = "insecure-skip-tls-verify";
         static final String AUTH_PROVIDER = "auth-provider";
         static final String EXEC = "exec";
-        static final String COMMAND = "command";
-        static final String ARGS = "args";
-        static final String ENV = "env";
-        static final String VALUE = "value";
         static final String STATUS = "status";
         static final String CONFIG = "config";
         static final String ID_TOKEN = "id-token";
