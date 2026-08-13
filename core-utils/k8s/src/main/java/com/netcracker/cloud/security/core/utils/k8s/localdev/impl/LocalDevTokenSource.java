@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.MICROSERVICE_NAME_ENV;
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.MICROSERVICE_NAME_PROPERTY;
@@ -21,27 +20,20 @@ public final class LocalDevTokenSource implements TokenSource {
 
     private static final Duration EXPIRY_SKEW = Duration.ofMinutes(5);
 
-    private final Supplier<TokenRequestClient> clientSupplier;
-    private final Supplier<String> microserviceNameSupplier;
-    private final Supplier<String> namespaceSupplier;
+    private final String microserviceName;
+    private final String namespace;
     private final ConcurrentMap<String, CachedToken> cache = new ConcurrentHashMap<>();
-
     private final AtomicReference<TokenRequestClient> client = new AtomicReference<>();
 
     public LocalDevTokenSource() {
-        this(
-                () -> new TokenRequestClient(new KubeConfigLoader().load()),
-                defaultMicroserviceNameSupplier(),
-                defaultNamespaceSupplier());
+        this.microserviceName = null;
+        this.namespace = null;
     }
 
-    LocalDevTokenSource(
-            Supplier<TokenRequestClient> clientSupplier,
-            Supplier<String> microserviceNameSupplier,
-            Supplier<String> namespaceSupplier) {
-        this.clientSupplier = Objects.requireNonNull(clientSupplier, "clientSupplier");
-        this.microserviceNameSupplier = Objects.requireNonNull(microserviceNameSupplier, "microserviceNameSupplier");
-        this.namespaceSupplier = Objects.requireNonNull(namespaceSupplier, "namespaceSupplier");
+    LocalDevTokenSource(TokenRequestClient client, String microserviceName, String namespace) {
+        this.client.set(Objects.requireNonNull(client, "client"));
+        this.microserviceName = microserviceName;
+        this.namespace = namespace;
     }
 
     @Override
@@ -56,32 +48,22 @@ public final class LocalDevTokenSource implements TokenSource {
             if (cached != null && cached.isValid()) {
                 return cached.token();
             }
-            TokenRequestClient.TokenRequestResult result = request(audience);
+            String serviceAccount = requireMicroserviceName();
+            String resolvedNamespace = requireNamespace();
+            log.info("Local-dev TokenSource active: requesting token for audience={}, sa={}, namespace={}",
+                    audience, serviceAccount, resolvedNamespace);
+            TokenRequestClient.TokenRequestResult result =
+                    client().requestToken(resolvedNamespace, serviceAccount, audience);
             cache.put(audience, new CachedToken(result.token(), result.expiresAt().minus(EXPIRY_SKEW)));
             return result.token();
         }
     }
 
-    private TokenRequestClient.TokenRequestResult request(String audience) {
-        String namespace = requireNamespace();
-        String serviceAccount = requireMicroserviceName();
-        log.info("Local-dev TokenSource active: requesting token for audience={}, sa={}, namespace={}",
-                audience, serviceAccount, namespace);
-        return client().requestToken(namespace, serviceAccount, audience);
-    }
-
-    private static Supplier<String> defaultMicroserviceNameSupplier() {
-        return () -> StringUtils.firstNonBlank(
+    private String requireMicroserviceName() {
+        String name = StringUtils.firstNonBlank(
+                microserviceName,
                 System.getProperty(MICROSERVICE_NAME_PROPERTY),
                 System.getenv(MICROSERVICE_NAME_ENV));
-    }
-
-    private static Supplier<String> defaultNamespaceSupplier() {
-        return () -> System.getenv(NAMESPACE_ENV);
-    }
-
-    private String requireMicroserviceName() {
-        String name = microserviceNameSupplier.get();
         if (StringUtils.isBlank(name)) {
             throw new IllegalStateException(
                     "Local-dev M2M requires '" + MICROSERVICE_NAME_PROPERTY
@@ -93,13 +75,13 @@ public final class LocalDevTokenSource implements TokenSource {
     }
 
     private String requireNamespace() {
-        String namespace = namespaceSupplier.get();
-        if (StringUtils.isBlank(namespace)) {
+        String resolved = StringUtils.firstNonBlank(namespace, System.getenv(NAMESPACE_ENV));
+        if (StringUtils.isBlank(resolved)) {
             throw new IllegalStateException(
                     "Local-dev M2M requires env '" + NAMESPACE_ENV
                             + "' with the Kubernetes namespace of the service account.");
         }
-        return namespace.trim();
+        return resolved.trim();
     }
 
     private TokenRequestClient client() {
@@ -108,19 +90,18 @@ public final class LocalDevTokenSource implements TokenSource {
             return existing;
         }
         synchronized (this) {
-            TokenRequestClient resolved = client.get();
-            if (resolved == null) {
-                resolved = clientSupplier.get();
-                client.set(resolved);
+            existing = client.get();
+            if (existing == null) {
+                existing = new TokenRequestClient(new KubeConfigLoader().load());
+                client.set(existing);
             }
-            return resolved;
+            return existing;
         }
     }
 
     @Override
     public void close() {
         cache.clear();
-        client.set(null);
     }
 
     private record CachedToken(String token, Instant refreshAfter) {

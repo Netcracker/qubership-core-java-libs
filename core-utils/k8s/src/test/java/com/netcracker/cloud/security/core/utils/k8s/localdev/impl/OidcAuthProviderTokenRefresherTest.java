@@ -9,8 +9,6 @@ import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
@@ -24,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(SystemStubsExtension.class)
 class OidcAuthProviderTokenRefresherTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();

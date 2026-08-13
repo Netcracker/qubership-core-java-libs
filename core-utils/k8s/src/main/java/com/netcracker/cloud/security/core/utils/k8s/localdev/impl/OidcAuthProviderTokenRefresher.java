@@ -43,16 +43,6 @@ class OidcAuthProviderTokenRefresher {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final Duration EXPIRY_SKEW = Duration.ofSeconds(60);
 
-    private final KubeConfigHttpClientFactory httpClientFactory;
-
-    OidcAuthProviderTokenRefresher() {
-        this(new KubeConfigHttpClientFactory());
-    }
-
-    OidcAuthProviderTokenRefresher(KubeConfigHttpClientFactory httpClientFactory) {
-        this.httpClientFactory = httpClientFactory;
-    }
-
     String resolveToken(JsonNode authProviderConfig) {
         return resolveToken(authProviderConfig, createHttpClient());
     }
@@ -99,7 +89,7 @@ class OidcAuthProviderTokenRefresher {
 
     private HttpClient createHttpClient() {
         if (LocalDevMode.isEnabled()) {
-            return httpClientFactory.createInsecureForLocalDev();
+            return new KubeConfigHttpClientFactory().createInsecureForLocalDev();
         }
         return HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)

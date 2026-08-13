@@ -13,7 +13,6 @@ import java.net.http.HttpResponse;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.ACCEPT_HEADER;
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.APPLICATION_JSON;
@@ -35,23 +34,14 @@ public final class KubeLocalDevConfig {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private final Supplier<KubeConfigCredentials> credentialsSupplier;
-    private final KubeConfigHttpClientFactory httpClientFactory;
-
     private final AtomicReference<KubeConfigCredentials> credentials = new AtomicReference<>();
     private final AtomicReference<HttpClient> httpClient = new AtomicReference<>();
 
     public KubeLocalDevConfig() {
-        this(new KubeConfigLoader()::load, new KubeConfigHttpClientFactory());
     }
 
-    KubeLocalDevConfig(Supplier<KubeConfigCredentials> credentialsSupplier) {
-        this(credentialsSupplier, new KubeConfigHttpClientFactory());
-    }
-
-    KubeLocalDevConfig(Supplier<KubeConfigCredentials> credentialsSupplier, KubeConfigHttpClientFactory httpClientFactory) {
-        this.credentialsSupplier = Objects.requireNonNull(credentialsSupplier, "credentialsSupplier");
-        this.httpClientFactory = Objects.requireNonNull(httpClientFactory, "httpClientFactory");
+    KubeLocalDevConfig(KubeConfigCredentials credentials) {
+        this.credentials.set(Objects.requireNonNull(credentials, "credentials"));
     }
 
     public boolean isKubernetesIssuer(String issuerOrUrl) {
@@ -117,7 +107,7 @@ public final class KubeLocalDevConfig {
             return sendGet(url);
         } catch (IOException e) {
             log.debug("Retrying Kubernetes OIDC request after I/O failure for {}", url, e);
-            resetHttpClient();
+            httpClient.set(null);
             return sendGet(url);
         }
     }
@@ -145,7 +135,7 @@ public final class KubeLocalDevConfig {
         synchronized (this) {
             existing = credentials.get();
             if (existing == null) {
-                existing = credentialsSupplier.get();
+                existing = new KubeConfigLoader().load();
                 credentials.set(existing);
                 log.info("Local-dev kubeconfig: API server {}", existing.getServerUrl());
             }
@@ -161,14 +151,10 @@ public final class KubeLocalDevConfig {
         synchronized (this) {
             existing = httpClient.get();
             if (existing == null) {
-                existing = httpClientFactory.create(credentials());
+                existing = new KubeConfigHttpClientFactory().create(credentials());
                 httpClient.set(existing);
             }
             return existing;
         }
-    }
-
-    private void resetHttpClient() {
-        httpClient.set(null);
     }
 }

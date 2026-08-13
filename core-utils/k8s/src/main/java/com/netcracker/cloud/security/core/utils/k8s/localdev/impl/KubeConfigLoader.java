@@ -14,9 +14,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.KubeConfigFields;
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevUtils.getTextField;
@@ -30,30 +28,17 @@ class KubeConfigLoader {
     private static final long EXEC_TIMEOUT_SECONDS = 30;
 
     private final OidcAuthProviderTokenRefresher oidcAuthProviderTokenRefresher;
-    private final Supplier<String> kubeConfigEnvSupplier;
-    private final Supplier<String> userHomeSupplier;
+    private final String kubeConfigEnv;
+    private final String userHome;
 
     KubeConfigLoader() {
-        this(new OidcAuthProviderTokenRefresher());
+        this(System.getenv("KUBECONFIG"), System.getProperty("user.home"));
     }
 
-    KubeConfigLoader(OidcAuthProviderTokenRefresher oidcAuthProviderTokenRefresher) {
-        this(
-                oidcAuthProviderTokenRefresher,
-                () -> System.getenv("KUBECONFIG"),
-                () -> System.getProperty("user.home"));
-    }
-
-    KubeConfigLoader(Supplier<String> kubeConfigEnvSupplier, Supplier<String> userHomeSupplier) {
-        this(new OidcAuthProviderTokenRefresher(), kubeConfigEnvSupplier, userHomeSupplier);
-    }
-
-    KubeConfigLoader(OidcAuthProviderTokenRefresher oidcAuthProviderTokenRefresher,
-                     Supplier<String> kubeConfigEnvSupplier,
-                     Supplier<String> userHomeSupplier) {
-        this.oidcAuthProviderTokenRefresher = Objects.requireNonNull(oidcAuthProviderTokenRefresher, "oidcAuthProviderTokenRefresher");
-        this.kubeConfigEnvSupplier = Objects.requireNonNull(kubeConfigEnvSupplier, "kubeConfigEnvSupplier");
-        this.userHomeSupplier = Objects.requireNonNull(userHomeSupplier, "userHomeSupplier");
+    KubeConfigLoader(String kubeConfigEnv, String userHome) {
+        this.oidcAuthProviderTokenRefresher = new OidcAuthProviderTokenRefresher();
+        this.kubeConfigEnv = kubeConfigEnv;
+        this.userHome = userHome;
     }
 
     KubeConfigCredentials load() {
@@ -100,13 +85,12 @@ class KubeConfigLoader {
     }
 
     Path resolveKubeConfigPath() {
-        String kubeConfig = kubeConfigEnvSupplier.get();
-        if (StringUtils.isNotBlank(kubeConfig)) {
+        if (StringUtils.isNotBlank(kubeConfigEnv)) {
             // KUBECONFIG may be a list; use the first entry
-            String first = kubeConfig.split(java.io.File.pathSeparator)[0].trim();
+            String first = kubeConfigEnv.split(java.io.File.pathSeparator)[0].trim();
             return Path.of(first);
         }
-        return Path.of(userHomeSupplier.get(), ".kube", "config");
+        return Path.of(userHome, ".kube", "config");
     }
 
     private String resolveUserToken(JsonNode user) {

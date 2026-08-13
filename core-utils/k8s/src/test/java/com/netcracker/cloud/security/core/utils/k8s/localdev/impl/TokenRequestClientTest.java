@@ -58,8 +58,7 @@ class TokenRequestClientTest {
 
     @Test
     void requestTokenSuccess() {
-        TokenRequestClient client = new TokenRequestClient(baseUrl, "kube-user-token", HttpClient.newHttpClient());
-        TokenRequestClient.TokenRequestResult result = client.requestToken("ns1", "my-sa", "netcracker");
+        TokenRequestClient.TokenRequestResult result = client().requestToken("ns1", "my-sa", "netcracker");
 
         assertEquals("minted-token", result.token());
         assertEquals(Instant.parse("2099-01-01T00:00:00Z"), result.expiresAt());
@@ -72,7 +71,7 @@ class TokenRequestClientTest {
     void requestTokenUnauthorized() {
         responseStatus = 403;
         responseBody = "{\"message\":\"forbidden\"}";
-        TokenRequestClient client = new TokenRequestClient(baseUrl, "kube-user-token", HttpClient.newHttpClient());
+        TokenRequestClient client = client();
 
         IllegalStateException ex = assertThrows(IllegalStateException.class,
                 () -> client.requestToken("ns1", "my-sa", "netcracker"));
@@ -84,7 +83,7 @@ class TokenRequestClientTest {
     void requestTokenFailsOnServerError() {
         responseStatus = 500;
         responseBody = "{\"message\":\"server error\"}";
-        TokenRequestClient client = new TokenRequestClient(baseUrl, "kube-user-token", HttpClient.newHttpClient());
+        TokenRequestClient client = client();
 
         IllegalStateException ex = assertThrows(IllegalStateException.class,
                 () -> client.requestToken("ns1", "my-sa", "netcracker"));
@@ -94,7 +93,7 @@ class TokenRequestClientTest {
     @Test
     void requestTokenFailsWhenResponseHasNoToken() {
         responseBody = "{\"status\":{}}";
-        TokenRequestClient client = new TokenRequestClient(baseUrl, "kube-user-token", HttpClient.newHttpClient());
+        TokenRequestClient client = client();
 
         IllegalStateException ex = assertThrows(IllegalStateException.class,
                 () -> client.requestToken("ns1", "my-sa", "netcracker"));
@@ -110,7 +109,7 @@ class TokenRequestClientTest {
               }
             }
             """;
-        TokenRequestClient client = new TokenRequestClient(baseUrl, "kube-user-token", HttpClient.newHttpClient());
+        TokenRequestClient client = client();
         TokenRequestClient.TokenRequestResult result = client.requestToken("ns1", "my-sa", "netcracker");
         assertEquals("minted-token", result.token());
         assertNotNull(result.expiresAt());
@@ -126,5 +125,9 @@ class TokenRequestClientTest {
         TokenRequestClient client = new TokenRequestClient(credentials);
         TokenRequestClient.TokenRequestResult result = client.requestToken("ns1", "my-sa", "netcracker");
         assertEquals("minted-token", result.token());
+    }
+
+    private TokenRequestClient client() {
+        return new TokenRequestClient(baseUrl, "kube-user-token", HttpClient.newHttpClient());
     }
 }

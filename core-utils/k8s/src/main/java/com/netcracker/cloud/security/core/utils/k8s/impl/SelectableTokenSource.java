@@ -16,10 +16,9 @@ public class SelectableTokenSource implements TokenSource {
     private final TokenSource delegate;
 
     public SelectableTokenSource() {
-        this.delegate = LocalDevMode.isEnabled()
-                ? new LocalDevTokenSource()
-                : new CachingTokenSource();
-        if (LocalDevMode.isEnabled()) {
+        boolean localDev = LocalDevMode.isEnabled();
+        this.delegate = localDev ? new LocalDevTokenSource() : new CachingTokenSource();
+        if (localDev) {
             log.info("Local-dev enabled: using kubeconfig TokenRequest token source");
         }
     }

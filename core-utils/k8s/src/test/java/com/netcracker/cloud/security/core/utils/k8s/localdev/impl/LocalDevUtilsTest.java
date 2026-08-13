@@ -2,7 +2,6 @@ package com.netcracker.cloud.security.core.utils.k8s.localdev.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import java.net.http.HttpResponse;
@@ -32,13 +31,6 @@ class LocalDevUtilsTest {
         assertEquals("42", LocalDevUtils.getTextField(node, "number"));
         node.put("value", " text ");
         assertEquals(" text ", LocalDevUtils.getTextField(node, "value"));
-    }
-
-    @Test
-    void firstNonBlankReturnsFirstNonBlankValue() {
-        assertEquals("first", StringUtils.firstNonBlank("first", "second"));
-        assertEquals("second", StringUtils.firstNonBlank(null, "second"));
-        assertNull(StringUtils.firstNonBlank(null, null));
     }
 
     @Test

@@ -56,7 +56,7 @@ class KubeLocalDevConfigTest {
 
     @Test
     void isPublicOidcEndpointDetectsDiscoveryAndJwks() {
-        KubeLocalDevConfig config = configForServer("https://api.example:6443");
+        KubeLocalDevConfig config = dummyConfig();
 
         assertTrue(config.isPublicOidcEndpoint("https://api.example:6443/.well-known/openid-configuration"));
         assertTrue(config.isPublicOidcEndpoint("https://api.example:6443/openid/v1/jwks"));
@@ -65,7 +65,7 @@ class KubeLocalDevConfigTest {
 
     @Test
     void isKubernetesIssuerDetectsDefaultHosts() {
-        KubeLocalDevConfig config = configForServer("https://api.example:6443");
+        KubeLocalDevConfig config = dummyConfig();
 
         assertTrue(config.isKubernetesIssuer("https://kubernetes.default.svc"));
         assertTrue(config.isKubernetesIssuer("https://kubernetes.default.svc.cluster.local/openid/v1/jwks"));
@@ -91,22 +91,18 @@ class KubeLocalDevConfigTest {
 
     @Test
     void isPublicOidcEndpointHandlesInvalidUrl() {
-        KubeLocalDevConfig config = configForServer("https://api.example:6443");
+        KubeLocalDevConfig config = dummyConfig();
 
         assertFalse(config.isPublicOidcEndpoint(""));
         assertTrue(config.isPublicOidcEndpoint("not-a-valid-uri:///.well-known/openid-configuration"));
     }
 
-    @Test
-    void apiServerUrlIsCachedPerInstance() {
-        KubeLocalDevConfig config = configForServer(baseUrl);
-
-        assertEquals(baseUrl, config.apiServerUrl());
-        assertEquals(baseUrl, config.apiServerUrl());
+    private KubeLocalDevConfig dummyConfig() {
+        return configForServer("https://api.example:6443");
     }
 
     private KubeLocalDevConfig configForServer(String serverUrl) {
-        return new KubeLocalDevConfig(() -> KubeConfigCredentials.builder()
+        return new KubeLocalDevConfig(KubeConfigCredentials.builder()
                 .serverUrl(serverUrl)
                 .userToken("kube-user-token")
                 .insecureSkipTlsVerify(true)

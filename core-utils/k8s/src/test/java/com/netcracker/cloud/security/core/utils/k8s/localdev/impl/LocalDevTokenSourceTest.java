@@ -3,7 +3,6 @@ package com.netcracker.cloud.security.core.utils.k8s.localdev.impl;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -16,48 +15,28 @@ class LocalDevTokenSourceTest {
 
     @Test
     void requestsAndCachesToken() {
-        TokenRequestClient client = mock(TokenRequestClient.class);
-        when(client.requestToken("my-ns", "my-sa", "netcracker"))
-                .thenReturn(new TokenRequestClient.TokenRequestResult(
-                        "minted", Instant.now().plusSeconds(3600)));
+        TokenRequestClient client = mockClient("minted");
+        LocalDevTokenSource source = new LocalDevTokenSource(client, "my-sa", "my-ns");
 
-        AtomicInteger supplierCalls = new AtomicInteger();
-        LocalDevTokenSource source = new LocalDevTokenSource(
-                () -> {
-                    supplierCalls.incrementAndGet();
-                    return client;
-                },
-                () -> "my-sa",
-                () -> "my-ns");
         assertEquals("minted", source.getToken("netcracker"));
         assertEquals("minted", source.getToken("netcracker"));
         source.close();
 
         verify(client, times(1)).requestToken("my-ns", "my-sa", "netcracker");
-        assertEquals(1, supplierCalls.get());
     }
 
     @Test
     void throwsWhenAudienceIsNull() {
-        LocalDevTokenSource source = new LocalDevTokenSource(
-                () -> mock(TokenRequestClient.class),
-                () -> "my-sa",
-                () -> "my-ns");
+        LocalDevTokenSource source = new LocalDevTokenSource(mock(TokenRequestClient.class), "my-sa", "my-ns");
         assertThrows(NullPointerException.class, () -> source.getToken(null));
         source.close();
     }
 
     @Test
     void closeClearsCache() {
-        TokenRequestClient client = mock(TokenRequestClient.class);
-        when(client.requestToken("my-ns", "my-sa", "netcracker"))
-                .thenReturn(new TokenRequestClient.TokenRequestResult(
-                        "minted", Instant.now().plusSeconds(3600)));
+        TokenRequestClient client = mockClient("minted");
+        LocalDevTokenSource source = new LocalDevTokenSource(client, "my-sa", "my-ns");
 
-        LocalDevTokenSource source = new LocalDevTokenSource(
-                () -> client,
-                () -> "my-sa",
-                () -> "my-ns");
         assertEquals("minted", source.getToken("netcracker"));
         source.close();
         assertEquals("minted", source.getToken("netcracker"));
@@ -67,36 +46,22 @@ class LocalDevTokenSourceTest {
 
     @Test
     void failsWhenMicroserviceNameMissing() {
-        LocalDevTokenSource source = new LocalDevTokenSource(
-                () -> mock(TokenRequestClient.class),
-                () -> null,
-                () -> "my-ns");
+        LocalDevTokenSource source = new LocalDevTokenSource(mock(TokenRequestClient.class), null, "my-ns");
         assertThrows(IllegalStateException.class, () -> source.getToken("netcracker"));
         source.close();
     }
 
     @Test
     void failsWhenNamespaceMissing() {
-        LocalDevTokenSource source = new LocalDevTokenSource(
-                () -> mock(TokenRequestClient.class),
-                () -> "my-sa",
-                () -> null);
+        LocalDevTokenSource source = new LocalDevTokenSource(mock(TokenRequestClient.class), "my-sa", null);
         assertThrows(IllegalStateException.class, () -> source.getToken("netcracker"));
         source.close();
     }
 
-    @Test
-    void resolvesMicroserviceNameFromSupplier() {
+    private static TokenRequestClient mockClient(String token) {
         TokenRequestClient client = mock(TokenRequestClient.class);
         when(client.requestToken("my-ns", "my-sa", "netcracker"))
-                .thenReturn(new TokenRequestClient.TokenRequestResult(
-                        "minted", Instant.now().plusSeconds(3600)));
-
-        LocalDevTokenSource source = new LocalDevTokenSource(
-                () -> client,
-                () -> "my-sa",
-                () -> "my-ns");
-        assertEquals("minted", source.getToken("netcracker"));
-        source.close();
+                .thenReturn(new TokenRequestClient.TokenRequestResult(token, Instant.now().plusSeconds(3600)));
+        return client;
     }
 }

@@ -49,10 +49,7 @@ class KubeConfigHttpClientFactory {
     private SSLContext createSslContext(KubeConfigCredentials credentials) {
         try {
             if (credentials.isInsecureSkipTlsVerify()) {
-                TrustManager[] trustAll = new TrustManager[]{new InsecureTrustManager()};
-                SSLContext sslContext = SSLContext.getInstance("TLS");
-                sslContext.init(null, trustAll, new SecureRandom());
-                return sslContext;
+                return createInsecureSslContext();
             }
             if (credentials.getCertificateAuthorityData() == null
                     || credentials.getCertificateAuthorityData().length == 0) {

@@ -23,7 +23,7 @@ class KubeConfigLoaderTest {
     Path tempDir;
 
     private KubeConfigLoader loaderForKubeConfigEnv(String kubeConfigEnv) {
-        return new KubeConfigLoader(() -> kubeConfigEnv, () -> System.getProperty("user.home"));
+        return new KubeConfigLoader(kubeConfigEnv, System.getProperty("user.home"));
     }
 
     @Test
@@ -256,7 +256,7 @@ class KubeConfigLoaderTest {
 
     @Test
     void resolveKubeConfigPathUsesDefaultWhenUnset() {
-        KubeConfigLoader loader = new KubeConfigLoader(() -> null, () -> System.getProperty("user.home"));
+        KubeConfigLoader loader = new KubeConfigLoader(null, System.getProperty("user.home"));
         assertEquals(Path.of(System.getProperty("user.home"), ".kube", "config"), loader.resolveKubeConfigPath());
     }
 
