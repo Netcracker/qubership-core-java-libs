@@ -5,6 +5,7 @@ import com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevMode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -30,10 +31,12 @@ class SelectableTokenSourceTest {
     }
 
     @Test
-    void constructsWhenLocalDevEnabled() throws Exception {
+    void constructsWhenLocalDevEnabled() {
         System.setProperty(LocalDevMode.QUARKUS_PROFILE_PROPERTY, LocalDevMode.DEV_PROFILE);
-        try (SelectableTokenSource ignored = new SelectableTokenSource()) {
-            // construction selects local-dev delegate
-        }
+        assertDoesNotThrow(() -> {
+            try (SelectableTokenSource ignored = new SelectableTokenSource()) {
+                // construction selects local-dev delegate without contacting the cluster
+            }
+        });
     }
 }

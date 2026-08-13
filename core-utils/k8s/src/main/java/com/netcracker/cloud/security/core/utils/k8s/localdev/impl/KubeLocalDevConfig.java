@@ -12,6 +12,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.ACCEPT_HEADER;
@@ -28,7 +29,8 @@ import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDe
 @Slf4j
 public final class KubeLocalDevConfig {
 
-    public static final String DEFAULT_KUBERNETES_ISSUER = "https://kubernetes.default.svc";
+    /** Well-known in-cluster Kubernetes issuer, used as fallback when OIDC discovery is unavailable. */
+    public static final String DEFAULT_KUBERNETES_ISSUER = "https://kubernetes.default.svc"; // NOSONAR java:S1075
     public static final String JWKS_PATH = "/openid/v1/jwks";
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -36,8 +38,8 @@ public final class KubeLocalDevConfig {
     private final Supplier<KubeConfigCredentials> credentialsSupplier;
     private final KubeConfigHttpClientFactory httpClientFactory;
 
-    private volatile KubeConfigCredentials credentials;
-    private volatile HttpClient httpClient;
+    private final AtomicReference<KubeConfigCredentials> credentials = new AtomicReference<>();
+    private final AtomicReference<HttpClient> httpClient = new AtomicReference<>();
 
     public KubeLocalDevConfig() {
         this(new KubeConfigLoader()::load, new KubeConfigHttpClientFactory());
@@ -136,35 +138,37 @@ public final class KubeLocalDevConfig {
     }
 
     private KubeConfigCredentials credentials() {
-        KubeConfigCredentials existing = credentials;
+        KubeConfigCredentials existing = credentials.get();
         if (existing != null) {
             return existing;
         }
         synchronized (this) {
-            if (credentials == null) {
-                credentials = credentialsSupplier.get();
-                log.info("Local-dev kubeconfig: API server {}", credentials.getServerUrl());
+            existing = credentials.get();
+            if (existing == null) {
+                existing = credentialsSupplier.get();
+                credentials.set(existing);
+                log.info("Local-dev kubeconfig: API server {}", existing.getServerUrl());
             }
-            return credentials;
+            return existing;
         }
     }
 
     private HttpClient httpClient() {
-        HttpClient existing = httpClient;
+        HttpClient existing = httpClient.get();
         if (existing != null) {
             return existing;
         }
         synchronized (this) {
-            if (httpClient == null) {
-                httpClient = httpClientFactory.create(credentials());
+            existing = httpClient.get();
+            if (existing == null) {
+                existing = httpClientFactory.create(credentials());
+                httpClient.set(existing);
             }
-            return httpClient;
+            return existing;
         }
     }
 
     private void resetHttpClient() {
-        synchronized (this) {
-            httpClient = null;
-        }
+        httpClient.set(null);
     }
 }

@@ -2,11 +2,15 @@ package com.netcracker.cloud.security.core.utils.k8s.localdev.impl;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -53,91 +57,39 @@ class KubeConfigLoaderTest {
         assertFalse(credentials.isInsecureSkipTlsVerify());
     }
 
-    @Test
-    void loadsIdTokenFromOidcAuthProviderWhenTokenNotExpiredJwt() throws Exception {
-        // non-JWT cached token cannot be parsed for exp → treated as expired,
-        // but without refresh-token fields loader falls back to cached id-token
+    @ParameterizedTest
+    @MethodSource("userTokenKubeConfigs")
+    void loadsUserTokenFromKubeConfig(String usersYaml, String expectedToken) throws Exception {
         Path kubeConfig = tempDir.resolve("config");
-        Files.writeString(kubeConfig, """
-                apiVersion: v1
-                kind: Config
-                current-context: test-ctx
-                contexts:
-                  - name: test-ctx
-                    context:
-                      cluster: test-cluster
-                      user: test-user
-                clusters:
-                  - name: test-cluster
-                    cluster:
-                      server: https://127.0.0.1:6443
-                      insecure-skip-tls-verify: true
-                users:
-                  - name: test-user
-                    user:
-                      auth-provider:
-                        name: oidc
-                        config:
-                          client-id: oauth-client
-                          client-secret: oauth-secret
-                          id-token: oidc-id-token-123
-                """);
-
-        KubeConfigCredentials credentials = loaderForKubeConfigEnv(kubeConfig.toString()).load();
-        assertEquals("oidc-id-token-123", credentials.getUserToken());
+        Files.writeString(kubeConfig, kubeConfigWithUsers(usersYaml));
+        assertEquals(expectedToken, loaderForKubeConfigEnv(kubeConfig.toString()).load().getUserToken());
     }
 
-    @Test
-    void loadsAccessTokenFromUser() throws Exception {
-        Path kubeConfig = tempDir.resolve("config");
-        Files.writeString(kubeConfig, """
-                apiVersion: v1
-                kind: Config
-                current-context: test-ctx
-                contexts:
-                  - name: test-ctx
-                    context:
-                      cluster: test-cluster
-                      user: test-user
-                clusters:
-                  - name: test-cluster
-                    cluster:
-                      server: https://127.0.0.1:6443
-                users:
-                  - name: test-user
-                    user:
-                      access-token: direct-access-token
-                """);
-
-        assertEquals("direct-access-token", loaderForKubeConfigEnv(kubeConfig.toString()).load().getUserToken());
-    }
-
-    @Test
-    void loadsAccessTokenFromNonOidcAuthProvider() throws Exception {
-        Path kubeConfig = tempDir.resolve("config");
-        Files.writeString(kubeConfig, """
-                apiVersion: v1
-                kind: Config
-                current-context: test-ctx
-                contexts:
-                  - name: test-ctx
-                    context:
-                      cluster: test-cluster
-                      user: test-user
-                clusters:
-                  - name: test-cluster
-                    cluster:
-                      server: https://127.0.0.1:6443
-                users:
-                  - name: test-user
-                    user:
-                      auth-provider:
-                        name: gcp
-                        config:
-                          access-token: provider-access-token
-                """);
-
-        assertEquals("provider-access-token", loaderForKubeConfigEnv(kubeConfig.toString()).load().getUserToken());
+    static Stream<Arguments> userTokenKubeConfigs() {
+        return Stream.of(
+                Arguments.of("""
+                                  - name: test-user
+                                    user:
+                                      access-token: direct-access-token
+                        """, "direct-access-token"),
+                Arguments.of("""
+                                  - name: test-user
+                                    user:
+                                      auth-provider:
+                                        name: gcp
+                                        config:
+                                          access-token: provider-access-token
+                        """, "provider-access-token"),
+                Arguments.of("""
+                                  - name: test-user
+                                    user:
+                                      auth-provider:
+                                        name: oidc
+                                        config:
+                                          client-id: oauth-client
+                                          client-secret: oauth-secret
+                                          id-token: oidc-id-token-123
+                        """, "oidc-id-token-123"));
     }
 
     @Test
@@ -194,23 +146,97 @@ class KubeConfigLoaderTest {
                 loaderForKubeConfigEnv(tempDir.resolve("missing").toString())::load);
     }
 
-    @Test
-    void failsWhenCurrentContextMissing() throws Exception {
+    @ParameterizedTest
+    @MethodSource("invalidKubeConfigs")
+    void failsWhenKubeconfigIsInvalid(String yaml) throws Exception {
         Path kubeConfig = tempDir.resolve("config");
-        Files.writeString(kubeConfig, """
-                apiVersion: v1
-                kind: Config
-                contexts: []
-                clusters: []
-                users: []
-                """);
+        Files.writeString(kubeConfig, yaml);
         assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
     }
 
-    @Test
-    void failsWhenClusterHasNoServer() throws Exception {
-        Path kubeConfig = tempDir.resolve("config");
-        Files.writeString(kubeConfig, """
+    static Stream<String> invalidKubeConfigs() {
+        return Stream.of(
+                """
+                        apiVersion: v1
+                        kind: Config
+                        contexts: []
+                        clusters: []
+                        users: []
+                        """,
+                """
+                        apiVersion: v1
+                        kind: Config
+                        current-context: test-ctx
+                        contexts:
+                          - name: test-ctx
+                            context:
+                              cluster: test-cluster
+                              user: test-user
+                        clusters:
+                          - name: test-cluster
+                            cluster: {}
+                        users:
+                          - name: test-user
+                            user:
+                              token: token
+                        """,
+                """
+                        apiVersion: v1
+                        kind: Config
+                        current-context: test-ctx
+                        contexts:
+                          - name: test-ctx
+                            context:
+                              user: test-user
+                        clusters:
+                          - name: test-cluster
+                            cluster:
+                              server: https://127.0.0.1:6443
+                        users:
+                          - name: test-user
+                            user:
+                              token: token
+                        """,
+                """
+                        apiVersion: v1
+                        kind: Config
+                        current-context: test-ctx
+                        contexts:
+                          - name: test-ctx
+                            context:
+                              cluster: missing-cluster
+                              user: test-user
+                        clusters:
+                          - name: test-cluster
+                            cluster:
+                              server: https://127.0.0.1:6443
+                        users:
+                          - name: test-user
+                            user:
+                              token: token
+                        """,
+                "{ not valid yaml [[[",
+                """
+                        apiVersion: v1
+                        kind: Config
+                        current-context: test-ctx
+                        contexts:
+                          - name: test-ctx
+                            context:
+                              cluster: test-cluster
+                              user: test-user
+                        clusters:
+                          - name: test-cluster
+                            cluster:
+                              server: https://127.0.0.1:6443
+                        users:
+                          - name: test-user
+                            user: {}
+                        """);
+    }
+
+    private static String kubeConfigWithUsers(String usersYaml) {
+        return """
                 apiVersion: v1
                 kind: Config
                 current-context: test-ctx
@@ -221,13 +247,11 @@ class KubeConfigLoaderTest {
                       user: test-user
                 clusters:
                   - name: test-cluster
-                    cluster: {}
+                    cluster:
+                      server: https://127.0.0.1:6443
+                      insecure-skip-tls-verify: true
                 users:
-                  - name: test-user
-                    user:
-                      token: token
-                """);
-        assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
+                """ + usersYaml;
     }
 
     @Test
@@ -258,83 +282,6 @@ class KubeConfigLoaderTest {
                       token: token
                 """);
         assertEquals("https://127.0.0.1:6443", loaderForKubeConfigEnv(kubeConfig.toString()).load().getServerUrl());
-    }
-
-    @Test
-    void failsWhenContextMissingClusterOrUser() throws Exception {
-        Path kubeConfig = tempDir.resolve("config");
-        Files.writeString(kubeConfig, """
-                apiVersion: v1
-                kind: Config
-                current-context: test-ctx
-                contexts:
-                  - name: test-ctx
-                    context:
-                      user: test-user
-                clusters:
-                  - name: test-cluster
-                    cluster:
-                      server: https://127.0.0.1:6443
-                users:
-                  - name: test-user
-                    user:
-                      token: token
-                """);
-        assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
-    }
-
-    @Test
-    void failsWhenKubeconfigEntryNotFound() throws Exception {
-        Path kubeConfig = tempDir.resolve("config");
-        Files.writeString(kubeConfig, """
-                apiVersion: v1
-                kind: Config
-                current-context: test-ctx
-                contexts:
-                  - name: test-ctx
-                    context:
-                      cluster: missing-cluster
-                      user: test-user
-                clusters:
-                  - name: test-cluster
-                    cluster:
-                      server: https://127.0.0.1:6443
-                users:
-                  - name: test-user
-                    user:
-                      token: token
-                """);
-        assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
-    }
-
-    @Test
-    void failsWhenKubeconfigIsInvalid() throws Exception {
-        Path kubeConfig = tempDir.resolve("config");
-        Files.writeString(kubeConfig, "{ not valid yaml [[[");
-        assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
-    }
-
-    @Test
-    void failsWhenUserHasNoCredentials() throws Exception {
-        Path kubeConfig = tempDir.resolve("config");
-        Files.writeString(kubeConfig, """
-                apiVersion: v1
-                kind: Config
-                current-context: test-ctx
-                contexts:
-                  - name: test-ctx
-                    context:
-                      cluster: test-cluster
-                      user: test-user
-                clusters:
-                  - name: test-cluster
-                    cluster:
-                      server: https://127.0.0.1:6443
-                users:
-                  - name: test-user
-                    user: {}
-                """);
-        assertThrows(IllegalStateException.class, loaderForKubeConfigEnv(kubeConfig.toString())::load);
     }
 
     @Test

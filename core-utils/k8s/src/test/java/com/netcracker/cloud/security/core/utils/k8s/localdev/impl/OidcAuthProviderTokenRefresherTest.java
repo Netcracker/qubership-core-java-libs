@@ -112,7 +112,7 @@ class OidcAuthProviderTokenRefresherTest {
     }
 
     @Test
-    void prefersIdTokenFromRefreshResponse() throws Exception {
+    void prefersIdTokenFromRefreshResponse() {
         String issuer = server.url("/realms/kubernetes").toString().replaceAll("/$", "");
         String tokenEndpoint = server.url("/realms/kubernetes/token").toString();
 
@@ -150,7 +150,7 @@ class OidcAuthProviderTokenRefresherTest {
     }
 
     @Test
-    void refreshResponseWithoutTokensFails() throws Exception {
+    void refreshResponseWithoutTokensFails() {
         String issuer = server.url("/realms/kubernetes").toString().replaceAll("/$", "");
         String tokenEndpoint = server.url("/realms/kubernetes/token").toString();
         server.enqueue(new MockResponse().setBody("{\"token_endpoint\":\"" + tokenEndpoint + "\"}"));

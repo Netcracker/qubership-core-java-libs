@@ -49,10 +49,19 @@ class LocalDevTokenSourceTest {
 
     @Test
     void closeClearsCache() {
+        TokenRequestClient client = mock(TokenRequestClient.class);
+        when(client.requestToken("my-ns", "my-sa", "netcracker"))
+                .thenReturn(new TokenRequestClient.TokenRequestResult(
+                        "minted", Instant.now().plusSeconds(3600)));
+
         LocalDevTokenSource source = new LocalDevTokenSource(
-                () -> mock(TokenRequestClient.class),
+                () -> client,
                 () -> "my-sa",
                 () -> "my-ns");
+        assertEquals("minted", source.getToken("netcracker"));
+        source.close();
+        assertEquals("minted", source.getToken("netcracker"));
+        verify(client, times(2)).requestToken("my-ns", "my-sa", "netcracker");
         source.close();
     }
 
