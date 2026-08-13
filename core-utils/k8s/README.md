@@ -130,7 +130,7 @@ into a system property so `k8s-utils` can read it without depending on Spring/Qu
 
 On HTTP 401/403 from TokenRequest the error message explains missing RBAC on `serviceaccounts/token`.
 
-For inbound validation, consumers rewrite the JWKS URL to `LocalDevKubernetesOidc.jwksUrl()`
+For inbound validation, consumers create `LocalDevKubernetesOidc` and rewrite the JWKS URL to `jwksUrl()`
 (kube API + `/openid/v1/jwks`). Discovery and JWKS on the API server are public (no Bearer).
 When a projected SA token is missing, `resolveIssuerClaimFromDiscovery()` reads the issuer from
 kube OIDC discovery.

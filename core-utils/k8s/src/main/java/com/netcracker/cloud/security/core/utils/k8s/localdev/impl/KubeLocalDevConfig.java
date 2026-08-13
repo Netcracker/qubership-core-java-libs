@@ -10,9 +10,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.ACCEPT_HEADER;
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.APPLICATION_JSON;
@@ -34,23 +32,22 @@ public final class KubeLocalDevConfig {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private final AtomicReference<KubeConfigCredentials> credentials = new AtomicReference<>();
-    private final AtomicReference<HttpClient> httpClient = new AtomicReference<>();
+    private KubeConfigCredentials credentials;
+    private HttpClient httpClient;
 
     public KubeLocalDevConfig() {
     }
 
     KubeLocalDevConfig(KubeConfigCredentials credentials) {
-        this.credentials.set(Objects.requireNonNull(credentials, "credentials"));
+        this.credentials = Objects.requireNonNull(credentials, "credentials");
     }
 
     public boolean isKubernetesIssuer(String issuerOrUrl) {
         if (StringUtils.isBlank(issuerOrUrl)) {
             return false;
         }
-        String normalized = issuerOrUrl.toLowerCase(Locale.ROOT);
-        return normalized.contains("kubernetes.default.svc")
-                || normalized.contains("kubernetes.default");
+        return issuerOrUrl.contains("kubernetes.default.svc")
+                || issuerOrUrl.contains("kubernetes.default");
     }
 
     public String apiServerUrl() {
@@ -107,7 +104,7 @@ public final class KubeLocalDevConfig {
             return sendGet(url);
         } catch (IOException e) {
             log.debug("Retrying Kubernetes OIDC request after I/O failure for {}", url, e);
-            httpClient.set(null);
+            httpClient = null;
             return sendGet(url);
         }
     }
@@ -128,33 +125,17 @@ public final class KubeLocalDevConfig {
     }
 
     private KubeConfigCredentials credentials() {
-        KubeConfigCredentials existing = credentials.get();
-        if (existing != null) {
-            return existing;
+        if (credentials == null) {
+            credentials = new KubeConfigLoader().load();
+            log.info("Local-dev kubeconfig: API server {}", credentials.getServerUrl());
         }
-        synchronized (this) {
-            existing = credentials.get();
-            if (existing == null) {
-                existing = new KubeConfigLoader().load();
-                credentials.set(existing);
-                log.info("Local-dev kubeconfig: API server {}", existing.getServerUrl());
-            }
-            return existing;
-        }
+        return credentials;
     }
 
     private HttpClient httpClient() {
-        HttpClient existing = httpClient.get();
-        if (existing != null) {
-            return existing;
+        if (httpClient == null) {
+            httpClient = new KubeConfigHttpClientFactory().create(credentials());
         }
-        synchronized (this) {
-            existing = httpClient.get();
-            if (existing == null) {
-                existing = new KubeConfigHttpClientFactory().create(credentials());
-                httpClient.set(existing);
-            }
-            return existing;
-        }
+        return httpClient;
     }
 }

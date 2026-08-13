@@ -36,7 +36,6 @@ class LocalDevKubernetesOidcTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        LocalDevKubernetesOidc.resetCache();
         server = HttpServer.create(new InetSocketAddress(0), 0);
         server.createContext("/.well-known/openid-configuration", exchange -> {
             byte[] body = """
@@ -55,26 +54,17 @@ class LocalDevKubernetesOidcTest {
     @AfterEach
     void tearDown() {
         server.stop(0);
-        LocalDevKubernetesOidc.resetCache();
     }
 
     @Test
     void exposesJwksUrlAndIssuerDiscoveryThroughFacade() throws Exception {
         writeKubeConfig(baseUrl);
+        LocalDevKubernetesOidc oidc = new LocalDevKubernetesOidc();
 
-        assertEquals("https://kubernetes.default.svc", LocalDevKubernetesOidc.resolveIssuerClaimFromDiscovery());
-        assertEquals(baseUrl + JWKS_PATH, LocalDevKubernetesOidc.jwksUrl());
-        assertTrue(LocalDevKubernetesOidc.isKubernetesIssuer("https://kubernetes.default.svc"));
-        assertFalse(LocalDevKubernetesOidc.isKubernetesIssuer("https://accounts.google.com"));
-    }
-
-    @Test
-    void resetCacheReloadsKubeconfig() throws Exception {
-        writeKubeConfig(baseUrl);
-        assertEquals(baseUrl + JWKS_PATH, LocalDevKubernetesOidc.jwksUrl());
-
-        LocalDevKubernetesOidc.resetCache();
-        assertEquals(baseUrl + JWKS_PATH, LocalDevKubernetesOidc.jwksUrl());
+        assertEquals("https://kubernetes.default.svc", oidc.resolveIssuerClaimFromDiscovery());
+        assertEquals(baseUrl + JWKS_PATH, oidc.jwksUrl());
+        assertTrue(oidc.isKubernetesIssuer("https://kubernetes.default.svc"));
+        assertFalse(oidc.isKubernetesIssuer("https://accounts.google.com"));
     }
 
     private void writeKubeConfig(String serverUrl) throws IOException {
