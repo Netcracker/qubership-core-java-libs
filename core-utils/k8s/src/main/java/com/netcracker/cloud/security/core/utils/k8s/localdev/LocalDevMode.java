@@ -13,9 +13,9 @@ public final class LocalDevMode {
     public static final String DEV_PROFILE = "dev";
 
     public static boolean isEnabled() {
-        if (DEV_PROFILE.equalsIgnoreCase(System.getProperty(QUARKUS_PROFILE_PROPERTY, "-"))) {
+        if (DEV_PROFILE.equalsIgnoreCase(System.getProperty(QUARKUS_PROFILE_PROPERTY, ""))) {
             return true;
         }
-        return System.getProperty(SPRING_PROFILES_ACTIVE_PROPERTY, "-").contains(DEV_PROFILE);
+        return System.getProperty(SPRING_PROFILES_ACTIVE_PROPERTY, "").contains(DEV_PROFILE);
     }
 }
