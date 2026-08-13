@@ -112,7 +112,8 @@ public class KubernetesTokenVerifier {
 
 ### Local-dev TokenRequest (`LocalDevTokenSource`)
 
-When application profile is `dev` (Quarkus: `-Dquarkus.profile=dev`, Spring: `--spring.profiles.active=dev`),
+When one of the active profiles is `dev` (Quarkus: `-Dquarkus.profile=dev`,
+Spring: `--spring.profiles.active=dev`; comma-separated lists are split by token),
 `CachingTokenSource` delegates to `LocalDevTokenSource`, which mints real SA tokens via Kubernetes TokenRequest API
 using the developer kubeconfig instead of projected-volume files.
 

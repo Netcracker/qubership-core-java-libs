@@ -3,6 +3,9 @@ package com.netcracker.cloud.security.core.utils.k8s.localdev;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LocalDevMode {
 
@@ -13,9 +16,15 @@ public final class LocalDevMode {
     public static final String DEV_PROFILE = "dev";
 
     public static boolean isEnabled() {
-        if (DEV_PROFILE.equalsIgnoreCase(System.getProperty(QUARKUS_PROFILE_PROPERTY, ""))) {
-            return true;
-        }
-        return System.getProperty(SPRING_PROFILES_ACTIVE_PROPERTY, "").contains(DEV_PROFILE);
+        return hasDevProfile(System.getProperty(QUARKUS_PROFILE_PROPERTY))
+                || hasDevProfile(System.getProperty(SPRING_PROFILES_ACTIVE_PROPERTY));
+    }
+
+    private static boolean hasDevProfile(String profiles) {
+        return Optional.ofNullable(profiles)
+                .map(value -> value.split(" *, *"))
+                .stream()
+                .flatMap(Arrays::stream)
+                .anyMatch(DEV_PROFILE::equalsIgnoreCase);
     }
 }
