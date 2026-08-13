@@ -216,4 +216,57 @@ class M2MInterceptorTest {
 
         fallbackServer.stop();
     }
+
+    @Test
+    @SneakyThrows
+    void fallbackUrl_RebasesHostWhenK8sM2mDisabled() {
+        environmentVariables.set("KUBERNETES_M2M_ENABLED", "false");
+
+        assertRebasesToFallbackHostWithoutContactingService();
+    }
+
+    @Test
+    @SneakyThrows
+    void fallbackUrl_RebasesHostWhenK8sM2mNotSet() {
+        environmentVariables.remove("KUBERNETES_M2M_ENABLED");
+
+        assertRebasesToFallbackHostWithoutContactingService();
+    }
+
+    @SneakyThrows
+    private void assertRebasesToFallbackHostWithoutContactingService() {
+        WireMockServer fallbackServer = new WireMockServer(0);
+        fallbackServer.start();
+        WireMock.configureFor("localhost", fallbackServer.port());
+
+        fallbackServer.stubFor(get(urlEqualTo(TEST_ENDPOINT))
+                .withHeader("Authorization", equalTo(FALLBACK_TOKEN_HEADER))
+                .willReturn(aResponse().withStatus(200)));
+
+        wireMockServer.stubFor(get(urlEqualTo(TEST_ENDPOINT))
+                .willReturn(aResponse().withStatus(401)));
+
+        UrlCache urlCache = new UrlCache(TEST_CACHE_SIZE, TEST_CACHE_DURATION_SEC);
+        String fallbackBaseUrl = "http://localhost:" + fallbackServer.port();
+
+        M2MInterceptor interceptor = new M2MInterceptor(urlCache, fallbackSupplier, k8sSupplier, fallbackBaseUrl);
+        OkHttpClient clientWithFallbackUrl = new OkHttpClient.Builder()
+                .addInterceptor(interceptor)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(wireMockServer.baseUrl() + TEST_ENDPOINT)
+                .get()
+                .build();
+
+        try (Response response = clientWithFallbackUrl.newCall(request).execute()) {
+            assertEquals(200, response.code());
+        }
+
+        wireMockServer.verify(0, getRequestedFor(urlEqualTo(TEST_ENDPOINT)));
+        fallbackServer.verify(1, getRequestedFor(urlEqualTo(TEST_ENDPOINT))
+                .withHeader("Authorization", equalTo(FALLBACK_TOKEN_HEADER)));
+
+        fallbackServer.stop();
+    }
 }

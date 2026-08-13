@@ -16,7 +16,7 @@
     </licenses>
 
     <properties>
-        <quarkus.platform.version>3.33.2.1</quarkus.platform.version>
+        <quarkus.platform.version>3.33.3.1</quarkus.platform.version>
 
         <maven.compiler.release>21</maven.compiler.release>
         <maven.compiler.source>21</maven.compiler.source>
@@ -33,9 +33,10 @@
         <curator.version>5.1.0</curator.version>
 
         <cloud-core.maas-declarative-client-commons.version>6.1.8</cloud-core.maas-declarative-client-commons.version>
-        <cloud-core.maas-declarative-client-quarkus.version>11.0.8</cloud-core.maas-declarative-client-quarkus.version>
+        <cloud-core.maas-client-quarkus.version>11.0.8</cloud-core.maas-client-quarkus.version>
         <cloud-core.core-blue-green-state-monitor-quarkus.version>4.0.8</cloud-core.core-blue-green-state-monitor-quarkus.version>
         <cloud-core.core-utils.version>3.1.8</cloud-core.core-utils.version>
+        <cloud-core.core-internal-boms.version>1.1.0-SNAPSHOT</cloud-core.core-internal-boms.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../maas-kafka-quarkus-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
@@ -52,7 +53,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-quarkus-internal-bom</artifactId>
-                <version>1.0.3</version>
+                <version>${cloud-core.core-internal-boms.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -66,12 +67,12 @@
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>maas-client-quarkus-kafka-deployment</artifactId>
-                <version>${cloud-core.maas-declarative-client-quarkus.version}</version>
+                <version>${cloud-core.maas-client-quarkus.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.netcracker.cloud.quarkus</groupId>
                 <artifactId>maas-client-quarkus-kafka</artifactId>
-                <version>${cloud-core.maas-declarative-client-quarkus.version}</version>
+                <version>${cloud-core.maas-client-quarkus.version}</version>
             </dependency>
 
             <!--external platform dependencies-->

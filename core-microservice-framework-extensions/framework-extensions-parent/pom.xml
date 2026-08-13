@@ -23,6 +23,7 @@
         <jacoco.plugin.version>0.8.15</jacoco.plugin.version>
         <spring.metrics.version>3.1.3</spring.metrics.version>
         <maven.surefire.plugin.version>3.5.6</maven.surefire.plugin.version>
+        <cloud-core.core-internal-boms.version>1.1.0-SNAPSHOT</cloud-core.core-internal-boms.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../framework-extensions-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -33,7 +34,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-spring-internal-bom</artifactId>
-                <version>1.0.3</version>
+                <version>${cloud-core.core-internal-boms.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
