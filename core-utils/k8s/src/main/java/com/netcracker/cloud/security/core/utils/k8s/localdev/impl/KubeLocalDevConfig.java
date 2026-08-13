@@ -92,7 +92,11 @@ public final class KubeLocalDevConfig {
             if (StringUtils.isNotBlank(issuer)) {
                 return issuer;
             }
-        } catch (IOException | InterruptedException | IllegalStateException e) { // NOSONAR
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException(
+                    "Local-dev Kubernetes issuer discovery interrupted: " + discoveryUrl, e);
+        } catch (IOException | IllegalStateException e) {
             log.warn("Failed to resolve Kubernetes issuer from discovery at {} in local-dev, using default {}",
                     discoveryUrl, DEFAULT_KUBERNETES_ISSUER, e);
         }

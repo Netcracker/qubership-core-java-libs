@@ -61,7 +61,7 @@ class LocalDevTokenSourceTest {
     private static TokenRequestClient mockClient(String token) {
         TokenRequestClient client = mock(TokenRequestClient.class);
         when(client.requestToken("my-ns", "my-sa", "netcracker"))
-                .thenReturn(new TokenRequestClient.TokenRequestResult(token, Instant.now().plusSeconds(3600)));
+                .thenReturn(new TokenRequestClient.ServiceAccountToken(token, Instant.now().plusSeconds(3600)));
         return client;
     }
 }

@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -47,48 +49,42 @@ public class TokenRequestClient {
         this.httpClient = httpClient;
     }
 
-    public TokenRequestResult requestToken(String namespace, String serviceAccountName, String audience) {
+    public ServiceAccountToken requestToken(String namespace, String serviceAccountName, String audience) {
         String url = serverUrl + "/api/v1/namespaces/" + namespace
                 + "/serviceaccounts/" + serviceAccountName + "/token";
         try {
-            String body = buildRequestBody(audience);
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .timeout(HTTP_REQUEST_TIMEOUT)
-                    .header(AUTHORIZATION_HEADER, BEARER_PREFIX + userToken)
-                    .header(CONTENT_TYPE_HEADER, APPLICATION_JSON)
-                    .header(ACCEPT_HEADER, APPLICATION_JSON)
-                    .POST(HttpRequest.BodyPublishers.ofString(body))
-                    .build();
-
-            log.info("Requesting local-dev SA token: namespace={}, sa={}, audience={}, ttl={}s",
-                    namespace, serviceAccountName, audience, TOKEN_REQUEST_EXPIRATION_SECONDS);
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            handleTokenRequestResponse(response, serviceAccountName, namespace);
-
-            JsonNode root = MAPPER.readTree(response.body());
-            String token = root.path(STATUS).path(K8S_TOKEN_STATUS_TOKEN).asText(null);
-            if (StringUtils.isBlank(token)) {
-                throw new IllegalStateException("TokenRequest response has no status.token");
-            }
-            Instant expiresAt = parseExpiration(root.path(STATUS).path(K8S_TOKEN_STATUS_EXPIRATION).asText(null));
-            return new TokenRequestResult(token, expiresAt);
-        } catch (IllegalStateException e) {
-            throw e;
+            HttpResponse<String> response = sendTokenRequest(url, audience, namespace, serviceAccountName);
+            return extractToken(response.body());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IllegalStateException("Local-dev TokenRequest interrupted", e);
+        } catch (IllegalStateException e) {
+            throw e;
         } catch (Exception e) {
             throw new IllegalStateException("Local-dev TokenRequest failed for SA '"
                     + serviceAccountName + "' in namespace '" + namespace + "'", e);
         }
     }
 
-    private void handleTokenRequestResponse(HttpResponse<String> response,
-                                            String serviceAccountName,
-                                            String namespace) {
+    private HttpResponse<String> sendTokenRequest(String url,
+                                                  String audience,
+                                                  String namespace,
+                                                  String serviceAccountName) throws IOException, InterruptedException {
+        String body = buildRequestBody(audience);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .timeout(HTTP_REQUEST_TIMEOUT)
+                .header(AUTHORIZATION_HEADER, BEARER_PREFIX + userToken)
+                .header(CONTENT_TYPE_HEADER, APPLICATION_JSON)
+                .header(ACCEPT_HEADER, APPLICATION_JSON)
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+
+        log.info("Requesting local-dev SA token: namespace={}, sa={}, audience={}, ttl={}s",
+                namespace, serviceAccountName, audience, TOKEN_REQUEST_EXPIRATION_SECONDS);
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         int status = response.statusCode();
-        if (status == 401 || status == 403) {
+        if (status == HttpURLConnection.HTTP_UNAUTHORIZED || status == HttpURLConnection.HTTP_FORBIDDEN) {
             throw new IllegalStateException(
                     "Local-dev TokenRequest unauthorized (HTTP " + status + ") for SA '"
                             + serviceAccountName + "' in namespace '" + namespace
@@ -101,6 +97,17 @@ public class TokenRequestClient {
                             + serviceAccountName + "' in namespace '" + namespace
                             + "'. Response: " + LocalDevUtils.truncateResponseBody(response.body()));
         }
+        return response;
+    }
+
+    private ServiceAccountToken extractToken(String responseBody) throws JsonProcessingException {
+        JsonNode root = MAPPER.readTree(responseBody);
+        String token = root.path(STATUS).path(K8S_TOKEN_STATUS_TOKEN).asText(null);
+        if (StringUtils.isBlank(token)) {
+            throw new IllegalStateException("TokenRequest response has no status.token");
+        }
+        Instant expiresAt = parseExpiration(root.path(STATUS).path(K8S_TOKEN_STATUS_EXPIRATION).asText(null));
+        return new ServiceAccountToken(token, expiresAt);
     }
 
     private String buildRequestBody(String audience) {
@@ -125,6 +132,6 @@ public class TokenRequestClient {
         return Instant.now().plusSeconds(TOKEN_REQUEST_EXPIRATION_SECONDS);
     }
 
-    public record TokenRequestResult(String token, Instant expiresAt) {
+    public record ServiceAccountToken(String token, Instant expiresAt) {
     }
 }

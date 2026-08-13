@@ -36,6 +36,10 @@ class KubeConfigHttpClientFactory {
                 .build();
     }
 
+    /**
+     * Local-dev only: the kube API / IdP uses a non-standard (private or self-signed) certificate,
+     * so TLS verification is skipped.
+     */
     private SSLContext createInsecureSslContext() {
         try {
             SSLContext sslContext = SSLContext.getInstance("TLS");

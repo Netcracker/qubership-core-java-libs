@@ -52,7 +52,7 @@ public final class LocalDevTokenSource implements TokenSource {
             String resolvedNamespace = requireNamespace();
             log.info("Local-dev TokenSource active: requesting token for audience={}, sa={}, namespace={}",
                     audience, serviceAccount, resolvedNamespace);
-            TokenRequestClient.TokenRequestResult result =
+            TokenRequestClient.ServiceAccountToken result =
                     client().requestToken(resolvedNamespace, serviceAccount, audience);
             cache.put(audience, new CachedToken(result.token(), result.expiresAt().minus(EXPIRY_SKEW)));
             return result.token();

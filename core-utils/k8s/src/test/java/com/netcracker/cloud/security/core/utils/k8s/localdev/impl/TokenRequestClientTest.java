@@ -58,7 +58,7 @@ class TokenRequestClientTest {
 
     @Test
     void requestTokenSuccess() {
-        TokenRequestClient.TokenRequestResult result = client().requestToken("ns1", "my-sa", "netcracker");
+        TokenRequestClient.ServiceAccountToken result = client().requestToken("ns1", "my-sa", "netcracker");
 
         assertEquals("minted-token", result.token());
         assertEquals(Instant.parse("2099-01-01T00:00:00Z"), result.expiresAt());
@@ -110,7 +110,7 @@ class TokenRequestClientTest {
             }
             """;
         TokenRequestClient client = client();
-        TokenRequestClient.TokenRequestResult result = client.requestToken("ns1", "my-sa", "netcracker");
+        TokenRequestClient.ServiceAccountToken result = client.requestToken("ns1", "my-sa", "netcracker");
         assertEquals("minted-token", result.token());
         assertNotNull(result.expiresAt());
     }
@@ -123,7 +123,7 @@ class TokenRequestClientTest {
                 .insecureSkipTlsVerify(true)
                 .build();
         TokenRequestClient client = new TokenRequestClient(credentials);
-        TokenRequestClient.TokenRequestResult result = client.requestToken("ns1", "my-sa", "netcracker");
+        TokenRequestClient.ServiceAccountToken result = client.requestToken("ns1", "my-sa", "netcracker");
         assertEquals("minted-token", result.token());
     }
 
