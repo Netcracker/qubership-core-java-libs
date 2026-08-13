@@ -30,7 +30,7 @@ import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDe
 public final class KubeLocalDevConfig {
 
     /** Well-known in-cluster Kubernetes issuer, used as fallback when OIDC discovery is unavailable. */
-    public static final String DEFAULT_KUBERNETES_ISSUER = "https://kubernetes.default.svc"; // NOSONAR java:S1075
+    public static final String DEFAULT_KUBERNETES_ISSUER = "https://kubernetes.default.svc"; // NOSONAR
     public static final String JWKS_PATH = "/openid/v1/jwks";
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
