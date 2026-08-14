@@ -19,6 +19,7 @@ final class LocalDevConstants {
     static final String NAMESPACE_ENV = "CLOUD_NAMESPACE";
 
     static final String APPLICATION_JSON = "application/json";
+    static final String APPLICATION_JWK_SET_JSON = "application/jwk-set+json";
     static final String APPLICATION_FORM_URLENCODED = "application/x-www-form-urlencoded";
 
     static final String AUTHORIZATION_HEADER = "Authorization";
@@ -51,7 +52,6 @@ final class LocalDevConstants {
     static final String OIDC_FORM_GRANT_TYPE = "grant_type";
 
     static final int MAX_ERROR_BODY_LENGTH = 500;
-    static final int JWT_BASE64_PAD_LENGTH = 4;
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     static final class KubeConfigFields {

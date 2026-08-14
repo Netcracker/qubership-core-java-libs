@@ -47,6 +47,25 @@ class LocalDevKubernetesOidcTest {
                 os.write(body);
             }
         });
+        server.createContext(JWKS_PATH, exchange -> {
+            String accept = exchange.getRequestHeaders().getFirst("Accept");
+            if (!"application/jwk-set+json".equals(accept)) {
+                byte[] body = "Not Acceptable".getBytes(StandardCharsets.UTF_8);
+                exchange.sendResponseHeaders(406, body.length);
+                try (OutputStream os = exchange.getResponseBody()) {
+                    os.write(body);
+                }
+                return;
+            }
+            byte[] body = """
+                    {"keys":[{"kty":"RSA","kid":"test","n":"abc","e":"AQAB"}]}
+                    """.getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "application/jwk-set+json");
+            exchange.sendResponseHeaders(200, body.length);
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(body);
+            }
+        });
         server.start();
         baseUrl = "http://127.0.0.1:" + server.getAddress().getPort();
     }
@@ -62,7 +81,9 @@ class LocalDevKubernetesOidcTest {
         LocalDevKubernetesOidc oidc = new LocalDevKubernetesOidc();
 
         assertEquals("https://kubernetes.default.svc", oidc.resolveIssuerClaimFromDiscovery());
+        assertEquals(baseUrl, oidc.apiServerUrl());
         assertEquals(baseUrl + JWKS_PATH, oidc.jwksUrl());
+        assertTrue(oidc.fetchJwks().contains("\"keys\""));
         assertTrue(oidc.isKubernetesIssuer("https://kubernetes.default.svc"));
         assertFalse(oidc.isKubernetesIssuer("https://accounts.google.com"));
     }

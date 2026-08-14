@@ -14,6 +14,7 @@ import java.util.Objects;
 
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.ACCEPT_HEADER;
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.APPLICATION_JSON;
+import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.APPLICATION_JWK_SET_JSON;
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.AUTHORIZATION_HEADER;
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.BEARER_PREFIX;
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.HTTP_REQUEST_TIMEOUT;
@@ -63,22 +64,26 @@ public final class KubeLocalDevConfig {
     }
 
     /**
+     * Fetches JWKS from the reachable kube API using TLS settings from kubeconfig.
+     */
+    public String fetchJwks() {
+        try {
+            return get(jwksUrl());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Local-dev JWKS fetch interrupted: " + jwksUrl(), e);
+        } catch (IOException e) {
+            throw new IllegalStateException("Local-dev JWKS fetch failed for " + jwksUrl(), e);
+        }
+    }
+
+    /**
      * Kubernetes API OIDC discovery and JWKS are served without authentication.
      */
-    public boolean isPublicOidcEndpoint(String url) {
-        if (StringUtils.isBlank(url)) {
-            return false;
-        }
-        try {
-            String path = URI.create(url).getRawPath();
-            if (StringUtils.isBlank(path)) {
-                return false;
-            }
-            return path.endsWith(WELL_KNOWN_OPENID_CONFIGURATION_PATH)
-                    || path.contains(JWKS_PATH);
-        } catch (IllegalArgumentException e) {
-            return url.contains(WELL_KNOWN_OPENID_CONFIGURATION_PATH) || url.contains(JWKS_PATH);
-        }
+    public boolean isPublicOidcEndpoint(URI uri) {
+        String path = uri.getRawPath();
+        return path.endsWith(WELL_KNOWN_OPENID_CONFIGURATION_PATH)
+                || path.contains(JWKS_PATH);
     }
 
     /**
@@ -114,12 +119,13 @@ public final class KubeLocalDevConfig {
     }
 
     private String sendGet(String url) throws IOException, InterruptedException {
+        URI uri = URI.create(url);
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-                .uri(URI.create(url))
+                .uri(uri)
                 .timeout(HTTP_REQUEST_TIMEOUT)
-                .header(ACCEPT_HEADER, APPLICATION_JSON)
+                .header(ACCEPT_HEADER, url.contains(JWKS_PATH) ? APPLICATION_JWK_SET_JSON : APPLICATION_JSON)
                 .GET();
-        if (!isPublicOidcEndpoint(url)) {
+        if (!isPublicOidcEndpoint(uri)) {
             requestBuilder.header(AUTHORIZATION_HEADER, BEARER_PREFIX + userToken());
         }
         HttpRequest request = requestBuilder.build();

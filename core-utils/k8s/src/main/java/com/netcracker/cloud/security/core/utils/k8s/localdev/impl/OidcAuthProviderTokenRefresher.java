@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netcracker.cloud.security.core.utils.k8s.localdev.LocalDevMode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,6 +32,13 @@ import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDe
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.OIDC_TOKEN_ID_TOKEN;
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.WELL_KNOWN_OPENID_CONFIGURATION_PATH;
 
+/**
+ * Refreshes OIDC tokens from kubeconfig {@code auth-provider} (Keycloak) for local development.
+ * <p>
+ * <strong>Local-dev only.</strong> Must not be used outside the {@code localdev} code path
+ * (e.g. {@link KubeConfigLoader}, {@link LocalDevTokenSource}, {@link KubeLocalDevConfig}).
+ * Uses trust-all TLS to reach corporate IdPs with private CAs; not suitable for production.
+ */
 @Slf4j
 class OidcAuthProviderTokenRefresher {
 
@@ -40,7 +46,7 @@ class OidcAuthProviderTokenRefresher {
     private static final Duration EXPIRY_SKEW = Duration.ofSeconds(60);
 
     String resolveToken(JsonNode authProviderConfig) {
-        return resolveToken(authProviderConfig, createHttpClient());
+        return resolveToken(authProviderConfig, new KubeConfigHttpClientFactory().createInsecureForLocalDev());
     }
 
     String resolveToken(JsonNode authProviderConfig, HttpClient httpClient) {
@@ -72,16 +78,6 @@ class OidcAuthProviderTokenRefresher {
             }
             throw e;
         }
-    }
-
-    private HttpClient createHttpClient() {
-        if (LocalDevMode.isEnabled()) {
-            return new KubeConfigHttpClientFactory().createInsecureForLocalDev();
-        }
-        return HttpClient.newBuilder()
-                .version(HttpClient.Version.HTTP_1_1)
-                .connectTimeout(HTTP_REQUEST_TIMEOUT)
-                .build();
     }
 
     private String discoverTokenEndpoint(HttpClient httpClient, String issuerUrl) {
@@ -161,7 +157,9 @@ class OidcAuthProviderTokenRefresher {
             if (parts.length < 2) {
                 return true;
             }
-            byte[] payload = Base64.getUrlDecoder().decode(LocalDevUtils.padBase64Url(parts[1]));
+            // Base64.getUrlDecoder() accepts unpadded input (RFC 4648 base64url segments have no '='),
+            // decoding the final 2- or 3-char unit as if padding were present.
+            byte[] payload = Base64.getUrlDecoder().decode(parts[1]);
             JsonNode claims = MAPPER.readTree(payload);
             JsonNode expNode = claims.path("exp");
             if (!expNode.isNumber()) {

@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.http.HttpResponse;
-import java.util.Base64;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class LocalDevUtils {
@@ -26,18 +25,6 @@ final class LocalDevUtils {
         return body.length() <= LocalDevConstants.MAX_ERROR_BODY_LENGTH
                 ? body
                 : body.substring(0, LocalDevConstants.MAX_ERROR_BODY_LENGTH) + "...";
-    }
-
-    /**
-     * Pads a Base64URL JWT segment so {@link Base64#getUrlDecoder()} accepts it.
-     * JWT payloads use Base64URL without padding; Java's decoder requires length % 4 == 0.
-     */
-    static String padBase64Url(String base64Url) {
-        int remainder = base64Url.length() % LocalDevConstants.JWT_BASE64_PAD_LENGTH;
-        if (remainder == 0) {
-            return base64Url;
-        }
-        return base64Url + "====".substring(remainder);
     }
 
     static boolean isFailed(int statusCode) {

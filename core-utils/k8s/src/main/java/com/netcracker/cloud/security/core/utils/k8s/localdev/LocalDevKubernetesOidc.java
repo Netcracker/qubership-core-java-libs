@@ -18,8 +18,19 @@ public final class LocalDevKubernetesOidc {
         return config.isKubernetesIssuer(issuerOrUrl);
     }
 
+    public String apiServerUrl() {
+        return config.apiServerUrl();
+    }
+
     public String jwksUrl() {
         return config.jwksUrl();
+    }
+
+    /**
+     * Fetches JWKS from the reachable kube API using TLS settings from kubeconfig.
+     */
+    public String fetchJwks() {
+        return config.fetchJwks();
     }
 
     /**

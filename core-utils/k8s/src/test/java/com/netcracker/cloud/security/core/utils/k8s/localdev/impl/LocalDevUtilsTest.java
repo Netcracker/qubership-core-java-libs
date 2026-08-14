@@ -44,12 +44,6 @@ class LocalDevUtilsTest {
     }
 
     @Test
-    void padBase64UrlPadsToMultipleOfFour() {
-        assertEquals("abcd", LocalDevUtils.padBase64Url("abcd"));
-        assertEquals("abc=", LocalDevUtils.padBase64Url("abc"));
-    }
-
-    @Test
     void isFailedDetectsNon2xx() {
         assertFalse(LocalDevUtils.isFailed(200));
         assertFalse(LocalDevUtils.isFailed(204));

@@ -8,11 +8,13 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class KubeLocalDevConfigTest {
@@ -49,7 +51,7 @@ class KubeLocalDevConfigTest {
         KubeLocalDevConfig config = configForServer(baseUrl);
 
         assertEquals("https://kubernetes.default.svc", config.resolveIssuerClaimFromDiscovery());
-        assertEquals(null, lastAuth.get());
+        assertNull(lastAuth.get());
         assertEquals(baseUrl + KubeLocalDevConfig.JWKS_PATH, config.jwksUrl());
         assertEquals("kube-user-token", config.userToken());
     }
@@ -58,9 +60,9 @@ class KubeLocalDevConfigTest {
     void isPublicOidcEndpointDetectsDiscoveryAndJwks() {
         KubeLocalDevConfig config = dummyConfig();
 
-        assertTrue(config.isPublicOidcEndpoint("https://api.example:6443/.well-known/openid-configuration"));
-        assertTrue(config.isPublicOidcEndpoint("https://api.example:6443/openid/v1/jwks"));
-        assertFalse(config.isPublicOidcEndpoint("https://api.example:6443/api/v1/namespaces/default"));
+        assertTrue(config.isPublicOidcEndpoint(URI.create("https://api.example:6443/.well-known/openid-configuration")));
+        assertTrue(config.isPublicOidcEndpoint(URI.create("https://api.example:6443/openid/v1/jwks")));
+        assertFalse(config.isPublicOidcEndpoint(URI.create("https://api.example:6443/api/v1/namespaces/default")));
     }
 
     @Test
@@ -93,8 +95,8 @@ class KubeLocalDevConfigTest {
     void isPublicOidcEndpointHandlesInvalidUrl() {
         KubeLocalDevConfig config = dummyConfig();
 
-        assertFalse(config.isPublicOidcEndpoint(""));
-        assertTrue(config.isPublicOidcEndpoint("not-a-valid-uri:///.well-known/openid-configuration"));
+        assertFalse(config.isPublicOidcEndpoint(URI.create("")));
+        assertTrue(config.isPublicOidcEndpoint(URI.create("not-a-valid-uri:///.well-known/openid-configuration")));
     }
 
     private KubeLocalDevConfig dummyConfig() {

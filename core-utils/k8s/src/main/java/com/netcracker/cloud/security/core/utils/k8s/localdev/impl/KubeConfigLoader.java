@@ -3,6 +3,7 @@ package com.netcracker.cloud.security.core.utils.k8s.localdev.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -13,8 +14,10 @@ import java.util.Iterator;
 
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevConstants.KubeConfigFields;
 import static com.netcracker.cloud.security.core.utils.k8s.localdev.impl.LocalDevUtils.getTextField;
+import static java.io.File.pathSeparator;
 import static org.apache.commons.lang3.StringUtils.firstNonBlank;
 
+@Slf4j
 class KubeConfigLoader {
 
     private static final ObjectMapper YAML_MAPPER = new ObjectMapper(new YAMLFactory());
@@ -76,10 +79,19 @@ class KubeConfigLoader {
         }
     }
 
+    /**
+     * Resolves the kubeconfig file path.
+     * <p>
+     * When {@code KUBECONFIG} lists multiple files (OS path-separated), only the <strong>first</strong>
+     * entry is used (kubectl merges configs; local-dev does not).
+     */
     Path resolveKubeConfigPath() {
         if (StringUtils.isNotBlank(kubeConfigEnv)) {
-            // KUBECONFIG may be a list; use the first entry
-            String first = kubeConfigEnv.split(java.io.File.pathSeparator)[0].trim();
+            String[] kubeConfigs = kubeConfigEnv.split(pathSeparator);
+            String first = kubeConfigs[0].trim();
+            if (kubeConfigs.length > 1) {
+                log.warn("Local-dev takes only the first kubeconfig: {}", first);
+            }
             return Path.of(first);
         }
         return Path.of(userHome, ".kube", "config");
