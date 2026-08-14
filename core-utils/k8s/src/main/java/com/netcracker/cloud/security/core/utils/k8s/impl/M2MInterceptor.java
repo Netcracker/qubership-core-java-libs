@@ -73,9 +73,8 @@ public final class M2MInterceptor implements Interceptor {
             }
             return response;
         }
-        final Request fallbackRequest = alterRequest(request, fallbackAuthHeaderSupplier.get(), true);
-        log.debug("Sending http request to {} using keycloak token", fallbackRequest.url());
-        return chain.proceed(fallbackRequest);
+        log.debug("Sending http request to {}", request.url());
+        return chain.proceed(request);
     }
 
     private Response doRequestFallback(final Request fallbackRequest,
