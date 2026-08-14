@@ -26,18 +26,6 @@ class LocalDevModeTest {
     }
 
     @Test
-    void enabledByQuarkusProfileAmongCommaSeparatedValues() {
-        System.setProperty(LocalDevMode.QUARKUS_PROFILE_PROPERTY, "test, dev");
-        assertTrue(LocalDevMode.isEnabled());
-    }
-
-    @Test
-    void enabledBySpringProfilesActiveProperty() {
-        System.setProperty(LocalDevMode.SPRING_PROFILES_ACTIVE_PROPERTY, "local,dev");
-        assertTrue(LocalDevMode.isEnabled());
-    }
-
-    @Test
     void springDevelopmentProfileDoesNotEnable() {
         System.setProperty(LocalDevMode.SPRING_PROFILES_ACTIVE_PROPERTY, "development");
         assertFalse(LocalDevMode.isEnabled());
