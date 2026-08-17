@@ -1,7 +1,7 @@
 package com.netcracker.cloud.dbaas.client.config;
 
-import com.netcracker.cloud.dbaas.client.cassandra.migration.MigrationExecutorImpl;
 import com.netcracker.cloud.dbaas.client.cassandra.migration.MigrationExecutor;
+import com.netcracker.cloud.dbaas.client.cassandra.migration.MigrationExecutorImpl;
 import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.*;
 import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.ak.AmazonKeyspacesSettings;
 import com.netcracker.cloud.dbaas.client.cassandra.migration.model.settings.ak.TableStatusCheckSettings;
@@ -11,11 +11,10 @@ import com.netcracker.cloud.dbaas.client.cassandra.migration.service.extension.A
 import com.netcracker.cloud.dbaas.client.cassandra.migration.service.resource.SchemaVersionResourceFinderRegistry;
 import com.netcracker.cloud.dbaas.client.config.properties.DbaasCassandraMigrationProperties;
 import com.netcracker.cloud.dbaas.client.service.migration.SpringBootJarSchemaVersionResourceFinder;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,59 +22,64 @@ import static com.netcracker.cloud.dbaas.client.cassandra.migration.service.reso
 
 @Configuration
 @ConditionalOnProperty(value = "dbaas.cassandra.migration.enabled", havingValue = "true", matchIfMissing = true)
-@ConfigurationPropertiesScan("com.netcracker.cloud.dbaas.client.config.properties")
 public class DbaasCassandraMigrationConfiguration {
+
+    @Bean
+    @ConfigurationProperties("dbaas.cassandra.migration")
+    public DbaasCassandraMigrationProperties dbaasCassandraMigrationProperties() {
+        return new DbaasCassandraMigrationProperties();
+    }
 
     @Bean
     public SchemaMigrationSettings schemaMigrationSettings(
             DbaasCassandraMigrationProperties properties
     ) {
         SchemaMigrationSettings.SchemaMigrationSettingsBuilder builder = SchemaMigrationSettings.builder()
-                .withSchemaHistoryTableName(properties.schemaHistoryTableName());
+                .withSchemaHistoryTableName(properties.getSchemaHistoryTableName());
 
-        if (properties.version() != null) {
+        if (properties.getVersion() != null) {
             VersionSettings versionSettings = VersionSettings.builder()
-                    .withSettingsResourcePath(properties.version().settingsResourcePath())
-                    .withDirectoryPath(properties.version().directoryPath())
-                    .withResourceNamePattern(properties.version().resourceNamePattern())
+                    .withSettingsResourcePath(properties.getVersion().getSettingsResourcePath())
+                    .withDirectoryPath(properties.getVersion().getDirectoryPath())
+                    .withResourceNamePattern(properties.getVersion().getResourceNamePattern())
                     .build();
             builder = builder.withVersionSettings(versionSettings);
         }
 
-        if (properties.template() != null) {
+        if (properties.getTemplate() != null) {
             TemplateSettings templateSettings = TemplateSettings.builder()
-                    .withDefinitionsResourcePath(properties.template().definitionsResourcePath())
+                    .withDefinitionsResourcePath(properties.getTemplate().getDefinitionsResourcePath())
                     .build();
             builder = builder.withTemplateSettings(templateSettings);
         }
 
-        if (properties.lock() != null) {
+        if (properties.getLock() != null) {
             LockSettings lockSettings = LockSettings.builder()
-                    .withTableName(properties.lock().tableName())
-                    .withLockLifetime(properties.lock().lockLifetime())
-                    .withExtensionFailDelayRetry(properties.lock().extensionFailRetryDelay())
-                    .withExtensionPeriod(properties.lock().extensionPeriod())
-                    .withRetryDelay(properties.lock().retryDelay())
+                    .withTableName(properties.getLock().getTableName())
+                    .withLockLifetime(properties.getLock().getLockLifetime())
+                    .withExtensionFailDelayRetry(properties.getLock().getExtensionFailRetryDelay())
+                    .withExtensionPeriod(properties.getLock().getExtensionPeriod())
+                    .withRetryDelay(properties.getLock().getRetryDelay())
                     .build();
             builder = builder.withLockSettings(lockSettings);
         }
 
-        if (properties.schemaAgreement() != null) {
+        if (properties.getSchemaAgreement() != null) {
             SchemaAgreementSettings schemaAgreementSettings =
                     SchemaAgreementSettings.builder()
-                            .withAwaitRetryDelay(properties.schemaAgreement().awaitRetryDelay())
+                            .withAwaitRetryDelay(properties.getSchemaAgreement().getAwaitRetryDelay())
                             .build();
             builder = builder.withSchemaAgreement(schemaAgreementSettings);
         }
 
-        if (properties.amazonKeyspaces() != null) {
+        if (properties.getAmazonKeyspaces() != null) {
             AmazonKeyspacesSettings.AmazonKeyspacesSettingsBuilder akBuilder = AmazonKeyspacesSettings.builder()
-                    .enabled(properties.amazonKeyspaces().enabled());
-            if (properties.amazonKeyspaces().tableStatusCheck() != null) {
+                    .enabled(properties.getAmazonKeyspaces().isEnabled());
+            if (properties.getAmazonKeyspaces().getTableStatusCheck() != null) {
                 akBuilder.withTableStatusCheck(
                         TableStatusCheckSettings.builder()
-                                .withPreDelay(properties.amazonKeyspaces().tableStatusCheck().preDelay())
-                                .withRetryDelay(properties.amazonKeyspaces().tableStatusCheck().retryDelay())
+                                .withPreDelay(properties.getAmazonKeyspaces().getTableStatusCheck().getPreDelay())
+                                .withRetryDelay(properties.getAmazonKeyspaces().getTableStatusCheck().getRetryDelay())
                                 .build()
                 );
             }
