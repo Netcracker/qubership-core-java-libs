@@ -44,7 +44,7 @@
         <!-- core-blue-green-state-monitor (pure-java module) -->
         <cloud-core.blue-green-monitor.version>2.1.10</cloud-core.blue-green-monitor.version>
         <!-- dbaas-client (pure-java modules) -->
-        <cloud-core.dbaas-client.version>9.1.10</cloud-core.dbaas-client.version>
+        <cloud-core.dbaas-client.version>9.1.11</cloud-core.dbaas-client.version>
         <!-- maas-client (pure-java modules) -->
         <cloud-core.maas-client.version>12.2.10</cloud-core.maas-client.version>
         <!-- maas-declarative-client-commons -->
