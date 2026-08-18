@@ -37,6 +37,9 @@
         <!-- Jackson -->
         <jackson-bom.version>2.21.5</jackson-bom.version>
 
+        <!-- Metrics -->
+        <micrometer-bom.version>1.16.6</micrometer-bom.version>
+
         <!-- Annotations -->
         <jetbrains-annotations.version>26.0.2</jetbrains-annotations.version>
 
@@ -115,6 +118,20 @@
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers-bom</artifactId>
                 <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!--
+            Pinned to the version Quarkus 3.33.3.1 ships, so both stacks build against the same Micrometer. Spring Boot
+            4.1.0 would otherwise raise the Spring side to 1.17.0, which also drops the transitive LatencyUtils
+            dependency that AbstractTimer still declares a field for, breaking Mockito spies on Timer. This import is
+            declared before the Spring Boot and Quarkus BOMs, so it wins for both stacks. Remove the pin once Quarkus
+            ships the Micrometer version that Spring Boot manages.
+            -->
+            <dependency>
+                <groupId>io.micrometer</groupId>
+                <artifactId>micrometer-bom</artifactId>
+                <version>${micrometer-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
