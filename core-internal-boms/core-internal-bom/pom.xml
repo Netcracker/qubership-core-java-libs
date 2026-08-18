@@ -47,10 +47,6 @@
         <!-- Metrics -->
         <micrometer-bom.version>1.16.6</micrometer-bom.version>
 
-        <!-- Tracing -->
-        <!-- Spring Boot 4.1.0: 1.62.0 | Quarkus 3.33.3.1: 1.57.0 -->
-        <opentelemetry-bom.version>1.57.0</opentelemetry-bom.version>
-
         <!-- Annotations -->
         <jetbrains-annotations.version>26.0.2</jetbrains-annotations.version>
 
@@ -180,17 +176,14 @@
                 <scope>import</scope>
             </dependency>
             <!--
-            OpenTelemetry, the MongoDB driver, gRPC and the Kotlin standard library are pinned for the same reason as
-            Micrometer above: shared pure-Java modules compile against whatever this BOM manages, and the Quarkus
-            runtime then supplies its own version. See the version properties for what each platform ships.
+            The MongoDB driver, gRPC and the Kotlin standard library are pinned for the same reason as Micrometer
+            above: shared pure-Java modules compile against whatever this BOM manages, and the Quarkus runtime then
+            supplies its own version. See the version properties for what each platform ships.
+
+            OpenTelemetry is deliberately absent. No pure-Java module depends on it, and Spring Boot has to keep
+            deciding the core version: the instrumentation BOMs imported by maas-declarative-client-spring are built
+            against the core version Spring Boot manages, and a mismatch fails at context startup, not at compile time.
             -->
-            <dependency>
-                <groupId>io.opentelemetry</groupId>
-                <artifactId>opentelemetry-bom</artifactId>
-                <version>${opentelemetry-bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
             <dependency>
                 <groupId>org.mongodb</groupId>
                 <artifactId>mongodb-driver-bom</artifactId>
