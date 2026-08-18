@@ -20,7 +20,7 @@
         <jacoco.plugin.version>0.8.15</jacoco.plugin.version>
         <skipIT>true</skipIT>
 
-        <cloud-core.core-internal-boms.version>1.1.0-SNAPSHOT</cloud-core.core-internal-boms.version>
+        <cloud-core.core-internal-boms.version>1.1.0</cloud-core.core-internal-boms.version>
     </properties>
 
     <modules>
