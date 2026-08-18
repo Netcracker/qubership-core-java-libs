@@ -49,4 +49,29 @@ class M2MDbaaSClientTest {
         assertNotNull(client);
         assertEquals(3, clientValue.interceptors().size());
     }
+
+    @Test
+    void testAggregatorAddressIsUsedWhenK8sM2mIsEnabled() throws Exception {
+        assertEquals(DB_AGGREGATOR_URL, address(m2MDbaaSClient.build()));
+    }
+
+    @Test
+    void testAgentAddressIsUsedWhenK8sM2mIsDisabled() throws Exception {
+        environmentVariables.set("KUBERNETES_M2M_ENABLED", "false");
+
+        assertEquals(DB_AGENT_URL, address(m2MDbaaSClient.build()));
+    }
+
+    @Test
+    void testAgentAddressIsUsedWhenAggregatorAddressIsMissing() throws Exception {
+        m2MDbaaSClient.apiDbaasAddress = Optional.empty();
+
+        assertEquals(DB_AGENT_URL, address(m2MDbaaSClient.build()));
+    }
+
+    private String address(DbaasClient client) throws Exception {
+        Field addressField = client.getClass().getDeclaredField("address");
+        addressField.setAccessible(true);
+        return (String) addressField.get(client);
+    }
 }
