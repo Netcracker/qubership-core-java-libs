@@ -26,16 +26,16 @@
 
     <properties>
         <!-- Imported sub-BOMs -->
-        <cloud-core.maas-declarative-client-spring.version>7.2.0-SNAPSHOT</cloud-core.maas-declarative-client-spring.version>
-        <cloud-core.framework-extensions.version>7.2.0-SNAPSHOT</cloud-core.framework-extensions.version>
-        <cloud-core.dbaas-client.version>9.2.0-SNAPSHOT</cloud-core.dbaas-client.version>
-        <cloud-core.context-propagation.version>8.3.0-SNAPSHOT</cloud-core.context-propagation.version>
-        <cloud-core.mongo-evolution.version>8.2.0-SNAPSHOT</cloud-core.mongo-evolution.version>
-        <cloud-core.restclient.version>7.2.0-SNAPSHOT</cloud-core.restclient.version>
-        <cloud-core.rest-libraries.version>7.4.0-SNAPSHOT</cloud-core.rest-libraries.version>
-        <cloud-core.blue-green-monitor.version>2.2.0-SNAPSHOT</cloud-core.blue-green-monitor.version>
-        <cloud-core.maas-client-spring.version>9.2.0-SNAPSHOT</cloud-core.maas-client-spring.version>
-        <cloud-core.microservice-framework.version>8.2.0-SNAPSHOT</cloud-core.microservice-framework.version>
+        <cloud-core.maas-declarative-client-spring.version>7.2.0</cloud-core.maas-declarative-client-spring.version>
+        <cloud-core.framework-extensions.version>7.2.0</cloud-core.framework-extensions.version>
+        <cloud-core.dbaas-client.version>9.2.0</cloud-core.dbaas-client.version>
+        <cloud-core.context-propagation.version>8.3.0</cloud-core.context-propagation.version>
+        <cloud-core.mongo-evolution.version>8.2.0</cloud-core.mongo-evolution.version>
+        <cloud-core.restclient.version>7.2.0</cloud-core.restclient.version>
+        <cloud-core.rest-libraries.version>7.4.0</cloud-core.rest-libraries.version>
+        <cloud-core.blue-green-monitor.version>2.2.0</cloud-core.blue-green-monitor.version>
+        <cloud-core.maas-client-spring.version>9.2.0</cloud-core.maas-client-spring.version>
+        <cloud-core.microservice-framework.version>8.2.0</cloud-core.microservice-framework.version>
     </properties>
 
     <dependencyManagement>
