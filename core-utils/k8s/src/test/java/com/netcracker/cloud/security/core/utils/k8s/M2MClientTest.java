@@ -1,6 +1,7 @@
 package com.netcracker.cloud.security.core.utils.k8s;
 
 import com.netcracker.cloud.security.core.utils.k8s.impl.M2MInterceptor;
+import com.netcracker.cloud.security.core.utils.k8s.impl.UrlCache;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Test;
@@ -10,9 +11,12 @@ import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mockStatic;
 
 @ExtendWith(SystemStubsExtension.class)
 class M2MClientTest {
@@ -89,6 +93,98 @@ class M2MClientTest {
     void testAudienceMustNotBeNull() {
         M2MClient.M2MClientBuilder builder = M2MClient.builder();
         assertThrows(NullPointerException.class, () -> builder.audience(null));
+    }
+
+    @Test
+    void testAudienceDefaultsToNetcracker() {
+        try (var tokenSource = mockStatic(KubernetesAudienceToken.class)) {
+            tokenSource.when(() -> KubernetesAudienceToken.getToken(anyString())).thenReturn("k8s-token");
+
+            M2MInterceptor interceptor = findM2mInterceptor(M2MClient.builder()
+                    .keycloakTokenSupplier(TOKEN_SUPPLIER)
+                    .build());
+
+            assertEquals("Bearer k8s-token", k8sAuthHeader(interceptor));
+            tokenSource.verify(() -> KubernetesAudienceToken.getToken(AudienceName.NETCRACKER));
+        }
+    }
+
+    @Test
+    void testAudienceIsPassedToTheKubernetesTokenSource() {
+        for (String audience : new String[]{AudienceName.DBAAS, AudienceName.MAAS, AudienceName.NETCRACKER}) {
+            try (var tokenSource = mockStatic(KubernetesAudienceToken.class)) {
+                tokenSource.when(() -> KubernetesAudienceToken.getToken(anyString())).thenReturn("k8s-token");
+
+                M2MInterceptor interceptor = findM2mInterceptor(M2MClient.builder()
+                        .audience(audience)
+                        .keycloakTokenSupplier(TOKEN_SUPPLIER)
+                        .build());
+
+                assertEquals("Bearer k8s-token", k8sAuthHeader(interceptor));
+                tokenSource.verify(() -> KubernetesAudienceToken.getToken(audience));
+            }
+        }
+    }
+
+    @Test
+    void testKeycloakTokenIsSentAsBearerHeader() {
+        M2MInterceptor interceptor = findM2mInterceptor(M2MClient.builder()
+                .keycloakTokenSupplier(TOKEN_SUPPLIER)
+                .build());
+
+        assertEquals("Bearer test-token", fallbackAuthHeader(interceptor));
+    }
+
+    @Test
+    void testTokenSuppliersAreCalledPerRequestAndNotAtBuildTime() {
+        AtomicInteger calls = new AtomicInteger();
+        M2MInterceptor interceptor = findM2mInterceptor(M2MClient.builder()
+                .keycloakTokenSupplier(() -> "token-" + calls.incrementAndGet())
+                .build());
+
+        assertEquals(0, calls.get(), "the token must not be requested while the client is being built");
+        assertEquals("Bearer token-1", fallbackAuthHeader(interceptor));
+        assertEquals("Bearer token-2", fallbackAuthHeader(interceptor));
+    }
+
+    @Test
+    void testAgentUrlWithoutSchemeIsRejected() {
+        M2MClient.M2MClientBuilder builder = M2MClient.builder()
+                .agentUrl("localhost:8080")
+                .keycloakTokenSupplier(TOKEN_SUPPLIER);
+
+        assertThrows(IllegalArgumentException.class, builder::build);
+    }
+
+    @Test
+    void testEachClientGetsItsOwnUrlCache() {
+        M2MClient.M2MClientBuilder builder = M2MClient.builder().keycloakTokenSupplier(TOKEN_SUPPLIER);
+
+        UrlCache first = (UrlCache) getFieldValue(findM2mInterceptor(builder.build()), "urlCache");
+        UrlCache second = (UrlCache) getFieldValue(findM2mInterceptor(builder.build()), "urlCache");
+
+        assertNotNull(first);
+        assertNotSame(first, second, "clients must not share the fallback decision cache");
+    }
+
+    @Test
+    void testBuilderMethodsReturnTheSameBuilder() {
+        M2MClient.M2MClientBuilder builder = M2MClient.builder();
+
+        assertSame(builder, builder.audience(AudienceName.DBAAS));
+        assertSame(builder, builder.agentUrl("http://dbaas-agent:8080"));
+        assertSame(builder, builder.keycloakTokenSupplier(TOKEN_SUPPLIER));
+        assertSame(builder, builder.k8sM2mEnabled(true));
+    }
+
+    @SuppressWarnings("unchecked")
+    private String k8sAuthHeader(M2MInterceptor interceptor) {
+        return ((Supplier<String>) getFieldValue(interceptor, "k8sAuthHeaderSupplier")).get();
+    }
+
+    @SuppressWarnings("unchecked")
+    private String fallbackAuthHeader(M2MInterceptor interceptor) {
+        return ((Supplier<String>) getFieldValue(interceptor, "fallbackAuthHeaderSupplier")).get();
     }
 
     private M2MInterceptor buildInterceptor(M2MClient.M2MClientBuilder builder) {
