@@ -25,10 +25,17 @@
     </scm>
 
     <properties>
+        <!--
+        Cross-stack pins below carry a note with the version each platform manages, so the next Spring Boot or Quarkus
+        upgrade shows whether the pin still buys anything. Drop a pin once both platforms agree on the version.
+        -->
+
         <!-- Logging -->
         <slf4j.version>2.0.18</slf4j.version>
         <logback.version>1.5.34</logback.version>
         <log4j.version>2.26.0</log4j.version>
+        <!-- Spring Boot 4.1.0: 3.6.3.Final | Quarkus 3.33.3.1: 3.6.2.Final -->
+        <jboss-logging.version>3.6.2.Final</jboss-logging.version>
 
         <!-- Build / annotation processing -->
         <lombok.version>1.18.46</lombok.version>
@@ -40,6 +47,10 @@
         <!-- Metrics -->
         <micrometer-bom.version>1.16.6</micrometer-bom.version>
 
+        <!-- Tracing -->
+        <!-- Spring Boot 4.1.0: 1.62.0 | Quarkus 3.33.3.1: 1.57.0 -->
+        <opentelemetry-bom.version>1.57.0</opentelemetry-bom.version>
+
         <!-- Annotations -->
         <jetbrains-annotations.version>26.0.2</jetbrains-annotations.version>
 
@@ -47,9 +58,15 @@
         <okhttp3.version>4.12.0</okhttp3.version>
         <okio.version>3.17.0</okio.version>
 
-        <!-- JSON -->
+        <!-- JSON / YAML / protobuf -->
         <gson.version>2.13.2</gson.version>
         <jsonpath.version>2.10.0</jsonpath.version>
+        <!-- Spring Boot 4.1.0: 2.6 | Quarkus 3.33.3.1: 2.5 -->
+        <snakeyaml.version>2.5</snakeyaml.version>
+        <!-- Spring Boot 4.1.0: 4.34.2 | Quarkus 3.33.3.1: 4.33.2 -->
+        <protobuf.version>4.33.2</protobuf.version>
+        <!-- Spring Boot 4.1.0: 1.80.0 | Quarkus 3.33.3.1: 1.81.0. gRPC and protobuf move together. -->
+        <grpc-bom.version>1.81.0</grpc-bom.version>
 
         <!-- Jakarta EE APIs -->
         <!-- This block explicitly pins Jakarta EE API versions to override the ones brought in by the
@@ -58,6 +75,12 @@
         <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
         <hibernate-validator.version>9.1.0.Final</hibernate-validator.version>
+        <!-- Spring Boot 4.1.0: 3.0.2 | Quarkus 3.33.3.1: 3.0.1 -->
+        <jakarta.json.bind-api.version>3.0.1</jakarta.json.bind-api.version>
+        <!-- Spring Boot 4.1.0: 4.0.9 | Quarkus 3.33.3.1: 4.0.8 -->
+        <jaxb.version>4.0.8</jaxb.version>
+        <!-- Spring Boot 4.1.0: 1.7.3 | Quarkus 3.33.3.1: 1.7.1. Reflection helper behind hibernate-validator. -->
+        <classmate.version>1.7.1</classmate.version>
 
         <!-- Apache Commons -->
         <commons-lang3.version>3.20.0</commons-lang3.version>
@@ -67,8 +90,16 @@
         <!-- HTTP clients (Apache) -->
         <apache.httpclient5.version>5.6.1</apache.httpclient5.version>
 
+        <!-- Databases -->
+        <!-- Spring Boot 4.1.0: 5.8.0 | Quarkus 3.33.3.1: 5.6.4 -->
+        <mongodb-driver-bom.version>5.6.4</mongodb-driver-bom.version>
+        <!-- Spring Boot 4.1.0: 42.7.11 | Quarkus 3.33.3.1: 42.7.13. Quarkus leads here, so the pin moves the JDBC
+             driver up on the Spring side. -->
+        <postgresql.version>42.7.13</postgresql.version>
+
         <!-- Database migration -->
-        <flyway.version>12.10.0</flyway.version>
+        <!-- Spring Boot 4.1.0: 12.4.0 | Quarkus 3.33.3.1: 12.0.0 -->
+        <flyway.version>12.0.0</flyway.version>
 
         <!-- Other compile/runtime -->
         <guava.version>33.5.0-jre</guava.version>
@@ -77,14 +108,26 @@
         <undertow.version>2.3.26.Final</undertow.version>
         <reflections.version>0.10.2</reflections.version>
         <awaitility.version>4.3.0</awaitility.version>
+        <!-- Spring Boot 4.1.0: 3.2.4 | Quarkus 3.33.3.1: 3.2.3 -->
+        <caffeine.version>3.2.3</caffeine.version>
+        <!-- Spring Boot 4.1.0: 2.3.21 | Quarkus 3.33.3.1: 2.3.10 -->
+        <kotlin-bom.version>2.3.10</kotlin-bom.version>
 
         <!-- Messaging -->
         <rabbitmq.version>5.30.0</rabbitmq.version>
         <rabbitmq-mock.version>1.2.0</rabbitmq-mock.version>
+        <!-- Spring Boot 4.1.0: 4.2.1 | Quarkus 3.33.3.1: 4.1.2. Also replaces the local 4.2.0 pins that
+             maas-client and maas-declarative-client-commons carry. -->
+        <kafka.version>4.1.2</kafka.version>
 
         <!-- Test -->
         <junit-bom.version>6.0.3</junit-bom.version>
         <mockito.version>5.21.0</mockito.version>
+        <!-- Spring Boot 4.1.0: 1.18.10 | Quarkus 3.33.3.1: 1.17.8. Kept on the branch Mockito 5.21.0 was built
+             against; revisit together with mockito.version. -->
+        <byte-buddy.version>1.17.8</byte-buddy.version>
+        <!-- Spring Boot 4.1.0: 3.0 | Quarkus 3.33.3.1: 2.2. REST Assured on the Quarkus side needs 2.x. -->
+        <hamcrest.version>2.2</hamcrest.version>
         <assertj.version>3.27.7</assertj.version>
         <testcontainers.version>2.0.5</testcontainers.version>
         <system-stubs.version>2.1.8</system-stubs.version>
@@ -132,6 +175,39 @@
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-bom</artifactId>
                 <version>${micrometer-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!--
+            OpenTelemetry, the MongoDB driver, gRPC and the Kotlin standard library are pinned for the same reason as
+            Micrometer above: shared pure-Java modules compile against whatever this BOM manages, and the Quarkus
+            runtime then supplies its own version. See the version properties for what each platform ships.
+            -->
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-bom</artifactId>
+                <version>${opentelemetry-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongodb-driver-bom</artifactId>
+                <version>${mongodb-driver-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-bom</artifactId>
+                <version>${grpc-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-bom</artifactId>
+                <version>${kotlin-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -187,6 +263,11 @@
                 <artifactId>log4j-slf4j-impl</artifactId>
                 <version>${log4j.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.logging</groupId>
+                <artifactId>jboss-logging</artifactId>
+                <version>${jboss-logging.version}</version>
             </dependency>
 
             <!-- ===== Build / annotation processing ===== -->
@@ -245,6 +326,21 @@
                 <artifactId>json-path</artifactId>
                 <version>${jsonpath.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java-util</artifactId>
+                <version>${protobuf.version}</version>
+            </dependency>
 
             <!-- ===== Jakarta EE APIs ===== -->
             <dependency>
@@ -266,6 +362,31 @@
                 <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate-validator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.json.bind</groupId>
+                <artifactId>jakarta.json.bind-api</artifactId>
+                <version>${jakarta.json.bind-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml</groupId>
+                <artifactId>classmate</artifactId>
+                <version>${classmate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-core</artifactId>
+                <version>${jaxb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${jaxb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>txw2</artifactId>
+                <version>${jaxb.version}</version>
             </dependency>
 
             <!-- ===== Apache Commons ===== -->
@@ -299,11 +420,23 @@
                 <version>${flyway.version}</version>
             </dependency>
 
+            <!-- ===== Databases ===== -->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
+            </dependency>
+
             <!-- ===== Other compile/runtime ===== -->
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${caffeine.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.reflections</groupId>
@@ -323,6 +456,37 @@
                 <version>${rabbitmq-mock.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>${kafka.version}</version>
+            </dependency>
+            <!-- spring-kafka-test pulls the test-classified jar, which is a separate managed key. Spring Boot 4.1.0
+                 manages it at 4.2.1; Quarkus does not manage it at all. -->
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>${kafka.version}</version>
+                <classifier>test</classifier>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-streams</artifactId>
+                <version>${kafka.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka_2.13</artifactId>
+                <version>${kafka.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-streams-test-utils</artifactId>
+                <version>${kafka.version}</version>
+                <scope>test</scope>
+            </dependency>
 
             <!-- ===== Test ===== -->
             <dependency>
@@ -336,6 +500,21 @@
                 <artifactId>mockito-junit-jupiter</artifactId>
                 <version>${mockito.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy</artifactId>
+                <version>${byte-buddy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy-agent</artifactId>
+                <version>${byte-buddy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest</artifactId>
+                <version>${hamcrest.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.assertj</groupId>
