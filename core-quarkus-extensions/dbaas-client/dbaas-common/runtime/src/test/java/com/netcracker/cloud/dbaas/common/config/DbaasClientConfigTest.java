@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 @TestProfile(DbaasClientConfigTest.PropertiesProviderTestProfile.class)
@@ -26,7 +25,7 @@ class DbaasClientConfigTest {
 
     @Test
     void testDbaasClientConfigBuild() {
-        assertTrue(dbaasClientConfig.dbaasAgentUrl().isEmpty());
+        assertEquals(DbaasClientConfig.DEFAULT_DBAAS_AGENT_ADDRESS, dbaasClientConfig.dbaasAgentUrl());
         assertEquals(DBAAS_AGGREGATOR_ADDRESS, dbaasClientConfig.dbaasUrl().get());
         assertEquals(DBAAS_USERNAME, dbaasClientConfig.dbaasUsername().get());
         assertEquals(DBAAS_PASSWORD, dbaasClientConfig.dbaasPassword().get());

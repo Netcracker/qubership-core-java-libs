@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.config;
 
-import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
+import com.netcracker.cloud.security.core.utils.k8s.M2MClient;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class SpringDbaasApiProperties {
     private int dbaasAsyncRetryTimeoutInS;
 
     public String getAddress() {
-        if(!M2MClientFactory.isK8sM2mEnabled()) {
+        if(!M2MClient.isK8sM2mEnabled()) {
             return dbaasAgentAddress.orElse(DEFAULT_DBAAS_AGENT_URL);
         }
         if(dbaasAddress.isEmpty()) {

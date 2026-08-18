@@ -15,8 +15,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(SystemStubsExtension.class)
 class M2MDbaaSClientTest {
@@ -29,13 +27,12 @@ class M2MDbaaSClientTest {
 
     @BeforeEach
     void setUp() {
-        DbaasClientConfig dbaasConfig = mock(DbaasClientConfig.class);
-        when(dbaasConfig.dbaasAgentUrl()).thenReturn(Optional.of(DB_AGENT_URL));
-        when(dbaasConfig.dbaasUrl()).thenReturn(Optional.of(DB_AGGREGATOR_URL));
         environmentVariables.set("KUBERNETES_M2M_ENABLED", "true");
 
-        m2MDbaaSClient = new M2MDbaaSClient(dbaasConfig);
+        m2MDbaaSClient = new M2MDbaaSClient();
         m2MDbaaSClient.apiDbaasAddress = Optional.of(DB_AGGREGATOR_URL);
+        m2MDbaaSClient.dbaasAgentUrl = DB_AGENT_URL;
+        m2MDbaaSClient.dbaasOkHttpClient = new DbaasClientProducer().dbaasOkHttpClient(DB_AGENT_URL);
     }
 
     @AfterEach

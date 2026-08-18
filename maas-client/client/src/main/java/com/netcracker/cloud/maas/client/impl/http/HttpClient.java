@@ -2,7 +2,8 @@ package com.netcracker.cloud.maas.client.impl.http;
 
 import com.netcracker.cloud.context.propagation.core.RequestContextPropagation;
 import com.netcracker.cloud.maas.client.impl.Env;
-import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
+import com.netcracker.cloud.security.core.utils.k8s.AudienceName;
+import com.netcracker.cloud.security.core.utils.k8s.M2MClient;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
@@ -12,11 +13,17 @@ public class HttpClient {
     private final OkHttpClient httpClient;
 
     public static HttpClient getM2mClient(Supplier<String> tokenSupplier) {
-        return new HttpClient(M2MClientFactory.getM2mOkHttpClient(tokenSupplier));
+        return new HttpClient(M2MClient.builder()
+                .keycloakTokenSupplier(tokenSupplier)
+                .build());
     }
 
     public static HttpClient getMaasClient(Supplier<String> tokenSupplier) {
-        return new HttpClient(M2MClientFactory.getMaasOkHttpClient(tokenSupplier));
+        return new HttpClient(M2MClient.builder()
+                .audience(AudienceName.MAAS)
+                .agentUrl(Env.maasAgentUrl())
+                .keycloakTokenSupplier(tokenSupplier)
+                .build());
     }
 
     private HttpClient(OkHttpClient client) {

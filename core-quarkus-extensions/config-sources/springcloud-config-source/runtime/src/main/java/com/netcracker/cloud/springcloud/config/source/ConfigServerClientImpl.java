@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.netcracker.cloud.quarkus.security.auth.M2MManager;
+import com.netcracker.cloud.security.core.utils.k8s.M2MClient;
 import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
-import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import okhttp3.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.microprofile.config.Config;
@@ -37,7 +37,9 @@ public class ConfigServerClientImpl implements ConfigServerClient {
 
     public ConfigServerClientImpl(String csUrl) throws MalformedURLException {
         final Config cfg = ConfigProvider.getConfig();
-        client = M2MClientFactory.getM2mOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue())
+        client = M2MClient.builder()
+                .keycloakTokenSupplier(() -> M2MManager.getInstance().getToken().getTokenValue())
+                .build()
                 .newBuilder()
                 .connectionSpecs(Collections.singletonList(
                         csUrl.startsWith("https") ? ConnectionSpec.COMPATIBLE_TLS : ConnectionSpec.CLEARTEXT)
