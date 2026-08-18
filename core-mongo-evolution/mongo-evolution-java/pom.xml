@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud</groupId>
     <artifactId>mongo-evolution</artifactId>
-    <version>8.2.0-SNAPSHOT</version>
+    <version>8.2.1-SNAPSHOT</version>
 
     <name>mongo-evolution-java</name>
     <description>Common mongo-evolution library which is free from any frameworks</description>
@@ -21,10 +21,9 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <java.version>21</java.version>
-        <mongodb.version>5.6.5</mongodb.version>
         <jacoco.plugin.version>0.8.15</jacoco.plugin.version>
 
-        <cloud-core.core-internal-boms.version>1.1.0-SNAPSHOT</cloud-core.core-internal-boms.version>
+        <cloud-core.core-internal-boms.version>1.1.0</cloud-core.core-internal-boms.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../mongo-evolution-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
@@ -47,7 +46,6 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
-            <version>${mongodb.version}</version>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>

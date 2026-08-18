@@ -2,6 +2,7 @@ package com.netcracker.cloud.dbaas.client.management;
 
 import com.mongodb.ClientSessionOptions;
 import com.mongodb.client.ClientSession;
+import com.mongodb.client.MongoCluster;
 import com.mongodb.client.MongoCollection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -70,8 +71,8 @@ final class ClientSessionBoundMongoDbFactory implements MongoDatabaseFactory {
         factory.setInterfaces(targetType);
         factory.setOpaque(true);
 
-        factory.addAdvice(new SessionAwareMethodInterceptor<>(session, target, ClientSession.class, com.mongodb.client.MongoDatabase.class,
-            this::proxyDatabase, MongoCollection.class, this::proxyCollection));
+        factory.addAdvice(new SessionAwareMethodInterceptor<>(session, target, MongoCluster.class, ClientSession.class,
+            com.mongodb.client.MongoDatabase.class, this::proxyDatabase, MongoCollection.class, this::proxyCollection));
 
         return targetType.cast(factory.getProxy(target.getClass().getClassLoader()));
     }
