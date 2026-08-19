@@ -27,15 +27,15 @@ public class M2MDbaaSClient {
     @ConfigProperty(name = "api.dbaas.address")
     Optional<String> apiDbaasAddress;
 
-    @ConfigProperty(name = "quarkus.dbaas.api.agent.url", defaultValue = DbaasClientConfig.DEFAULT_DBAAS_AGENT_ADDRESS)
-    String dbaasAgentUrl;
-
     @Inject
     @Named(DbaasClientProducer.DBAAS_HTTP_CLIENT)
     OkHttpClient dbaasOkHttpClient;
 
+    @Inject
+    DbaasClientConfig dbaasClientConfig;
+
     public DbaasClient build() {
-        String dbaasUrl = dbaasAgentUrl;
+        String dbaasUrl = dbaasClientConfig.dbaasAgentUrl();
         if(M2MClient.isK8sM2mEnabled()) {
             if(apiDbaasAddress.isEmpty()) {
                 log.warn("DBaaS address is not available, falling back to dbaas-agent. Specify 'api.dbaas.address' property to DBaaS url");

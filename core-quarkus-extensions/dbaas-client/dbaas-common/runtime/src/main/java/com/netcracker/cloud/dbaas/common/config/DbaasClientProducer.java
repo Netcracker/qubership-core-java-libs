@@ -9,7 +9,6 @@ import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import com.netcracker.cloud.dbaas.client.DbaasClient;
 
 @Slf4j
@@ -21,11 +20,10 @@ public class DbaasClientProducer {
     @Produces
     @DefaultBean
     @Named(DBAAS_HTTP_CLIENT)
-    public OkHttpClient dbaasOkHttpClient(@ConfigProperty(name = "quarkus.dbaas.api.agent.url",
-            defaultValue = DbaasClientConfig.DEFAULT_DBAAS_AGENT_ADDRESS) String dbaasAgentUrl) {
+    public OkHttpClient dbaasOkHttpClient(DbaasClientConfig dbaasClientConfig) {
         return M2MClient.builder()
                 .audience(AudienceName.DBAAS)
-                .agentUrl(dbaasAgentUrl)
+                .agentUrl(dbaasClientConfig.dbaasAgentUrl())
                 .keycloakTokenSupplier(() -> M2MManager.getInstance().getToken().getTokenValue())
                 .build();
     }

@@ -9,6 +9,8 @@ import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DbaasClientProducerTest {
 
@@ -21,7 +23,7 @@ class DbaasClientProducerTest {
     void testProducedClientIsRebasedOntoTheConfiguredAgent() throws Exception {
         String agentUrl = "http://dbaas-agent-custom:9090";
 
-        OkHttpClient client = new DbaasClientProducer().dbaasOkHttpClient(agentUrl);
+        OkHttpClient client = new DbaasClientProducer().dbaasOkHttpClient(dbaasClientConfig(agentUrl));
 
         M2MInterceptor interceptor = m2mInterceptorOf(client);
         assertNotNull(interceptor, "the produced client must carry the m2m interceptor");
@@ -30,9 +32,16 @@ class DbaasClientProducerTest {
 
     @Test
     void testProducedClientUsesTheDefaultAgentAddress() throws Exception {
-        OkHttpClient client = new DbaasClientProducer().dbaasOkHttpClient(DbaasClientConfig.DEFAULT_DBAAS_AGENT_ADDRESS);
+        OkHttpClient client = new DbaasClientProducer()
+                .dbaasOkHttpClient(dbaasClientConfig(DbaasClientConfig.DEFAULT_DBAAS_AGENT_ADDRESS));
 
         assertEquals(HttpUrl.get(DbaasClientConfig.DEFAULT_DBAAS_AGENT_ADDRESS), fallbackBaseUrl(m2mInterceptorOf(client)));
+    }
+
+    private DbaasClientConfig dbaasClientConfig(String dbaasAgentUrl) {
+        DbaasClientConfig dbaasClientConfig = mock(DbaasClientConfig.class);
+        when(dbaasClientConfig.dbaasAgentUrl()).thenReturn(dbaasAgentUrl);
+        return dbaasClientConfig;
     }
 
     private M2MInterceptor m2mInterceptorOf(OkHttpClient client) {
