@@ -34,5 +34,9 @@ jobs:
       version-suffix: ${{ github.ref_name }}
       # -T 2C only pairs with skipped tests: parallel execution breaks the test suites.
       maven-command: ${{ inputs.skip-tests && 'deploy -T 2C -Dmaven.test.skip=true' || 'deploy' }}
+      maven-username: 'NetcrackerCLPLCI'
       skip-docker: true
-    secrets: inherit
+    secrets:
+      MAVEN_TOKEN: ${{ secrets.GH_RWD_PACKAGE_TOKEN }}
+      MAVEN_GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+      MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
