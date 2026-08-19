@@ -13,7 +13,7 @@
 # See generic-maven-build.yaml in qubership-core-infra for the version-suffix input and its
 # two constraints on SNAPSHOT dependencies.
 
-name: Maven deploy (branch snapshot)
+name: Maven deploy (branch snapshot) v2
 
 run-name: Deploy branch snapshot [${{ github.ref_name }}]
 
