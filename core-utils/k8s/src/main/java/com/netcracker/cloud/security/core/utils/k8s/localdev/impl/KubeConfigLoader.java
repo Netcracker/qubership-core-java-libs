@@ -70,8 +70,7 @@ class KubeConfigLoader {
             return KubeConfigCredentials.builder()
                     .serverUrl(StringUtils.stripEnd(server, "/"))
                     .userToken(resolveUserToken(user))
-                    .certificateAuthorityData(decodeOptionalBase64(
-                            getTextField(cluster, KubeConfigFields.CERTIFICATE_AUTHORITY_DATA)))
+                    .certificateAuthorityData(resolveCertificateAuthorityData(cluster, kubeConfigPath))
                     .insecureSkipTlsVerify(cluster.path(KubeConfigFields.INSECURE_SKIP_TLS_VERIFY).asBoolean(false))
                     .build();
         } catch (IOException e) {
@@ -150,6 +149,29 @@ class KubeConfigLoader {
             }
         }
         throw new IllegalStateException("Kubeconfig entry not found: " + name);
+    }
+
+    private byte[] resolveCertificateAuthorityData(JsonNode cluster, Path kubeConfigPath) throws IOException {
+        byte[] fromData = decodeOptionalBase64(getTextField(cluster, KubeConfigFields.CERTIFICATE_AUTHORITY_DATA));
+        if (fromData.length > 0) {
+            return fromData;
+        }
+        String caPath = getTextField(cluster, KubeConfigFields.CERTIFICATE_AUTHORITY);
+        if (StringUtils.isBlank(caPath)) {
+            return new byte[0];
+        }
+        Path resolved = Path.of(caPath);
+        if (!resolved.isAbsolute()) {
+            Path kubeConfigDir = kubeConfigPath.getParent();
+            if (kubeConfigDir == null) {
+                throw new IllegalStateException("Cannot resolve relative certificate-authority path: " + caPath);
+            }
+            resolved = kubeConfigDir.resolve(resolved).normalize();
+        }
+        if (!Files.isRegularFile(resolved)) {
+            throw new IllegalStateException("Kubeconfig certificate-authority file not found: " + resolved);
+        }
+        return Files.readAllBytes(resolved);
     }
 
     private byte[] decodeOptionalBase64(String value) {

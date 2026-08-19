@@ -65,6 +65,7 @@ final class LocalDevConstants {
         static final String NAME = "name";
         static final String SERVER = "server";
         static final String TOKEN = "token";
+        static final String CERTIFICATE_AUTHORITY = "certificate-authority";
         static final String CERTIFICATE_AUTHORITY_DATA = "certificate-authority-data";
         static final String INSECURE_SKIP_TLS_VERIFY = "insecure-skip-tls-verify";
         static final String AUTH_PROVIDER = "auth-provider";

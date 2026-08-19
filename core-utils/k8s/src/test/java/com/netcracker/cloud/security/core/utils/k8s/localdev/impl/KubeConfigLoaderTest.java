@@ -28,6 +28,96 @@ class KubeConfigLoaderTest {
     }
 
     @Test
+    void loadsCertificateAuthorityFromFile() throws Exception {
+        Path caFile = tempDir.resolve("cluster-ca.crt");
+        Files.writeString(caFile, "dummy-ca-from-file");
+
+        Path kubeConfig = tempDir.resolve("config");
+        Files.writeString(kubeConfig, """
+                apiVersion: v1
+                kind: Config
+                current-context: test-ctx
+                contexts:
+                  - name: test-ctx
+                    context:
+                      cluster: test-cluster
+                      user: test-user
+                clusters:
+                  - name: test-cluster
+                    cluster:
+                      server: https://127.0.0.1:6443
+                      certificate-authority: cluster-ca.crt
+                users:
+                  - name: test-user
+                    user:
+                      token: user-token-123
+                """);
+
+        KubeConfigCredentials credentials = loaderForKubeConfigEnv(kubeConfig.toString()).load();
+        assertEquals("dummy-ca-from-file", new String(credentials.getCertificateAuthorityData(), StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void prefersCertificateAuthorityDataOverFile() throws Exception {
+        Path caFile = tempDir.resolve("cluster-ca.crt");
+        Files.writeString(caFile, "from-file");
+
+        String caData = Base64.getEncoder().encodeToString("from-data".getBytes(StandardCharsets.UTF_8));
+        Path kubeConfig = tempDir.resolve("config");
+        Files.writeString(kubeConfig, """
+                apiVersion: v1
+                kind: Config
+                current-context: test-ctx
+                contexts:
+                  - name: test-ctx
+                    context:
+                      cluster: test-cluster
+                      user: test-user
+                clusters:
+                  - name: test-cluster
+                    cluster:
+                      server: https://127.0.0.1:6443
+                      certificate-authority: cluster-ca.crt
+                      certificate-authority-data: %s
+                users:
+                  - name: test-user
+                    user:
+                      token: user-token-123
+                """.formatted(caData));
+
+        KubeConfigCredentials credentials = loaderForKubeConfigEnv(kubeConfig.toString()).load();
+        assertEquals("from-data", new String(credentials.getCertificateAuthorityData(), StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void failsWhenCertificateAuthorityFileMissing() throws Exception {
+        Path kubeConfig = tempDir.resolve("config");
+        Files.writeString(kubeConfig, """
+                apiVersion: v1
+                kind: Config
+                current-context: test-ctx
+                contexts:
+                  - name: test-ctx
+                    context:
+                      cluster: test-cluster
+                      user: test-user
+                clusters:
+                  - name: test-cluster
+                    cluster:
+                      server: https://127.0.0.1:6443
+                      certificate-authority: missing-ca.crt
+                users:
+                  - name: test-user
+                    user:
+                      token: user-token-123
+                """);
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class,
+                loaderForKubeConfigEnv(kubeConfig.toString())::load);
+        assertTrue(ex.getMessage().contains("certificate-authority"));
+    }
+
+    @Test
     void loadsTokenAndCaFromKubeConfig() throws Exception {
         String ca = Base64.getEncoder().encodeToString("dummy-ca".getBytes(StandardCharsets.UTF_8));
         Path kubeConfig = tempDir.resolve("config");
