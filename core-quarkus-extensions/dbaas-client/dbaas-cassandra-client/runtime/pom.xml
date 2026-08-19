@@ -10,10 +10,6 @@
 
     <artifactId>dbaas-cassandra-client</artifactId>
 
-    <properties>
-        <datastax.cassandra.driver.version>4.19.3</datastax.cassandra.driver.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -58,7 +54,6 @@
         <dependency>
             <groupId>org.apache.cassandra</groupId>
             <artifactId>java-driver-core</artifactId>
-            <version>${datastax.cassandra.driver.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.ow2.asm</groupId>
