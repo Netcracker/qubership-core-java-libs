@@ -26,7 +26,7 @@
         <freemarker.version>2.3.34</freemarker.version>
 
         <!-- Align various dependencies that are not really part of the bom-->
-        <jsoup.version>1.23.1</jsoup.version>
+        <jsoup.version>1.22.2</jsoup.version>
         <wagon-provider-api.version>3.5.3</wagon-provider-api.version>
     </properties>
 
