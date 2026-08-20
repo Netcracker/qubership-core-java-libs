@@ -115,7 +115,7 @@
         <!-- Spring Boot 4.1.0: 4.2.1 | Quarkus 3.33.3.1: 4.1.2. Follows Spring, unlike the pins above:
              spring-kafka-test 4.1.0 calls ConfigDef$ValidList.anyNonDuplicateValues, added in Kafka 4.2.x, so
              @EmbeddedKafka fails to start the broker on 4.1.2. This raises the Quarkus side to 4.2.1. -->
-        <kafka.version>4.3.1</kafka.version>
+        <kafka.version>4.2.1</kafka.version>
 
         <!-- Test -->
         <junit-bom.version>6.0.3</junit-bom.version>
