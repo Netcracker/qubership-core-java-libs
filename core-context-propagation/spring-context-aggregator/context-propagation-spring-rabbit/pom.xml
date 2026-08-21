@@ -10,7 +10,7 @@
 
     <artifactId>context-propagation-spring-rabbit</artifactId>
     <properties>
-        <qpid.version>10.0.1</qpid.version>
+        <qpid.version>10.1.0</qpid.version>
     </properties>
     <dependencies>
         <dependency>

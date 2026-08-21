@@ -33,9 +33,9 @@
         <!-- Logging -->
         <slf4j.version>2.0.18</slf4j.version>
         <logback.version>1.5.34</logback.version>
-        <log4j.version>2.26.0</log4j.version>
+        <log4j.version>2.26.1</log4j.version>
         <!-- Spring Boot 4.1.0: 3.6.3.Final | Quarkus 3.33.3.1: 3.6.2.Final -->
-        <jboss-logging.version>3.6.2.Final</jboss-logging.version>
+        <jboss-logging.version>3.6.3.Final</jboss-logging.version>
 
         <!-- Build / annotation processing -->
         <lombok.version>1.18.46</lombok.version>
@@ -45,22 +45,22 @@
         <jackson-bom.version>2.21.5</jackson-bom.version>
 
         <!-- Metrics -->
-        <micrometer-bom.version>1.16.6</micrometer-bom.version>
+        <micrometer-bom.version>1.17.0</micrometer-bom.version>
 
         <!-- Annotations -->
         <jetbrains-annotations.version>26.0.2</jetbrains-annotations.version>
 
         <!-- HTTP clients -->
         <okhttp3.version>4.12.0</okhttp3.version>
-        <okio.version>3.17.0</okio.version>
+        <okio.version>3.18.1</okio.version>
 
         <!-- JSON / YAML / protobuf -->
         <gson.version>2.13.2</gson.version>
         <jsonpath.version>2.10.0</jsonpath.version>
         <!-- Spring Boot 4.1.0: 2.6 | Quarkus 3.33.3.1: 2.5 -->
-        <snakeyaml.version>2.5</snakeyaml.version>
+        <snakeyaml.version>2.6</snakeyaml.version>
         <!-- Spring Boot 4.1.0: 4.34.2 | Quarkus 3.33.3.1: 4.33.2 -->
-        <protobuf.version>4.33.2</protobuf.version>
+        <protobuf.version>4.34.2</protobuf.version>
         <!-- Spring Boot 4.1.0: 1.80.0 | Quarkus 3.33.3.1: 1.81.0. gRPC and protobuf move together. -->
         <grpc-bom.version>1.81.0</grpc-bom.version>
 
@@ -72,30 +72,30 @@
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
         <hibernate-validator.version>9.1.0.Final</hibernate-validator.version>
         <!-- Spring Boot 4.1.0: 3.0.2 | Quarkus 3.33.3.1: 3.0.1 -->
-        <jakarta.json.bind-api.version>3.0.1</jakarta.json.bind-api.version>
+        <jakarta.json.bind-api.version>3.0.2</jakarta.json.bind-api.version>
         <!-- Spring Boot 4.1.0: 4.0.9 | Quarkus 3.33.3.1: 4.0.8 -->
-        <jaxb.version>4.0.8</jaxb.version>
+        <jaxb.version>4.0.9</jaxb.version>
         <!-- Spring Boot 4.1.0: 1.7.3 | Quarkus 3.33.3.1: 1.7.1. Reflection helper behind hibernate-validator. -->
-        <classmate.version>1.7.1</classmate.version>
+        <classmate.version>1.7.3</classmate.version>
 
         <!-- Apache Commons -->
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <commons-io.version>2.21.0</commons-io.version>
-        <commons-collections4.version>4.5.0</commons-collections4.version>
+        <commons-collections4.version>4.6.0</commons-collections4.version>
 
         <!-- HTTP clients (Apache) -->
-        <apache.httpclient5.version>5.6.1</apache.httpclient5.version>
+        <apache.httpclient5.version>5.6.3</apache.httpclient5.version>
 
         <!-- Databases -->
         <!-- Spring Boot 4.1.0: 5.8.0 | Quarkus 3.33.3.1: 5.6.4 -->
-        <mongodb-driver-bom.version>5.6.4</mongodb-driver-bom.version>
+        <mongodb-driver-bom.version>5.8.0</mongodb-driver-bom.version>
         <!-- Spring Boot 4.1.0: 42.7.11 | Quarkus 3.33.3.1: 42.7.13. Quarkus leads here, so the pin moves the JDBC
              driver up on the Spring side. -->
         <postgresql.version>42.7.13</postgresql.version>
 
         <!-- Database migration -->
         <!-- Spring Boot 4.1.0: 12.4.0 | Quarkus 3.33.3.1: 12.0.0 -->
-        <flyway.version>12.0.0</flyway.version>
+        <flyway.version>12.4.0</flyway.version>
 
         <!-- Other compile/runtime -->
         <guava.version>33.5.0-jre</guava.version>
@@ -105,12 +105,12 @@
         <reflections.version>0.10.2</reflections.version>
         <awaitility.version>4.3.0</awaitility.version>
         <!-- Spring Boot 4.1.0: 3.2.4 | Quarkus 3.33.3.1: 3.2.3 -->
-        <caffeine.version>3.2.3</caffeine.version>
+        <caffeine.version>3.2.4</caffeine.version>
         <!-- Spring Boot 4.1.0: 2.3.21 | Quarkus 3.33.3.1: 2.3.10 -->
-        <kotlin-bom.version>2.3.10</kotlin-bom.version>
+        <kotlin-bom.version>2.3.21</kotlin-bom.version>
 
         <!-- Messaging -->
-        <rabbitmq.version>5.30.0</rabbitmq.version>
+        <rabbitmq.version>5.33.1</rabbitmq.version>
         <rabbitmq-mock.version>1.2.0</rabbitmq-mock.version>
         <!-- Spring Boot 4.1.0: 4.2.1 | Quarkus 3.33.3.1: 4.1.2. Follows Spring, unlike the pins above:
              spring-kafka-test 4.1.0 calls ConfigDef$ValidList.anyNonDuplicateValues, added in Kafka 4.2.x, so
@@ -119,10 +119,10 @@
 
         <!-- Test -->
         <junit-bom.version>6.0.3</junit-bom.version>
-        <mockito.version>5.21.0</mockito.version>
+        <mockito.version>5.23.0</mockito.version>
         <!-- Spring Boot 4.1.0: 1.18.10 | Quarkus 3.33.3.1: 1.17.8. Kept on the branch Mockito 5.21.0 was built
              against; revisit together with mockito.version. -->
-        <byte-buddy.version>1.17.8</byte-buddy.version>
+        <byte-buddy.version>1.18.10</byte-buddy.version>
         <!-- Spring Boot 4.1.0: 3.0 | Quarkus 3.33.3.1: 2.2. REST Assured on the Quarkus side needs 2.x. -->
         <hamcrest.version>2.2</hamcrest.version>
         <assertj.version>3.27.7</assertj.version>
@@ -131,7 +131,7 @@
         <junit-pioneer.version>2.3.0</junit-pioneer.version>
         <h2.version>2.4.240</h2.version>
         <logcaptor.version>2.12.6</logcaptor.version>
-        <mockserver.version>7.5.0</mockserver.version>
+        <mockserver.version>7.6.0</mockserver.version>
         <mongo-java-server.version>1.47.0</mongo-java-server.version>
         <docker-java.version>3.7.1</docker-java.version>
     </properties>
