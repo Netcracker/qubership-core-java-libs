@@ -21,15 +21,15 @@
         <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
         <build.plugins.plugin.version>3.4.0</build.plugins.plugin.version>
 
-        <cloud-core.core-error-handling.version>4.3.0</cloud-core.core-error-handling.version>
+        <cloud-core.core-error-handling.version>4.3.1-SNAPSHOT</cloud-core.core-error-handling.version>
         <cloud-core.core-utils.version>3.2.1-SNAPSHOT</cloud-core.core-utils.version>
-        <cloud-core.core-context-propagation.version>8.3.0</cloud-core.core-context-propagation.version>
-        <cloud-core.core-internal-boms.version>1.1.0</cloud-core.core-internal-boms.version>
+        <cloud-core.core-context-propagation.version>8.3.1-SNAPSHOT</cloud-core.core-context-propagation.version>
+        <cloud-core.core-internal-boms.version>1.1.1-SNAPSHOT</cloud-core.core-internal-boms.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../microservice-restclient-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
-        <mockito.version>5.21.0</mockito.version>
+        <mockito.version>5.23.0</mockito.version>
     </properties>
 
     <dependencies>
