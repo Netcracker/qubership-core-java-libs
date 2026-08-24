@@ -40,13 +40,13 @@
         <!-- core-restclient (pure-java modules) -->
         <cloud-core.restclient.version>7.1.11-SNAPSHOT</cloud-core.restclient.version>
         <!-- core-rest-libraries (pure-java modules) -->
-        <cloud-core.rest-libraries.version>7.3.9-SNAPSHOT</cloud-core.rest-libraries.version>
+        <cloud-core.rest-libraries.version>7.3.8</cloud-core.rest-libraries.version>
         <!-- core-blue-green-state-monitor (pure-java module) -->
         <cloud-core.blue-green-monitor.version>2.1.11-SNAPSHOT</cloud-core.blue-green-monitor.version>
         <!-- dbaas-client (pure-java modules) -->
-        <cloud-core.dbaas-client.version>9.1.12-SNAPSHOT</cloud-core.dbaas-client.version>
+        <cloud-core.dbaas-client.version>9.1.11</cloud-core.dbaas-client.version>
         <!-- maas-client (pure-java modules) -->
-        <cloud-core.maas-client.version>12.2.11-SNAPSHOT</cloud-core.maas-client.version>
+        <cloud-core.maas-client.version>12.2.10</cloud-core.maas-client.version>
         <!-- maas-declarative-client-commons -->
         <cloud-core.maas-declarative-client.version>6.1.11-SNAPSHOT</cloud-core.maas-declarative-client.version>
     </properties>
