@@ -110,6 +110,33 @@ public class KubernetesTokenVerifier {
 | com.netcracker.cloud.security.kubernetes.service.account.token.dir | /path/to/directory | /var/run/secrets/kubernetes.io/serviceaccount | change the directory where kubernetes service account token is located       |
 | com.netcracker.cloud.security.kubernetes.tokens.polling.interval   | 2m                 | 1m                                            | change the interval of polling events from file system about token rotations |
 
+### Local-dev TokenRequest (`LocalDevTokenSource`)
+
+When the active profile is exactly `dev` (Quarkus: `-Dquarkus.profile=dev`,
+Spring: `-Dspring.profiles.active=dev`; comma-separated profile lists such as `dev,local` do **not** enable local-dev),
+`CachingTokenSource` delegates to `LocalDevTokenSource`, which mints real SA tokens via Kubernetes TokenRequest API
+using the developer kubeconfig instead of projected-volume files.
+
+| requirement | value |
+|---|---|
+| Profile | `dev` |
+| SA name | `cloud.microservice.name` (contract, no override) |
+| Namespace | env `CLOUD_NAMESPACE` |
+| Kube access | `KUBECONFIG` or `~/.kube/config` (static `token` or OIDC `auth-provider` with refresh via `idp-issuer-url`). `exec` auth is not supported. IdP TLS uses trust-all in local-dev. |
+| Token TTL | 8 hours (`expirationSeconds=28800`) |
+| Audience | value passed to `KubernetesAudienceToken.getToken(audience)` |
+
+Framework bootstrap (security-core / security-quarkus-extensions m2m-manager) copies `cloud.microservice.name`
+into a system property so `k8s-utils` can read it without depending on Spring/Quarkus config APIs.
+
+On HTTP 401/403 from TokenRequest the error message explains missing RBAC on `serviceaccounts/token`.
+
+For inbound validation, consumers create `LocalDevKubernetesOidc` and rewrite the JWKS URL to `jwksUrl()`
+(kube API + `/openid/v1/jwks`); Quarkus OIDC also uses `apiServerUrl()` as `authServerUrl`.
+Discovery and JWKS on the API server are public (no Bearer).
+When a projected SA token is missing, `resolveIssuerClaimFromDiscovery()` reads the issuer from
+kube OIDC discovery.
+
 ### Custom TokenSource
 
 `com.netcracker.cloud.security.core.utils.k8s.impl.WatchingTokenSource` is the current default implementation of the
