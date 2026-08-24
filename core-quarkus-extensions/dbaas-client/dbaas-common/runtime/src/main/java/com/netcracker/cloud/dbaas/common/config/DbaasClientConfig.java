@@ -3,6 +3,7 @@ package com.netcracker.cloud.dbaas.common.config;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithDefault;
 import io.smallrye.config.WithName;
 
 import java.util.Optional;
@@ -17,7 +18,8 @@ public interface DbaasClientConfig {
      * dbaas agent url
      */
     @WithName("agent.url")
-    Optional<String> dbaasAgentUrl();
+    @WithDefault(DEFAULT_DBAAS_AGENT_ADDRESS)
+    String dbaasAgentUrl();
 
     /**
      * dbaas url.

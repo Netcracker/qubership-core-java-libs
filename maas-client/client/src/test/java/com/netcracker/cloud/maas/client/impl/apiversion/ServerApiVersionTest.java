@@ -1,8 +1,8 @@
 package com.netcracker.cloud.maas.client.impl.apiversion;
 
 import com.netcracker.cloud.maas.client.Utils;
+import com.netcracker.cloud.maas.client.impl.Env;
 import com.netcracker.cloud.maas.client.impl.http.HttpClient;
-import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockserver.integration.ClientAndServer;
@@ -51,9 +51,9 @@ class ServerApiVersionTest {
                         .withBody(Utils.readResourceAsString("api-version." + version + ".json"))
         );
 
-        System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, "http://localhost:" + mockServer.getPort());
+        System.setProperty(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort());
         var httpClient = HttpClient.getMaasClient(() -> "faketoken");
-        System.clearProperty(M2MClientFactory.MAAS_AGENT_URL_PROP);
+        System.clearProperty(Env.PROP_MAAS_AGENT_URL);
         return new ServerApiVersion(httpClient, "http://localhost:" + mockServer.getPort());
     }
 }

@@ -73,7 +73,7 @@ class M2MInterceptorTest {
         when(k8sSupplier.get()).thenReturn(K8S_TOKEN_HEADER);
         when(fallbackSupplier.get()).thenReturn(FALLBACK_TOKEN_HEADER);
 
-        final M2MInterceptor interceptor = new M2MInterceptor(urlCache, fallbackSupplier, k8sSupplier);
+        final M2MInterceptor interceptor = new M2MInterceptor(M2MClient.isK8sM2mEnabled(), urlCache, fallbackSupplier, k8sSupplier);
 
         client = new OkHttpClient.Builder()
                 .addInterceptor(interceptor)
@@ -195,7 +195,7 @@ class M2MInterceptorTest {
         UrlCache urlCache = new UrlCache(TEST_CACHE_SIZE, TEST_CACHE_DURATION_SEC);
         String fallbackBaseUrl = "http://localhost:" + fallbackServer.port();
 
-        M2MInterceptor interceptor = new M2MInterceptor(urlCache, fallbackSupplier, k8sSupplier, fallbackBaseUrl);
+        M2MInterceptor interceptor = new M2MInterceptor(M2MClient.isK8sM2mEnabled(), urlCache, fallbackSupplier, k8sSupplier, fallbackBaseUrl);
         OkHttpClient clientWithFallbackUrl = new OkHttpClient.Builder()
                 .addInterceptor(interceptor)
                 .build();
@@ -233,6 +233,36 @@ class M2MInterceptorTest {
         assertRebasesToFallbackHostWithoutContactingService();
     }
 
+    @Test
+    @SneakyThrows
+    void explicitK8sM2mDisabledWinsOverTheEnabledEnvironment() {
+        environmentVariables.set("KUBERNETES_M2M_ENABLED", "true");
+
+        wireMockServer.stubFor(get(urlEqualTo(TEST_ENDPOINT))
+                .withHeader("Authorization", equalTo(FALLBACK_TOKEN_HEADER))
+                .willReturn(aResponse().withStatus(200)));
+
+        UrlCache urlCache = new UrlCache(TEST_CACHE_SIZE, TEST_CACHE_DURATION_SEC);
+        M2MInterceptor interceptor = new M2MInterceptor(false, urlCache, fallbackSupplier, k8sSupplier);
+        OkHttpClient disabledClient = new OkHttpClient.Builder()
+                .addInterceptor(interceptor)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(wireMockServer.baseUrl() + TEST_ENDPOINT)
+                .get()
+                .build();
+
+        try (Response response = disabledClient.newCall(request).execute()) {
+            assertEquals(200, response.code());
+        }
+
+        wireMockServer.verify(1, getRequestedFor(urlEqualTo(TEST_ENDPOINT))
+                .withHeader("Authorization", equalTo(FALLBACK_TOKEN_HEADER)));
+        wireMockServer.verify(0, getRequestedFor(urlEqualTo(TEST_ENDPOINT))
+                .withHeader("Authorization", equalTo(K8S_TOKEN_HEADER)));
+    }
+
     @SneakyThrows
     private void assertRebasesToFallbackHostWithoutContactingService() {
         WireMockServer fallbackServer = new WireMockServer(0);
@@ -249,7 +279,7 @@ class M2MInterceptorTest {
         UrlCache urlCache = new UrlCache(TEST_CACHE_SIZE, TEST_CACHE_DURATION_SEC);
         String fallbackBaseUrl = "http://localhost:" + fallbackServer.port();
 
-        M2MInterceptor interceptor = new M2MInterceptor(urlCache, fallbackSupplier, k8sSupplier, fallbackBaseUrl);
+        M2MInterceptor interceptor = new M2MInterceptor(M2MClient.isK8sM2mEnabled(), urlCache, fallbackSupplier, k8sSupplier, fallbackBaseUrl);
         OkHttpClient clientWithFallbackUrl = new OkHttpClient.Builder()
                 .addInterceptor(interceptor)
                 .build();

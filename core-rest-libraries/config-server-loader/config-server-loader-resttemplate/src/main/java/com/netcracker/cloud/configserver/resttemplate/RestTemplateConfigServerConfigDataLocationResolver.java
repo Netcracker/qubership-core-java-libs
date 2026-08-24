@@ -1,7 +1,7 @@
 package com.netcracker.cloud.configserver.resttemplate;
 
 import com.netcracker.cloud.restclient.okhttp.MicroserviceOkHttpRestClient;
-import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
+import com.netcracker.cloud.security.core.utils.k8s.M2MClient;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
@@ -33,7 +33,9 @@ public class RestTemplateConfigServerConfigDataLocationResolver extends Abstract
     @Override
     public MicroserviceRestClient getMicroserviceRestClient() {
         if (hasM2M(configurableBootstrapContext)) {
-            var client = M2MClientFactory.getM2mOkHttpClient(() -> getM2MToken(configurableBootstrapContext));
+            var client = M2MClient.builder()
+                    .keycloakTokenSupplier(() -> getM2MToken(configurableBootstrapContext))
+                    .build();
             return new MicroserviceOkHttpRestClient(client);
         }
         return createM2MRestTemplate();
