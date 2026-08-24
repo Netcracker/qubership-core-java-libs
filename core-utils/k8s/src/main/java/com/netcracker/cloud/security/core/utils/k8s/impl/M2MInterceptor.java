@@ -1,6 +1,5 @@
 package com.netcracker.cloud.security.core.utils.k8s.impl;
 
-import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -37,12 +36,12 @@ public final class M2MInterceptor implements Interceptor {
     private final Supplier<String> k8sAuthHeaderSupplier;
     private final HttpUrl fallbackBaseUrl;
 
-    public M2MInterceptor(UrlCache urlCache, Supplier<String> fallbackAuthHeaderSupplier, Supplier<String> k8sAuthHeaderSupplier) {
-        this(urlCache, fallbackAuthHeaderSupplier, k8sAuthHeaderSupplier, null);
+    public M2MInterceptor(boolean k8sM2mEnabled, UrlCache urlCache, Supplier<String> fallbackAuthHeaderSupplier, Supplier<String> k8sAuthHeaderSupplier) {
+        this(k8sM2mEnabled, urlCache, fallbackAuthHeaderSupplier, k8sAuthHeaderSupplier, null);
     }
 
-    public M2MInterceptor(UrlCache urlCache, Supplier<String> fallbackAuthHeaderSupplier, Supplier<String> k8sAuthHeaderSupplier, String fallbackBaseUrl) {
-        this.k8sM2mEnabled = M2MClientFactory.isK8sM2mEnabled();
+    public M2MInterceptor(boolean k8sM2mEnabled, UrlCache urlCache, Supplier<String> fallbackAuthHeaderSupplier, Supplier<String> k8sAuthHeaderSupplier, String fallbackBaseUrl) {
+        this.k8sM2mEnabled = k8sM2mEnabled;
         this.urlCache = urlCache;
         this.fallbackAuthHeaderSupplier = fallbackAuthHeaderSupplier;
         this.k8sAuthHeaderSupplier = k8sAuthHeaderSupplier;

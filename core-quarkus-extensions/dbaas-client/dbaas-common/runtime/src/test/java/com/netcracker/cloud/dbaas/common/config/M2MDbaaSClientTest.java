@@ -21,6 +21,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SystemStubsExtension.class)
 class M2MDbaaSClientTest {
     private M2MDbaaSClient m2MDbaaSClient;
+    private DbaasClientConfig dbaasClientConfig;
+    private OkHttpClient dbaasOkHttpClient;
     private static final String DB_AGENT_URL  = "http://dbaas-agent:8080";
     private static final String DB_AGGREGATOR_URL  = "http://dbaas-aggregator:8080";
 
@@ -29,13 +31,13 @@ class M2MDbaaSClientTest {
 
     @BeforeEach
     void setUp() {
-        DbaasClientConfig dbaasConfig = mock(DbaasClientConfig.class);
-        when(dbaasConfig.dbaasAgentUrl()).thenReturn(Optional.of(DB_AGENT_URL));
-        when(dbaasConfig.dbaasUrl()).thenReturn(Optional.of(DB_AGGREGATOR_URL));
         environmentVariables.set("KUBERNETES_M2M_ENABLED", "true");
 
-        m2MDbaaSClient = new M2MDbaaSClient(dbaasConfig);
-        m2MDbaaSClient.apiDbaasAddress = Optional.of(DB_AGGREGATOR_URL);
+        dbaasClientConfig = mock(DbaasClientConfig.class);
+        when(dbaasClientConfig.dbaasAgentUrl()).thenReturn(DB_AGENT_URL);
+        dbaasOkHttpClient = new DbaasClientProducer().dbaasOkHttpClient(dbaasClientConfig);
+
+        m2MDbaaSClient = new M2MDbaaSClient(Optional.of(DB_AGGREGATOR_URL), dbaasOkHttpClient, dbaasClientConfig);
     }
 
     @AfterEach
@@ -51,5 +53,31 @@ class M2MDbaaSClientTest {
         OkHttpClient clientValue = (OkHttpClient) clientField.get(client);
         assertNotNull(client);
         assertEquals(3, clientValue.interceptors().size());
+    }
+
+    @Test
+    void testAggregatorAddressIsUsedWhenK8sM2mIsEnabled() throws Exception {
+        assertEquals(DB_AGGREGATOR_URL, address(m2MDbaaSClient.build()));
+    }
+
+    @Test
+    void testAgentAddressIsUsedWhenK8sM2mIsDisabled() throws Exception {
+        environmentVariables.set("KUBERNETES_M2M_ENABLED", "false");
+
+        assertEquals(DB_AGENT_URL, address(m2MDbaaSClient.build()));
+    }
+
+    @Test
+    void testAgentAddressIsUsedWhenAggregatorAddressIsMissing() throws Exception {
+        M2MDbaaSClient withoutAggregatorAddress =
+                new M2MDbaaSClient(Optional.empty(), dbaasOkHttpClient, dbaasClientConfig);
+
+        assertEquals(DB_AGENT_URL, address(withoutAggregatorAddress.build()));
+    }
+
+    private String address(DbaasClient client) throws Exception {
+        Field addressField = client.getClass().getDeclaredField("address");
+        addressField.setAccessible(true);
+        return (String) addressField.get(client);
     }
 }

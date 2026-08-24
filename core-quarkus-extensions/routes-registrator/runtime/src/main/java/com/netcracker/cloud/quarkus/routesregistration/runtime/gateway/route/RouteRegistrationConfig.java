@@ -12,7 +12,7 @@ import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Named;
 import okhttp3.OkHttpClient;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
+import com.netcracker.cloud.security.core.utils.k8s.M2MClient;
 
 import java.util.Optional;
 
@@ -81,7 +81,9 @@ public class RouteRegistrationConfig {
     @Produces
     @Named(CONTROL_PLANE_HTTP_CLIENT)
     OkHttpClient controlPlaneHttpClient() {
-        return M2MClientFactory.getM2mOkHttpClient(() -> M2MManager.getInstance().getToken().getTokenValue())
+        return M2MClient.builder()
+                .keycloakTokenSupplier(() -> M2MManager.getInstance().getToken().getTokenValue())
+                .build()
                 .newBuilder()
                 .retryOnConnectionFailure(true)
                 .build();

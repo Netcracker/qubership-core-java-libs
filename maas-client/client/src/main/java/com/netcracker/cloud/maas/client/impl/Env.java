@@ -1,6 +1,6 @@
 package com.netcracker.cloud.maas.client.impl;
 
-import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
+import com.netcracker.cloud.security.core.utils.k8s.M2MClient;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +29,7 @@ public class Env {
     public static final String PROP_NAMESPACE = "maas.client.classifier.namespace"; //todo deprecated - delete in the next major release
     public static final String PROP_ORIGIN_NAMESPACE = "origin_namespace"; //todo change to 'origin.namespace'
     public static final String PROP_MAAS_AGENT_URL = "maas.client.api.url";
+    public static final String DEFAULT_MAAS_AGENT_URL = "http://maas-agent:8080";
     public static final String PROP_MAAS_URL = "maas.internal.address";
     public static final String PROP_API_AUTH = "maas.client.api.auth";
     public static final String PROP_TENANT_MANAGER_URL = "maas.client.tenant-manager.url";
@@ -36,13 +37,17 @@ public class Env {
     public static final String PROP_HTTP_TIMEOUT = "maas.http.timeout";
 
     public static String apiUrl() {
-        return apiUrl(M2MClientFactory.isK8sM2mEnabled());
+        return apiUrl(M2MClient.isK8sM2mEnabled());
+    }
+
+    public static String maasAgentUrl() {
+        return stringProperty(PROP_MAAS_AGENT_URL)
+                .map(Env::normalizeUrl)
+                .orElse(DEFAULT_MAAS_AGENT_URL);
     }
 
     public static String apiUrl(boolean k8sM2mEnabled) {
-        String maasAgentUrl = stringProperty(PROP_MAAS_AGENT_URL)
-                .map(Env::normalizeUrl)
-                .orElse(addr2http("maas-agent"));
+        String maasAgentUrl = maasAgentUrl();
         if(!k8sM2mEnabled) {
             return maasAgentUrl;
         }

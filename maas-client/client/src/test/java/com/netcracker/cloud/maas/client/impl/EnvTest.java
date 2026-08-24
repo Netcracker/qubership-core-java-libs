@@ -31,6 +31,37 @@ class EnvTest {
     }
 
     @Test
+    void testMaasAgentUrlDefault() {
+        withProp(Env.PROP_MAAS_AGENT_URL, null, () ->
+                assertEquals(Env.DEFAULT_MAAS_AGENT_URL, Env.maasAgentUrl())
+        );
+    }
+
+    @Test
+    void testMaasAgentUrlOverrideIsNormalized() {
+        withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:8080/", () ->
+                assertEquals("http://localhost:8080", Env.maasAgentUrl())
+        );
+    }
+
+    @Test
+    void testMaasAgentUrlWrongOverride() {
+        withProp(Env.PROP_MAAS_AGENT_URL, "localhost:8080", () ->
+                assertThrows(IllegalArgumentException.class, Env::maasAgentUrl)
+        );
+    }
+
+    @Test
+    void testApiUrlFallsBackToTheAgentWhenMaasUrlIsNotSet() {
+        withProp(Env.PROP_MAAS_AGENT_URL, "http://maas-agent-custom:8080", () ->
+                withProp(Env.PROP_MAAS_URL, null, () -> {
+                    assertEquals("http://maas-agent-custom:8080", Env.apiUrl(true));
+                    assertEquals("http://maas-agent-custom:8080", Env.apiUrl(false));
+                })
+        );
+    }
+
+    @Test
     void testApiUrlK8sM2mEnabled() {
         withProp(Env.PROP_MAAS_AGENT_URL, null, () ->
                 assertEquals("http://maas-agent:8080", Env.apiUrl(true))
