@@ -21,6 +21,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SystemStubsExtension.class)
 class M2MDbaaSClientTest {
     private M2MDbaaSClient m2MDbaaSClient;
+    private DbaasClientConfig dbaasClientConfig;
+    private OkHttpClient dbaasOkHttpClient;
     private static final String DB_AGENT_URL  = "http://dbaas-agent:8080";
     private static final String DB_AGGREGATOR_URL  = "http://dbaas-aggregator:8080";
 
@@ -31,13 +33,11 @@ class M2MDbaaSClientTest {
     void setUp() {
         environmentVariables.set("KUBERNETES_M2M_ENABLED", "true");
 
-        DbaasClientConfig dbaasClientConfig = mock(DbaasClientConfig.class);
+        dbaasClientConfig = mock(DbaasClientConfig.class);
         when(dbaasClientConfig.dbaasAgentUrl()).thenReturn(DB_AGENT_URL);
+        dbaasOkHttpClient = new DbaasClientProducer().dbaasOkHttpClient(dbaasClientConfig);
 
-        m2MDbaaSClient = new M2MDbaaSClient();
-        m2MDbaaSClient.apiDbaasAddress = Optional.of(DB_AGGREGATOR_URL);
-        m2MDbaaSClient.dbaasClientConfig = dbaasClientConfig;
-        m2MDbaaSClient.dbaasOkHttpClient = new DbaasClientProducer().dbaasOkHttpClient(dbaasClientConfig);
+        m2MDbaaSClient = new M2MDbaaSClient(Optional.of(DB_AGGREGATOR_URL), dbaasOkHttpClient, dbaasClientConfig);
     }
 
     @AfterEach
@@ -69,9 +69,10 @@ class M2MDbaaSClientTest {
 
     @Test
     void testAgentAddressIsUsedWhenAggregatorAddressIsMissing() throws Exception {
-        m2MDbaaSClient.apiDbaasAddress = Optional.empty();
+        M2MDbaaSClient withoutAggregatorAddress =
+                new M2MDbaaSClient(Optional.empty(), dbaasOkHttpClient, dbaasClientConfig);
 
-        assertEquals(DB_AGENT_URL, address(m2MDbaaSClient.build()));
+        assertEquals(DB_AGENT_URL, address(withoutAggregatorAddress.build()));
     }
 
     private String address(DbaasClient client) throws Exception {

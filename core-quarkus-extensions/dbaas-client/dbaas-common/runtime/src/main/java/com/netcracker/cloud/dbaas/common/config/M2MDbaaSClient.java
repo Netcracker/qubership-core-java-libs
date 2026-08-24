@@ -24,15 +24,18 @@ public class M2MDbaaSClient {
     private static final int MAX_RETRIES = 3;
     private static final long INITIAL_RETRY_DELAY = 500;
 
-    @ConfigProperty(name = "api.dbaas.address")
-    Optional<String> apiDbaasAddress;
+    private final Optional<String> apiDbaasAddress;
+    private final OkHttpClient dbaasOkHttpClient;
+    private final DbaasClientConfig dbaasClientConfig;
 
     @Inject
-    @Named(DbaasClientProducer.DBAAS_HTTP_CLIENT)
-    OkHttpClient dbaasOkHttpClient;
-
-    @Inject
-    DbaasClientConfig dbaasClientConfig;
+    public M2MDbaaSClient(@ConfigProperty(name = "api.dbaas.address") Optional<String> apiDbaasAddress,
+                          @Named(DbaasClientProducer.DBAAS_HTTP_CLIENT) OkHttpClient dbaasOkHttpClient,
+                          DbaasClientConfig dbaasClientConfig) {
+        this.apiDbaasAddress = apiDbaasAddress;
+        this.dbaasOkHttpClient = dbaasOkHttpClient;
+        this.dbaasClientConfig = dbaasClientConfig;
+    }
 
     public DbaasClient build() {
         String dbaasUrl = dbaasClientConfig.dbaasAgentUrl();
