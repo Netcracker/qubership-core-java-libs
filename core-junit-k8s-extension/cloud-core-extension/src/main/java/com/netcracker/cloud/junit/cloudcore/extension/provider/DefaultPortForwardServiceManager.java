@@ -19,15 +19,16 @@ import java.util.stream.Collectors;
 public class DefaultPortForwardServiceManager implements PortForwardServiceManager {
 
     protected static Map<PortForwardConfig, PortForwardService> portForwardServiceMap = new ConcurrentHashMap<>();
-    public static String PORTFORWARD_FQDN_ENABLED_PROP = "portforward.fqdn.hosts.enabled";
-    public static String USE_FREE_LOCAL_PORTS_PROP = "portforward.use.free.local.ports";
+    public final static String PORTFORWARD_FQDN_ENABLED_PROP = "portforward.fqdn.hosts.enabled";
+    public final static String USE_FREE_LOCAL_PORTS_PROP = "portforward.use.free.local.ports";
 
     @Override
     public PortForwardService getPortForwardService(PortForwardConfig config) {
         return portForwardServiceMap.computeIfAbsent(config, c -> {
             KubernetesClientFactory kubernetesClientFactory = OrderedServiceLoader.load(KubernetesClientFactory.class)
                     .orElseThrow(() -> new IllegalStateException("No KubernetesClientFactory implementation found"));
-            KubernetesClient kubernetesClient = kubernetesClientFactory.getKubernetesClient(c.getCloud(), c.getNamespace());
+            KubernetesClient kubernetesClient;
+            kubernetesClient = kubernetesClientFactory.getKubernetesClient(c.getCloud(), c.getNamespace());
             boolean fqdnFromProp = Boolean.parseBoolean(System.getProperty(PORTFORWARD_FQDN_ENABLED_PROP, "false"));
             boolean useFreeLocalPorts = Boolean.parseBoolean(System.getProperty(USE_FREE_LOCAL_PORTS_PROP, "false"));
             Pattern cloudPropPattern = Pattern.compile("^clouds\\.(?<name>[^.]+)\\.name$");
@@ -37,7 +38,7 @@ public class DefaultPortForwardServiceManager implements PortForwardServiceManag
                     .map(m -> m.group("name"))
                     .collect(Collectors.toSet());
             boolean fqdn = fqdnFromProp || clouds.size() > 1;
-            return new PortForwardService(kubernetesClient, fqdn, useFreeLocalPorts);
+            return new PortForwardService(kubernetesClient, fqdn, useFreeLocalPorts, false);
         });
     }
 

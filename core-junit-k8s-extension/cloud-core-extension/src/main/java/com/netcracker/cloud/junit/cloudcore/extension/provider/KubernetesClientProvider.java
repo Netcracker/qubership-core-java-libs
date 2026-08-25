@@ -10,6 +10,8 @@ import static com.netcracker.cloud.junit.cloudcore.extension.callbacks.CloudCore
 
 public class KubernetesClientProvider implements FieldInstanceProvider {
 
+    public final static String IN_K8S = "IN_K8S";
+
     @Override
     public KubernetesClient createInstance(Object testInstance, Field field) {
         KubernetesClientFactory kubernetesClientFactory = OrderedServiceLoader.load(KubernetesClientFactory.class)

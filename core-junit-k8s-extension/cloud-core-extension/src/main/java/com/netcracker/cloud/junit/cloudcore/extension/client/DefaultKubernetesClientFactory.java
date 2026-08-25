@@ -21,7 +21,7 @@ import static com.netcracker.cloud.junit.cloudcore.extension.provider.OrderedSer
 public class DefaultKubernetesClientFactory implements AutoCloseable, KubernetesClientFactory {
 
     public static final String PORTFORWARD_FQDN_ENABLED_PROP = "portforward.fqdn.enabled";
-
+    private final static ConcurrentHashMap<CloudAndNamespace, KubernetesClient> clientsMap = new ConcurrentHashMap<>();
     private final Config config;
 
     public DefaultKubernetesClientFactory() {
@@ -31,8 +31,6 @@ public class DefaultKubernetesClientFactory implements AutoCloseable, Kubernetes
     public DefaultKubernetesClientFactory(Config config) {
         this.config = config;
     }
-
-    private final static ConcurrentHashMap<CloudAndNamespace, KubernetesClient> clientsMap = new ConcurrentHashMap<>();
 
     public Collection<String> getKubernetesContexts() {
         return config.getContexts().stream().map(NamedContext::getName).toList();
@@ -51,12 +49,13 @@ public class DefaultKubernetesClientFactory implements AutoCloseable, Kubernetes
             } else {
                 config = Config.autoConfigure(namedContext.getName());
             }
+            ConfigBuilder configBuilder = new ConfigBuilder(config).withNamespace(cloudAndNamespace.getNamespace());
+
             List<Fabric8ConfigBuilderAdapter> fabric8ConfigBuilderAdapters =
                     OrderedServiceLoader.loadAll(Fabric8ConfigBuilderAdapter.class, ASC);
             if (fabric8ConfigBuilderAdapters.isEmpty()) {
                 throw new IllegalStateException("No Fabric8ConfigBuilderAdapter found");
             }
-            ConfigBuilder configBuilder = new ConfigBuilder(config).withNamespace(cloudAndNamespace.getNamespace());
             for (Fabric8ConfigBuilderAdapter adapter : fabric8ConfigBuilderAdapters) {
                 configBuilder = adapter.adapt(configBuilder);
             }

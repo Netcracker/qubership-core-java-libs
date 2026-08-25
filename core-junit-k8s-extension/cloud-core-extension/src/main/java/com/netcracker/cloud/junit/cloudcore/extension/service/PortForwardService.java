@@ -25,24 +25,33 @@ public class PortForwardService {
     protected boolean fqdn;
     @Getter
     protected boolean useFreeLocalPorts;
+    protected boolean inK8s;
 
-    public PortForwardService(KubernetesClient kubernetesClient, boolean fqdn, boolean useFreeLocalPorts) {
-        this(kubernetesClient, new ConcurrentHashMap<>(), fqdn, useFreeLocalPorts);
+    public PortForwardService(KubernetesClient kubernetesClient, boolean fqdn, boolean useFreeLocalPorts, boolean inK8s) {
+        this(kubernetesClient, new ConcurrentHashMap<>(), fqdn, useFreeLocalPorts, inK8s);
     }
 
     public PortForwardService(KubernetesClient kubernetesClient, Map<Endpoint, LocalPortForward> cache,
-                              boolean fqdn, boolean useFreeLocalPorts) {
+                              boolean fqdn, boolean useFreeLocalPorts, boolean inK8s) {
         this.kubernetesClient = kubernetesClient;
         this.cache = cache;
         this.fqdn = fqdn;
         this.useFreeLocalPorts = useFreeLocalPorts;
+        this.inK8s = inK8s;
+    }
+
+    private synchronized <T> T direct(BasePortForwardParams<T> params, String name, int targetPort){
+        return params.supply(new NetSocketAddress(name, targetPort));
     }
 
     public synchronized <T> T portForward(BasePortForwardParams<T> params) {
-        String namespace = Optional.ofNullable(params.getNamespace()).orElseGet(kubernetesClient::getNamespace);
-        String cloud = kubernetesClient.getMasterUrl().getHost();
         String name = params.getName();
         int targetPort = params.getPort();
+        if (inK8s){
+            return direct(params, name, targetPort);
+        }
+        String namespace = Optional.ofNullable(params.getNamespace()).orElseGet(kubernetesClient::getNamespace);
+        String cloud = kubernetesClient.getMasterUrl().getHost();
         int localPort = useFreeLocalPorts ? 0 : targetPort;
         // i.e. my-svc.my-namespace.svc.cluster-domain.example
         String host = fqdn ? String.format("%s.svc.%s", params.host(namespace), cloud) : params.host(namespace);
@@ -95,6 +104,7 @@ public class PortForwardService {
                 log.info("Closed port forward for endpoint: {}", endpoint);
             }
         } catch (Exception e) {
+            System.out.println(e);
             log.warn("Error while closing portForwarder, e: {} - {}", e.getClass().getSimpleName(), e.getMessage() != null ? e.getMessage() : "");
         }
     }

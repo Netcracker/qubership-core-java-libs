@@ -1,1 +1,2 @@
 com.netcracker.cloud.junit.cloudcore.extension.provider.DefaultPortForwardServiceManager
+com.netcracker.cloud.junit.cloudcore.extension.provider.DirectCommunicationServiceManager

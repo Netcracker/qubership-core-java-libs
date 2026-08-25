@@ -1,1 +1,2 @@
 com.netcracker.cloud.junit.cloudcore.extension.client.DefaultKubernetesClientFactory
+com.netcracker.cloud.junit.cloudcore.extension.client.DirectKubernetesClientFactory

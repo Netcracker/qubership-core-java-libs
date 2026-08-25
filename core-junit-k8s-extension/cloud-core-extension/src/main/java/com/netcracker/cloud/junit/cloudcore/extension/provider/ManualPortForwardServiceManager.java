@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.function.Function;
 
 @Slf4j
-@Priority(0)
+@Priority(1)
 public class ManualPortForwardServiceManager implements PortForwardServiceManager {
 
     @Setter
