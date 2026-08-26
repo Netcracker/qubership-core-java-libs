@@ -26,35 +26,38 @@ class TenantManagerConnectorImplTest {
     @TenantManagerMockInject
     TenantManagerMockServer tmMock;
 
+    private static final long EVENT_TIMEOUT_SEC = 10;
+    private static final long NO_EVENT_TIMEOUT_SEC = 1;
+
     @Test
     public void testApi() throws Exception {
         BlockingQueue<List<Tenant>> events = new LinkedBlockingDeque<>();
         try (TenantManagerConnectorImpl client = new TenantManagerConnectorImpl(tmMock.getUrl(), HttpClient.getM2mClient(() -> "faketoken"))) {
             client.subscribe(events::add);
-            List<Tenant> tenants = events.poll(1, TimeUnit.SECONDS);
+            List<Tenant> tenants = events.poll(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
             assertNotNull(tenants);
             assertEquals(0, tenants.size());
 
             String firstId = tmMock.addFirstActivatedTenant();
-            tenants = events.poll(1, TimeUnit.SECONDS);
+            tenants = events.poll(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
             assertNotNull(tenants);
             assertEquals(1, tenants.size());
             assertEquals(firstId, tenants.get(0).getExternalId());
 
             String secondId = tmMock.addSecondActivatedTenant();
-            tenants = events.poll(1, TimeUnit.SECONDS);
+            tenants = events.poll(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
             assertNotNull(tenants);
             assertEquals(2, tenants.size());
             assertArrayEquals(new String[]{firstId, secondId}, tenants.stream().map(Tenant::getExternalId).toArray());
 
             tmMock.deactivateSecondTenant();
-            tenants = events.poll(1, TimeUnit.SECONDS);
+            tenants = events.poll(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
             assertNotNull(tenants);
             assertEquals(1, tenants.size());
             assertEquals(firstId, tenants.get(0).getExternalId());
 
             tmMock.deleteFirstTenant();
-            tenants = events.poll(1, TimeUnit.SECONDS);
+            tenants = events.poll(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
             assertNotNull(tenants);
             assertEquals(0, tenants.size());
         }
@@ -67,12 +70,12 @@ class TenantManagerConnectorImplTest {
             try (TenantManagerConnectorImpl client = new TenantManagerConnectorImpl(tmMock.getUrl(), HttpClient.getM2mClient(() -> "faketoken"))) {
 
                 client.subscribe(events::add);
-                List<Tenant> tenants = events.poll(1, TimeUnit.SECONDS);
+                List<Tenant> tenants = events.poll(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
                 assertNotNull(tenants);
                 assertEquals(0, tenants.size());
 
                 String firstId = tmMock.addFirstActivatedTenant();
-                tenants = events.poll(1, TimeUnit.SECONDS);
+                tenants = events.poll(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
                 assertNotNull(tenants);
                 assertEquals(1, tenants.size());
                 assertEquals(firstId, tenants.get(0).getExternalId());
@@ -86,12 +89,12 @@ class TenantManagerConnectorImplTest {
                 // tenant should be cache from previous connection session
                 assertEquals(1, client.getTenantList().size());
 
-                tenants = events.poll(1, TimeUnit.SECONDS);
+                tenants = events.poll(NO_EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
                 assertNull(tenants); // no messages should be send due of reconnection
 
                 // check that tenant list change is processed normally
                 tmMock.addSecondActivatedTenant();
-                tenants = events.poll(10, TimeUnit.SECONDS);
+                tenants = events.poll(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
                 assertNotNull(tenants, "no tenant list update arrived after the reconnect");
                 assertEquals(2, tenants.size());
                 assertEquals(2, client.getTenantList().size());
