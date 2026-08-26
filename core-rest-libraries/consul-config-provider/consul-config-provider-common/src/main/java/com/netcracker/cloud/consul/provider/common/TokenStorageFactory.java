@@ -58,6 +58,18 @@ public abstract class TokenStorageFactory {
         String authMethod;
         String audience;
 
+        public ConsulLoginMode getMode() {
+            return mode;
+        }
+
+        public String getAuthMethod() {
+            return authMethod;
+        }
+
+        public String getAudience() {
+            return audience;
+        }
+
         public static class Builder {
             CreateOptions options = new CreateOptions();
 
