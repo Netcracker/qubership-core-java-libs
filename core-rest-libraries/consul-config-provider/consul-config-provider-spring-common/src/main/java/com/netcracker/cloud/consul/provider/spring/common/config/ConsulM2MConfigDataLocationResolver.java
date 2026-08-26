@@ -1,6 +1,7 @@
 package com.netcracker.cloud.consul.provider.spring.common.config;
 
 import org.apache.commons.logging.Log;
+import com.netcracker.cloud.consul.provider.common.ConsulLoginCredentials;
 import com.netcracker.cloud.consul.provider.common.TokenProvider;
 import com.netcracker.cloud.consul.provider.common.client.ConsulRestClient;
 import com.netcracker.cloud.consul.provider.spring.common.Utils;
@@ -49,9 +50,21 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
         ConsulProperties properties = resolverContext.getBootstrapContext().get(ConsulProperties.class);
         try {
             M2MManager m2MManager = resolverContext.getBootstrapContext().get(M2MManager.class);
-            ConsulRestClient client = createConsulRestClient(Utils.formatConsulAddress(properties), () -> m2MManager.getToken().getTokenValue());
-            TokenProvider tokenProvider = new TokenProvider(client, getPropsOrEnvsMust(args(PROP_CLOUD_NAMESPACE), args(ENV_NAMESPACE, ENV_CLOUD_NAMESPACE)));
-            consulConfigProperties.setAclToken(tokenProvider.getNewConsulToken().getSecretId());
+            Supplier<String> m2mTokenSupplier = () -> m2MManager.getToken().getTokenValue();
+            String namespace = getPropsOrEnvsMust(args(PROP_CLOUD_NAMESPACE), args(ENV_NAMESPACE, ENV_CLOUD_NAMESPACE));
+            ConsulRestClient client = createConsulRestClient(Utils.formatConsulAddress(properties), m2mTokenSupplier);
+            TokenProvider tokenProvider = new TokenProvider(client, new ConsulLoginCredentials() {
+                @Override
+                public String authMethod() {
+                    return namespace;
+                }
+
+                @Override
+                public String bearerToken() {
+                    return m2mTokenSupplier.get();
+                }
+            });
+            consulConfigProperties.setAclToken(tokenProvider.perform().getSecretId());
         } catch (IOException e) {
             log.error("can not get consul token by m2m: ", e);
         }

@@ -1,6 +1,7 @@
 package com.netcracker.cloud.consul.provider.common.client;
 
 import com.google.gson.Gson;
+import com.netcracker.cloud.consul.provider.common.ConsulLoginCredentials;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -68,5 +69,20 @@ public class ConsulOkHttpClient implements ConsulClient {
         }
         return new ConsulClientResponse(responseBody, response.code());
     }
-}
 
+    @Override
+    public ConsulClientResponse login(ConsulLoginCredentials credentials) throws IOException {
+        Map<String, String> payload = new HashMap<>();
+        payload.put(AUTH_METHOD_FIELD, credentials.authMethod());
+        payload.put(BEARER_TOKEN_FIELD, credentials.bearerToken());
+        String json = new Gson().toJson(payload);
+        log.info("Perform login to {} with {} auth method", consulAddr, credentials.authMethod());
+        Response response = client.newCall(new Request.Builder()
+                .post(RequestBody.create(MediaType.parse(APPLICATION_JSON), json))
+                .url(consulAddr + V1_ACL_LOGIN)
+                .addHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .build()
+        ).execute();
+        return new ConsulClientResponse(response.body().string(), response.code());
+    }
+}

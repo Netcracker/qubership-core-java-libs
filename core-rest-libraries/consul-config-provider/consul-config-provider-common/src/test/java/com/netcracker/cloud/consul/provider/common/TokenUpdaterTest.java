@@ -3,42 +3,46 @@ package com.netcracker.cloud.consul.provider.common;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class TokenUpdaterTest {
     private TokenUpdater tokenUpdater;
-    private TokenProvider tokenProvider;
+    private ConsulLogin consulLogin;
+    private SelfTokenReader selfTokenReader;
     private ScheduledExecutorService scheduledExecutorService;
     private final Instant currentTime = Instant.now();
 
     @BeforeEach
     public void init() {
 
-        tokenProvider = Mockito.mock(TokenProvider.class);
+        consulLogin = Mockito.mock(ConsulLogin.class);
+        selfTokenReader = Mockito.mock(SelfTokenReader.class);
         scheduledExecutorService = Mockito.mock(ScheduledExecutorService.class);
-        tokenUpdater = new TokenUpdater(tokenProvider, scheduledExecutorService, Clock.fixed(currentTime, ZoneId.of("UTC")), 2);
+        tokenUpdater = new TokenUpdater(consulLogin, selfTokenReader, scheduledExecutorService, Clock.fixed(currentTime, ZoneId.of("UTC")), 2, Duration.ZERO);
     }
 
     @Test
     void mustGetNewTokenScheduleUpdates() throws IOException {
         String secretId = "test-token";
         OffsetDateTime secretExpirationTime = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
-        when(tokenProvider.getNewConsulToken()).thenReturn(new Token(secretId, secretExpirationTime));
+        when(consulLogin.perform()).thenReturn(new Token(secretId, secretExpirationTime));
 
         AtomicReference<String> updater = new AtomicReference<>("");
         tokenUpdater.watch(updater::set, "");
@@ -46,8 +50,8 @@ class TokenUpdaterTest {
 
         verify(scheduledExecutorService).scheduleWithFixedDelay(
                 any(),
-                eq(ChronoUnit.SECONDS.between(currentTime, secretExpirationTime.minusMinutes(5))),
-                eq(ChronoUnit.SECONDS.between(currentTime, secretExpirationTime.minusMinutes(5))),
+                eq(1440L),
+                eq(1440L),
                 eq(TimeUnit.SECONDS)
         );
     }
@@ -56,15 +60,15 @@ class TokenUpdaterTest {
     void mustUseSelfTokenIfProvidedScheduleUpdates() throws IOException {
         String secretId = "test-self-token";
         OffsetDateTime secretExpirationTime = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
-        when(tokenProvider.getSelf(secretId)).thenReturn(new Token(secretId, secretExpirationTime));
+        when(selfTokenReader.read(secretId)).thenReturn(new Token(secretId, secretExpirationTime));
 
         AtomicReference<String> updater = new AtomicReference<>("");
         tokenUpdater.watch(updater::set, secretId);
 
         verify(scheduledExecutorService).scheduleWithFixedDelay(
                 any(),
-                eq(ChronoUnit.SECONDS.between(currentTime, secretExpirationTime.minusMinutes(5))),
-                eq(ChronoUnit.SECONDS.between(currentTime, secretExpirationTime.minusMinutes(5))),
+                eq(1440L),
+                eq(1440L),
                 eq(TimeUnit.SECONDS)
         );
     }
@@ -73,21 +77,21 @@ class TokenUpdaterTest {
     void mustRetryOnFailure() throws IOException {
         String secretId = "test-self-token";
         OffsetDateTime secretExpirationTime = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
-        when(tokenProvider.getNewConsulToken())
+        when(consulLogin.perform())
                 .thenThrow(new IOException())
                 .thenReturn(new Token(secretId, secretExpirationTime));
 
         AtomicReference<String> updater = new AtomicReference<>("");
         tokenUpdater.watch(updater::set, "");
 
-        verify(tokenProvider, times(2)).getNewConsulToken();
+        verify(consulLogin, times(2)).perform();
     }
 
     @Test
     void scheduledTaskMustRetryOnFailure() throws IOException {
         String secretId = "test-token";
         OffsetDateTime secretExpirationTime = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
-        when(tokenProvider.getNewConsulToken())
+        when(consulLogin.perform())
                 .thenReturn(new Token(secretId, secretExpirationTime))
                 .thenThrow(new IOException())
                 .thenThrow(new IOException())
@@ -96,8 +100,8 @@ class TokenUpdaterTest {
         AtomicReference<String> updater = new AtomicReference<>("");
 
         when(scheduledExecutorService.scheduleWithFixedDelay(any(),
-                eq(ChronoUnit.SECONDS.between(currentTime, secretExpirationTime.minusMinutes(5))),
-                eq(ChronoUnit.SECONDS.between(currentTime, secretExpirationTime.minusMinutes(5))),
+                eq(1440L),
+                eq(1440L),
                 eq(TimeUnit.SECONDS))).thenAnswer(invocationOnMock -> {
             assertEquals(secretId, updater.get());
             Runnable task = invocationOnMock.getArgument(0);
@@ -107,5 +111,82 @@ class TokenUpdaterTest {
 
         tokenUpdater.watch(updater::set, "");
         assertEquals(secretId, updater.get());
+    }
+
+    @Test
+    void scheduledTaskLoginsThroughTheSameConsulLogin() throws IOException {
+        String secretId = "test-token";
+        String rotatedSecretId = "test-rotated-token";
+        OffsetDateTime secretExpirationTime = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
+        when(consulLogin.perform())
+                .thenReturn(new Token(secretId, secretExpirationTime))
+                .thenReturn(new Token(rotatedSecretId, secretExpirationTime));
+
+        AtomicReference<String> updater = new AtomicReference<>("");
+        when(scheduledExecutorService.scheduleWithFixedDelay(any(), anyLong(), anyLong(), eq(TimeUnit.SECONDS)))
+                .thenAnswer(invocationOnMock -> {
+                    Runnable task = invocationOnMock.getArgument(0);
+                    task.run();
+                    return null;
+                });
+
+        tokenUpdater.watch(updater::set, "");
+
+        assertEquals(rotatedSecretId, updater.get());
+        verify(consulLogin, times(2)).perform();
+        verifyNoInteractions(selfTokenReader);
+    }
+
+    private long scheduledDelay(Instant now, OffsetDateTime expirationTime) throws IOException {
+        ScheduledExecutorService executor = Mockito.mock(ScheduledExecutorService.class);
+        ConsulLogin login = Mockito.mock(ConsulLogin.class);
+        when(login.perform()).thenReturn(new Token("test-token", expirationTime));
+
+        new TokenUpdater(login, Mockito.mock(SelfTokenReader.class), executor,
+                Clock.fixed(now, ZoneId.of("UTC")), 2, Duration.ZERO).watch(unused -> {
+        }, "");
+
+        ArgumentCaptor<Long> delay = ArgumentCaptor.forClass(Long.class);
+        verify(executor).scheduleWithFixedDelay(any(), delay.capture(), anyLong(), eq(TimeUnit.SECONDS));
+        return delay.getValue();
+    }
+
+    @Test
+    void delayIsAFractionOfRemainingLifetime() throws IOException {
+        Instant loginTime = Instant.parse("2026-08-26T07:21:30.522472777Z");
+
+        assertEquals(48L, scheduledDelay(loginTime, OffsetDateTime.parse("2026-08-26T07:22:30.522472777Z")));
+        assertEquals(240L, scheduledDelay(loginTime, OffsetDateTime.parse("2026-08-26T07:26:30.522472777Z")));
+        assertEquals(2880L, scheduledDelay(loginTime, OffsetDateTime.parse("2026-08-26T08:21:30.522472777Z")));
+        assertEquals(69120L, scheduledDelay(loginTime, OffsetDateTime.parse("2026-08-27T07:21:30.522472777Z")));
+    }
+
+    @Test
+    void delayKeepsLowerBoundWhenClockRanAhead() throws IOException {
+        Instant clockAhead = Instant.parse("2026-08-26T09:00:00Z");
+
+        assertEquals(TokenUpdater.MIN_DELAY_SECONDS,
+                scheduledDelay(clockAhead, OffsetDateTime.parse("2026-08-26T07:26:30.522472777Z")));
+    }
+
+    @Test
+    void retryWaitsConfiguredPauseBetweenAttempts() throws IOException {
+        Duration retryPause = Duration.ofMillis(200);
+        OffsetDateTime secretExpirationTime = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
+        when(consulLogin.perform())
+                .thenThrow(new IOException())
+                .thenReturn(new Token("test-token", secretExpirationTime));
+
+        TokenUpdater updater = new TokenUpdater(consulLogin, selfTokenReader, scheduledExecutorService,
+                Clock.fixed(currentTime, ZoneId.of("UTC")), 2, retryPause);
+
+        long startedAt = System.nanoTime();
+        updater.watch(unused -> {
+        }, "");
+        long elapsed = System.nanoTime() - startedAt;
+
+        verify(consulLogin, times(2)).perform();
+        Assertions.assertTrue(elapsed >= retryPause.toNanos(),
+                "expected at least one pause of " + retryPause + " between retries");
     }
 }

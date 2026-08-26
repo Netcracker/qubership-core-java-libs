@@ -10,39 +10,28 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 
-public class TokenProvider {
+public class TokenProvider implements ConsulLogin {
 
     private static final Logger log = LoggerFactory.getLogger(TokenProvider.class);
 
     private final ConsulClient client;
-    private final String authMethod;
+    private final ConsulLoginCredentials credentials;
 
-    public TokenProvider(ConsulClient client, String authMethod) {
+    public TokenProvider(ConsulClient client, ConsulLoginCredentials credentials) {
         this.client = client;
-        this.authMethod = authMethod;
+        this.credentials = credentials;
     }
 
-    public Token getSelf(String currentSecretId) throws IOException {
-        ConsulClientResponse response = client.getSelfToken(currentSecretId);
-        String bodyJson = response.getBodyJson();
-        if (response.getCode() != 200) {
-            throw new IOException(String.format("can not get self token from consul; response code=%s; body='%s'", response.getCode(), bodyJson));
-        }
-
-        String secretId = JsonPath.read(bodyJson, "$.SecretID");
-        OffsetDateTime expirationTime = OffsetDateTime.parse(JsonPath.read(bodyJson, "$.ExpirationTime"));
-        log.debug("Got self token from Consul");
-        return new Token(secretId, expirationTime);
-    }
-
-    public Token getNewConsulToken() throws IOException {
-        ConsulClientResponse response = client.login(authMethod);
+    @Override
+    public Token perform() throws IOException {
+        ConsulClientResponse response = client.login(credentials);
         String responseBody = response.getBodyJson();
         if (responseBody == null || responseBody.isEmpty()) {
             throw new IOException("can not get consul token by m2m token: response body is empty");
         }
         if (response.getCode() != 200) {
-            throw new IOException("can not get consul token by m2m token: " + responseBody);
+            String reason = response.getCode() == 403 ? "consul auth method is not ready" : "login to consul failed";
+            throw new IOException(String.format("%s: response code=%s; body='%s'", reason, response.getCode(), responseBody));
         }
         String secretId = JsonPath.read(responseBody, "$.SecretID");
         OffsetDateTime expirationTime = null;

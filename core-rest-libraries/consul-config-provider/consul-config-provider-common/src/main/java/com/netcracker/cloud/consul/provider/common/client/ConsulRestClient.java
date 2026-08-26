@@ -1,12 +1,15 @@
 package com.netcracker.cloud.consul.provider.common.client;
 
 import com.google.gson.Gson;
+import com.netcracker.cloud.consul.provider.common.ConsulLoginCredentials;
 import com.netcracker.cloud.restclient.HttpMethod;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import com.netcracker.cloud.restclient.entity.RestClientResponseEntity;
+import com.netcracker.cloud.restclient.exception.MicroserviceRestClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -56,6 +59,26 @@ public class ConsulRestClient implements ConsulClient {
 
         log.debug("Perform login to {} with {} auth method", consulAddr, authMethod);
         RestClientResponseEntity<String> response = client.doRequest(consulAddr + V1_ACL_LOGIN, HttpMethod.POST, headers, json, String.class);
+        return new ConsulClientResponse(response.getResponseBody(), response.getHttpStatus());
+    }
+
+    @Override
+    public ConsulClientResponse login(ConsulLoginCredentials credentials) throws IOException {
+        Map<String, String> payload = new HashMap<>();
+        payload.put(AUTH_METHOD_FIELD, credentials.authMethod());
+        payload.put(BEARER_TOKEN_FIELD, credentials.bearerToken());
+        String json = new Gson().toJson(payload);
+
+        Map<String, List<String>> headers = new HashMap<>();
+        headers.put(CONTENT_TYPE, Collections.singletonList(APPLICATION_JSON));
+
+        log.debug("Perform login to {} with {} auth method", consulAddr, credentials.authMethod());
+        RestClientResponseEntity<String> response;
+        try {
+            response = client.doRequest(consulAddr + V1_ACL_LOGIN, HttpMethod.POST, headers, json, String.class);
+        } catch (MicroserviceRestClientException e) {
+            throw new IOException("can not perform login to consul: " + e.getMessage(), e);
+        }
         return new ConsulClientResponse(response.getResponseBody(), response.getHttpStatus());
     }
 }
