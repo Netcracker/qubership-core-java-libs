@@ -58,6 +58,7 @@ public class KafkaContainerCluster implements Startable {
                             .withClusterId(clusterId)
                             .withEnv("KAFKA_BROKER_ID", brokerNum + "")
                             .withEnv("KAFKA_NODE_ID", brokerNum + "")
+                            .withEnv("KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS", "0")
                             .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", replicationFactor + "")
                             .withEnv("KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS", replicationFactor + "")
                             .withEnv("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", replicationFactor + "")
