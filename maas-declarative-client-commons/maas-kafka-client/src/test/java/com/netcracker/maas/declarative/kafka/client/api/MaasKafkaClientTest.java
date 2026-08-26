@@ -6,9 +6,6 @@ import com.netcracker.cloud.bluegreen.api.model.State;
 import com.netcracker.cloud.bluegreen.api.model.Version;
 import com.netcracker.cloud.bluegreen.impl.service.InMemoryBlueGreenStatePublisher;
 import com.netcracker.cloud.bluegreen.impl.util.EnvUtil;
-import com.netcracker.cloud.context.propagation.core.ContextManager;
-import com.netcracker.cloud.context.propagation.core.supports.strategies.DefaultStrategies;
-import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
 import com.netcracker.cloud.framework.contexts.tenant.context.TenantContext;
 import com.netcracker.cloud.headerstracking.filters.context.AcceptLanguageContext;
 import com.netcracker.cloud.maas.bluegreen.kafka.ConsumerConsistencyMode;
@@ -35,6 +32,7 @@ import com.netcracker.maas.declarative.kafka.client.impl.tenant.api.InternalTena
 import com.netcracker.maas.declarative.kafka.client.impl.tracing.TracingService;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.OffsetSpec;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -43,6 +41,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serializer;
@@ -52,6 +51,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -64,9 +65,12 @@ import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -74,6 +78,8 @@ import static org.mockito.Mockito.*;
 
 @Testcontainers
 class MaasKafkaClientTest {
+
+    private static final Logger log = LoggerFactory.getLogger(MaasKafkaClientTest.class);
 
     @Container
     private static final KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:6.2.1"));
@@ -259,11 +265,16 @@ class MaasKafkaClientTest {
         when(maasKafkaTopicService.getTopicAddressByDefinition(any())).thenReturn(new TopicAddressImpl(topicInfo));
         final CompletableFuture<String> msg = new CompletableFuture<>();
         String groupId = "group-" + RANDOM_STRING.get();
-        try (var ignored = maasKafkaConsumer(topicInfo.getName(), record -> msg.complete(record.value()), false, true, groupId)) {
+        AtomicInteger handlerCalls = new AtomicInteger(0);
+        try (var ignored = maasKafkaConsumer(topicInfo.getName(), record -> {
+            log.info("[test] handler invocation #{}: partition={}, offset={}, value={}",
+                    handlerCalls.getAndIncrement(), record.partition(), record.offset(), record.value());
+            msg.complete(record.value());
+        }, false, true, groupId)) {
             waitForBgConsumerReady(groupId);
             String testMsg = "message-" + RANDOM_STRING.get();
             kafkaProducer.send(new ProducerRecord<>(topicInfo.getName(), testMsg));
-            assertEquals(testMsg, msg.get(ASYNC_WAIT_TIMEOUT_SEC, TimeUnit.SECONDS));
+            assertEquals(testMsg, awaitReceived(msg, "message " + testMsg, groupId, topicInfo.getName(), handlerCalls::get));
         }
     }
 
@@ -279,7 +290,10 @@ class MaasKafkaClientTest {
         String groupId = "group-" + RANDOM_STRING.get();
         try (var ignored = maasKafkaConsumer(topicInfo.getName(), rec -> {
             int counter = c.getAndIncrement();
+            log.info("[test] handler invocation #{}: partition={}, offset={}, value={}",
+                    counter, rec.partition(), rec.offset(), rec.value());
             if (counter == 0) {
+                log.info("[test] failing the first delivery on purpose, the record must be redelivered after consumer recreation");
                 throw new RuntimeException();
             } else if (counter == 1) {
                 firstMsgReceived.complete(rec.value());
@@ -289,9 +303,9 @@ class MaasKafkaClientTest {
         }, false, true, groupId)) {
             waitForBgConsumerReady(groupId);
             kafkaProducer.send(new ProducerRecord<>(topicInfo.getName(), firstMsg));
-            assertEquals(firstMsg, firstMsgReceived.get(ASYNC_WAIT_TIMEOUT_SEC, TimeUnit.SECONDS));
+            assertEquals(firstMsg, awaitReceived(firstMsgReceived, "redelivery of " + firstMsg, groupId, topicInfo.getName(), c::get));
             kafkaProducer.send(new ProducerRecord<>(topicInfo.getName(), secondMsg));
-            assertEquals(secondMsg, secondMsgReceived.get(ASYNC_WAIT_TIMEOUT_SEC, TimeUnit.SECONDS));
+            assertEquals(secondMsg, awaitReceived(secondMsgReceived, "message " + secondMsg, groupId, topicInfo.getName(), c::get));
         }
     }
 
@@ -459,17 +473,68 @@ class MaasKafkaClientTest {
     private void waitForBgConsumerReady(String groupId) throws Exception {
         Properties adminProps = new Properties();
         adminProps.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers());
-        long deadline = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(10);
+        long start = System.currentTimeMillis();
+        long deadline = start + TimeUnit.SECONDS.toMillis(ASYNC_WAIT_TIMEOUT_SEC);
         try (AdminClient admin = AdminClient.create(adminProps)) {
             while (System.currentTimeMillis() < deadline) {
-                if (!admin.listConsumerGroupOffsets(groupId).partitionsToOffsetAndMetadata()
-                        .get(3, TimeUnit.SECONDS).isEmpty()) {
+                var committed = admin.listConsumerGroupOffsets(groupId)
+                        .partitionsToOffsetAndMetadata().get(3, TimeUnit.SECONDS);
+                if (!committed.isEmpty()) {
+                    log.info("[test] BG consumer group '{}' became ready in {} ms, committed offsets: {}",
+                            groupId, System.currentTimeMillis() - start, committed);
                     return;
                 }
                 Thread.sleep(50);
             }
         }
-        fail("BG consumer group " + groupId + " did not become ready within timeout");
+        fail(String.format("BG consumer group '%s' did not become ready within %d s. %s",
+                groupId, ASYNC_WAIT_TIMEOUT_SEC, describeConsumerGroup(groupId, null)));
+    }
+
+    /**
+     * Waits for an expected delivery and, on timeout, reports the state instead of a bare TimeoutException.
+     */
+    private <T> T awaitReceived(CompletableFuture<T> future, String what, String groupId, String topicName,
+                                IntSupplier handlerCalls) throws Exception {
+        try {
+            return future.get(ASYNC_WAIT_TIMEOUT_SEC, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            String diagnostics = String.format("%s was not received in %d s. handler invocations=%d, %s",
+                    what, ASYNC_WAIT_TIMEOUT_SEC, handlerCalls.getAsInt(), describeConsumerGroup(groupId, topicName));
+            log.error("[test] {}", diagnostics);
+            throw new AssertionError(diagnostics, e);
+        }
+    }
+
+    private String describeConsumerGroup(String groupId, String topicName) {
+        Properties adminProps = new Properties();
+        adminProps.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers());
+        StringBuilder diagnostics = new StringBuilder("group='").append(groupId).append("'");
+        try (AdminClient admin = AdminClient.create(adminProps)) {
+            var committed = admin.listConsumerGroupOffsets(groupId)
+                    .partitionsToOffsetAndMetadata().get(10, TimeUnit.SECONDS);
+            diagnostics.append(", committed=").append(committed);
+            var description = admin.describeConsumerGroups(List.of(groupId)).all()
+                    .get(10, TimeUnit.SECONDS).get(groupId);
+            if (description != null) {
+                diagnostics.append(", members=").append(description.members().stream()
+                        .map(member -> member.clientId() + "->" + member.assignment().topicPartitions())
+                        .collect(Collectors.toList()));
+            }
+            Map<TopicPartition, OffsetSpec> offsetSpecs = committed.keySet().stream()
+                    .collect(Collectors.toMap(partition -> partition, partition -> OffsetSpec.latest()));
+            if (offsetSpecs.isEmpty() && topicName != null) {
+                offsetSpecs = Map.of(new TopicPartition(topicName, 0), OffsetSpec.latest());
+            }
+            if (!offsetSpecs.isEmpty()) {
+                diagnostics.append(", endOffsets=").append(admin.listOffsets(offsetSpecs).all()
+                        .get(10, TimeUnit.SECONDS).entrySet().stream()
+                        .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().offset())));
+            }
+        } catch (Exception e) {
+            diagnostics.append(", diagnostics collection failed: ").append(e);
+        }
+        return diagnostics.toString();
     }
 
     private static class StrTestDeserializer implements Deserializer<String> {

@@ -7,7 +7,6 @@ import com.netcracker.cloud.testharness.MaaSCocoonExtension;
 import com.netcracker.cloud.testharness.TenantManagerMockInject;
 import com.netcracker.cloud.testharness.TenantManagerMockServer;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -22,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MaaSCocoonExtension.class)
 @Slf4j
-@Disabled // TODO fix this problem
 class TenantManagerConnectorImplTest {
 
     @TenantManagerMockInject
@@ -64,7 +62,7 @@ class TenantManagerConnectorImplTest {
 
     @Test
     public void testReconnect() throws Exception {
-        withProp(Env.PROP_TENANT_MANAGER_RECONNECT_TIMEOUT, "1", () -> {
+        withProp(Env.PROP_TENANT_MANAGER_RECONNECT_TIMEOUT, "PT1S", () -> {
             BlockingQueue<List<Tenant>> events = new LinkedBlockingDeque<>();
             try (TenantManagerConnectorImpl client = new TenantManagerConnectorImpl(tmMock.getUrl(), HttpClient.getM2mClient(() -> "faketoken"))) {
 
@@ -83,7 +81,7 @@ class TenantManagerConnectorImplTest {
                 tmMock.stop();
                 tmMock.start();
 
-                Thread.sleep(2); // wait PROP_RECONNECT_TIMEOUT
+                Thread.sleep(2_000); // reconnect timeout above is PT1S, give the reconnect time to fire
 
                 // tenant should be cache from previous connection session
                 assertEquals(1, client.getTenantList().size());
@@ -93,7 +91,8 @@ class TenantManagerConnectorImplTest {
 
                 // check that tenant list change is processed normally
                 tmMock.addSecondActivatedTenant();
-                tenants = events.poll(2, TimeUnit.SECONDS);
+                tenants = events.poll(10, TimeUnit.SECONDS);
+                assertNotNull(tenants, "no tenant list update arrived after the reconnect");
                 assertEquals(2, tenants.size());
                 assertEquals(2, client.getTenantList().size());
             }

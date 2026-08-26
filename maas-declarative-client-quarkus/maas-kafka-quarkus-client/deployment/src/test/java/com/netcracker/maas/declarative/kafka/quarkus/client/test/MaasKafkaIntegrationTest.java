@@ -4,14 +4,11 @@ import com.netcracker.maas.declarative.kafka.client.api.*;
 import com.netcracker.maas.declarative.kafka.client.api.model.MaasKafkaConsumerCreationRequest;
 import com.netcracker.maas.declarative.kafka.client.api.model.MaasKafkaProducerCreationRequest;
 import com.netcracker.maas.declarative.kafka.client.api.model.MaasProducerRecord;
-import io.opentelemetry.api.GlobalOpenTelemetry;
+import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.context.Scope;
-import io.opentelemetry.context.propagation.ContextPropagators;
-import io.opentelemetry.extension.trace.propagation.B3Propagator;
-import io.opentelemetry.sdk.OpenTelemetrySdk;
 import jakarta.inject.Inject;
 import org.apache.commons.lang3.stream.Streams;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -19,8 +16,6 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serializer;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.slf4j.Logger;
@@ -30,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -38,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 
-@Disabled //TODO need to fix - failed in monorepo
 public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
 
     static {
@@ -68,6 +63,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
 
     private static final String TEST_MESSAGE = "test_message";
     private static final String TEST_MESSAGE_AFTER_REACTIVATION = "test_message_after_reactivation";
+    private static final long AWAIT_TIMEOUT_SEC = 30;
 
 
     @Inject
@@ -77,12 +73,26 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
     @Inject
     OpenTelemetry openTelemetry;
 
+    /**
+     * Each test method consumes in its own group: with the fixed group id from application.yml a consumer
+     * left over from an earlier method can still hold the single partition of the topic, and the consumer
+     * of the current method never gets the record.
+     */
+    private MaasKafkaConsumerDefinition uniqueGroupConsumerDefinition() {
+        return MaasKafkaConsumerDefinition.builder(clientFactory.getConsumerDefinition(CONSUMER_NAME))
+                .setGroupId("group-" + UUID.randomUUID())
+                .build();
+    }
+
     @Test
     @Timeout(value = 60)
     void clientActivationAndDeactivationTest() throws Exception {
         LOG.info("starting test clientActivationAndDeactivationTest");
 
         final String topicFilledName = "test_topic";
+
+        final String messageKey = UUID.randomUUID().toString();
+        final String messageAfterReactivationKey = UUID.randomUUID().toString();
 
         final CompletableFuture<Void> consumerDeactivationFuture = new CompletableFuture<>();
         final CompletableFuture<Void> consumerActivationFuture = new CompletableFuture<>();
@@ -95,9 +105,11 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
 
         Consumer<ConsumerRecord<String, String>> recordConsumer = record -> {
             LOG.info("Received record: {}", record);
-            if (record.value().equals(TEST_MESSAGE)) {
+            // Match by the unique record key: the topic is shared with the other test methods and is
+            // read from the beginning (auto.offset.reset=earliest), so the value alone is ambiguous.
+            if (messageKey.equals(record.key())) {
                 consumerPollingMessageFuture.complete(record.value());
-            } else if (record.value().equals(TEST_MESSAGE_AFTER_REACTIVATION)) {
+            } else if (messageAfterReactivationKey.equals(record.key())) {
                 consumerPollingMessageAfterReactivationFuture.complete(record.value());
             }
         };
@@ -106,7 +118,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
 
         MaasKafkaConsumerCreationRequest consumerCreationRequest =
                 MaasKafkaConsumerCreationRequest.builder()
-                        .setConsumerDefinition(clientFactory.getConsumerDefinition(CONSUMER_NAME))
+                        .setConsumerDefinition(uniqueGroupConsumerDefinition())
                         .setHandler(recordConsumer)
                         .setValueDeserializer(deserializer)
                         .build();
@@ -158,7 +170,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
                 // sending message test
                 MaasProducerRecord<String, String> producerRecord = new MaasProducerRecord(
                         null,
-                        UUID.randomUUID().toString(),
+                        messageKey,
                         TEST_MESSAGE,
                         null,
                         null
@@ -167,7 +179,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
                 assertThat(recordMetadata.topic()).isEqualTo(topicFilledName);
                 LOG.info("Successfully sent message to topic {}", recordMetadata.topic());
 
-                String sentMessage = consumerPollingMessageFuture.get();
+                String sentMessage = consumerPollingMessageFuture.get(AWAIT_TIMEOUT_SEC, TimeUnit.SECONDS);
                 assertThat(sentMessage).isEqualTo(TEST_MESSAGE);
                 LOG.info("Successfully received message from topic {}", recordMetadata.topic());
 
@@ -177,7 +189,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
                 CompletableFuture.allOf(
                         consumerDeactivationFuture,
                         producerDeactivationFuture
-                ).get();
+                ).get(AWAIT_TIMEOUT_SEC, TimeUnit.SECONDS);
                 assertThat(consumer.getClientState()).isEqualTo(MaasKafkaClientState.INACTIVE);
                 assertThat(producer.getClientState()).isEqualTo(MaasKafkaClientState.INACTIVE);
                 LOG.info("Successfully deactivate all clients");
@@ -188,7 +200,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
                 CompletableFuture.allOf(
                         consumerActivationFuture,
                         producerActivationFuture
-                ).get();
+                ).get(AWAIT_TIMEOUT_SEC, TimeUnit.SECONDS);
                 assertThat(consumer.getClientState()).isEqualTo(MaasKafkaClientState.ACTIVE);
                 assertThat(producer.getClientState()).isEqualTo(MaasKafkaClientState.ACTIVE);
                 LOG.info("Successfully reactivate all clients");
@@ -196,7 +208,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
                 // sending message test after reactivation
                 MaasProducerRecord<String, String> producerRecordAr = new MaasProducerRecord(
                         null,
-                        UUID.randomUUID().toString(),
+                        messageAfterReactivationKey,
                         TEST_MESSAGE_AFTER_REACTIVATION,
                         null,
                         null
@@ -205,7 +217,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
                 assertThat(recordMetadataAr.topic()).isEqualTo(topicFilledName);
                 LOG.info("Successfully sent message to topic {}", recordMetadataAr.topic());
 
-                String sentMessageAr = consumerPollingMessageAfterReactivationFuture.get();
+                String sentMessageAr = consumerPollingMessageAfterReactivationFuture.get(AWAIT_TIMEOUT_SEC, TimeUnit.SECONDS);
                 assertThat(sentMessageAr).isEqualTo(TEST_MESSAGE_AFTER_REACTIVATION);
                 LOG.info("Successfully received message from topic {}", recordMetadataAr.topic());
             }
@@ -215,16 +227,20 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
     @Test
     @Timeout(value = 60)
     void tracingTest_ProducerProvidesNewChildSpanAndInjectsIntoHeaders() throws Exception {
+        final String messageKey = UUID.randomUUID().toString();
         final CompletableFuture<Map<String, String>> consumerPollingMessageFuture = new CompletableFuture<>();
 
         Consumer<ConsumerRecord<String, String>> recordConsumer = record -> {
+            if (!messageKey.equals(record.key())) {
+                return;
+            }
             Map<String, String> headersMap = Streams.of(record.headers()).collect(Collectors.toMap(Header::key, header -> new String(header.value())));
             consumerPollingMessageFuture.complete(headersMap);
         };
 
         MaasKafkaConsumerCreationRequest consumerCreationRequest =
                 MaasKafkaConsumerCreationRequest.builder()
-                        .setConsumerDefinition(clientFactory.getConsumerDefinition(CONSUMER_NAME))
+                        .setConsumerDefinition(uniqueGroupConsumerDefinition())
                         .setHandler(recordConsumer)
                         .setValueDeserializer(new StrTestDeserializer())
                         .build();
@@ -253,7 +269,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
 
                     MaasProducerRecord<String, String> producerRecord = new MaasProducerRecord(
                             null,
-                            UUID.randomUUID().toString(),
+                            messageKey,
                             TEST_MESSAGE,
                             null,
                             null
@@ -262,7 +278,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
                     producer.sendSync(producerRecord);
                     assertEquals(spanId, Span.current().getSpanContext().getSpanId());
 
-                    Map<String, String> headersInConsumer = consumerPollingMessageFuture.get();
+                    Map<String, String> headersInConsumer = consumerPollingMessageFuture.get(AWAIT_TIMEOUT_SEC, TimeUnit.SECONDS);
                     LOG.info("map of headers from recordConsumer {}", headersInConsumer);
                     assertNotEquals(spanId, headersInConsumer.get("X-B3-SpanId"));
                 } finally {
@@ -274,18 +290,21 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
 
     @Test
     @Timeout(value = 60)
-    @Disabled("hangs sometimes")
     void tracingTest_Consumer() throws Exception {
+        final String messageKey = UUID.randomUUID().toString();
         final CompletableFuture<Map<String, String>> consumerPollingMessageFuture = new CompletableFuture<>();
 
         Consumer<ConsumerRecord<String, String>> recordConsumer = record -> {
+            if (!messageKey.equals(record.key())) {
+                return;
+            }
             Map<String, String> headersMap = Streams.of(record.headers()).collect(Collectors.toMap(Header::key, header -> new String(header.value())));
             consumerPollingMessageFuture.complete(headersMap);
         };
 
         MaasKafkaConsumerCreationRequest consumerCreationRequest =
                 MaasKafkaConsumerCreationRequest.builder()
-                        .setConsumerDefinition(clientFactory.getConsumerDefinition(CONSUMER_NAME))
+                        .setConsumerDefinition(uniqueGroupConsumerDefinition())
                         .setHandler(recordConsumer)
                         .setValueDeserializer(new StrTestDeserializer())
                         .build();
@@ -308,7 +327,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
 
                 MaasProducerRecord<String, String> producerRecord = new MaasProducerRecord(
                         null,
-                        UUID.randomUUID().toString(),
+                        messageKey,
                         TEST_MESSAGE,
                         null,
                         null
@@ -317,7 +336,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
                 try (Scope ignored = span.makeCurrent()) {
                     SpanContext spanContext = span.getSpanContext();
                     producer.sendSync(producerRecord);
-                    Map<String, String> headers = consumerPollingMessageFuture.get();
+                    Map<String, String> headers = consumerPollingMessageFuture.get(AWAIT_TIMEOUT_SEC, TimeUnit.SECONDS);
 
                     assertEquals(spanContext.getTraceId(), headers.get("X-B3-TraceId"));
                     assertNotEquals(spanContext.getSpanId(), headers.get("X-B3-SpanId"));

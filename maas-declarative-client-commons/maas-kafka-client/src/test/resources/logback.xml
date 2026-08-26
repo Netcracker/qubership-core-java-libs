@@ -6,6 +6,9 @@
         </encoder>
     </appender>
 
+    <logger name="com.github.dockerjava" level="WARN"/>
+    <logger name="org.testcontainers" level="INFO"/>
+    <logger name="tc" level="INFO"/>
     <logger name="kafka" level="INFO"/>
     <logger name="org.apache" level="INFO"/>
     <logger name="state.change.logger" level="WARN"/>
