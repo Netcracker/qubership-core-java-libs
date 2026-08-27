@@ -10,7 +10,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
@@ -27,7 +26,6 @@ import static org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CON
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 
 @Slf4j
-@Disabled //todo: unstable in monorepo
 class BGKafkaPauseResumeConsumerTest extends AbstractKafkaClusterTest {
 
     @Test
@@ -81,6 +79,11 @@ class BGKafkaPauseResumeConsumerTest extends AbstractKafkaClusterTest {
                     new ConsumerKey<>(ORIGIN_NS, originConsumersPods),
                     new ConsumerKey<>(PEER_NS, peerConsumersPods)));
 
+            // wait until every pod of both groups actually owns partitions:
+            // pause() applies to the current assignment, so pausing a pod which is still joining is a no-op
+            awaitPartitionsAssigned(ASSIGNMENT_TIMEOUT, topics, originConsumersPods);
+            awaitPartitionsAssigned(ASSIGNMENT_TIMEOUT, topics, peerConsumersPods);
+
             // send to active
             List<ProducerRecord<String, String>> sentRecordsActive = sendRecords("producing records for active", null,
                     IntStream.range(0, partitions).boxed().flatMap(partition -> topics.stream().map(topic ->
@@ -106,6 +109,7 @@ class BGKafkaPauseResumeConsumerTest extends AbstractKafkaClusterTest {
             Stream.concat(originConsumersPods.stream(), peerConsumersPods.stream()).forEach(consumer -> {
                 consumer.pause();
                 Assertions.assertFalse(consumer.paused().isEmpty());
+                Assertions.assertEquals(new HashSet<>(consumer.assignment()), consumer.paused());
             });
 
             // send active messages
@@ -191,6 +195,9 @@ class BGKafkaPauseResumeConsumerTest extends AbstractKafkaClusterTest {
                     Map.of(ORIGIN_NS, Map.of()),
                     new ConsumerKey<>(ORIGIN_NS, consumersPods)));
 
+            // wait until every pod actually owns partitions before pausing them
+            awaitPartitionsAssigned(ASSIGNMENT_TIMEOUT, topics, consumersPods);
+
             // send messages
             List<ProducerRecord<String, String>> sentRecords = sendRecords("producing records before pause", null,
                     IntStream.range(0, partitions).boxed().flatMap(partition -> topics.stream().map(topic ->
@@ -207,6 +214,7 @@ class BGKafkaPauseResumeConsumerTest extends AbstractKafkaClusterTest {
             consumersPods.forEach(consumer -> {
                 consumer.pause();
                 Assertions.assertFalse(consumer.paused().isEmpty());
+                Assertions.assertEquals(new HashSet<>(consumer.assignment()), consumer.paused());
             });
 
             // send messages

@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -54,6 +55,7 @@ abstract class AbstractKafkaClusterTest {
 
     Duration POLL_TIMEOUT = Duration.ofSeconds(30);
     Duration NO_RECORDS_TIMEOUT = Duration.ofSeconds(5);
+    static final Duration ASSIGNMENT_TIMEOUT = Duration.ofSeconds(60);
 
     static KafkaContainerCluster cluster;
 
@@ -229,6 +231,41 @@ abstract class AbstractKafkaClusterTest {
                 expectedRecords, (Objects.equals(receivedRecords, expectedRecords) ? "=" : "!="), receivedRecords,
                 expectedOffsets, (Objects.equals(receivedOffsets, expectedOffsets) ? "=" : "!="), receivedOffsets);
         return false;
+    }
+
+    void awaitPartitionsAssigned(Duration timeout, Set<String> topics, Collection<? extends BGKafkaConsumer<String, String>> consumers) {
+        Set<TopicPartition> expectedPartitions = topics.stream()
+                .flatMap(topic -> IntStream.range(0, partitions).boxed().map(partition -> new TopicPartition(topic, partition)))
+                .collect(Collectors.toCollection(() -> new TreeSet<>(topicPartitionComp)));
+        Duration pollTimeout = Duration.ofSeconds(1);
+        long deadline = System.nanoTime() + timeout.toNanos();
+        List<Collection<TopicPartition>> assignments = new ArrayList<>(consumers.size());
+        do {
+            List<Future<Collection<TopicPartition>>> futures = consumers.stream()
+                    .map(consumer -> executor.submit(() -> {
+                        consumer.poll(pollTimeout);
+                        return consumer.assignment();
+                    }))
+                    .toList();
+            assignments.clear();
+            futures.forEach(future -> {
+                try {
+                    assignments.add(future.get());
+                } catch (Exception e) {
+                    throw new IllegalStateException(e);
+                }
+            });
+            Set<TopicPartition> assignedPartitions = assignments.stream().flatMap(Collection::stream)
+                    .collect(Collectors.toCollection(() -> new TreeSet<>(topicPartitionComp)));
+            if (assignments.stream().noneMatch(Collection::isEmpty) && assignedPartitions.equals(expectedPartitions)) {
+                log.info("all {} consumers got their partitions assigned: {}", assignments.size(), assignments);
+                return;
+            }
+            log.info("waiting for partitions to be assigned, current assignments: {}", assignments);
+        } while (System.nanoTime() < deadline);
+        throw new IllegalStateException(String.format(
+                "Consumers did not get their partitions assigned within %s. expected partitions: %s, actual assignments: %s",
+                timeout, expectedPartitions, assignments));
     }
 
     void updatePublishersVersions(States states, InMemoryBlueGreenStatePublisher origin, InMemoryBlueGreenStatePublisher... peer) {

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Disabled
+@Disabled // This test were disabled due to there are no assertions and it is used for manual memory leak detection only
 public class MongoClientTest {
 
     private static final Logger log = LoggerFactory.getLogger(MongoClientTest.class);

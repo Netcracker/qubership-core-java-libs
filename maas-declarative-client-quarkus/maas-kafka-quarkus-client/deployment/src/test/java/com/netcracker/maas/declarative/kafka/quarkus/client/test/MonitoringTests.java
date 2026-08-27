@@ -11,8 +11,8 @@ import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.inject.Inject;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serializer;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -23,10 +23,9 @@ import static org.awaitility.Awaitility.waitAtMost;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@Disabled //TODO need to fix - failed in monorepo
 public class MonitoringTests extends AbstractMaasKafkaTest {
 
-    private static final int MSG_WAIT_TIME_SEC = 10;
+    private static final int MSG_WAIT_TIME_SEC = 60;
 
     @Inject
     MaasKafkaClientFactory clientFactory;
@@ -35,38 +34,44 @@ public class MonitoringTests extends AbstractMaasKafkaTest {
     MeterRegistry registry;
 
     @Test
-    void producerIsInstrumented() {
-        createProducer().sendSync(new MaasProducerRecord<>(
-                null,
-                UUID.randomUUID().toString(),
-                "test-msg",
-                null,
-                null
-        ));
+    @Timeout(120)
+    void producerIsInstrumented() throws Exception {
+        try (MaasKafkaProducer producer = createProducer()) {
+            producer.sendSync(new MaasProducerRecord<>(
+                    null,
+                    UUID.randomUUID().toString(),
+                    "test-msg",
+                    null,
+                    null
+            ));
 
-        assertNotNull(registry.getMeters());
-        assertFalse(registry.getMeters().isEmpty());
-        waitAtMost(Duration.ofSeconds(MSG_WAIT_TIME_SEC))
-                .untilAsserted(() -> assertThat(this.registry.get("kafka.producer.record.send.total").functionCounter().count())
-                        .isGreaterThanOrEqualTo(1));
+            assertNotNull(registry.getMeters());
+            assertFalse(registry.getMeters().isEmpty());
+            waitAtMost(Duration.ofSeconds(MSG_WAIT_TIME_SEC))
+                    .untilAsserted(() -> assertThat(this.registry.get("kafka.producer.record.send.total").functionCounter().count())
+                            .isGreaterThanOrEqualTo(1));
+        }
     }
 
     @Test
-    void consumerIsInstrumented() {
-        createConsumer();
-        createProducer().sendSync(new MaasProducerRecord<>(
-                null,
-                UUID.randomUUID().toString(),
-                "test-msg",
-                null,
-                null
-        ));
+    @Timeout(120)
+    void consumerIsInstrumented() throws Exception {
+        try (MaasKafkaConsumer ignored = createConsumer();
+             MaasKafkaProducer producer = createProducer()) {
+            producer.sendSync(new MaasProducerRecord<>(
+                    null,
+                    UUID.randomUUID().toString(),
+                    "test-msg",
+                    null,
+                    null
+            ));
 
-        assertNotNull(registry.getMeters());
-        assertFalse(registry.getMeters().isEmpty());
-        waitAtMost(Duration.ofSeconds(MSG_WAIT_TIME_SEC))
-                .untilAsserted(() -> assertThat(this.registry.get("kafka.consumer.fetch.manager.records.consumed.total").functionCounter().count())
-                        .isGreaterThanOrEqualTo(1));
+            assertNotNull(registry.getMeters());
+            assertFalse(registry.getMeters().isEmpty());
+            waitAtMost(Duration.ofSeconds(MSG_WAIT_TIME_SEC))
+                    .untilAsserted(() -> assertThat(this.registry.get("kafka.consumer.fetch.manager.records.consumed.total").functionCounter().count())
+                            .isGreaterThanOrEqualTo(1));
+        }
     }
 
     private MaasKafkaConsumer createConsumer() {

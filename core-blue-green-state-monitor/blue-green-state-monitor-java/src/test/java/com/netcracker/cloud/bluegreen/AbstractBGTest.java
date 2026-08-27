@@ -4,6 +4,7 @@ import com.netcracker.cloud.bluegreen.impl.http.HttpClientAdapter;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.consul.ConsulContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -30,7 +31,10 @@ class AbstractBGTest {
     String consulUrl;
 
     @Container
-    ConsulContainer consulContainer = new ConsulContainer("hashicorp/consul:1.16");
+    ConsulContainer consulContainer = new ConsulContainer("hashicorp/consul:1.16")
+            .waitingFor(Wait.forHttp("/v1/catalog/nodes")
+                    .forPort(8500)
+                    .forResponsePredicate(body -> !"[]".equals(body.trim())));
 
     @BeforeEach
     void before() {
