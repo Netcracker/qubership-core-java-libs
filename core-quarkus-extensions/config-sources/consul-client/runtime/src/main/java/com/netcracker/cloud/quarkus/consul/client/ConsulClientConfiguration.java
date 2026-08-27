@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.Optional;
 
 @Singleton
@@ -26,6 +27,8 @@ public class ConsulClientConfiguration {
     public static final String PROP_LOGIN_MODE = "quarkus.consul-source-config.login.mode";
     public static final String PROP_LOGIN_AUTH_METHOD = "quarkus.consul-source-config.login.auth-method";
     public static final String PROP_LOGIN_AUDIENCE = "quarkus.consul-source-config.login.audience";
+    public static final String PROP_LOGIN_FALLBACK_RECHECK_INTERVAL =
+            "quarkus.consul-source-config.login.fallback-recheck-interval";
 
     private static final Logger log = LoggerFactory.getLogger(ConsulClientConfiguration.class);
 
@@ -76,7 +79,9 @@ public class ConsulClientConfiguration {
                                      @ConfigProperty(name = "quarkus.consul-source-config.agent.url") String agentUrl,
                                      @ConfigProperty(name = PROP_LOGIN_MODE) Optional<ConsulLoginMode> mode,
                                      @ConfigProperty(name = PROP_LOGIN_AUTH_METHOD) Optional<String> authMethod,
-                                     @ConfigProperty(name = PROP_LOGIN_AUDIENCE) Optional<String> audience) {
+                                     @ConfigProperty(name = PROP_LOGIN_AUDIENCE) Optional<String> audience,
+                                     @ConfigProperty(name = PROP_LOGIN_FALLBACK_RECHECK_INTERVAL)
+                                     Optional<Duration> fallbackRecheckInterval) {
         return tokenStorageFactory.create(new TokenStorageFactory.CreateOptions.Builder()
                 .consulUrl(agentUrl)
                 .namespace(namespace)
@@ -84,6 +89,7 @@ public class ConsulClientConfiguration {
                 .mode(mode.orElse(null))
                 .authMethod(authMethod.orElse(null))
                 .audience(audience.orElse(null))
+                .fallbackRecheckInterval(fallbackRecheckInterval.orElse(null))
                 .build());
     }
 

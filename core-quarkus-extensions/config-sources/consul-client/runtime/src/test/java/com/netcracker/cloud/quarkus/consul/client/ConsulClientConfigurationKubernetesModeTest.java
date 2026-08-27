@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.time.Duration;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -33,7 +34,8 @@ class ConsulClientConfigurationKubernetesModeTest {
                     "quarkus.consul-source-config.agent.url", "http://localhost:8500",
                     ConsulClientConfiguration.PROP_LOGIN_MODE, "kubernetes",
                     ConsulClientConfiguration.PROP_LOGIN_AUTH_METHOD, "core-k8s",
-                    ConsulClientConfiguration.PROP_LOGIN_AUDIENCE, "dbaas"
+                    ConsulClientConfiguration.PROP_LOGIN_AUDIENCE, "dbaas",
+                    ConsulClientConfiguration.PROP_LOGIN_FALLBACK_RECHECK_INTERVAL, "PT30M"
             );
         }
     }
@@ -56,5 +58,6 @@ class ConsulClientConfigurationKubernetesModeTest {
         Assertions.assertEquals(ConsulLoginMode.KUBERNETES, options.getValue().getMode());
         Assertions.assertEquals("core-k8s", options.getValue().getAuthMethod());
         Assertions.assertEquals("dbaas", options.getValue().getAudience());
+        Assertions.assertEquals(Duration.ofMinutes(30), options.getValue().getFallbackRecheckInterval());
     }
 }

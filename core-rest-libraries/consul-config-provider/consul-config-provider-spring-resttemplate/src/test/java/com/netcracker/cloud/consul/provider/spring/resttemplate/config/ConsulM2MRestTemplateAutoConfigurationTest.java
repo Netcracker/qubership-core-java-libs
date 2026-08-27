@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.cloud.consul.ConsulProperties;
 
+import java.time.Duration;
+
 class ConsulM2MRestTemplateAutoConfigurationTest {
 
     private final ConsulLoginProperties loginProperties = new ConsulLoginProperties();
@@ -72,5 +74,18 @@ class ConsulM2MRestTemplateAutoConfigurationTest {
 
         Assertions.assertEquals("core-k8s", opts.getAuthMethod());
         Assertions.assertEquals(AudienceName.DBAAS, opts.getAudience());
+    }
+
+    @Test
+    void fallbackRecheckIntervalDefaultComesFromTheBuilder() {
+        Assertions.assertEquals(TokenStorageFactory.CreateOptions.DEFAULT_FALLBACK_RECHECK_INTERVAL,
+                options().getFallbackRecheckInterval());
+    }
+
+    @Test
+    void fallbackRecheckIntervalIsReadFromTheConfiguration() {
+        loginProperties.setFallbackRecheckInterval(Duration.ofMinutes(30));
+
+        Assertions.assertEquals(Duration.ofMinutes(30), options().getFallbackRecheckInterval());
     }
 }

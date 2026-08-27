@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -216,5 +217,27 @@ class TokenStorageFactoryTest {
         verify(client, atLeast(2)).login(used.capture());
         Assertions.assertInstanceOf(KubernetesLoginCredentials.class, used.getAllValues().get(0));
         Assertions.assertInstanceOf(M2MLoginCredentials.class, used.getAllValues().get(used.getAllValues().size() - 1));
+    }
+
+    @Test
+    void builderSuppliesTheFallbackRecheckIntervalDefault() {
+        TokenStorageFactory.CreateOptions opts = new TokenStorageFactory.CreateOptions.Builder()
+                .consulUrl(CONSUL_URL)
+                .mode(ConsulLoginMode.KUBERNETES)
+                .build();
+
+        Assertions.assertEquals(TokenStorageFactory.CreateOptions.DEFAULT_FALLBACK_RECHECK_INTERVAL,
+                opts.getFallbackRecheckInterval());
+    }
+
+    @Test
+    void fallbackRecheckIntervalIsTakenFromTheCallerWhenGiven() {
+        TokenStorageFactory.CreateOptions opts = new TokenStorageFactory.CreateOptions.Builder()
+                .consulUrl(CONSUL_URL)
+                .mode(ConsulLoginMode.KUBERNETES)
+                .fallbackRecheckInterval(Duration.ofMinutes(30))
+                .build();
+
+        Assertions.assertEquals(Duration.ofMinutes(30), opts.getFallbackRecheckInterval());
     }
 }

@@ -53,6 +53,7 @@ public class ConsulM2MRestTemplateAutoConfiguration {
                 .mode(loginProperties.getMode())
                 .authMethod(loginProperties.getAuthMethod())
                 .audience(loginProperties.getAudience())
+                .fallbackRecheckInterval(loginProperties.getFallbackRecheckInterval())
                 .build();
     }
 

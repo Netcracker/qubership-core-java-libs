@@ -10,7 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.Clock;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,8 +39,11 @@ class KubernetesWithM2MFallbackTokenProviderTest {
             "Post \"https://kubernetes.default.svc/apis/authentication.k8s.io/v1/tokenreviews\": "
                     + "dial tcp 10.96.0.1:443: connect: connection refused";
 
+    private static final Duration RECHECK_INTERVAL = Duration.ofHours(5);
+
     private ConsulTokenProvider kubernetes;
     private ConsulTokenProvider m2m;
+    private TestClock clock;
     private ListAppender<ILoggingEvent> appender;
     private ch.qos.logback.classic.Logger logger;
 
@@ -44,6 +51,7 @@ class KubernetesWithM2MFallbackTokenProviderTest {
     void init() {
         kubernetes = mock(ConsulTokenProvider.class);
         m2m = mock(ConsulTokenProvider.class);
+        clock = new TestClock(Instant.parse("2026-08-26T07:00:00Z"));
 
         logger = ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger(KubernetesWithM2MFallbackTokenProvider.class);
         appender = new ListAppender<>();
@@ -58,7 +66,7 @@ class KubernetesWithM2MFallbackTokenProviderTest {
     }
 
     private KubernetesWithM2MFallbackTokenProvider probing() {
-        return new KubernetesWithM2MFallbackTokenProvider(kubernetes, m2m, 2, Duration.ZERO);
+        return new KubernetesWithM2MFallbackTokenProvider(kubernetes, m2m, 2, Duration.ZERO, RECHECK_INTERVAL, clock);
     }
 
     private List<String> infoRecords() {
@@ -109,7 +117,7 @@ class KubernetesWithM2MFallbackTokenProviderTest {
                 "login to consul failed: response code=500; body='" + TOKEN_REVIEW_UNREACHABLE + "'"));
         when(m2m.getToken()).thenReturn(new Token(SECRET_ID, null));
 
-        new KubernetesWithM2MFallbackTokenProvider(kubernetes, m2m).getToken();
+        new KubernetesWithM2MFallbackTokenProvider(kubernetes, m2m, RECHECK_INTERVAL).getToken();
 
         verify(kubernetes, times(KubernetesWithM2MFallbackTokenProvider.PROBE_TRIES)).getToken();
     }
@@ -183,5 +191,116 @@ class KubernetesWithM2MFallbackTokenProviderTest {
         String logged = String.join("\n", infoRecords());
         assertFalse(logged.contains(BEARER_TOKEN));
         assertFalse(logged.contains(SECRET_ID));
+    }
+
+    private static final class TestClock extends Clock {
+
+        private Instant now;
+
+        private TestClock(Instant now) {
+            this.now = now;
+        }
+
+        private void advance(Duration duration) {
+            now = now.plus(duration);
+        }
+
+        @Override
+        public ZoneId getZone() {
+            return ZoneOffset.UTC;
+        }
+
+        @Override
+        public Clock withZone(ZoneId zone) {
+            return this;
+        }
+
+        @Override
+        public Instant instant() {
+            return now;
+        }
+    }
+
+    @Test
+    void fallbackIsNotRecheckedBeforeTheIntervalPasses() throws IOException {
+        when(kubernetes.getToken()).thenThrow(new IllegalArgumentException("Unknown token audience: netcracker"));
+        when(m2m.getToken()).thenReturn(new Token(SECRET_ID, null));
+
+        KubernetesWithM2MFallbackTokenProvider provider = probing();
+        provider.getToken();
+        clock.advance(RECHECK_INTERVAL.minusMinutes(1));
+        provider.getToken();
+
+        verify(kubernetes, times(1)).getToken();
+        verify(m2m, times(2)).getToken();
+    }
+
+    @Test
+    void fallbackIsRecheckedOnceTheIntervalPasses() throws IOException {
+        when(kubernetes.getToken()).thenThrow(new IllegalArgumentException("Unknown token audience: netcracker"));
+        when(m2m.getToken()).thenReturn(new Token(SECRET_ID, null));
+
+        KubernetesWithM2MFallbackTokenProvider provider = probing();
+        provider.getToken();
+        clock.advance(RECHECK_INTERVAL);
+        provider.getToken();
+
+        verify(kubernetes, times(2)).getToken();
+        verify(m2m, times(2)).getToken();
+    }
+
+    @Test
+    void successfulRecheckSwitchesToTheNewWayForGood() throws IOException {
+        Token kubernetesToken = new Token("kubernetes-secret-id", null);
+        when(kubernetes.getToken())
+                .thenThrow(new IllegalArgumentException("Unknown token audience: netcracker"))
+                .thenReturn(kubernetesToken);
+        when(m2m.getToken()).thenReturn(new Token(SECRET_ID, null));
+
+        KubernetesWithM2MFallbackTokenProvider provider = probing();
+        provider.getToken();
+        clock.advance(RECHECK_INTERVAL);
+
+        assertEquals(kubernetesToken, provider.getToken());
+        assertEquals(kubernetesToken, provider.getToken());
+        verify(m2m, times(1)).getToken();
+    }
+
+    @Test
+    void failedRecheckKeepsTheOldWayAndPostponesTheNextOne() throws IOException {
+        when(kubernetes.getToken()).thenThrow(new IllegalArgumentException("Unknown token audience: netcracker"));
+        when(m2m.getToken()).thenReturn(new Token(SECRET_ID, null));
+
+        KubernetesWithM2MFallbackTokenProvider provider = probing();
+        provider.getToken();
+        clock.advance(RECHECK_INTERVAL);
+        provider.getToken();
+        clock.advance(RECHECK_INTERVAL.minusMinutes(1));
+        provider.getToken();
+
+        verify(kubernetes, times(2)).getToken();
+        verify(m2m, times(3)).getToken();
+    }
+
+    @Test
+    void onlyTheSwitchAddsASecondLogRecord() throws IOException {
+        when(kubernetes.getToken())
+                .thenThrow(new IllegalArgumentException("Unknown token audience: netcracker"))
+                .thenThrow(new IllegalArgumentException("Unknown token audience: netcracker"))
+                .thenReturn(new Token("kubernetes-secret-id", null));
+        when(m2m.getToken()).thenReturn(new Token(SECRET_ID, null));
+
+        KubernetesWithM2MFallbackTokenProvider provider = probing();
+        provider.getToken();
+        clock.advance(RECHECK_INTERVAL);
+        provider.getToken();
+        assertEquals(1, infoRecords().size(), infoRecords().toString());
+
+        clock.advance(RECHECK_INTERVAL);
+        provider.getToken();
+
+        List<String> records = infoRecords();
+        assertEquals(2, records.size(), records.toString());
+        assertTrue(records.get(1).contains("kubernetes"), records.get(1));
     }
 }

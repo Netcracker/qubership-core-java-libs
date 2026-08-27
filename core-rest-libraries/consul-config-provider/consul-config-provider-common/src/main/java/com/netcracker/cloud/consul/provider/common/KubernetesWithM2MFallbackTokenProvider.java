@@ -6,13 +6,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.Clock;
 import java.time.Duration;
+import java.time.Instant;
 
 /**
- * Probes the kubernetes way and falls back to m2m if the probe fails. The choice sticks until the pod restarts, so a
- * later failure never switches the way back, and the pod logs one {@code INFO} record telling which way it settled on.
- * The whole class goes away with the m2m way, which is why it names the pair it serves instead of taking two
- * interchangeable providers.
+ * Probes the kubernetes way and falls back to m2m if the probe fails. The fallback is temporary: every so often the
+ * pod tries the kubernetes way again, and the first success switches it over for good. Going back to m2m never
+ * happens, so the state is a ratchet, and a later failure of the kubernetes way is a plain failure.
+ *
+ * <p>The recheck rides on the scheduled relogin rather than on a timer of its own, so it happens only while someone
+ * asks for tokens. The whole class goes away with the m2m way, which is why it names the pair it serves instead of
+ * taking two interchangeable providers.
  */
 final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvider {
 
@@ -29,41 +34,71 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
     private final ConsulTokenProvider m2mProvider;
     private final int tries;
     private final Duration probeDelay;
+    private final Duration recheckInterval;
+    private final Clock clock;
 
-    private volatile ConsulTokenProvider chosen;
+    private volatile boolean kubernetesConfirmed;
+    private Instant fellBackAt;
 
-    KubernetesWithM2MFallbackTokenProvider(ConsulTokenProvider kubernetesProvider, ConsulTokenProvider m2mProvider) {
-        this(kubernetesProvider, m2mProvider, PROBE_TRIES, DEFAULT_PROBE_PAUSE);
+    KubernetesWithM2MFallbackTokenProvider(ConsulTokenProvider kubernetesProvider, ConsulTokenProvider m2mProvider,
+                                           Duration recheckInterval) {
+        this(kubernetesProvider, m2mProvider, PROBE_TRIES, DEFAULT_PROBE_PAUSE, recheckInterval, Clock.systemUTC());
     }
 
-    KubernetesWithM2MFallbackTokenProvider(ConsulTokenProvider kubernetesProvider, ConsulTokenProvider m2mProvider, int tries, Duration probeDelay) {
+    KubernetesWithM2MFallbackTokenProvider(ConsulTokenProvider kubernetesProvider, ConsulTokenProvider m2mProvider,
+                                           int tries, Duration probeDelay, Duration recheckInterval, Clock clock) {
         this.kubernetesProvider = kubernetesProvider;
         this.m2mProvider = m2mProvider;
         this.tries = tries;
         this.probeDelay = probeDelay;
+        this.recheckInterval = recheckInterval;
+        this.clock = clock;
     }
 
     /**
-     * Returns a token from the way already chosen, or, on the first call, chooses one. The probe spends fewer attempts
-     * than the scheduler so that an unmigrated pod pays little for it. Any {@link Exception} out of the kubernetes way
-     * means the fallback; an {@link Error} passes through untouched.
+     * Returns a token from the kubernetes way once it is confirmed, and otherwise probes it whenever the recheck
+     * interval has passed since the last failure. The probe spends fewer attempts than the scheduler so that an
+     * unmigrated pod pays little for it. Any {@link Exception} out of the kubernetes way means the m2m way for now;
+     * an {@link Error} passes through untouched.
      */
     @Override
     public synchronized Token getToken() throws IOException {
-        if (chosen != null) {
-            return chosen.getToken();
+        if (kubernetesConfirmed) {
+            return kubernetesProvider.getToken();
         }
-        try {
-            Token token = probe();
-            chosen = kubernetesProvider;
+        if (recheckIsDue()) {
+            try {
+                Token token = probe();
+                confirmKubernetes();
+                return token;
+            } catch (Exception e) {
+                fallBack(e);
+            }
+        }
+        return m2mProvider.getToken();
+    }
+
+    private boolean recheckIsDue() {
+        return fellBackAt == null || !clock.instant().isBefore(fellBackAt.plus(recheckInterval));
+    }
+
+    private void confirmKubernetes() {
+        boolean afterFallback = fellBackAt != null;
+        kubernetesConfirmed = true;
+        if (afterFallback) {
+            log.info("Consul ACL token is obtained by the {} auth method from now on, the fallback to the {} one is over",
+                    KUBERNETES_WAY, M2M_WAY);
+        } else {
             log.info("Consul ACL token is obtained by the {} auth method", KUBERNETES_WAY);
-            return token;
-        } catch (Exception e) {
-            chosen = m2mProvider;
-            log.info("Consul login by the {} auth method failed, falling back to the {} one until the pod restarts: {}",
-                    KUBERNETES_WAY, M2M_WAY, describe(e));
-            return m2mProvider.getToken();
         }
+    }
+
+    private void fallBack(Exception e) {
+        if (fellBackAt == null) {
+            log.info("Consul login by the {} auth method failed, falling back to the {} one and retrying it every {}: {}",
+                    KUBERNETES_WAY, M2M_WAY, recheckInterval, describe(e));
+        }
+        fellBackAt = clock.instant();
     }
 
     private Token probe() throws IOException {

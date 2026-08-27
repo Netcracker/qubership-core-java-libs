@@ -49,6 +49,7 @@ public class ConsulM2MWebClientAutoConfiguration {
                 .mode(loginProperties.getMode())
                 .authMethod(loginProperties.getAuthMethod())
                 .audience(loginProperties.getAudience())
+                .fallbackRecheckInterval(loginProperties.getFallbackRecheckInterval())
                 .build();
     }
 

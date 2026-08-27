@@ -14,6 +14,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,9 +49,8 @@ class TokenUpdaterTest {
         tokenUpdater.watch(updater::set, "");
         assertEquals(secretId, updater.get());
 
-        verify(scheduledExecutorService).scheduleWithFixedDelay(
-                any(),
-                eq(1440L),
+        verify(scheduledExecutorService).schedule(
+                any(Runnable.class),
                 eq(1440L),
                 eq(TimeUnit.SECONDS)
         );
@@ -65,9 +65,8 @@ class TokenUpdaterTest {
         AtomicReference<String> updater = new AtomicReference<>("");
         tokenUpdater.watch(updater::set, secretId);
 
-        verify(scheduledExecutorService).scheduleWithFixedDelay(
-                any(),
-                eq(1440L),
+        verify(scheduledExecutorService).schedule(
+                any(Runnable.class),
                 eq(1440L),
                 eq(TimeUnit.SECONDS)
         );
@@ -99,15 +98,11 @@ class TokenUpdaterTest {
 
         AtomicReference<String> updater = new AtomicReference<>("");
 
-        when(scheduledExecutorService.scheduleWithFixedDelay(any(),
-                eq(1440L),
-                eq(1440L),
-                eq(TimeUnit.SECONDS))).thenAnswer(invocationOnMock -> {
-            assertEquals(secretId, updater.get());
-            Runnable task = invocationOnMock.getArgument(0);
-            Assertions.assertDoesNotThrow(() -> task.run());
-            return null;
-        });
+        when(scheduledExecutorService.schedule(any(Runnable.class), eq(1440L), eq(TimeUnit.SECONDS)))
+                .thenAnswer(invocationOnMock -> {
+                    assertEquals(secretId, updater.get());
+                    return null;
+                });
 
         tokenUpdater.watch(updater::set, "");
         assertEquals(secretId, updater.get());
@@ -123,12 +118,7 @@ class TokenUpdaterTest {
                 .thenReturn(new Token(rotatedSecretId, secretExpirationTime));
 
         AtomicReference<String> updater = new AtomicReference<>("");
-        when(scheduledExecutorService.scheduleWithFixedDelay(any(), anyLong(), anyLong(), eq(TimeUnit.SECONDS)))
-                .thenAnswer(invocationOnMock -> {
-                    Runnable task = invocationOnMock.getArgument(0);
-                    task.run();
-                    return null;
-                });
+        runScheduledTaskOnce();
 
         tokenUpdater.watch(updater::set, "");
 
@@ -147,7 +137,7 @@ class TokenUpdaterTest {
         }, "");
 
         ArgumentCaptor<Long> delay = ArgumentCaptor.forClass(Long.class);
-        verify(executor).scheduleWithFixedDelay(any(), delay.capture(), anyLong(), eq(TimeUnit.SECONDS));
+        verify(executor).schedule(any(Runnable.class), delay.capture(), eq(TimeUnit.SECONDS));
         return delay.getValue();
     }
 
@@ -189,5 +179,66 @@ class TokenUpdaterTest {
         verify(tokenProvider, times(2)).getToken();
         Assertions.assertTrue(elapsed >= lowestJitteredDelay,
                 "expected a backoff delay of at least " + lowestJitteredDelay + " ns between retries, got " + elapsed);
+    }
+
+    private void runScheduledTaskOnce() {
+        AtomicInteger runs = new AtomicInteger();
+        when(scheduledExecutorService.schedule(any(Runnable.class), anyLong(), eq(TimeUnit.SECONDS)))
+                .thenAnswer(invocationOnMock -> {
+                    if (runs.getAndIncrement() == 0) {
+                        Runnable task = invocationOnMock.getArgument(0);
+                        task.run();
+                    }
+                    return null;
+                });
+    }
+
+    @Test
+    void nextReloginIsScheduledByTheExpirationOfTheNewToken() throws IOException {
+        OffsetDateTime firstExpiration = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
+        OffsetDateTime secondExpiration = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(10);
+        when(tokenProvider.getToken())
+                .thenReturn(new Token("test-token", firstExpiration))
+                .thenReturn(new Token("test-rotated-token", secondExpiration));
+
+        runScheduledTaskOnce();
+        tokenUpdater.watch(unused -> {
+        }, "");
+
+        ArgumentCaptor<Long> delays = ArgumentCaptor.forClass(Long.class);
+        verify(scheduledExecutorService, times(2)).schedule(any(Runnable.class), delays.capture(), eq(TimeUnit.SECONDS));
+        assertEquals(1440L, delays.getAllValues().get(0));
+        assertEquals(480L, delays.getAllValues().get(1));
+    }
+
+    @Test
+    void aFailedReloginKeepsTheSchedule() throws IOException {
+        OffsetDateTime expiration = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
+        when(tokenProvider.getToken())
+                .thenReturn(new Token("test-token", expiration))
+                .thenThrow(new IOException())
+                .thenThrow(new IOException());
+
+        runScheduledTaskOnce();
+        tokenUpdater.watch(unused -> {
+        }, "");
+
+        ArgumentCaptor<Long> delays = ArgumentCaptor.forClass(Long.class);
+        verify(scheduledExecutorService, times(2)).schedule(any(Runnable.class), delays.capture(), eq(TimeUnit.SECONDS));
+        assertEquals(1440L, delays.getAllValues().get(1));
+    }
+
+    @Test
+    void aTokenWithoutExpirationStopsTheSchedule() throws IOException {
+        OffsetDateTime expiration = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
+        when(tokenProvider.getToken())
+                .thenReturn(new Token("test-token", expiration))
+                .thenReturn(new Token("test-endless-token", null));
+
+        runScheduledTaskOnce();
+        tokenUpdater.watch(unused -> {
+        }, "");
+
+        verify(scheduledExecutorService, times(1)).schedule(any(Runnable.class), anyLong(), eq(TimeUnit.SECONDS));
     }
 }

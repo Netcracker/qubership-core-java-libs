@@ -44,10 +44,15 @@ The Consul ACL token is exchanged through `POST /v1/acl/login`. Two ways to obta
 the projected service account token of the pod, `m2m` sends an M2M token. The three properties below are read at runtime
 when the `TokenStorage` bean is built, so the way can be switched without rebuilding the application.
 
-A pod keeps one way for its whole life: in `kubernetes-with-m2m-fallback` mode the first login decides, and a failure of a later login does not
-switch the way back. In `kubernetes-with-m2m-fallback` mode the `kubernetes` way is tried first, and on failure the pod falls back to the `m2m`
-way and logs one `INFO` record with the reason, the Consul response code, and a truncated response body. In `kubernetes`
-mode there is no probe and no fallback. In `m2m` mode the auth method name and the audience are not read at all.
+In `kubernetes-with-m2m-fallback` mode the `kubernetes` way is tried first, and on failure the pod falls back to the
+`m2m` way and logs one `INFO` record with the reason, the Consul response code, and a truncated response body. In
+`kubernetes` mode there is no probe and no fallback. In `m2m` mode the auth method name and the audience are not read
+at all.
+
+The fallback is temporary. Once `fallback-recheck-interval` has passed, the next scheduled relogin tries the
+`kubernetes` way again, and the first success switches the pod over for good. Going back to `m2m` never happens. The
+recheck rides on the scheduled relogin, so it needs `MaxTokenTTL` on the auth method: without it the token never
+expires, nothing is scheduled, and nothing is rechecked.
 
 An unknown value of `quarkus.consul-source-config.login.mode` fails the startup. With
 `quarkus.consul-source-config.m2m.enabled=false` none of the three properties are read.
@@ -69,3 +74,4 @@ the token directory elsewhere with `com.netcracker.cloud.security.kubernetes.tok
 | quarkus.consul-source-config.login.mode      | Way to obtain the ACL token: kubernetes-with-m2m-fallback, kubernetes or m2m          | kubernetes-with-m2m-fallback                              |
 | quarkus.consul-source-config.login.auth-method | Consul auth method name, used by the kubernetes way         | kubernetes-auth-method-placeholder                        |
 | quarkus.consul-source-config.login.audience  | Projected token audience, used by the kubernetes way          | netcracker                                                |
+| quarkus.consul-source-config.login.fallback-recheck-interval | How often the fallback retries the kubernetes way | PT5H                                  |

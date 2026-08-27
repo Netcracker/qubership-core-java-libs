@@ -3,6 +3,7 @@ package com.netcracker.cloud.consul.provider.common;
 import com.netcracker.cloud.consul.provider.common.client.ConsulClient;
 import com.netcracker.cloud.security.core.utils.k8s.AudienceName;
 
+import java.time.Duration;
 import java.util.Locale;
 import java.util.function.Supplier;
 
@@ -36,7 +37,8 @@ public abstract class TokenStorageFactory {
             case KUBERNETES:
                 return kubernetesProvider(client, options);
             default:
-                return new KubernetesWithM2MFallbackTokenProvider(kubernetesProvider(client, options), m2mProvider(client, options));
+                return new KubernetesWithM2MFallbackTokenProvider(kubernetesProvider(client, options),
+                        m2mProvider(client, options), options.fallbackRecheckInterval);
         }
     }
 
@@ -55,6 +57,7 @@ public abstract class TokenStorageFactory {
     public static class CreateOptions {
 
         public static final String DEFAULT_AUTH_METHOD = "kubernetes-auth-method-placeholder";
+        public static final Duration DEFAULT_FALLBACK_RECHECK_INTERVAL = Duration.ofHours(5);
 
         String consulUrl;
         String namespace;
@@ -62,6 +65,7 @@ public abstract class TokenStorageFactory {
         ConsulLoginMode mode;
         String authMethod;
         String audience;
+        Duration fallbackRecheckInterval;
 
         public ConsulLoginMode getMode() {
             return mode;
@@ -73,6 +77,10 @@ public abstract class TokenStorageFactory {
 
         public String getAudience() {
             return audience;
+        }
+
+        public Duration getFallbackRecheckInterval() {
+            return fallbackRecheckInterval;
         }
 
         public static class Builder {
@@ -111,6 +119,11 @@ public abstract class TokenStorageFactory {
                 return this;
             }
 
+            public Builder fallbackRecheckInterval(Duration interval) {
+                options.fallbackRecheckInterval = interval;
+                return this;
+            }
+
             /**
              * Applies the defaults and checks the inputs the mode needs. Defaults live here rather than in the entry
              * points so that an external caller of the builder gets them too.
@@ -126,6 +139,9 @@ public abstract class TokenStorageFactory {
                 }
                 if (options.audience == null) {
                     options.audience = AudienceName.NETCRACKER;
+                }
+                if (options.fallbackRecheckInterval == null) {
+                    options.fallbackRecheckInterval = DEFAULT_FALLBACK_RECHECK_INTERVAL;
                 }
                 require(options.consulUrl != null, "consulUrl", options.mode);
                 if (options.mode != ConsulLoginMode.KUBERNETES) {

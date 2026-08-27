@@ -67,7 +67,8 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
                     .consulUrl(Utils.formatConsulAddress(properties))
                     .mode(login.getMode())
                     .authMethod(login.getAuthMethod())
-                    .audience(login.getAudience());
+                    .audience(login.getAudience())
+                    .fallbackRecheckInterval(login.getFallbackRecheckInterval());
             if (login.getMode() != ConsulLoginMode.KUBERNETES) {
                 options.namespace(getPropsOrEnvsMust(args(PROP_CLOUD_NAMESPACE), args(ENV_NAMESPACE, ENV_CLOUD_NAMESPACE)))
                         .m2mSupplier(m2mTokenSupplier);

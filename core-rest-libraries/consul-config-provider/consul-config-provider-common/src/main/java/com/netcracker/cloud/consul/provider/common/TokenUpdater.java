@@ -72,18 +72,32 @@ public class TokenUpdater {
         }
 
         if (token.getExpirationTime() != null) {
-            long delay = reloginDelaySeconds(token.getExpirationTime());
-            Runnable task = () -> {
-                log.debug("Get new consul token with {} retry attempts", tries);
-                try {
-                    Token newToken = withRetry(tokenProvider::getToken, tries);
-                    updater.accept(newToken.getSecretId());
-                } catch (Exception e) {
-                    log.error("Error occurred during getting new consul token. Will try in {} second.", delay, e);
-                }
-            };
-            executor.scheduleWithFixedDelay(task, delay, delay, TimeUnit.SECONDS);
+            scheduleRelogin(updater, reloginDelaySeconds(token.getExpirationTime()));
         }
+    }
+
+    /**
+     * Schedules one relogin and, from its result, the next one. The period follows the expiration of the token just
+     * received rather than of the first one: the way of obtaining the token can change while the pod lives, and the
+     * two auth methods carry different {@code MaxTokenTTL}. A failed relogin keeps the previous period, and a token
+     * without an expiration ends the schedule.
+     */
+    private void scheduleRelogin(Consumer<String> updater, long delay) {
+        executor.schedule(() -> {
+            log.debug("Get new consul token with {} retry attempts", tries);
+            try {
+                Token newToken = withRetry(tokenProvider::getToken, tries);
+                updater.accept(newToken.getSecretId());
+                if (newToken.getExpirationTime() == null) {
+                    log.debug("Consul token has no expiration time, stop refreshing");
+                    return;
+                }
+                scheduleRelogin(updater, reloginDelaySeconds(newToken.getExpirationTime()));
+            } catch (Exception e) {
+                log.error("Error occurred during getting new consul token. Will try in {} seconds.", delay, e);
+                scheduleRelogin(updater, delay);
+            }
+        }, delay, TimeUnit.SECONDS);
     }
 
     /**

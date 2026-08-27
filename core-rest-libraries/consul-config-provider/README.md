@@ -12,19 +12,26 @@ Two ways to obtain the token are supported:
 ## Login properties
 
 The three properties below are read at startup, in the ConfigData phase and again when the `TokenStorage` bean is
-built. A pod keeps one way of obtaining the token for its whole life: in `kubernetes-with-m2m-fallback` mode the first login decides, and a
-failure of a later login does not switch the way back.
+built. In `kubernetes-with-m2m-fallback` mode the first login picks the way, and a later failure never switches it
+back on its own.
 
 | Property name                                       | Type                          | Default                              | Read when                                                    |
 |-----------------------------------------------------|-------------------------------|--------------------------------------|--------------------------------------------------------------|
 | `spring.cloud.consul.config.login.mode`             | `kubernetes-with-m2m-fallback`, `kubernetes` or `m2m` | `kubernetes-with-m2m-fallback`       | ConfigData phase and `TokenStorage` bean creation            |
 | `spring.cloud.consul.config.login.auth-method`      | string                        | `kubernetes-auth-method-placeholder` | same, and only when the `kubernetes` way is used             |
 | `spring.cloud.consul.config.login.audience`         | string                        | `netcracker`                         | same, and only when the `kubernetes` way is used             |
+| `spring.cloud.consul.config.login.fallback-recheck-interval` | duration          | `5h`                                 | same, and only in the fallback mode                          |
 
-In `kubernetes-with-m2m-fallback` mode the `kubernetes` way is tried first. If it fails, the pod falls back to the `m2m` way and logs one
-`INFO` record with the reason, the Consul response code, and a truncated response body. In `kubernetes` mode there is
-no probe and no fallback, and neither `M2MManager` nor the namespace is needed. In `m2m` mode the auth method name and
-the audience are not read at all.
+In `kubernetes-with-m2m-fallback` mode the `kubernetes` way is tried first. If it fails, the pod falls back to the
+`m2m` way and logs one `INFO` record with the reason, the Consul response code, and a truncated response body. In
+`kubernetes` mode there is no probe and no fallback, and neither `M2MManager` nor the namespace is needed. In `m2m`
+mode the auth method name and the audience are not read at all.
+
+The fallback is temporary. Once `fallback-recheck-interval` has passed, the next scheduled relogin tries the
+`kubernetes` way again, and the first success switches the pod over for good, with a second `INFO` record. Going back
+to `m2m` never happens. The recheck rides on the scheduled relogin instead of a timer of its own, so it needs
+`MaxTokenTTL` on the auth method: without it Consul issues a token that never expires, nothing is scheduled, and
+nothing is rechecked.
 
 An unknown value of `spring.cloud.consul.config.login.mode` fails the startup.
 

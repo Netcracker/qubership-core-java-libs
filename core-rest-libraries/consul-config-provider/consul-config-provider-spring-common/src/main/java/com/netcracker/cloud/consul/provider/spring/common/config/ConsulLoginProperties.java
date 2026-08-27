@@ -1,6 +1,8 @@
 package com.netcracker.cloud.consul.provider.spring.common.config;
 
 import com.netcracker.cloud.consul.provider.common.ConsulLoginMode;
+
+import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -17,6 +19,7 @@ public class ConsulLoginProperties {
     private ConsulLoginMode mode;
     private String authMethod;
     private String audience;
+    private Duration fallbackRecheckInterval;
 
     public ConsulLoginMode getMode() {
         return mode;
@@ -40,5 +43,13 @@ public class ConsulLoginProperties {
 
     public void setAudience(String audience) {
         this.audience = audience;
+    }
+
+    public Duration getFallbackRecheckInterval() {
+        return fallbackRecheckInterval;
+    }
+
+    public void setFallbackRecheckInterval(Duration fallbackRecheckInterval) {
+        this.fallbackRecheckInterval = fallbackRecheckInterval;
     }
 }
