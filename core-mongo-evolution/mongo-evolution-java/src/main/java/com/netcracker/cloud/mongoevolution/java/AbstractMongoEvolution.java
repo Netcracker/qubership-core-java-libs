@@ -3,13 +3,13 @@ package com.netcracker.cloud.mongoevolution.java;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoWriteException;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.result.UpdateResult;
 import com.netcracker.cloud.mongoevolution.java.annotation.AnnotationProcessor;
 import com.netcracker.cloud.mongoevolution.java.dataaccess.ConnectionSearchKey;
 import org.bson.BsonTimestamp;
@@ -125,7 +125,9 @@ public class AbstractMongoEvolution {
                         try {
                             Thread.sleep(waitTimeMillisecWithinUpdate);
                         } catch (InterruptedException e) {
-                            LOGGER.error("executeChangeLogUpdate Thread was interrupted: {}", e);
+                            LOGGER.error("executeChangeLogUpdate Thread was interrupted", e);
+                            Thread.currentThread().interrupt();
+                            throw e;
                         }
                     }
                 } else {
@@ -195,22 +197,7 @@ public class AbstractMongoEvolution {
     public boolean isUpdateInProgress() throws Exception {
         MongoCollection<Document> updatesTracker = database.getCollection(TRACKER_COLLECTION);
         try {
-            FindIterable<Document> docs = updatesTracker.find();
-            Document doc;
-            if (!docs.iterator().hasNext()) {
-                long currentTime = currentTimeMillis();
-                doc = createTrackerCollectionRecord(currentTime, currentTime, false, INITIAL_VERSION);
-
-                updatesTracker.createIndex(new Document(TRACKER_IN_PROGRESS, 1), new IndexOptions().unique(true));
-                updatesTracker.insertOne(doc);
-
-                updateFieldWithMongoCurrentDate(updatesTracker, TRACKER_KEY_UPDATE_START, null);
-                updateFieldWithMongoCurrentDate(updatesTracker, TRACKER_KEY_UPDATE_END, null);
-            } else {
-                doc = docs.first();
-            }
-
-            return (boolean) doc.get(TRACKER_IN_PROGRESS);
+            return (boolean) ensureTrackerRecord(updatesTracker).get(TRACKER_IN_PROGRESS);
         } catch (MongoWriteException mongoEx) {
             if (mongoEx.getError().getCode() == ERR_CODE_MONGO_DUPLICATE_KEY) {
                 LOGGER.debug("getUpdateStatus failed due to DOCUMENT concurrent insertion: {}", mongoEx);
@@ -229,6 +216,39 @@ public class AbstractMongoEvolution {
             LOGGER.error("getUpdateStatus failed: {}", e);
             throw e;
         }
+    }
+
+    /**
+     * Returns the tracker record, creating it if the collection is still empty. The creation is an upsert with
+     * an empty filter: an existing record matches it whatever its state, so a concurrent starter cannot add a
+     * second record that the unique index on {@value #TRACKER_IN_PROGRESS} would deadlock against.
+     */
+    private Document ensureTrackerRecord(MongoCollection<Document> updatesTracker) {
+        updatesTracker.createIndex(new Document(TRACKER_IN_PROGRESS, 1), new IndexOptions().unique(true));
+        long currentTime = currentTimeMillis();
+        Document initialRecord = createTrackerCollectionRecord(currentTime, currentTime, false, INITIAL_VERSION);
+        try {
+            UpdateResult result = updatesTracker.updateOne(new Document(),
+                    new Document("$setOnInsert", initialRecord),
+                    new UpdateOptions().upsert(true));
+            if (result.getUpsertedId() != null) {
+                updateFieldWithMongoCurrentDate(updatesTracker, TRACKER_KEY_UPDATE_START, null);
+                updateFieldWithMongoCurrentDate(updatesTracker, TRACKER_KEY_UPDATE_END, null);
+            }
+        } catch (MongoWriteException | MongoCommandException e) {
+            if (!isDuplicateKey(e)) {
+                throw e;
+            }
+            LOGGER.debug("Tracker record was created concurrently by another instance: {}", e.getMessage());
+        }
+        return updatesTracker.find().first();
+    }
+
+    private static boolean isDuplicateKey(RuntimeException e) {
+        if (e instanceof MongoWriteException writeEx) {
+            return writeEx.getError().getCode() == ERR_CODE_MONGO_DUPLICATE_KEY;
+        }
+        return e instanceof MongoCommandException commandEx && commandEx.getErrorCode() == ERR_CODE_MONGO_DUPLICATE_KEY;
     }
 
     boolean insertUpdateFlag(MongoCollection<Document> collection, Long expectedVersion, boolean updateInProgress) {
