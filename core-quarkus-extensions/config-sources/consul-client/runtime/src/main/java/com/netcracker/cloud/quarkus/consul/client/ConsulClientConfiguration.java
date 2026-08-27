@@ -23,7 +23,6 @@ import java.util.Optional;
 @Singleton
 public class ConsulClientConfiguration {
 
-    //todo vlla мне не нравится, что имена пропертей дублируются. Мы можем эти константы задать где то в одном месте кода и переиспользовать?
     public static final String PROP_LOGIN_MODE = "quarkus.consul-source-config.login.mode";
     public static final String PROP_LOGIN_AUTH_METHOD = "quarkus.consul-source-config.login.auth-method";
     public static final String PROP_LOGIN_AUDIENCE = "quarkus.consul-source-config.login.audience";

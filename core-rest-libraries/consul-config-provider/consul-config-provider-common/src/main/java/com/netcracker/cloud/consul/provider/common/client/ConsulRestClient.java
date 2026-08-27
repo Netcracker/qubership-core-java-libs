@@ -47,9 +47,6 @@ public class ConsulRestClient implements ConsulClient {
         return new ConsulClientResponse(response.getResponseBody(), response.getHttpStatus());
     }
 
-    //todo vlla есть предложение удалить реализацию этого метода и бросить UnsupportedOperationException. Во первых, он deprecated, во вторых - после наших изменений код проходит только через метод login(ConsulLoginCredentials credentials) и нокогда через старый login (тут я могу ошибаться надо проверить).
-    // нам это даст возможность не передавать m2mTokenSupplier в клиент и немного упростить com.netcracker.cloud.consul.provider.spring.common.config.ConsulM2MConfigDataLocationResolver.loadConfigProperties
-    // но это только предложение, надо его проанализировать
     @Override
     public ConsulClientResponse login(String authMethod) {
         Map<String, String> payload = new HashMap<>();
@@ -68,19 +65,20 @@ public class ConsulRestClient implements ConsulClient {
     @Override
     public ConsulClientResponse login(ConsulLoginCredentials credentials) throws IOException {
         Map<String, String> payload = new HashMap<>();
-        payload.put(AUTH_METHOD_FIELD, credentials.authMethod());
-        payload.put(BEARER_TOKEN_FIELD, credentials.bearerToken());
+        payload.put(AUTH_METHOD_FIELD, credentials.getAuthMethod());
+        payload.put(BEARER_TOKEN_FIELD, credentials.getBearerToken());
         String json = new Gson().toJson(payload);
 
         Map<String, List<String>> headers = new HashMap<>();
         headers.put(CONTENT_TYPE, Collections.singletonList(APPLICATION_JSON));
 
-        log.debug("Perform login to {} with {} auth method", consulAddr, credentials.authMethod());
+        log.debug("Perform login to {} with {} auth method", consulAddr, credentials.getAuthMethod());
         RestClientResponseEntity<String> response;
         try {
             response = client.doRequest(consulAddr + V1_ACL_LOGIN, HttpMethod.POST, headers, json, String.class);
         } catch (MicroserviceRestClientException e) {
-            //todo vlla добавить комментарий, зачем здесь сделан выброс эксепшена
+            // Retries and their backoff act on IOException only, so a transport failure must reach the caller as one:
+            // otherwise a single dropped connection sticks the pod to the m2m auth method until it restarts.
             throw new IOException("can not perform login to consul: " + e.getMessage(), e);
         }
         return new ConsulClientResponse(response.getResponseBody(), response.getHttpStatus());

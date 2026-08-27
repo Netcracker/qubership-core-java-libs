@@ -51,26 +51,26 @@ class TokenStorageFactoryTest {
     }
 
     @Test
-    void modeIsAutoWhenNotGiven() {
+    void modeIsKubernetesWithM2MFallbackWhenNotGiven() {
         TokenStorageFactory.CreateOptions opts = new TokenStorageFactory.CreateOptions.Builder()
                 .consulUrl(CONSUL_URL)
                 .namespace(NAMESPACE)
                 .m2mSupplier(() -> "token")
                 .build();
 
-        Assertions.assertEquals(ConsulLoginMode.AUTO, opts.mode);
+        Assertions.assertEquals(ConsulLoginMode.KUBERNETES_WITH_M2M_FALLBACK, opts.mode);
     }
 
     @Test
-    void autoModeNamesTheMissingInputAndTheMode() {
+    void fallbackModeNamesTheMissingInputAndTheMode() {
         IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class,
                 () -> new TokenStorageFactory.CreateOptions.Builder()
                         .consulUrl(CONSUL_URL)
-                        .mode(ConsulLoginMode.AUTO)
+                        .mode(ConsulLoginMode.KUBERNETES_WITH_M2M_FALLBACK)
                         .build());
 
         Assertions.assertTrue(thrown.getMessage().contains("namespace"), thrown.getMessage());
-        Assertions.assertTrue(thrown.getMessage().contains("auto"), thrown.getMessage());
+        Assertions.assertTrue(thrown.getMessage().contains("kubernetes-with-m2m-fallback"), thrown.getMessage());
     }
 
     @Test
@@ -171,16 +171,16 @@ class TokenStorageFactoryTest {
         Assertions.assertInstanceOf(TokenProvider.class, login);
         ConsulLoginCredentials used = credentialsUsedBy(login, client);
         Assertions.assertInstanceOf(KubernetesLoginCredentials.class, used);
-        Assertions.assertEquals("core-k8s", used.authMethod());
+        Assertions.assertEquals("core-k8s", used.getAuthMethod());
         Assertions.assertEquals(0, m2mCalls.get());
     }
 
     @Test
-    void autoModeBuildsProbingLoginOverBothWays() throws IOException {
+    void fallbackModeBuildsProbingLoginOverBothWays() throws IOException {
         ConsulClient client = mock(ConsulClient.class);
         TokenStorageFactory.CreateOptions opts = new TokenStorageFactory.CreateOptions.Builder()
                 .consulUrl(CONSUL_URL)
-                .mode(ConsulLoginMode.AUTO)
+                .mode(ConsulLoginMode.KUBERNETES_WITH_M2M_FALLBACK)
                 .namespace(NAMESPACE)
                 .authMethod("core-k8s")
                 .m2mSupplier(() -> "token")
@@ -193,11 +193,11 @@ class TokenStorageFactoryTest {
     }
 
     @Test
-    void autoModeFallsBackToM2MCredentials() throws IOException {
+    void fallbackModeFallsBackToM2MCredentials() throws IOException {
         ConsulClient client = mock(ConsulClient.class);
         TokenStorageFactory.CreateOptions opts = new TokenStorageFactory.CreateOptions.Builder()
                 .consulUrl(CONSUL_URL)
-                .mode(ConsulLoginMode.AUTO)
+                .mode(ConsulLoginMode.KUBERNETES_WITH_M2M_FALLBACK)
                 .namespace(NAMESPACE)
                 .m2mSupplier(() -> "token")
                 .build();

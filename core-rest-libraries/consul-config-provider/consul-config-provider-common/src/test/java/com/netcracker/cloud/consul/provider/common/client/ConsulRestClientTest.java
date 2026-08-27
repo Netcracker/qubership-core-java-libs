@@ -69,12 +69,12 @@ class ConsulRestClientTest {
     private static ConsulLoginCredentials credentials(String authMethod, String bearerToken) {
         return new ConsulLoginCredentials() {
             @Override
-            public String authMethod() {
+            public String getAuthMethod() {
                 return authMethod;
             }
 
             @Override
-            public String bearerToken() {
+            public String getBearerToken() {
                 return bearerToken;
             }
         };

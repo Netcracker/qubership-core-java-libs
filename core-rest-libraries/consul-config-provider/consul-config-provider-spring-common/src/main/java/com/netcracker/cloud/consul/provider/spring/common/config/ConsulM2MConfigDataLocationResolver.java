@@ -31,9 +31,6 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
 
     public static final String PROP_CLOUD_NAMESPACE = "cloud.microservice.namespace";
     public static final String PROP_CONSUL_M2M_ENABLED = "spring.cloud.consul.config.m2m.enabled";
-    public static final String PROP_LOGIN_MODE = "spring.cloud.consul.config.login.mode";
-    public static final String PROP_LOGIN_AUTH_METHOD = "spring.cloud.consul.config.login.auth-method";
-    public static final String PROP_LOGIN_AUDIENCE = "spring.cloud.consul.config.login.audience";
     static final String ENV_NAMESPACE = "NAMESPACE";
     static final String ENV_CLOUD_NAMESPACE = "CLOUD_NAMESPACE";
 
@@ -54,17 +51,18 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
         }
         ConsulProperties properties = resolverContext.getBootstrapContext().get(ConsulProperties.class);
         try {
-            ConsulLoginMode mode = binder.bind(PROP_LOGIN_MODE, ConsulLoginMode.class).orElse(null);
+            ConsulLoginProperties login = binder.bind(ConsulLoginProperties.PREFIX, ConsulLoginProperties.class)
+                    .orElseGet(ConsulLoginProperties::new);
             Supplier<String> m2mTokenSupplier = () ->
                     resolverContext.getBootstrapContext().get(M2MManager.class).getToken().getTokenValue();
             ConsulRestClient client = createConsulRestClient(Utils.formatConsulAddress(properties), m2mTokenSupplier);
 
             TokenStorageFactory.CreateOptions.Builder options = new TokenStorageFactory.CreateOptions.Builder()
                     .consulUrl(Utils.formatConsulAddress(properties))
-                    .mode(mode)
-                    .authMethod(binder.bind(PROP_LOGIN_AUTH_METHOD, String.class).orElse(null))
-                    .audience(binder.bind(PROP_LOGIN_AUDIENCE, String.class).orElse(null));
-            if (mode != ConsulLoginMode.KUBERNETES) {
+                    .mode(login.getMode())
+                    .authMethod(login.getAuthMethod())
+                    .audience(login.getAudience());
+            if (login.getMode() != ConsulLoginMode.KUBERNETES) {
                 options.namespace(getPropsOrEnvsMust(args(PROP_CLOUD_NAMESPACE), args(ENV_NAMESPACE, ENV_CLOUD_NAMESPACE)))
                         .m2mSupplier(m2mTokenSupplier);
             }

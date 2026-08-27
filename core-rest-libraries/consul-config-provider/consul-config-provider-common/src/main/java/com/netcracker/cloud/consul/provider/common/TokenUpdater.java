@@ -1,5 +1,7 @@
 package com.netcracker.cloud.consul.provider.common;
 
+import net.jodah.failsafe.Failsafe;
+import net.jodah.failsafe.FailsafeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,9 +20,7 @@ public class TokenUpdater {
     private static final Logger log = LoggerFactory.getLogger(TokenUpdater.class);
     static final int DEFAULT_TRIES = 10;
     private static final Duration DEFAULT_RETRY_PAUSE = Duration.ofSeconds(1);
-    //todo vlla это СУПЕР не понятные и излишние константы. Почеме не просто 0.8?
-    private static final long DELAY_NUMERATOR = 8;
-    private static final long DELAY_DENOMINATOR = 10;
+    private static final double DELAY_FRACTION = 0.8;
     static final long MIN_DELAY_SECONDS = 10;
     private final ConsulLogin consulLogin;
     private final SelfTokenReader selfTokenReader;
@@ -56,7 +56,7 @@ public class TokenUpdater {
         }
 
         if (token.getExpirationTime() != null) {
-            long delay = relogonDelay(token.getExpirationTime());
+            long delay = reloginDelaySeconds(token.getExpirationTime());
             Runnable task = () -> {
                 log.debug("Get new consul token with {} retry attempts", tries);
                 try {
@@ -70,37 +70,19 @@ public class TokenUpdater {
         }
     }
 
-    //todo vlla неудачное название
-    private long relogonDelay(OffsetDateTime expirationTime) {
+    private long reloginDelaySeconds(OffsetDateTime expirationTime) {
         long remaining = ChronoUnit.SECONDS.between(OffsetDateTime.now(clock), expirationTime);
-        return Math.max(remaining * DELAY_NUMERATOR / DELAY_DENOMINATOR, MIN_DELAY_SECONDS);
+        return Math.max((long) (remaining * DELAY_FRACTION), MIN_DELAY_SECONDS);
     }
 
     private Token withRetry(CheckedFunction<Void, Token> c, int tries) {
-        int count = 0;
-        while (true) {
-            try {
-                return c.apply(null);
-            } catch (IOException e) {
-                if (++count >= tries) {
-                    throw new RuntimeException("can not update consul token: ", e);
-                }
-                log.debug("Failed {} retry attempt, exception: {}", count, e);
-                pauseBeforeNextAttempt();
-            }
-        }
-    }
-
-    //todo vlla аналогично: может есть более изящный способ сделать паузы, нежели Thread.sleep в продакшен-коде?
-    private void pauseBeforeNextAttempt() {
-        if (retryPause.isZero() || retryPause.isNegative()) {
-            return;
-        }
         try {
-            Thread.sleep(retryPause.toMillis());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("interrupted while waiting for the next consul token attempt", e);
+            return Failsafe.with(LoginRetryPolicies.<Token>onTransportFailure(tries, retryPause)
+                            .onFailedAttempt(event -> log.debug("Failed attempt {} to get a consul token",
+                                    event.getAttemptCount(), event.getLastFailure())))
+                    .get(() -> c.apply(null));
+        } catch (FailsafeException e) {
+            throw new RuntimeException("can not update consul token: ", e.getCause());
         }
     }
 

@@ -20,6 +20,6 @@ public interface ConsulClient {
     ConsulClientResponse login(String authMethod);
 
     default ConsulClientResponse login(ConsulLoginCredentials credentials) throws IOException {
-        return login(credentials.authMethod());
+        return login(credentials.getAuthMethod());
     }
 }

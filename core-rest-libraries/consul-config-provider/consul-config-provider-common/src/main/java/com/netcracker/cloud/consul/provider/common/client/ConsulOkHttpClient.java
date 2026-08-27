@@ -73,10 +73,10 @@ public class ConsulOkHttpClient implements ConsulClient {
     @Override
     public ConsulClientResponse login(ConsulLoginCredentials credentials) throws IOException {
         Map<String, String> payload = new HashMap<>();
-        payload.put(AUTH_METHOD_FIELD, credentials.authMethod());
-        payload.put(BEARER_TOKEN_FIELD, credentials.bearerToken());
+        payload.put(AUTH_METHOD_FIELD, credentials.getAuthMethod());
+        payload.put(BEARER_TOKEN_FIELD, credentials.getBearerToken());
         String json = new Gson().toJson(payload);
-        log.info("Perform login to {} with {} auth method", consulAddr, credentials.authMethod());
+        log.info("Perform login to {} with {} auth method", consulAddr, credentials.getAuthMethod());
         Response response = client.newCall(new Request.Builder()
                 .post(RequestBody.create(MediaType.parse(APPLICATION_JSON), json))
                 .url(consulAddr + V1_ACL_LOGIN)
@@ -86,5 +86,4 @@ public class ConsulOkHttpClient implements ConsulClient {
         return new ConsulClientResponse(response.body().string(), response.code());
     }
 
-    //todo vlla вынести общую часть в отдельный метод? Наверное нет, сложнее будет удалять.
 }

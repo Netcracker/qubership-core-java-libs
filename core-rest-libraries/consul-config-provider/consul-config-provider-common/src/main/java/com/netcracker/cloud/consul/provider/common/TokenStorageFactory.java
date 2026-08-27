@@ -108,7 +108,7 @@ public abstract class TokenStorageFactory {
 
             public CreateOptions build() {
                 if (options.mode == null) {
-                    options.mode = ConsulLoginMode.AUTO;
+                    options.mode = ConsulLoginMode.KUBERNETES_WITH_M2M_FALLBACK;
                 }
                 if (options.authMethod == null) {
                     options.authMethod = DEFAULT_AUTH_METHOD;
@@ -129,7 +129,7 @@ public abstract class TokenStorageFactory {
             private static void require(boolean given, String input, ConsulLoginMode mode) {
                 if (!given) {
                     throw new IllegalArgumentException(String.format("%s is required in the %s consul login mode",
-                            input, mode.name().toLowerCase(Locale.ROOT)));
+                            input, mode.name().toLowerCase(Locale.ROOT).replace('_', '-')));
                 }
             }
         }

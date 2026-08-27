@@ -13,12 +13,12 @@ final class KubernetesLoginCredentials implements ConsulLoginCredentials {
     }
 
     @Override
-    public String authMethod() {
+    public String getAuthMethod() {
         return authMethod;
     }
 
     @Override
-    public String bearerToken() {
+    public String getBearerToken() {
         return KubernetesAudienceToken.getToken(audience);
     }
 }

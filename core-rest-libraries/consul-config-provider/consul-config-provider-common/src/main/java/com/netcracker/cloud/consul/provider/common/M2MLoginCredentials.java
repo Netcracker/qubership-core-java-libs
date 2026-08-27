@@ -13,12 +13,12 @@ final class M2MLoginCredentials implements ConsulLoginCredentials {
     }
 
     @Override
-    public String authMethod() {
+    public String getAuthMethod() {
         return namespace;
     }
 
     @Override
-    public String bearerToken() {
+    public String getBearerToken() {
         return m2mSupplier.get();
     }
 }

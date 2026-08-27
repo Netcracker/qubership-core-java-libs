@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 
-//todo vlla напомни, чем мы руководствовались, выделяя SelfTokenReader в отдельный класс? Почему мы не оставили getSelfToken рядом с логином? Разве так было бы не проще с точки зрения кода?
 public class SelfTokenReader {
 
     private static final Logger log = LoggerFactory.getLogger(SelfTokenReader.class);

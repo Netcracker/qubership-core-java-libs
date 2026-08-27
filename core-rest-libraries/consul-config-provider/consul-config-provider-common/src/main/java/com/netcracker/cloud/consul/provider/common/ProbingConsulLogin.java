@@ -1,5 +1,7 @@
 package com.netcracker.cloud.consul.provider.common;
 
+import net.jodah.failsafe.Failsafe;
+import net.jodah.failsafe.FailsafeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,29 +59,13 @@ final class ProbingConsulLogin implements ConsulLogin {
     }
 
     private Token probe() throws IOException {
-        int count = 0;
-        while (true) {
-            try {
-                return probed.perform();
-            } catch (IOException e) {
-                if (++count >= tries) {
-                    throw e;
-                }
-                pauseBeforeNextAttempt();
-            }
-        }
-    }
-
-    //todo vlla может есть более изящный способ сделать паузы, нежели Thread.sleep в продакшен-коде? Поищи примеры в других модулях.
-    private void pauseBeforeNextAttempt() {
-        if (probePause.isZero() || probePause.isNegative()) {
-            return;
-        }
         try {
-            Thread.sleep(probePause.toMillis());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("interrupted while probing the consul login", e);
+            return Failsafe.with(LoginRetryPolicies.<Token>onTransportFailure(tries, probePause)
+                            .onFailedAttempt(event -> log.debug("Failed probe attempt {} of the {} auth method",
+                                    event.getAttemptCount(), KUBERNETES_WAY, event.getLastFailure())))
+                    .get(probed::perform);
+        } catch (FailsafeException e) {
+            throw (IOException) e.getCause();
         }
     }
 

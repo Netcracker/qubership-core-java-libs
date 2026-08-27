@@ -170,7 +170,7 @@ class TokenUpdaterTest {
     }
 
     @Test
-    void retryWaitsConfiguredPauseBetweenAttempts() throws IOException {
+    void retryWaitsBackoffDelayBetweenAttempts() throws IOException {
         Duration retryPause = Duration.ofMillis(200);
         OffsetDateTime secretExpirationTime = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
         when(consulLogin.perform())
@@ -185,8 +185,9 @@ class TokenUpdaterTest {
         }, "");
         long elapsed = System.nanoTime() - startedAt;
 
+        long lowestJitteredDelay = (long) (retryPause.toNanos() * (1 - LoginRetryPolicies.JITTER));
         verify(consulLogin, times(2)).perform();
-        Assertions.assertTrue(elapsed >= retryPause.toNanos(),
-                "expected at least one pause of " + retryPause + " between retries");
+        Assertions.assertTrue(elapsed >= lowestJitteredDelay,
+                "expected a backoff delay of at least " + lowestJitteredDelay + " ns between retries, got " + elapsed);
     }
 }

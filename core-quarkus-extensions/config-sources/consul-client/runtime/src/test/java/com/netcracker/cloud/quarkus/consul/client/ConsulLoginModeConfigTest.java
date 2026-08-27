@@ -16,10 +16,15 @@ class ConsulLoginModeConfigTest {
                 .build();
     }
 
+    private static ConsulLoginMode read(String mode) {
+        return configWithMode(mode).getValue(ConsulClientConfiguration.PROP_LOGIN_MODE, ConsulLoginMode.class);
+    }
+
     @Test
-    void knownModeIsRead() {
-        Assertions.assertEquals(ConsulLoginMode.KUBERNETES,
-                configWithMode("kubernetes").getValue(ConsulClientConfiguration.PROP_LOGIN_MODE, ConsulLoginMode.class));
+    void everyModeIsReadFromItsPropertyValue() {
+        Assertions.assertEquals(ConsulLoginMode.KUBERNETES, read("kubernetes"));
+        Assertions.assertEquals(ConsulLoginMode.M2M, read("m2m"));
+        Assertions.assertEquals(ConsulLoginMode.KUBERNETES_WITH_M2M_FALLBACK, read("kubernetes-with-m2m-fallback"));
     }
 
     @Test

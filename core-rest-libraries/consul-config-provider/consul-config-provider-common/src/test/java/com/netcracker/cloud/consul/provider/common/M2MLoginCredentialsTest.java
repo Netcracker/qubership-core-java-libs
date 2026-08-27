@@ -12,7 +12,7 @@ class M2MLoginCredentialsTest {
     @Test
     void authMethodIsNamespace() {
         M2MLoginCredentials credentials = new M2MLoginCredentials("test-namespace", () -> "test-m2m-token");
-        assertEquals("test-namespace", credentials.authMethod());
+        assertEquals("test-namespace", credentials.getAuthMethod());
     }
 
     @Test
@@ -22,8 +22,8 @@ class M2MLoginCredentialsTest {
 
         M2MLoginCredentials credentials = new M2MLoginCredentials("test-namespace", supplier);
 
-        assertEquals("test-m2m-token-1", credentials.bearerToken());
-        assertEquals("test-m2m-token-2", credentials.bearerToken());
+        assertEquals("test-m2m-token-1", credentials.getBearerToken());
+        assertEquals("test-m2m-token-2", credentials.getBearerToken());
         assertEquals(2, calls.get());
     }
 

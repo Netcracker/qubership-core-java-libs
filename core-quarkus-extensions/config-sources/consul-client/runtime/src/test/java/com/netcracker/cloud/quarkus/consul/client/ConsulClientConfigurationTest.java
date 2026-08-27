@@ -59,7 +59,7 @@ class ConsulClientConfigurationTest {
         ArgumentCaptor<TokenStorageFactory.CreateOptions> options =
                 ArgumentCaptor.forClass(TokenStorageFactory.CreateOptions.class);
         verify(tokenStorageFactory).create(options.capture());
-        Assertions.assertEquals(ConsulLoginMode.AUTO, options.getValue().getMode());
+        Assertions.assertEquals(ConsulLoginMode.KUBERNETES_WITH_M2M_FALLBACK, options.getValue().getMode());
         Assertions.assertEquals(TokenStorageFactory.CreateOptions.DEFAULT_AUTH_METHOD, options.getValue().getAuthMethod());
         Assertions.assertEquals(AudienceName.NETCRACKER, options.getValue().getAudience());
     }

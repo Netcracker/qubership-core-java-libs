@@ -35,7 +35,7 @@ class KubernetesLoginCredentialsTest {
     @Test
     void authMethodIsTheGivenName() {
         KubernetesLoginCredentials credentials = new KubernetesLoginCredentials("core-k8s", AudienceName.NETCRACKER);
-        assertEquals("core-k8s", credentials.authMethod());
+        assertEquals("core-k8s", credentials.getAuthMethod());
     }
 
     @Test
@@ -43,10 +43,10 @@ class KubernetesLoginCredentialsTest {
         writeToken(AudienceName.NETCRACKER, "first-projected-token");
         KubernetesLoginCredentials credentials = new KubernetesLoginCredentials("core-k8s", AudienceName.NETCRACKER);
 
-        assertEquals("first-projected-token", credentials.bearerToken());
+        assertEquals("first-projected-token", credentials.getBearerToken());
 
         writeToken(AudienceName.NETCRACKER, "rotated-projected-token");
-        assertEquals("rotated-projected-token", credentials.bearerToken());
+        assertEquals("rotated-projected-token", credentials.getBearerToken());
     }
 
     @Test
@@ -54,7 +54,7 @@ class KubernetesLoginCredentialsTest {
         Files.createDirectories(tokensDir.resolve(AudienceName.MAAS).resolve("token"));
         KubernetesLoginCredentials credentials = new KubernetesLoginCredentials("core-k8s", AudienceName.MAAS);
 
-        RuntimeException thrown = assertThrows(RuntimeException.class, credentials::bearerToken);
+        RuntimeException thrown = assertThrows(RuntimeException.class, credentials::getBearerToken);
         assertInstanceOf(IOException.class, thrown.getCause());
     }
 
@@ -62,6 +62,6 @@ class KubernetesLoginCredentialsTest {
     void bearerTokenFailsWithIllegalArgumentExceptionForUnknownAudience() {
         KubernetesLoginCredentials credentials = new KubernetesLoginCredentials("core-k8s", "no-such-audience");
 
-        assertThrows(IllegalArgumentException.class, credentials::bearerToken);
+        assertThrows(IllegalArgumentException.class, credentials::getBearerToken);
     }
 }
