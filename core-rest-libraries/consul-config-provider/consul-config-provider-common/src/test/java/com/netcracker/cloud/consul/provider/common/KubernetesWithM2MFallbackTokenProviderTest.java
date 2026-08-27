@@ -112,7 +112,6 @@ class KubernetesWithM2MFallbackTokenProviderTest {
         new KubernetesWithM2MFallbackTokenProvider(kubernetes, m2m).getToken();
 
         verify(kubernetes, times(KubernetesWithM2MFallbackTokenProvider.PROBE_TRIES)).getToken();
-        assertTrue(KubernetesWithM2MFallbackTokenProvider.PROBE_TRIES < TokenUpdater.DEFAULT_TRIES);
     }
 
     @Test

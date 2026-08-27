@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
+//todo vlla javadoc
 final class LoginRetryPolicies {
 
     static final double JITTER = 0.25;

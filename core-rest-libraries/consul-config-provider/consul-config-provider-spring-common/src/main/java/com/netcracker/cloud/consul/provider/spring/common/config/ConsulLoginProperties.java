@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * belong to {@code TokenStorageFactory.CreateOptions.Builder}, so that an external caller of the builder gets them
  * too.
  */
+//todo vlla lombok?
 @ConfigurationProperties(prefix = ConsulLoginProperties.PREFIX)
 public class ConsulLoginProperties {
 
