@@ -41,6 +41,12 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
         this.log = log.getLog(ConsulM2MConfigDataLocationResolver.class);
     }
 
+    /**
+     * Logs in once and writes the {@code SecretID} into {@link ConsulConfigProperties}, so that Consul is readable
+     * before the application context exists. The phase runs without a context, so the mode is bound through {@link
+     * Binder} rather than injected, and a failed login is logged rather than thrown: the application still starts,
+     * just without an ACL token.
+     */
     @Override
     protected ConsulConfigProperties loadConfigProperties(ConfigDataLocationResolverContext resolverContext) {
         ConsulConfigProperties consulConfigProperties = super.loadConfigProperties(resolverContext);

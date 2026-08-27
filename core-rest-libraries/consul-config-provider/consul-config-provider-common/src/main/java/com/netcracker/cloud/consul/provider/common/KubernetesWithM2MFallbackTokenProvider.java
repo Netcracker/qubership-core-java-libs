@@ -8,6 +8,12 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.Duration;
 
+/**
+ * Probes the kubernetes way and falls back to m2m if the probe fails. The choice sticks until the pod restarts, so a
+ * later failure never switches the way back, and the pod logs one {@code INFO} record telling which way it settled on.
+ * The whole class goes away with the m2m way, which is why it names the pair it serves instead of taking two
+ * interchangeable providers.
+ */
 final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvider {
 
     static final int PROBE_TRIES = 3;
@@ -37,6 +43,11 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
         this.probeDelay = probeDelay;
     }
 
+    /**
+     * Returns a token from the way already chosen, or, on the first call, chooses one. The probe spends fewer attempts
+     * than the scheduler so that an unmigrated pod pays little for it. Any {@link Exception} out of the kubernetes way
+     * means the fallback; an {@link Error} passes through untouched.
+     */
     @Override
     public synchronized Token getToken() throws IOException {
         if (chosen != null) {

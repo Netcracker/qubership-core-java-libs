@@ -10,6 +10,10 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 
+/**
+ * Obtains a token by performing a Consul login with one set of credentials. Knows nothing about which way the
+ * credentials represent.
+ */
 public class LoginTokenProvider implements ConsulTokenProvider {
 
     private static final Logger log = LoggerFactory.getLogger(LoginTokenProvider.class);
@@ -22,6 +26,12 @@ public class LoginTokenProvider implements ConsulTokenProvider {
         this.credentials = credentials;
     }
 
+    /**
+     * @throws IOException on an empty body or a non-2xx answer; the message carries the response code, and a
+     *         {@code 403} is reported as a Consul configuration that is not ready yet
+     * @throws com.jayway.jsonpath.PathNotFoundException when the answer carries no {@code SecretID}; retrying that
+     *         does not help
+     */
     @Override
     public Token getToken() throws IOException {
         ConsulClientResponse response = client.login(credentials);

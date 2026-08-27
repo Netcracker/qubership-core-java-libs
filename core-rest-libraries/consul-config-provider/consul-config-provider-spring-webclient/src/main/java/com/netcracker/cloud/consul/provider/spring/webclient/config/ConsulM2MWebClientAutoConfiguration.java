@@ -34,6 +34,10 @@ public class ConsulM2MWebClientAutoConfiguration {
         return factory.create(createOptions(loginProperties, consulProperties, m2MManager, System.getenv("NAMESPACE")));
     }
 
+    /**
+     * Collects the raw inputs of the login. Values absent from the configuration stay {@code null} here, so that the
+     * builder applies the defaults.
+     */
     static TokenStorageFactory.CreateOptions createOptions(ConsulLoginProperties loginProperties,
                                                            ConsulProperties consulProperties,
                                                            M2MManager m2MManager,

@@ -10,6 +10,10 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 
+/**
+ * Reads the expiration of an ACL token the pod already holds. The operation does not depend on how the token was
+ * obtained, which is why it lives apart from {@link ConsulTokenProvider}.
+ */
 public class SelfTokenReader {
 
     private static final Logger log = LoggerFactory.getLogger(SelfTokenReader.class);
@@ -20,6 +24,12 @@ public class SelfTokenReader {
         this.client = client;
     }
 
+    /**
+     * Reads the token behind {@code currentSecretId}. A token without an expiration is valid: Consul omits the field
+     * for an auth method without {@code MaxTokenTTL}.
+     *
+     * @throws IOException on a transport failure or a non-2xx answer
+     */
     public Token read(String currentSecretId) throws IOException {
         ConsulClientResponse response = client.getSelfToken(currentSecretId);
         String bodyJson = response.getBodyJson();

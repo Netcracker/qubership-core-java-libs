@@ -70,6 +70,10 @@ public class ConsulOkHttpClient implements ConsulClient {
         return new ConsulClientResponse(responseBody, response.code());
     }
 
+    /**
+     * Unlike the deprecated {@link #login(String)}, lets a transport {@link IOException} out instead of wrapping it:
+     * retries and the fallback decision act on that type.
+     */
     @Override
     public ConsulClientResponse login(ConsulLoginCredentials credentials) throws IOException {
         Map<String, String> payload = new HashMap<>();

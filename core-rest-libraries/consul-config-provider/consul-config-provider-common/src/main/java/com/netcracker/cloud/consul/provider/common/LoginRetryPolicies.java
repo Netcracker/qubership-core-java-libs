@@ -6,7 +6,11 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
-//todo vlla javadoc
+/**
+ * Retry policies shared by the login callers. Only {@link IOException} is retried: by the exception contract of the
+ * module it means a transport failure or a non-2xx answer, where another attempt may help, while anything else means
+ * the input itself is wrong.
+ */
 final class LoginRetryPolicies {
 
     static final double JITTER = 0.25;
@@ -15,6 +19,11 @@ final class LoginRetryPolicies {
     private LoginRetryPolicies() {
     }
 
+    /**
+     * Builds a policy of at most {@code attempts} attempts with an exponential delay and jitter, so that a fleet
+     * restarted during a Consul outage does not retry in lockstep. A zero or negative {@code delay} retries without
+     * waiting, which keeps tests fast.
+     */
     static <T> RetryPolicy<T> onTransportFailure(int attempts, Duration delay) {
         RetryPolicy<T> policy = new RetryPolicy<T>()
                 .handle(IOException.class)

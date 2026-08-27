@@ -3,6 +3,7 @@ package com.netcracker.cloud.consul.provider.common;
 import net.jodah.failsafe.Failsafe;
 import net.jodah.failsafe.FailsafeException;
 import net.jodah.failsafe.RetryPolicy;
+import net.jodah.failsafe.function.CheckedSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +17,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+/**
+ * Keeps the ACL token of the pod fresh: obtains the first one, then relogins on a schedule while the pod lives. Knows
+ * nothing about how the token is obtained.
+ */
 public class TokenUpdater {
 
     private static final Logger log = LoggerFactory.getLogger(TokenUpdater.class);
@@ -47,6 +52,15 @@ public class TokenUpdater {
         this.retryPause = retryPause;
     }
 
+    /**
+     * Obtains the token and, when it expires, schedules a relogin. An empty {@code currentSecretId} means a login;
+     * otherwise the pod already holds a token and only its expiration is read. Only a token with an expiration is
+     * scheduled for: Consul omits the field for auth methods without {@code MaxTokenTTL}, and such a token never
+     * expires.
+     *
+     * @param updater receives every new {@code SecretID}, including the ones from scheduled relogins
+     * @throws RuntimeException when the attempts run out
+     */
     synchronized public void watch(Consumer<String> updater, String currentSecretId) {
         log.debug("Start token refreshing process for consul");
         Token token;
@@ -72,14 +86,19 @@ public class TokenUpdater {
         }
     }
 
+    /**
+     * Returns the delay before the next relogin as a share of the remaining lifetime. The same value serves as the
+     * period of the schedule, so a constant offset from the expiration would degenerate on short-lived tokens. The
+     * lower bound covers clocks that ran ahead of the expiration.
+     */
     private long reloginDelaySeconds(OffsetDateTime expirationTime) {
         long remaining = ChronoUnit.SECONDS.between(OffsetDateTime.now(clock), expirationTime);
         return Math.max((long) (remaining * DELAY_MULTIPLIER), MIN_DELAY_SECONDS);
     }
 
-    private Token withRetry(CheckedFunction<Token> c, int tries) {
+    private Token withRetry(CheckedSupplier<Token> c, int tries) {
         try {
-            return Failsafe.with(getRetryPolicy(tries)).get(c::apply);
+            return Failsafe.with(getRetryPolicy(tries)).get(c);
         } catch (FailsafeException e) {
             throw new RuntimeException("can not update consul token: ", e.getCause());
         }
@@ -89,10 +108,5 @@ public class TokenUpdater {
         return LoginRetryPolicies.<Token>onTransportFailure(tries, retryPause)
                 .onFailedAttempt(event -> log.debug("Failed attempt {} to get a consul token",
                         event.getAttemptCount(), event.getLastFailure()));
-    }
-
-    @FunctionalInterface
-    public interface CheckedFunction<R> {
-        R apply() throws IOException;
     }
 }

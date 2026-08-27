@@ -24,6 +24,11 @@ public abstract class TokenStorageFactory {
         return tokenStorage;
     }
 
+    /**
+     * Builds the provider the mode asks for. The single place that knows both ways exist; everything below it sees one
+     * {@link ConsulTokenProvider}. The client comes separately because the caller owns the transport: the ConfigData
+     * phase builds its own.
+     */
     public static ConsulTokenProvider from(ConsulClient client, CreateOptions options) {
         switch (options.mode) {
             case M2M:
@@ -106,6 +111,12 @@ public abstract class TokenStorageFactory {
                 return this;
             }
 
+            /**
+             * Applies the defaults and checks the inputs the mode needs. Defaults live here rather than in the entry
+             * points so that an external caller of the builder gets them too.
+             *
+             * @throws IllegalArgumentException naming the missing input and the mode that requires it
+             */
             public CreateOptions build() {
                 if (options.mode == null) {
                     options.mode = ConsulLoginMode.KUBERNETES_WITH_M2M_FALLBACK;

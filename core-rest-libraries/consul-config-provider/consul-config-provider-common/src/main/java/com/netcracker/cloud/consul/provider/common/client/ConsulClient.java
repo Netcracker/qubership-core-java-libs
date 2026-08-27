@@ -19,6 +19,11 @@ public interface ConsulClient {
     @Deprecated(forRemoval = true)
     ConsulClientResponse login(String authMethod);
 
+    /**
+     * Logs in with the given credentials. The default implementation delegates to the deprecated {@link
+     * #login(String)}, so an implementation written before the credentials existed keeps working: it sends its own
+     * bearer token and ignores the one in {@code credentials}.
+     */
     default ConsulClientResponse login(ConsulLoginCredentials credentials) throws IOException {
         return login(credentials.getAuthMethod());
     }
