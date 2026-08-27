@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-class ProbingConsulLoginTest {
+class KubernetesWithM2MFallbackTokenProviderTest {
 
     private static final String BEARER_TOKEN = "my-secret-bearer-token";
     private static final String SECRET_ID = "my-secret-acl-token";
@@ -35,17 +35,17 @@ class ProbingConsulLoginTest {
             "Post \"https://kubernetes.default.svc/apis/authentication.k8s.io/v1/tokenreviews\": "
                     + "dial tcp 10.96.0.1:443: connect: connection refused";
 
-    private ConsulLogin kubernetes;
-    private ConsulLogin m2m;
+    private ConsulTokenProvider kubernetes;
+    private ConsulTokenProvider m2m;
     private ListAppender<ILoggingEvent> appender;
     private ch.qos.logback.classic.Logger logger;
 
     @BeforeEach
     void init() {
-        kubernetes = mock(ConsulLogin.class);
-        m2m = mock(ConsulLogin.class);
+        kubernetes = mock(ConsulTokenProvider.class);
+        m2m = mock(ConsulTokenProvider.class);
 
-        logger = ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger(ProbingConsulLogin.class);
+        logger = ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger(KubernetesWithM2MFallbackTokenProvider.class);
         appender = new ListAppender<>();
         appender.start();
         logger.addAppender(appender);
@@ -57,8 +57,8 @@ class ProbingConsulLoginTest {
         logger.detachAppender(appender);
     }
 
-    private ProbingConsulLogin probing() {
-        return new ProbingConsulLogin(kubernetes, m2m, 2, Duration.ZERO);
+    private KubernetesWithM2MFallbackTokenProvider probing() {
+        return new KubernetesWithM2MFallbackTokenProvider(kubernetes, m2m, 2, Duration.ZERO);
     }
 
     private List<String> infoRecords() {
@@ -71,57 +71,57 @@ class ProbingConsulLoginTest {
     @Test
     void successOnFirstAttemptSticksToTheNewWay() throws IOException {
         Token token = new Token(SECRET_ID, null);
-        when(kubernetes.perform()).thenReturn(token);
+        when(kubernetes.getToken()).thenReturn(token);
 
-        ProbingConsulLogin probing = probing();
-        assertEquals(token, probing.perform());
-        assertEquals(token, probing.perform());
+        KubernetesWithM2MFallbackTokenProvider probing = probing();
+        assertEquals(token, probing.getToken());
+        assertEquals(token, probing.getToken());
 
-        verify(kubernetes, times(2)).perform();
+        verify(kubernetes, times(2)).getToken();
         verifyNoInteractions(m2m);
     }
 
     @Test
     void anyExceptionFromTheNewWayLeadsToTheOldOneAndSticksIt() throws IOException {
         Token token = new Token(SECRET_ID, null);
-        when(kubernetes.perform()).thenThrow(new IllegalArgumentException("Unknown token audience: netcracker"));
-        when(m2m.perform()).thenReturn(token);
+        when(kubernetes.getToken()).thenThrow(new IllegalArgumentException("Unknown token audience: netcracker"));
+        when(m2m.getToken()).thenReturn(token);
 
-        ProbingConsulLogin probing = probing();
-        assertEquals(token, probing.perform());
-        assertEquals(token, probing.perform());
+        KubernetesWithM2MFallbackTokenProvider probing = probing();
+        assertEquals(token, probing.getToken());
+        assertEquals(token, probing.getToken());
 
-        verify(kubernetes, times(1)).perform();
-        verify(m2m, times(2)).perform();
+        verify(kubernetes, times(1)).getToken();
+        verify(m2m, times(2)).getToken();
     }
 
     @Test
     void errorPassesThrough() throws IOException {
-        when(kubernetes.perform()).thenThrow(new Error("Unable to locate implementation for TokenSource"));
+        when(kubernetes.getToken()).thenThrow(new Error("Unable to locate implementation for TokenSource"));
 
-        assertThrows(Error.class, () -> probing().perform());
+        assertThrows(Error.class, () -> probing().getToken());
         verifyNoInteractions(m2m);
     }
 
     @Test
     void probeSpendsFewerTriesThanTokenUpdater() throws IOException {
-        when(kubernetes.perform()).thenThrow(new IOException(
+        when(kubernetes.getToken()).thenThrow(new IOException(
                 "login to consul failed: response code=500; body='" + TOKEN_REVIEW_UNREACHABLE + "'"));
-        when(m2m.perform()).thenReturn(new Token(SECRET_ID, null));
+        when(m2m.getToken()).thenReturn(new Token(SECRET_ID, null));
 
-        new ProbingConsulLogin(kubernetes, m2m).perform();
+        new KubernetesWithM2MFallbackTokenProvider(kubernetes, m2m).getToken();
 
-        verify(kubernetes, times(ProbingConsulLogin.PROBE_TRIES)).perform();
-        assertTrue(ProbingConsulLogin.PROBE_TRIES < TokenUpdater.DEFAULT_TRIES);
+        verify(kubernetes, times(KubernetesWithM2MFallbackTokenProvider.PROBE_TRIES)).getToken();
+        assertTrue(KubernetesWithM2MFallbackTokenProvider.PROBE_TRIES < TokenUpdater.DEFAULT_TRIES);
     }
 
     @Test
     void chosenWayIsLoggedOnceOnSuccess() throws IOException {
-        when(kubernetes.perform()).thenReturn(new Token(SECRET_ID, null));
+        when(kubernetes.getToken()).thenReturn(new Token(SECRET_ID, null));
 
-        ProbingConsulLogin probing = probing();
-        probing.perform();
-        probing.perform();
+        KubernetesWithM2MFallbackTokenProvider probing = probing();
+        probing.getToken();
+        probing.getToken();
 
         List<String> records = infoRecords();
         assertEquals(1, records.size());
@@ -130,13 +130,13 @@ class ProbingConsulLoginTest {
 
     @Test
     void fallbackIsLoggedOnceWithReasonCodeAndBody() throws IOException {
-        when(kubernetes.perform()).thenThrow(new IOException(
+        when(kubernetes.getToken()).thenThrow(new IOException(
                 "login to consul failed: response code=500; body='" + TOKEN_REVIEW_UNREACHABLE + "'"));
-        when(m2m.perform()).thenReturn(new Token(SECRET_ID, null));
+        when(m2m.getToken()).thenReturn(new Token(SECRET_ID, null));
 
-        ProbingConsulLogin probing = probing();
-        probing.perform();
-        probing.perform();
+        KubernetesWithM2MFallbackTokenProvider probing = probing();
+        probing.getToken();
+        probing.getToken();
 
         List<String> records = infoRecords();
         assertEquals(1, records.size());
@@ -148,11 +148,11 @@ class ProbingConsulLoginTest {
 
     @Test
     void notReadyConfigurationIsNamedInTheFallbackRecord() throws IOException {
-        when(kubernetes.perform()).thenThrow(new IOException(
+        when(kubernetes.getToken()).thenThrow(new IOException(
                 "consul auth method is not ready: response code=403; body='" + AUTH_METHOD_NOT_FOUND + "'"));
-        when(m2m.perform()).thenReturn(new Token(SECRET_ID, null));
+        when(m2m.getToken()).thenReturn(new Token(SECRET_ID, null));
 
-        probing().perform();
+        probing().getToken();
 
         List<String> records = infoRecords();
         assertEquals(1, records.size());
@@ -163,11 +163,11 @@ class ProbingConsulLoginTest {
     @Test
     void longErrorBodyIsTruncatedInTheFallbackRecord() throws IOException {
         String longBody = "x".repeat(4096);
-        when(kubernetes.perform()).thenThrow(new IOException(
+        when(kubernetes.getToken()).thenThrow(new IOException(
                 "login to consul failed: response code=500; body='" + longBody + "'"));
-        when(m2m.perform()).thenReturn(new Token(SECRET_ID, null));
+        when(m2m.getToken()).thenReturn(new Token(SECRET_ID, null));
 
-        probing().perform();
+        probing().getToken();
 
         String record = infoRecords().get(0);
         assertTrue(record.length() < longBody.length());
@@ -175,11 +175,11 @@ class ProbingConsulLoginTest {
 
     @Test
     void secretsNeverReachTheLog() throws IOException {
-        when(kubernetes.perform()).thenThrow(new IOException(
+        when(kubernetes.getToken()).thenThrow(new IOException(
                 "login to consul failed: response code=500; body='" + TOKEN_REVIEW_UNREACHABLE + "'"));
-        when(m2m.perform()).thenReturn(new Token(SECRET_ID, null));
+        when(m2m.getToken()).thenReturn(new Token(SECRET_ID, null));
 
-        probing().perform();
+        probing().getToken();
 
         String logged = String.join("\n", infoRecords());
         assertFalse(logged.contains(BEARER_TOKEN));

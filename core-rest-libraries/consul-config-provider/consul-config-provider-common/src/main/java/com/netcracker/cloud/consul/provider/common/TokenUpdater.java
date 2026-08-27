@@ -22,22 +22,22 @@ public class TokenUpdater {
     private static final Duration DEFAULT_RETRY_PAUSE = Duration.ofSeconds(1);
     private static final double DELAY_FRACTION = 0.8;
     static final long MIN_DELAY_SECONDS = 10;
-    private final ConsulLogin consulLogin;
+    private final ConsulTokenProvider tokenProvider;
     private final SelfTokenReader selfTokenReader;
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
     private Clock clock = Clock.systemDefaultZone();
     private final Integer tries;
     private final Duration retryPause;
 
-    public TokenUpdater(ConsulLogin consulLogin, SelfTokenReader selfTokenReader) {
-        this.consulLogin = consulLogin;
+    public TokenUpdater(ConsulTokenProvider tokenProvider, SelfTokenReader selfTokenReader) {
+        this.tokenProvider = tokenProvider;
         this.selfTokenReader = selfTokenReader;
         this.tries = DEFAULT_TRIES;
         this.retryPause = DEFAULT_RETRY_PAUSE;
     }
 
-    TokenUpdater(ConsulLogin consulLogin, SelfTokenReader selfTokenReader, ScheduledExecutorService executor, Clock clock, int tries, Duration retryPause) {
-        this.consulLogin = consulLogin;
+    TokenUpdater(ConsulTokenProvider tokenProvider, SelfTokenReader selfTokenReader, ScheduledExecutorService executor, Clock clock, int tries, Duration retryPause) {
+        this.tokenProvider = tokenProvider;
         this.selfTokenReader = selfTokenReader;
         this.executor = executor;
         this.clock = clock;
@@ -49,7 +49,7 @@ public class TokenUpdater {
         log.debug("Start token refreshing process for consul");
         Token token;
         if (currentSecretId == null || currentSecretId.isEmpty()) {
-            token = withRetry(unused -> consulLogin.perform(), tries);
+            token = withRetry(unused -> tokenProvider.getToken(), tries);
             updater.accept(token.getSecretId());
         } else {
             token = withRetry(unused -> selfTokenReader.read(currentSecretId), tries);
@@ -60,7 +60,7 @@ public class TokenUpdater {
             Runnable task = () -> {
                 log.debug("Get new consul token with {} retry attempts", tries);
                 try {
-                    Token newToken = withRetry(unused -> consulLogin.perform(), tries);
+                    Token newToken = withRetry(unused -> tokenProvider.getToken(), tries);
                     updater.accept(newToken.getSecretId());
                 } catch (Exception e) {
                     log.error("Error occurred during getting new consul token. Will try in {} second.", delay, e);

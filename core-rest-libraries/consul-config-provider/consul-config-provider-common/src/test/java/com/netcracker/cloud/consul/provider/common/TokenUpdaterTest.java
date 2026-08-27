@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 
 class TokenUpdaterTest {
     private TokenUpdater tokenUpdater;
-    private ConsulLogin consulLogin;
+    private ConsulTokenProvider tokenProvider;
     private SelfTokenReader selfTokenReader;
     private ScheduledExecutorService scheduledExecutorService;
     private final Instant currentTime = Instant.now();
@@ -32,17 +32,17 @@ class TokenUpdaterTest {
     @BeforeEach
     public void init() {
 
-        consulLogin = Mockito.mock(ConsulLogin.class);
+        tokenProvider = Mockito.mock(ConsulTokenProvider.class);
         selfTokenReader = Mockito.mock(SelfTokenReader.class);
         scheduledExecutorService = Mockito.mock(ScheduledExecutorService.class);
-        tokenUpdater = new TokenUpdater(consulLogin, selfTokenReader, scheduledExecutorService, Clock.fixed(currentTime, ZoneId.of("UTC")), 2, Duration.ZERO);
+        tokenUpdater = new TokenUpdater(tokenProvider, selfTokenReader, scheduledExecutorService, Clock.fixed(currentTime, ZoneId.of("UTC")), 2, Duration.ZERO);
     }
 
     @Test
     void mustGetNewTokenScheduleUpdates() throws IOException {
         String secretId = "test-token";
         OffsetDateTime secretExpirationTime = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
-        when(consulLogin.perform()).thenReturn(new Token(secretId, secretExpirationTime));
+        when(tokenProvider.getToken()).thenReturn(new Token(secretId, secretExpirationTime));
 
         AtomicReference<String> updater = new AtomicReference<>("");
         tokenUpdater.watch(updater::set, "");
@@ -77,21 +77,21 @@ class TokenUpdaterTest {
     void mustRetryOnFailure() throws IOException {
         String secretId = "test-self-token";
         OffsetDateTime secretExpirationTime = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
-        when(consulLogin.perform())
+        when(tokenProvider.getToken())
                 .thenThrow(new IOException())
                 .thenReturn(new Token(secretId, secretExpirationTime));
 
         AtomicReference<String> updater = new AtomicReference<>("");
         tokenUpdater.watch(updater::set, "");
 
-        verify(consulLogin, times(2)).perform();
+        verify(tokenProvider, times(2)).getToken();
     }
 
     @Test
     void scheduledTaskMustRetryOnFailure() throws IOException {
         String secretId = "test-token";
         OffsetDateTime secretExpirationTime = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
-        when(consulLogin.perform())
+        when(tokenProvider.getToken())
                 .thenReturn(new Token(secretId, secretExpirationTime))
                 .thenThrow(new IOException())
                 .thenThrow(new IOException())
@@ -118,7 +118,7 @@ class TokenUpdaterTest {
         String secretId = "test-token";
         String rotatedSecretId = "test-rotated-token";
         OffsetDateTime secretExpirationTime = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
-        when(consulLogin.perform())
+        when(tokenProvider.getToken())
                 .thenReturn(new Token(secretId, secretExpirationTime))
                 .thenReturn(new Token(rotatedSecretId, secretExpirationTime));
 
@@ -133,14 +133,14 @@ class TokenUpdaterTest {
         tokenUpdater.watch(updater::set, "");
 
         assertEquals(rotatedSecretId, updater.get());
-        verify(consulLogin, times(2)).perform();
+        verify(tokenProvider, times(2)).getToken();
         verifyNoInteractions(selfTokenReader);
     }
 
     private long scheduledDelay(Instant now, OffsetDateTime expirationTime) throws IOException {
         ScheduledExecutorService executor = Mockito.mock(ScheduledExecutorService.class);
-        ConsulLogin login = Mockito.mock(ConsulLogin.class);
-        when(login.perform()).thenReturn(new Token("test-token", expirationTime));
+        ConsulTokenProvider login = Mockito.mock(ConsulTokenProvider.class);
+        when(login.getToken()).thenReturn(new Token("test-token", expirationTime));
 
         new TokenUpdater(login, Mockito.mock(SelfTokenReader.class), executor,
                 Clock.fixed(now, ZoneId.of("UTC")), 2, Duration.ZERO).watch(unused -> {
@@ -173,11 +173,11 @@ class TokenUpdaterTest {
     void retryWaitsBackoffDelayBetweenAttempts() throws IOException {
         Duration retryPause = Duration.ofMillis(200);
         OffsetDateTime secretExpirationTime = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
-        when(consulLogin.perform())
+        when(tokenProvider.getToken())
                 .thenThrow(new IOException())
                 .thenReturn(new Token("test-token", secretExpirationTime));
 
-        TokenUpdater updater = new TokenUpdater(consulLogin, selfTokenReader, scheduledExecutorService,
+        TokenUpdater updater = new TokenUpdater(tokenProvider, selfTokenReader, scheduledExecutorService,
                 Clock.fixed(currentTime, ZoneId.of("UTC")), 2, retryPause);
 
         long startedAt = System.nanoTime();
@@ -186,7 +186,7 @@ class TokenUpdaterTest {
         long elapsed = System.nanoTime() - startedAt;
 
         long lowestJitteredDelay = (long) (retryPause.toNanos() * (1 - LoginRetryPolicies.JITTER));
-        verify(consulLogin, times(2)).perform();
+        verify(tokenProvider, times(2)).getToken();
         Assertions.assertTrue(elapsed >= lowestJitteredDelay,
                 "expected a backoff delay of at least " + lowestJitteredDelay + " ns between retries, got " + elapsed);
     }

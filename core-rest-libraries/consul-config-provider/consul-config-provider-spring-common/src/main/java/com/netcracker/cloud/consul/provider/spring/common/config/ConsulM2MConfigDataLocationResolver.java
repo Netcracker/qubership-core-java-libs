@@ -67,7 +67,7 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
                         .m2mSupplier(m2mTokenSupplier);
             }
 
-            consulConfigProperties.setAclToken(TokenStorageFactory.from(client, options.build()).perform().getSecretId());
+            consulConfigProperties.setAclToken(TokenStorageFactory.from(client, options.build()).getToken().getSecretId());
         } catch (IOException e) {
             log.error("can not get consul token by m2m: ", e);
         }

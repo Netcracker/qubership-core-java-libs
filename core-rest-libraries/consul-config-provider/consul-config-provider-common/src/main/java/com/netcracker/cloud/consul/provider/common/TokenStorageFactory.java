@@ -24,23 +24,23 @@ public abstract class TokenStorageFactory {
         return tokenStorage;
     }
 
-    public static ConsulLogin from(ConsulClient client, CreateOptions options) {
+    public static ConsulTokenProvider from(ConsulClient client, CreateOptions options) {
         switch (options.mode) {
             case M2M:
-                return m2mLogin(client, options);
+                return m2mProvider(client, options);
             case KUBERNETES:
-                return kubernetesLogin(client, options);
+                return kubernetesProvider(client, options);
             default:
-                return new ProbingConsulLogin(kubernetesLogin(client, options), m2mLogin(client, options));
+                return new KubernetesWithM2MFallbackTokenProvider(kubernetesProvider(client, options), m2mProvider(client, options));
         }
     }
 
-    private static ConsulLogin m2mLogin(ConsulClient client, CreateOptions options) {
-        return new TokenProvider(client, new M2MLoginCredentials(options.namespace, options.m2mSupplier));
+    private static ConsulTokenProvider m2mProvider(ConsulClient client, CreateOptions options) {
+        return new LoginTokenProvider(client, new M2MLoginCredentials(options.namespace, options.m2mSupplier));
     }
 
-    private static ConsulLogin kubernetesLogin(ConsulClient client, CreateOptions options) {
-        return new TokenProvider(client, new KubernetesLoginCredentials(options.authMethod, options.audience));
+    private static ConsulTokenProvider kubernetesProvider(ConsulClient client, CreateOptions options) {
+        return new LoginTokenProvider(client, new KubernetesLoginCredentials(options.authMethod, options.audience));
     }
 
     abstract protected TokenStorage createTokenStorage(CreateOptions config);

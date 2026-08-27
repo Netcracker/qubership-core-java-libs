@@ -10,20 +10,20 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 
-public class TokenProvider implements ConsulLogin {
+public class LoginTokenProvider implements ConsulTokenProvider {
 
-    private static final Logger log = LoggerFactory.getLogger(TokenProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(LoginTokenProvider.class);
 
     private final ConsulClient client;
     private final ConsulLoginCredentials credentials;
 
-    public TokenProvider(ConsulClient client, ConsulLoginCredentials credentials) {
+    public LoginTokenProvider(ConsulClient client, ConsulLoginCredentials credentials) {
         this.client = client;
         this.credentials = credentials;
     }
 
     @Override
-    public Token perform() throws IOException {
+    public Token getToken() throws IOException {
         ConsulClientResponse response = client.login(credentials);
         String responseBody = response.getBodyJson();
         if (responseBody == null || responseBody.isEmpty()) {

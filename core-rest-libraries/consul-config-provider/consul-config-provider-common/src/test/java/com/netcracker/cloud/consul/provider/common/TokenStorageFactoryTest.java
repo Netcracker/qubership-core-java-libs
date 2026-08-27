@@ -125,11 +125,11 @@ class TokenStorageFactoryTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> ConsulLoginMode.valueOf("cloud-foundry"));
     }
 
-    private static ConsulLoginCredentials credentialsUsedBy(ConsulLogin login, ConsulClient client) throws IOException {
+    private static ConsulLoginCredentials credentialsUsedBy(ConsulTokenProvider login, ConsulClient client) throws IOException {
         when(client.login(any(ConsulLoginCredentials.class)))
                 .thenReturn(new ConsulClientResponse("{\"SecretID\":\"test-secret-id\"}", 200));
 
-        login.perform();
+        login.getToken();
 
         ArgumentCaptor<ConsulLoginCredentials> used = ArgumentCaptor.forClass(ConsulLoginCredentials.class);
         verify(client).login(used.capture());
@@ -146,9 +146,9 @@ class TokenStorageFactoryTest {
                 .m2mSupplier(() -> "token")
                 .build();
 
-        ConsulLogin login = TokenStorageFactory.from(client, opts);
+        ConsulTokenProvider login = TokenStorageFactory.from(client, opts);
 
-        Assertions.assertInstanceOf(TokenProvider.class, login);
+        Assertions.assertInstanceOf(LoginTokenProvider.class, login);
         Assertions.assertInstanceOf(M2MLoginCredentials.class, credentialsUsedBy(login, client));
     }
 
@@ -166,9 +166,9 @@ class TokenStorageFactoryTest {
                 })
                 .build();
 
-        ConsulLogin login = TokenStorageFactory.from(client, opts);
+        ConsulTokenProvider login = TokenStorageFactory.from(client, opts);
 
-        Assertions.assertInstanceOf(TokenProvider.class, login);
+        Assertions.assertInstanceOf(LoginTokenProvider.class, login);
         ConsulLoginCredentials used = credentialsUsedBy(login, client);
         Assertions.assertInstanceOf(KubernetesLoginCredentials.class, used);
         Assertions.assertEquals("core-k8s", used.getAuthMethod());
@@ -186,9 +186,9 @@ class TokenStorageFactoryTest {
                 .m2mSupplier(() -> "token")
                 .build();
 
-        ConsulLogin login = TokenStorageFactory.from(client, opts);
+        ConsulTokenProvider login = TokenStorageFactory.from(client, opts);
 
-        Assertions.assertInstanceOf(ProbingConsulLogin.class, login);
+        Assertions.assertInstanceOf(KubernetesWithM2MFallbackTokenProvider.class, login);
         Assertions.assertInstanceOf(KubernetesLoginCredentials.class, credentialsUsedBy(login, client));
     }
 
@@ -209,7 +209,7 @@ class TokenStorageFactoryTest {
             return new ConsulClientResponse("{\"SecretID\":\"test-secret-id\"}", 200);
         });
 
-        Token token = TokenStorageFactory.from(client, opts).perform();
+        Token token = TokenStorageFactory.from(client, opts).getToken();
 
         Assertions.assertEquals("test-secret-id", token.getSecretId());
         ArgumentCaptor<ConsulLoginCredentials> used = ArgumentCaptor.forClass(ConsulLoginCredentials.class);

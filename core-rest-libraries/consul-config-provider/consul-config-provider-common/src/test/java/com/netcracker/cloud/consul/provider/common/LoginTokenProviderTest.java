@@ -19,7 +19,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class TokenProviderTest {
+class LoginTokenProviderTest {
 
     private static final String LOGIN_RESPONSE_WITHOUT_EXPIRATION =
             "{\"AccessorID\":\"test-accessor-id\",\"SecretID\":\"test-secret-id\",\"Description\":\"token created via login\"," +
@@ -34,13 +34,13 @@ class TokenProviderTest {
 
     private ConsulClient consulClient;
     private ConsulLoginCredentials credentials;
-    private TokenProvider tokenProvider;
+    private LoginTokenProvider tokenProvider;
 
     @BeforeEach
     public void init() {
         consulClient = mock(ConsulClient.class);
         credentials = new M2MLoginCredentials("test", () -> "test-m2m-token");
-        tokenProvider = new TokenProvider(consulClient, credentials);
+        tokenProvider = new LoginTokenProvider(consulClient, credentials);
     }
 
     @Test
@@ -48,7 +48,7 @@ class TokenProviderTest {
         when(consulClient.login(any(ConsulLoginCredentials.class)))
                 .thenReturn(new ConsulClientResponse(LOGIN_RESPONSE_WITH_EXPIRATION, 200));
 
-        Token token = tokenProvider.perform();
+        Token token = tokenProvider.getToken();
 
         verify(consulClient).login(eq(credentials));
         assertEquals("test-secret-id", token.getSecretId());
@@ -60,7 +60,7 @@ class TokenProviderTest {
         when(consulClient.login(any(ConsulLoginCredentials.class)))
                 .thenReturn(new ConsulClientResponse(LOGIN_RESPONSE_WITHOUT_EXPIRATION, 200));
 
-        Token token = tokenProvider.perform();
+        Token token = tokenProvider.getToken();
 
         assertEquals("test-secret-id", token.getSecretId());
         assertNull(token.getExpirationTime());
@@ -71,7 +71,7 @@ class TokenProviderTest {
         when(consulClient.login(any(ConsulLoginCredentials.class)))
                 .thenReturn(new ConsulClientResponse("", 200));
 
-        assertThrows(IOException.class, () -> tokenProvider.perform());
+        assertThrows(IOException.class, () -> tokenProvider.getToken());
     }
 
     @Test
@@ -79,7 +79,7 @@ class TokenProviderTest {
         when(consulClient.login(any(ConsulLoginCredentials.class)))
                 .thenReturn(new ConsulClientResponse("{\"Error\":\"Permission denied\"}", 403));
 
-        assertThrows(IOException.class, () -> tokenProvider.perform());
+        assertThrows(IOException.class, () -> tokenProvider.getToken());
     }
 
     @Test
@@ -87,7 +87,7 @@ class TokenProviderTest {
         when(consulClient.login(any(ConsulLoginCredentials.class)))
                 .thenReturn(new ConsulClientResponse("{\"AccessorID\":\"test-accessor-id\"}", 200));
 
-        assertThrows(PathNotFoundException.class, () -> tokenProvider.perform());
+        assertThrows(PathNotFoundException.class, () -> tokenProvider.getToken());
         verify(consulClient, times(1)).login(any(ConsulLoginCredentials.class));
     }
 }
