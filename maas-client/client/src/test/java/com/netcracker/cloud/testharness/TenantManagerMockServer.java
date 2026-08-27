@@ -107,8 +107,7 @@ public class TenantManagerMockServer implements WebsockServer {
     }
 
     /**
-     * Waits until a client connects to this mock. Lets a test observe a reconnect instead of
-     * sleeping for a guessed amount of time.
+     * Waits until a client connects to this mock.
      *
      * @return true if a connection arrived within the timeout
      */

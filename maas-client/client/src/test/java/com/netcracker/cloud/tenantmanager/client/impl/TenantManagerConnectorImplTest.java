@@ -84,8 +84,7 @@ class TenantManagerConnectorImplTest {
                 tmMock.stop();
                 tmMock.start();
 
-                // Wait for the client to actually reconnect. Sleeping for a guessed interval instead
-                // makes the test both slower and flaky on a loaded CI runner.
+                // The reconnect itself emits no event, so wait for the connection.
                 assertTrue(tmMock.awaitClientConnected(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS),
                         "the client did not reconnect to the restarted tenant-manager");
 

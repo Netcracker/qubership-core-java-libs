@@ -63,6 +63,11 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
 
     private static final String TEST_MESSAGE = "test_message";
     private static final String TEST_MESSAGE_AFTER_REACTIVATION = "test_message_after_reactivation";
+
+    /**
+     * Time interval for a single await. A method {@code @Timeout} is a multiple of it: one per await plus
+     * one for slack, so a stuck await fails before the method timeout does.
+     */
     private static final long AWAIT_TIMEOUT_SEC = 30;
 
 
@@ -85,7 +90,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
     }
 
     @Test
-    @Timeout(value = 60)
+    @Timeout(value = 5 * AWAIT_TIMEOUT_SEC) // 4 awaits below
     void clientActivationAndDeactivationTest() throws Exception {
         LOG.info("starting test clientActivationAndDeactivationTest");
 
@@ -105,8 +110,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
 
         Consumer<ConsumerRecord<String, String>> recordConsumer = record -> {
             LOG.info("Received record: {}", record);
-            // Match by the unique record key: the topic is shared with the other test methods and is
-            // read from the beginning (auto.offset.reset=earliest), so the value alone is ambiguous.
+            // The shared topic is read from the beginning, so only the key identifies our record.
             if (messageKey.equals(record.key())) {
                 consumerPollingMessageFuture.complete(record.value());
             } else if (messageAfterReactivationKey.equals(record.key())) {
@@ -225,7 +229,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
     }
 
     @Test
-    @Timeout(value = 60)
+    @Timeout(value = 2 * AWAIT_TIMEOUT_SEC) // 1 await below
     void tracingTest_ProducerProvidesNewChildSpanAndInjectsIntoHeaders() throws Exception {
         final String messageKey = UUID.randomUUID().toString();
         final CompletableFuture<Map<String, String>> consumerPollingMessageFuture = new CompletableFuture<>();
@@ -289,7 +293,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
     }
 
     @Test
-    @Timeout(value = 60)
+    @Timeout(value = 2 * AWAIT_TIMEOUT_SEC) // 1 await below
     void tracingTest_Consumer() throws Exception {
         final String messageKey = UUID.randomUUID().toString();
         final CompletableFuture<Map<String, String>> consumerPollingMessageFuture = new CompletableFuture<>();
