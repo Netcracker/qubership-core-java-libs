@@ -84,7 +84,10 @@ class TenantManagerConnectorImplTest {
                 tmMock.stop();
                 tmMock.start();
 
-                Thread.sleep(2_000); // reconnect timeout above is PT1S, give the reconnect time to fire
+                // Wait for the client to actually reconnect. Sleeping for a guessed interval instead
+                // makes the test both slower and flaky on a loaded CI runner.
+                assertTrue(tmMock.awaitClientConnected(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS),
+                        "the client did not reconnect to the restarted tenant-manager");
 
                 // tenant should be cache from previous connection session
                 assertEquals(1, client.getTenantList().size());

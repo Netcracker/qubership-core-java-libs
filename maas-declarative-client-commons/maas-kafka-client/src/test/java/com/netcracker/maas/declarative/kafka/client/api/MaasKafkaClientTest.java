@@ -266,10 +266,11 @@ class MaasKafkaClientTest {
         final CompletableFuture<String> msg = new CompletableFuture<>();
         String groupId = "group-" + RANDOM_STRING.get();
         AtomicInteger handlerCalls = new AtomicInteger(0);
-        try (var ignored = maasKafkaConsumer(topicInfo.getName(), record -> {
+        try (var ignored = maasKafkaConsumer(topicInfo.getName(), consumerRecord -> {
             log.info("[test] handler invocation #{}: partition={}, offset={}, value={}",
-                    handlerCalls.getAndIncrement(), record.partition(), record.offset(), record.value());
-            msg.complete(record.value());
+                    handlerCalls.getAndIncrement(), consumerRecord.partition(), consumerRecord.offset(),
+                    consumerRecord.value());
+            msg.complete(consumerRecord.value());
         }, false, true, groupId)) {
             waitForBgConsumerReady(groupId);
             String testMsg = "message-" + RANDOM_STRING.get();
@@ -519,7 +520,7 @@ class MaasKafkaClientTest {
             if (description != null) {
                 diagnostics.append(", members=").append(description.members().stream()
                         .map(member -> member.clientId() + "->" + member.assignment().topicPartitions())
-                        .collect(Collectors.toList()));
+                        .toList());
             }
             Map<TopicPartition, OffsetSpec> offsetSpecs = committed.keySet().stream()
                     .collect(Collectors.toMap(partition -> partition, partition -> OffsetSpec.latest()));

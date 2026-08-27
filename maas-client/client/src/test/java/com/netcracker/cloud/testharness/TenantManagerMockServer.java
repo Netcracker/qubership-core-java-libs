@@ -28,6 +28,7 @@ public class TenantManagerMockServer implements WebsockServer {
 
     private final int serverPort;
     private final BlockingQueue<String> messagesQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<Object> clientConnections = new LinkedBlockingQueue<>();
     private volatile Timer heartbeatTimer;
 
     public TenantManagerMockServer() {
@@ -47,6 +48,7 @@ public class TenantManagerMockServer implements WebsockServer {
                             @SneakyThrows
                             public void onConnect(WebSocketHttpExchange exchange, WebSocketChannel channel) {
                                 log.info("Client connected");
+                                clientConnections.add(new Object());
                                 channel.getReceiveSetter().set(new AbstractReceiveListener() {
                                     @SneakyThrows
                                     protected void onFullTextMessage(WebSocketChannel channel, BufferedTextMessage message) {
@@ -104,8 +106,19 @@ public class TenantManagerMockServer implements WebsockServer {
                 "{\\\"type\\\":\\\"MODIFIED\\\",\\\"tenants\\\":[{\\\"externalId\\\":\\\"800eb78d-9878-4222-82e9-9bc1fde13196\\\",\\\"objectId\\\":\\\"4dd2d500-3ee3-40a8-bb79-5e535c533da1\\\",\\\"namespace\\\":null,\\\"status\\\":\\\"SUSPENDED\\\",\\\"name\\\":\\\"user-tenant2\\\",\\\"domainName\\\":null,\\\"workbook\\\":null,\\\"admin\\\":{\\\"login\\\":\\\"test@example.com\\\",\\\"password\\\":null,\\\"firstName\\\":\\\"Sergey\\\",\\\"lastName\\\":\\\"Lisovoy\\\"}}]}\\u0000\"]");
     }
 
+    /**
+     * Waits until a client connects to this mock. Lets a test observe a reconnect instead of
+     * sleeping for a guessed amount of time.
+     *
+     * @return true if a connection arrived within the timeout
+     */
+    public boolean awaitClientConnected(long timeout, TimeUnit unit) throws InterruptedException {
+        return clientConnections.poll(timeout, unit) != null;
+    }
+
     public void start() {
         messagesQueue.clear();
+        clientConnections.clear();
         messagesQueue.add("a[\"MESSAGE\\nsubscription:9abb0688-6426-4c88-a535-64ba223e89d2\\n\\n{\\\"type\\\":\\\"SUBSCRIBED\\\",\\\"tenants\\\":[{\\\"externalId\\\":\\\"9bcacf1e-20cb-4dd2-970e-404c354bcd8f\\\",\\\"objectId\\\":null,\\\"namespace\\\":null,\\\"status\\\":\\\"AWAITING_APPROVAL\\\",\\\"name\\\":\\\"user-tenant1\\\",\\\"domainName\\\":null,\\\"workbook\\\":null,\\\"admin\\\":{\\\"login\\\":\\\"test@example.com\\\",\\\"password\\\":null,\\\"firstName\\\":\\\"Sergey\\\",\\\"lastName\\\":\\\"Lisovoy\\\"}}]}\\u0000\"]");
         server.start();
 

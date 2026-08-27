@@ -55,7 +55,7 @@ abstract class AbstractKafkaClusterTest {
 
     Duration POLL_TIMEOUT = Duration.ofSeconds(30);
     Duration NO_RECORDS_TIMEOUT = Duration.ofSeconds(5);
-    Duration ASSIGNMENT_TIMEOUT = Duration.ofSeconds(60);
+    static final Duration ASSIGNMENT_TIMEOUT = Duration.ofSeconds(60);
 
     static KafkaContainerCluster cluster;
 
@@ -246,7 +246,7 @@ abstract class AbstractKafkaClusterTest {
                         consumer.poll(pollTimeout);
                         return consumer.assignment();
                     }))
-                    .collect(Collectors.toList());
+                    .toList();
             assignments.clear();
             futures.forEach(future -> {
                 try {
