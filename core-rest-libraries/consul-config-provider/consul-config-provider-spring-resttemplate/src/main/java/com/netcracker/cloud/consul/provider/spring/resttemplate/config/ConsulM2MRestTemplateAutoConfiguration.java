@@ -29,6 +29,7 @@ import org.springframework.core.env.Environment;
 public class ConsulM2MRestTemplateAutoConfiguration {
     private final static Logger LOGGER = LoggerFactory.getLogger(ConsulM2MRestTemplateAutoConfiguration.class);
 
+    // todo vlla эм, а нафига их дублировать?
     public static final String PROP_LOGIN_MODE = ConsulM2MConfigDataLocationResolver.PROP_LOGIN_MODE;
     public static final String PROP_LOGIN_AUTH_METHOD = ConsulM2MConfigDataLocationResolver.PROP_LOGIN_AUTH_METHOD;
     public static final String PROP_LOGIN_AUDIENCE = ConsulM2MConfigDataLocationResolver.PROP_LOGIN_AUDIENCE;
@@ -53,6 +54,7 @@ public class ConsulM2MRestTemplateAutoConfiguration {
                 .consulUrl(Utils.formatConsulAddress(consulProperties))
                 .namespace(namespace)
                 .m2mSupplier(() -> m2MManager.getToken().getTokenValue())
+                //todo vlla это же бин, мы не можем просто заинжектить значения этих пропертей? Через биндер же очень низкоуровнево? Или есть причины, почему надо именно через биндер?
                 .mode(binder.bind(PROP_LOGIN_MODE, ConsulLoginMode.class).orElse(null))
                 .authMethod(binder.bind(PROP_LOGIN_AUTH_METHOD, String.class).orElse(null))
                 .audience(binder.bind(PROP_LOGIN_AUDIENCE, String.class).orElse(null))

@@ -43,6 +43,9 @@ final class ProbingConsulLogin implements ConsulLogin {
         try {
             Token token = probe();
             chosen = probed;
+            //todo vlla мы тут смешиваем контексты. Переменные называются probed и fallback, что как бы подразумевает, что они могут быть любыми способами. При этом при удаче и неудаче мы используем KUBERNETES_WAY и M2M_WAY, сразу предполагая, что мы знаем какиеми они будут.
+            // надо выбрать один из подходов: генерализованный, когда ProbingConsulLogin не знает, что за ConsulLogin в него переданы (но тогда тип авторизации надо как-то получать из самих ConsulLogin), либо уж он захардкожен на пару kubernetes + m2m
+            // проанализируй оба подхода и давай выберем
             log.info("Consul ACL token is obtained by the {} auth method", KUBERNETES_WAY);
             return token;
         } catch (Exception e) {
@@ -67,6 +70,7 @@ final class ProbingConsulLogin implements ConsulLogin {
         }
     }
 
+    //todo vlla может есть более изящный способ сделать паузы, нежели Thread.sleep в продакшен-коде? Поищи примеры в других модулях.
     private void pauseBeforeNextAttempt() {
         if (probePause.isZero() || probePause.isNegative()) {
             return;

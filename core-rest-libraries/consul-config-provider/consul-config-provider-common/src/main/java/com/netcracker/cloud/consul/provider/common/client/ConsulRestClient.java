@@ -47,6 +47,9 @@ public class ConsulRestClient implements ConsulClient {
         return new ConsulClientResponse(response.getResponseBody(), response.getHttpStatus());
     }
 
+    //todo vlla есть предложение удалить реализацию этого метода и бросить UnsupportedOperationException. Во первых, он deprecated, во вторых - после наших изменений код проходит только через метод login(ConsulLoginCredentials credentials) и нокогда через старый login (тут я могу ошибаться надо проверить).
+    // нам это даст возможность не передавать m2mTokenSupplier в клиент и немного упростить com.netcracker.cloud.consul.provider.spring.common.config.ConsulM2MConfigDataLocationResolver.loadConfigProperties
+    // но это только предложение, надо его проанализировать
     @Override
     public ConsulClientResponse login(String authMethod) {
         Map<String, String> payload = new HashMap<>();
@@ -77,6 +80,7 @@ public class ConsulRestClient implements ConsulClient {
         try {
             response = client.doRequest(consulAddr + V1_ACL_LOGIN, HttpMethod.POST, headers, json, String.class);
         } catch (MicroserviceRestClientException e) {
+            //todo vlla добавить комментарий, зачем здесь сделан выброс эксепшена
             throw new IOException("can not perform login to consul: " + e.getMessage(), e);
         }
         return new ConsulClientResponse(response.getResponseBody(), response.getHttpStatus());

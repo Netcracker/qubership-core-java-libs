@@ -18,6 +18,7 @@ public class TokenUpdater {
     private static final Logger log = LoggerFactory.getLogger(TokenUpdater.class);
     static final int DEFAULT_TRIES = 10;
     private static final Duration DEFAULT_RETRY_PAUSE = Duration.ofSeconds(1);
+    //todo vlla это СУПЕР не понятные и излишние константы. Почеме не просто 0.8?
     private static final long DELAY_NUMERATOR = 8;
     private static final long DELAY_DENOMINATOR = 10;
     static final long MIN_DELAY_SECONDS = 10;
@@ -69,6 +70,7 @@ public class TokenUpdater {
         }
     }
 
+    //todo vlla неудачное название
     private long relogonDelay(OffsetDateTime expirationTime) {
         long remaining = ChronoUnit.SECONDS.between(OffsetDateTime.now(clock), expirationTime);
         return Math.max(remaining * DELAY_NUMERATOR / DELAY_DENOMINATOR, MIN_DELAY_SECONDS);
@@ -89,6 +91,7 @@ public class TokenUpdater {
         }
     }
 
+    //todo vlla аналогично: может есть более изящный способ сделать паузы, нежели Thread.sleep в продакшен-коде?
     private void pauseBeforeNextAttempt() {
         if (retryPause.isZero() || retryPause.isNegative()) {
             return;

@@ -85,4 +85,6 @@ public class ConsulOkHttpClient implements ConsulClient {
         ).execute();
         return new ConsulClientResponse(response.body().string(), response.code());
     }
+
+    //todo vlla вынести общую часть в отдельный метод? Наверное нет, сложнее будет удалять.
 }
