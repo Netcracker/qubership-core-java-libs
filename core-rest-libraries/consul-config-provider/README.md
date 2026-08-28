@@ -11,7 +11,7 @@ Two ways to obtain the token are supported:
 
 ## Login properties
 
-The three properties below are read at startup, in the ConfigData phase and again when the `TokenStorage` bean is
+The four properties below are read at startup, in the ConfigData phase and again when the `TokenStorage` bean is
 built. In `kubernetes-with-m2m-fallback` mode the first login picks the way, and a later failure never switches it
 back on its own.
 

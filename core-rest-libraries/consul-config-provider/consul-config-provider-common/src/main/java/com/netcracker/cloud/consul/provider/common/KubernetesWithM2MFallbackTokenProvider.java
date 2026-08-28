@@ -108,7 +108,8 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
                                     event.getAttemptCount(), KUBERNETES_WAY, event.getLastFailure())))
                     .get(kubernetesProvider::getToken);
         } catch (FailsafeException e) {
-            throw (IOException) e.getCause();
+            Throwable cause = e.getCause();
+            throw cause instanceof IOException ? (IOException) cause : new IOException(cause);
         }
     }
 

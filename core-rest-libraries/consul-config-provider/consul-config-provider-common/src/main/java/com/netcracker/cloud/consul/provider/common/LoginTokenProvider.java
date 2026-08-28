@@ -37,7 +37,7 @@ public class LoginTokenProvider implements ConsulTokenProvider {
         ConsulClientResponse response = client.login(credentials);
         String responseBody = response.getBodyJson();
         if (responseBody == null || responseBody.isEmpty()) {
-            throw new IOException("can not get consul token by m2m token: response body is empty");
+            throw new IOException("can not get consul token: response body is empty");
         }
         if (response.getCode() != 200) {
             String reason = response.getCode() == 403 ? "consul auth method is not ready" : "login to consul failed";

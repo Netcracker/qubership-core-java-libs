@@ -28,7 +28,10 @@ public class SelfTokenReader {
      * Reads the token behind {@code currentSecretId}. A token without an expiration is valid: Consul omits the field
      * for an auth method without {@code MaxTokenTTL}.
      *
-     * @throws IOException on a transport failure or a non-2xx answer
+     * @throws IOException on a non-2xx answer; the caller may retry
+     * @throws RuntimeException on a transport failure, in whatever type the client throws. Unlike {@link
+     *         ConsulClient#login(ConsulLoginCredentials)}, {@link ConsulClient#getSelfToken(String)} does not report
+     *         it as an {@link IOException}, so the retry policies of the module do not cover it
      */
     public Token read(String currentSecretId) throws IOException {
         ConsulClientResponse response = client.getSelfToken(currentSecretId);
@@ -47,7 +50,7 @@ public class SelfTokenReader {
         log.info("Got self token from Consul, issued by the {} auth method", readAuthMethod(bodyJson));
         return new Token(secretId, expirationTime);
     }
-    
+
     private static String readAuthMethod(String bodyJson) {
         try {
             return JsonPath.read(bodyJson, "$.AuthMethod");
