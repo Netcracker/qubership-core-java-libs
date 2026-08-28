@@ -32,11 +32,11 @@
         <jandex.version>3.5.3</jandex.version>
         <curator.version>5.1.0</curator.version>
 
-        <cloud-core.maas-declarative-client-commons.version>6.2.2-SNAPSHOT</cloud-core.maas-declarative-client-commons.version>
-        <cloud-core.maas-client-quarkus.version>11.1.2-SNAPSHOT</cloud-core.maas-client-quarkus.version>
-        <cloud-core.core-blue-green-state-monitor-quarkus.version>4.1.2-SNAPSHOT</cloud-core.core-blue-green-state-monitor-quarkus.version>
-        <cloud-core.core-utils.version>3.2.2-SNAPSHOT</cloud-core.core-utils.version>
-        <cloud-core.core-internal-boms.version>1.1.2-SNAPSHOT</cloud-core.core-internal-boms.version>
+        <cloud-core.maas-declarative-client-commons.version>6.2.2</cloud-core.maas-declarative-client-commons.version>
+        <cloud-core.maas-client-quarkus.version>11.1.2</cloud-core.maas-client-quarkus.version>
+        <cloud-core.core-blue-green-state-monitor-quarkus.version>4.1.2</cloud-core.core-blue-green-state-monitor-quarkus.version>
+        <cloud-core.core-utils.version>3.2.2</cloud-core.core-utils.version>
+        <cloud-core.core-internal-boms.version>1.1.2</cloud-core.core-internal-boms.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../../maas-kafka-quarkus-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
