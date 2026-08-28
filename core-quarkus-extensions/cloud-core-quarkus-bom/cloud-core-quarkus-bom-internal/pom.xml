@@ -13,14 +13,14 @@
 
     <properties>
         <!-- Qubership -->
-        <cloud-core.core-context-propagation.version>8.3.2-SNAPSHOT</cloud-core.core-context-propagation.version>
+        <cloud-core.core-context-propagation.version>8.3.2</cloud-core.core-context-propagation.version>
         <!--cloud-core.core-context-propagation-quarkus.version>9.1.0-SNAPSHOT</cloud-core.core-context-propagation-quarkus.version-->
-        <cloud-core.dbaas-client.version>9.2.2-SNAPSHOT</cloud-core.dbaas-client.version>
-        <cloud-core.core-utils.version>3.2.2-SNAPSHOT</cloud-core.core-utils.version>
-        <cloud-core.core-rest-libraries.version>7.4.2-SNAPSHOT</cloud-core.core-rest-libraries.version>
-        <cloud-core.maas-client.version>12.3.2-SNAPSHOT</cloud-core.maas-client.version>
-        <cloud-core.core-error-handling.version>4.3.2-SNAPSHOT</cloud-core.core-error-handling.version>
-        <cloud-core.core-internal-boms.version>1.1.2-SNAPSHOT</cloud-core.core-internal-boms.version>
+        <cloud-core.dbaas-client.version>9.2.2</cloud-core.dbaas-client.version>
+        <cloud-core.core-utils.version>3.2.2</cloud-core.core-utils.version>
+        <cloud-core.core-rest-libraries.version>7.4.2</cloud-core.core-rest-libraries.version>
+        <cloud-core.maas-client.version>12.3.2</cloud-core.maas-client.version>
+        <cloud-core.core-error-handling.version>4.3.2</cloud-core.core-error-handling.version>
+        <cloud-core.core-internal-boms.version>1.1.2</cloud-core.core-internal-boms.version>
 
         <!-- Dev tools -->
         <freemarker.version>2.3.34</freemarker.version>
