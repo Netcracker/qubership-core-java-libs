@@ -57,7 +57,7 @@ public class ConsulRestClient implements ConsulClient {
         Map<String, List<String>> headers = new HashMap<>();
         headers.put(CONTENT_TYPE, Collections.singletonList(APPLICATION_JSON));
 
-        log.debug("Perform login to {} with {} auth method", consulAddr, authMethod);
+        log.info("Perform login to {} with {} auth method", consulAddr, authMethod);
         RestClientResponseEntity<String> response = client.doRequest(consulAddr + V1_ACL_LOGIN, HttpMethod.POST, headers, json, String.class);
         return new ConsulClientResponse(response.getResponseBody(), response.getHttpStatus());
     }
@@ -72,7 +72,7 @@ public class ConsulRestClient implements ConsulClient {
         Map<String, List<String>> headers = new HashMap<>();
         headers.put(CONTENT_TYPE, Collections.singletonList(APPLICATION_JSON));
 
-        log.debug("Perform login to {} with {} auth method", consulAddr, credentials.getAuthMethod());
+        log.info("Perform login to {} with {} auth method", consulAddr, credentials.getAuthMethod());
         RestClientResponseEntity<String> response;
         try {
             response = client.doRequest(consulAddr + V1_ACL_LOGIN, HttpMethod.POST, headers, json, String.class);

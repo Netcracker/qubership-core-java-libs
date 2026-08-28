@@ -44,7 +44,15 @@ public class SelfTokenReader {
         } catch (PathNotFoundException ex) {
             // No Expiration Time. Nothing to do.
         }
-        log.debug("Got self token from Consul");
+        log.info("Got self token from Consul, issued by the {} auth method", readAuthMethod(bodyJson));
         return new Token(secretId, expirationTime);
+    }
+    
+    private static String readAuthMethod(String bodyJson) {
+        try {
+            return JsonPath.read(bodyJson, "$.AuthMethod");
+        } catch (PathNotFoundException ex) {
+            return "unknown";
+        }
     }
 }
