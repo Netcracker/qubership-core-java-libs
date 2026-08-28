@@ -29,7 +29,9 @@ mode the auth method name and the audience are not read at all.
 
 The fallback is temporary. Once `fallback-recheck-interval` has passed, the next scheduled relogin tries the
 `kubernetes` way again, and the first success switches the pod over for good, with a second `INFO` record. Going back
-to `m2m` never happens. The recheck rides on the scheduled relogin instead of a timer of its own, so it needs
+to `m2m` never happens. The choice survives the two phases of the startup: the `TokenStorage` bean reads the auth
+method of the token the ConfigData phase already obtained, from `/v1/acl/token/self`, and picks up from there instead
+of probing again. The recheck rides on the scheduled relogin instead of a timer of its own, so it needs
 `MaxTokenTTL` on the auth method: without it Consul issues a token that never expires, nothing is scheduled, and
 nothing is rechecked.
 

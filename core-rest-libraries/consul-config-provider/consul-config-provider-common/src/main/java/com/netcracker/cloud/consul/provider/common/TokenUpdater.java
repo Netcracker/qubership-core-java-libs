@@ -30,22 +30,19 @@ public class TokenUpdater {
     static final long MIN_DELAY_SECONDS = 10;
 
     private final ConsulTokenProvider tokenProvider;
-    private final SelfTokenReader selfTokenReader;
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
     private Clock clock = Clock.systemDefaultZone();
     private final Integer tries;
     private final Duration retryPause;
 
-    public TokenUpdater(ConsulTokenProvider tokenProvider, SelfTokenReader selfTokenReader) {
+    public TokenUpdater(ConsulTokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
-        this.selfTokenReader = selfTokenReader;
         this.tries = DEFAULT_TRIES;
         this.retryPause = DEFAULT_RETRY_PAUSE;
     }
 
-    TokenUpdater(ConsulTokenProvider tokenProvider, SelfTokenReader selfTokenReader, ScheduledExecutorService executor, Clock clock, int tries, Duration retryPause) {
+    TokenUpdater(ConsulTokenProvider tokenProvider, ScheduledExecutorService executor, Clock clock, int tries, Duration retryPause) {
         this.tokenProvider = tokenProvider;
-        this.selfTokenReader = selfTokenReader;
         this.executor = executor;
         this.clock = clock;
         this.tries = tries;
@@ -68,21 +65,22 @@ public class TokenUpdater {
             token = withRetry(tokenProvider::getToken, tries);
             updater.accept(token.getSecretId());
         } else {
-            token = withRetry(() -> selfTokenReader.read(currentSecretId), tries);
+            token = withRetry(() -> tokenProvider.getSelfToken(currentSecretId), tries);
         }
 
         if (token.getExpirationTime() != null) {
-            scheduleRelogin(updater, reloginDelaySeconds(token.getExpirationTime()));
+            scheduleRelogin(updater, token.getExpirationTime());
         }
     }
 
     /**
-     * Schedules one relogin and, from its result, the next one. The period follows the expiration of the token just
-     * received rather than of the first one: the way of obtaining the token can change while the pod lives, and the
-     * two auth methods carry different {@code MaxTokenTTL}. A failed relogin keeps the previous period, and a token
-     * without an expiration ends the schedule.
+     * Schedules one relogin and, from its result, the next one. Every delay is measured against the expiration of the
+     * token the pod holds right now rather than of the first one: the way of obtaining the token can change while the
+     * pod lives, and the two auth methods carry different {@code MaxTokenTTL}. A failed relogin therefore shortens the
+     * next delay instead of repeating the previous one, which would put the retry well past the expiration on a
+     * short-lived token. A token without an expiration ends the schedule.
      */
-    private void scheduleRelogin(Consumer<String> updater, long delay) {
+    private void scheduleRelogin(Consumer<String> updater, OffsetDateTime expirationTime) {
         executor.schedule(() -> {
             log.debug("Get new consul token with {} retry attempts", tries);
             try {
@@ -92,18 +90,19 @@ public class TokenUpdater {
                     log.debug("Consul token has no expiration time, stop refreshing");
                     return;
                 }
-                scheduleRelogin(updater, reloginDelaySeconds(newToken.getExpirationTime()));
+                scheduleRelogin(updater, newToken.getExpirationTime());
             } catch (Exception e) {
-                log.error("Error occurred during getting new consul token. Will try in {} seconds.", delay, e);
-                scheduleRelogin(updater, delay);
+                log.error("Error occurred during getting new consul token. Will try in {} seconds.",
+                        reloginDelaySeconds(expirationTime), e);
+                scheduleRelogin(updater, expirationTime);
             }
-        }, delay, TimeUnit.SECONDS);
+        }, reloginDelaySeconds(expirationTime), TimeUnit.SECONDS);
     }
 
     /**
      * Returns the delay before the next relogin as a share of the remaining lifetime. The same value serves as the
-     * period of the schedule, so a constant offset from the expiration would degenerate on short-lived tokens. The
-     * lower bound covers clocks that ran ahead of the expiration.
+     * period of the schedule, so a constant offset from the expiration would degenerate on short-lived tokens. Past
+     * the expiration the share turns negative, and the lower bound takes over as the retry cadence.
      */
     private long reloginDelaySeconds(OffsetDateTime expirationTime) {
         long remaining = ChronoUnit.SECONDS.between(OffsetDateTime.now(clock), expirationTime);

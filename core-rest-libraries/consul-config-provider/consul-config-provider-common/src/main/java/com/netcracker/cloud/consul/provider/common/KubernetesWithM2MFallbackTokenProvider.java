@@ -32,6 +32,7 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
 
     private final ConsulTokenProvider kubernetesProvider;
     private final ConsulTokenProvider m2mProvider;
+    private final String kubernetesAuthMethod;
     private final int tries;
     private final Duration probeDelay;
     private final Duration recheckInterval;
@@ -41,14 +42,17 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
     private Instant fellBackAt;
 
     KubernetesWithM2MFallbackTokenProvider(ConsulTokenProvider kubernetesProvider, ConsulTokenProvider m2mProvider,
-                                           Duration recheckInterval) {
-        this(kubernetesProvider, m2mProvider, PROBE_TRIES, DEFAULT_PROBE_PAUSE, recheckInterval, Clock.systemUTC());
+                                           String kubernetesAuthMethod, Duration recheckInterval) {
+        this(kubernetesProvider, m2mProvider, kubernetesAuthMethod, PROBE_TRIES, DEFAULT_PROBE_PAUSE, recheckInterval,
+                Clock.systemUTC());
     }
 
     KubernetesWithM2MFallbackTokenProvider(ConsulTokenProvider kubernetesProvider, ConsulTokenProvider m2mProvider,
-                                           int tries, Duration probeDelay, Duration recheckInterval, Clock clock) {
+                                           String kubernetesAuthMethod, int tries, Duration probeDelay,
+                                           Duration recheckInterval, Clock clock) {
         this.kubernetesProvider = kubernetesProvider;
         this.m2mProvider = m2mProvider;
+        this.kubernetesAuthMethod = kubernetesAuthMethod;
         this.tries = tries;
         this.probeDelay = probeDelay;
         this.recheckInterval = recheckInterval;
@@ -76,6 +80,33 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
             }
         }
         return m2mProvider.getToken();
+    }
+
+    /**
+     * Reads the token through the kubernetes provider and adopts the state of whichever instance obtained it. The
+     * choice of provider is arbitrary: the read sends the token the pod already holds and never looks at the
+     * credentials, so both give the same answer.
+     *
+     * <p>Without the adoption a pod whose token was obtained in an earlier phase would start over: it would probe the
+     * kubernetes way again even after that way was confirmed, and one failing probe would send a migrated pod back to
+     * m2m for a whole recheck interval.
+     */
+    @Override
+    public synchronized Token getSelfToken(String currentSecretId) throws IOException {
+        Token token = kubernetesProvider.getSelfToken(currentSecretId);
+        adopt(token.getAuthMethod());
+        return token;
+    }
+
+    private void adopt(String authMethod) {
+        if (kubernetesConfirmed || fellBackAt != null || authMethod == null) {
+            return;
+        }
+        if (kubernetesAuthMethod.equals(authMethod)) {
+            confirmKubernetes();
+        } else {
+            fellBackAt = clock.instant();
+        }
     }
 
     private boolean recheckIsDue() {

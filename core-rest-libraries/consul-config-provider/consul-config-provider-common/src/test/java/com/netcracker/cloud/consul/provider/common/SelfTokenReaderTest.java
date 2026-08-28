@@ -29,6 +29,11 @@ class SelfTokenReaderTest {
                     "\"Local\":true,\"AuthMethod\":\"k8s-poc\",\"CreateTime\":\"2026-08-26T07:21:18.613036445Z\"," +
                     "\"Hash\":\"test-hash\",\"CreateIndex\":52,\"ModifyIndex\":52}";
 
+    private static final String SELF_RESPONSE_WITHOUT_AUTH_METHOD =
+            "{\"AccessorID\":\"test-accessor-id\",\"SecretID\":\"test-secret-id\",\"Description\":\"static token\"," +
+                    "\"Local\":true,\"CreateTime\":\"2026-08-26T07:21:18.613036445Z\"," +
+                    "\"Hash\":\"test-hash\",\"CreateIndex\":52,\"ModifyIndex\":52}";
+
     private ConsulClient consulClient;
     private SelfTokenReader selfTokenReader;
 
@@ -59,6 +64,25 @@ class SelfTokenReaderTest {
 
         assertEquals("test-secret-id", token.getSecretId());
         assertNull(token.getExpirationTime());
+    }
+
+    @Test
+    void readReportsTheAuthMethodThatIssuedTheToken() throws IOException {
+        when(consulClient.getSelfToken(anyString()))
+                .thenReturn(new ConsulClientResponse(SELF_RESPONSE_WITH_EXPIRATION, 200));
+
+        assertEquals("k8s-poc-ttl", selfTokenReader.read("test-current-secret-id").getAuthMethod());
+    }
+
+    @Test
+    void readSurvivesMissingAuthMethod() throws IOException {
+        when(consulClient.getSelfToken(anyString()))
+                .thenReturn(new ConsulClientResponse(SELF_RESPONSE_WITHOUT_AUTH_METHOD, 200));
+
+        Token token = selfTokenReader.read("test-current-secret-id");
+
+        assertEquals("test-secret-id", token.getSecretId());
+        assertNull(token.getAuthMethod());
     }
 
     @Test

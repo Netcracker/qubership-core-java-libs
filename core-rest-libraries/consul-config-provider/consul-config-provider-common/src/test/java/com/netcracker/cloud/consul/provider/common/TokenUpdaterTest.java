@@ -26,7 +26,6 @@ import static org.mockito.Mockito.*;
 class TokenUpdaterTest {
     private TokenUpdater tokenUpdater;
     private ConsulTokenProvider tokenProvider;
-    private SelfTokenReader selfTokenReader;
     private ScheduledExecutorService scheduledExecutorService;
     private final Instant currentTime = Instant.now();
 
@@ -34,9 +33,8 @@ class TokenUpdaterTest {
     public void init() {
 
         tokenProvider = Mockito.mock(ConsulTokenProvider.class);
-        selfTokenReader = Mockito.mock(SelfTokenReader.class);
         scheduledExecutorService = Mockito.mock(ScheduledExecutorService.class);
-        tokenUpdater = new TokenUpdater(tokenProvider, selfTokenReader, scheduledExecutorService, Clock.fixed(currentTime, ZoneId.of("UTC")), 2, Duration.ZERO);
+        tokenUpdater = new TokenUpdater(tokenProvider, scheduledExecutorService, Clock.fixed(currentTime, ZoneId.of("UTC")), 2, Duration.ZERO);
     }
 
     @Test
@@ -60,7 +58,7 @@ class TokenUpdaterTest {
     void mustUseSelfTokenIfProvidedScheduleUpdates() throws IOException {
         String secretId = "test-self-token";
         OffsetDateTime secretExpirationTime = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
-        when(selfTokenReader.read(secretId)).thenReturn(new Token(secretId, secretExpirationTime));
+        when(tokenProvider.getSelfToken(secretId)).thenReturn(new Token(secretId, secretExpirationTime));
 
         AtomicReference<String> updater = new AtomicReference<>("");
         tokenUpdater.watch(updater::set, secretId);
@@ -124,7 +122,7 @@ class TokenUpdaterTest {
 
         assertEquals(rotatedSecretId, updater.get());
         verify(tokenProvider, times(2)).getToken();
-        verifyNoInteractions(selfTokenReader);
+        verify(tokenProvider, never()).getSelfToken(any());
     }
 
     private long scheduledDelay(Instant now, OffsetDateTime expirationTime) throws IOException {
@@ -132,8 +130,7 @@ class TokenUpdaterTest {
         ConsulTokenProvider login = Mockito.mock(ConsulTokenProvider.class);
         when(login.getToken()).thenReturn(new Token("test-token", expirationTime));
 
-        new TokenUpdater(login, Mockito.mock(SelfTokenReader.class), executor,
-                Clock.fixed(now, ZoneId.of("UTC")), 2, Duration.ZERO).watch(unused -> {
+        new TokenUpdater(login, executor, Clock.fixed(now, ZoneId.of("UTC")), 2, Duration.ZERO).watch(unused -> {
         }, "");
 
         ArgumentCaptor<Long> delay = ArgumentCaptor.forClass(Long.class);
@@ -167,7 +164,7 @@ class TokenUpdaterTest {
                 .thenThrow(new IOException())
                 .thenReturn(new Token("test-token", secretExpirationTime));
 
-        TokenUpdater updater = new TokenUpdater(tokenProvider, selfTokenReader, scheduledExecutorService,
+        TokenUpdater updater = new TokenUpdater(tokenProvider, scheduledExecutorService,
                 Clock.fixed(currentTime, ZoneId.of("UTC")), 2, retryPause);
 
         long startedAt = System.nanoTime();
@@ -182,15 +179,50 @@ class TokenUpdaterTest {
     }
 
     private void runScheduledTaskOnce() {
+        runScheduledTaskOnce(null);
+    }
+
+    private void runScheduledTaskOnce(TestClock clock) {
         AtomicInteger runs = new AtomicInteger();
         when(scheduledExecutorService.schedule(any(Runnable.class), anyLong(), eq(TimeUnit.SECONDS)))
                 .thenAnswer(invocationOnMock -> {
                     if (runs.getAndIncrement() == 0) {
+                        if (clock != null) {
+                            clock.advance(Duration.ofSeconds(invocationOnMock.<Long>getArgument(1)));
+                        }
                         Runnable task = invocationOnMock.getArgument(0);
                         task.run();
                     }
                     return null;
                 });
+    }
+
+    private static final class TestClock extends Clock {
+
+        private Instant now;
+
+        private TestClock(Instant now) {
+            this.now = now;
+        }
+
+        private void advance(Duration duration) {
+            now = now.plus(duration);
+        }
+
+        @Override
+        public ZoneId getZone() {
+            return ZoneId.of("UTC");
+        }
+
+        @Override
+        public Clock withZone(ZoneId zone) {
+            return this;
+        }
+
+        @Override
+        public Instant instant() {
+            return now;
+        }
     }
 
     @Test
@@ -212,20 +244,37 @@ class TokenUpdaterTest {
     }
 
     @Test
-    void aFailedReloginKeepsTheSchedule() throws IOException {
+    void aFailedReloginRetriesBeforeTheCurrentTokenExpires() throws IOException {
+        TestClock clock = new TestClock(currentTime);
         OffsetDateTime expiration = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
         when(tokenProvider.getToken())
                 .thenReturn(new Token("test-token", expiration))
                 .thenThrow(new IOException())
                 .thenThrow(new IOException());
+        TokenUpdater updater = new TokenUpdater(tokenProvider, scheduledExecutorService, clock, 2, Duration.ZERO);
 
-        runScheduledTaskOnce();
-        tokenUpdater.watch(unused -> {
+        runScheduledTaskOnce(clock);
+        updater.watch(unused -> {
         }, "");
 
         ArgumentCaptor<Long> delays = ArgumentCaptor.forClass(Long.class);
         verify(scheduledExecutorService, times(2)).schedule(any(Runnable.class), delays.capture(), eq(TimeUnit.SECONDS));
-        assertEquals(1440L, delays.getAllValues().get(1));
+        assertEquals(1440L, delays.getAllValues().get(0));
+        assertEquals(288L, delays.getAllValues().get(1));
+        Assertions.assertTrue(delays.getAllValues().get(1) < 1800L - delays.getAllValues().get(0),
+                "the retry must land before the current token expires, got " + delays.getAllValues());
+    }
+
+    @Test
+    void anExistingSecretIdIsReadThroughTheProviderInsteadOfALogin() throws IOException {
+        String secretId = "test-token";
+        when(tokenProvider.getSelfToken(secretId)).thenReturn(new Token(secretId, null, "core-k8s"));
+
+        tokenUpdater.watch(unused -> {
+        }, secretId);
+
+        verify(tokenProvider).getSelfToken(secretId);
+        verify(tokenProvider, never()).getToken();
     }
 
     @Test

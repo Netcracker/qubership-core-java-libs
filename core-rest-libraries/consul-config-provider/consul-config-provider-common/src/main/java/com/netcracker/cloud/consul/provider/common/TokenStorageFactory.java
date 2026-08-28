@@ -19,7 +19,7 @@ public abstract class TokenStorageFactory {
 
     public TokenStorage create(CreateOptions config) {
         ConsulClient consulClient = createTokenExchanger(config);
-        TokenUpdater tokenUpdater = new TokenUpdater(from(consulClient, config), new SelfTokenReader(consulClient));
+        TokenUpdater tokenUpdater = new TokenUpdater(from(consulClient, config));
         TokenStorage tokenStorage = createTokenStorage(config);
         tokenUpdater.watch(tokenStorage::update, tokenStorage.get());
         return tokenStorage;
@@ -38,7 +38,7 @@ public abstract class TokenStorageFactory {
                 return kubernetesProvider(client, options);
             default:
                 return new KubernetesWithM2MFallbackTokenProvider(kubernetesProvider(client, options),
-                        m2mProvider(client, options), options.fallbackRecheckInterval);
+                        m2mProvider(client, options), options.authMethod, options.fallbackRecheckInterval);
         }
     }
 

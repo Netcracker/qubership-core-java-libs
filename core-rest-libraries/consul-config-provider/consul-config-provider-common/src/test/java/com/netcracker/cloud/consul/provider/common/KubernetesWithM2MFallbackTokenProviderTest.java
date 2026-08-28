@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -40,6 +41,9 @@ class KubernetesWithM2MFallbackTokenProviderTest {
                     + "dial tcp 10.96.0.1:443: connect: connection refused";
 
     private static final Duration RECHECK_INTERVAL = Duration.ofHours(5);
+    private static final String KUBERNETES_AUTH_METHOD = "core-k8s";
+    private static final String M2M_AUTH_METHOD = "test-namespace";
+    private static final String CURRENT_SECRET_ID = "test-current-secret-id";
 
     private ConsulTokenProvider kubernetes;
     private ConsulTokenProvider m2m;
@@ -66,7 +70,8 @@ class KubernetesWithM2MFallbackTokenProviderTest {
     }
 
     private KubernetesWithM2MFallbackTokenProvider probing() {
-        return new KubernetesWithM2MFallbackTokenProvider(kubernetes, m2m, 2, Duration.ZERO, RECHECK_INTERVAL, clock);
+        return new KubernetesWithM2MFallbackTokenProvider(kubernetes, m2m, KUBERNETES_AUTH_METHOD, 2, Duration.ZERO,
+                RECHECK_INTERVAL, clock);
     }
 
     private List<String> infoRecords() {
@@ -117,7 +122,7 @@ class KubernetesWithM2MFallbackTokenProviderTest {
                 "login to consul failed: response code=500; body='" + TOKEN_REVIEW_UNREACHABLE + "'"));
         when(m2m.getToken()).thenReturn(new Token(SECRET_ID, null));
 
-        new KubernetesWithM2MFallbackTokenProvider(kubernetes, m2m, RECHECK_INTERVAL).getToken();
+        new KubernetesWithM2MFallbackTokenProvider(kubernetes, m2m, KUBERNETES_AUTH_METHOD, RECHECK_INTERVAL).getToken();
 
         verify(kubernetes, times(KubernetesWithM2MFallbackTokenProvider.PROBE_TRIES)).getToken();
     }
@@ -302,5 +307,70 @@ class KubernetesWithM2MFallbackTokenProviderTest {
         List<String> records = infoRecords();
         assertEquals(2, records.size(), records.toString());
         assertTrue(records.get(1).contains("kubernetes"), records.get(1));
+    }
+
+    @Test
+    void anExistingKubernetesTokenConfirmsTheNewWayWithoutAProbe() throws IOException {
+        Token token = new Token(SECRET_ID, null);
+        when(kubernetes.getSelfToken(CURRENT_SECRET_ID)).thenReturn(new Token(SECRET_ID, null, KUBERNETES_AUTH_METHOD));
+        when(kubernetes.getToken()).thenReturn(token);
+
+        KubernetesWithM2MFallbackTokenProvider probing = probing();
+        probing.getSelfToken(CURRENT_SECRET_ID);
+
+        assertEquals(token, probing.getToken());
+        verifyNoInteractions(m2m);
+        assertEquals(1, infoRecords().size(), infoRecords().toString());
+    }
+
+    @Test
+    void anExistingKubernetesTokenSurvivesALaterFailureInsteadOfFallingBack() throws IOException {
+        when(kubernetes.getSelfToken(CURRENT_SECRET_ID)).thenReturn(new Token(SECRET_ID, null, KUBERNETES_AUTH_METHOD));
+        when(kubernetes.getToken()).thenThrow(new IOException(
+                "login to consul failed: response code=500; body='" + TOKEN_REVIEW_UNREACHABLE + "'"));
+
+        KubernetesWithM2MFallbackTokenProvider probing = probing();
+        probing.getSelfToken(CURRENT_SECRET_ID);
+
+        assertThrows(IOException.class, probing::getToken);
+        verifyNoInteractions(m2m);
+    }
+
+    @Test
+    void anExistingM2MTokenPostponesTheProbeByTheRecheckInterval() throws IOException {
+        when(kubernetes.getSelfToken(CURRENT_SECRET_ID)).thenReturn(new Token(SECRET_ID, null, M2M_AUTH_METHOD));
+        when(m2m.getToken()).thenReturn(new Token(SECRET_ID, null));
+
+        KubernetesWithM2MFallbackTokenProvider probing = probing();
+        probing.getSelfToken(CURRENT_SECRET_ID);
+        probing.getToken();
+
+        verify(kubernetes, never()).getToken();
+
+        clock.advance(RECHECK_INTERVAL);
+        when(kubernetes.getToken()).thenReturn(new Token("kubernetes-secret-id", null));
+        assertEquals("kubernetes-secret-id", probing.getToken().getSecretId());
+    }
+
+    @Test
+    void anUnreportedAuthMethodLeavesTheProbeToTheFirstRelogin() throws IOException {
+        when(kubernetes.getSelfToken(CURRENT_SECRET_ID)).thenReturn(new Token(SECRET_ID, null, null));
+        when(kubernetes.getToken()).thenReturn(new Token(SECRET_ID, null));
+
+        KubernetesWithM2MFallbackTokenProvider probing = probing();
+        probing.getSelfToken(CURRENT_SECRET_ID);
+
+        assertEquals(SECRET_ID, probing.getToken().getSecretId());
+        verify(kubernetes, times(1)).getToken();
+        verifyNoInteractions(m2m);
+    }
+
+    @Test
+    void theSelfTokenIsReadThroughTheKubernetesProviderAndReturnedUntouched() throws IOException {
+        Token selfToken = new Token(SECRET_ID, null, KUBERNETES_AUTH_METHOD);
+        when(kubernetes.getSelfToken(CURRENT_SECRET_ID)).thenReturn(selfToken);
+
+        assertEquals(selfToken, probing().getSelfToken(CURRENT_SECRET_ID));
+        verifyNoInteractions(m2m);
     }
 }

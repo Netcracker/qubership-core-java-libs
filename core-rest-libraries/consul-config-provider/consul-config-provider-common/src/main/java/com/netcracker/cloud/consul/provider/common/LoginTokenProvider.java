@@ -20,10 +20,12 @@ public class LoginTokenProvider implements ConsulTokenProvider {
 
     private final ConsulClient client;
     private final ConsulLoginCredentials credentials;
+    private final SelfTokenReader selfTokenReader;
 
     public LoginTokenProvider(ConsulClient client, ConsulLoginCredentials credentials) {
         this.client = client;
         this.credentials = credentials;
+        this.selfTokenReader = new SelfTokenReader(client);
     }
 
     /**
@@ -52,5 +54,10 @@ public class LoginTokenProvider implements ConsulTokenProvider {
         }
         log.debug("Got new token from Consul by login procedure");
         return new Token(secretId, expirationTime);
+    }
+
+    @Override
+    public Token getSelfToken(String currentSecretId) throws IOException {
+        return selfTokenReader.read(currentSecretId);
     }
 }
