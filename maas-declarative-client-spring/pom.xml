@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud.maas.declarative</groupId>
     <artifactId>maas-declarative-kafka-client-spring-bom</artifactId>
-    <version>7.2.2</version>
+    <version>7.2.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -199,7 +199,7 @@ These imports must stay after core-spring-internal-bom so that Spring Boot keeps
         <connection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</connection>
         <developerConnection>scm:git:https://github.com/Netcracker/qubership-core-java-libs.git</developerConnection>
         <url>https://github.com/Netcracker/qubership-core-java-libs</url>
-        <tag>maas-declarative-kafka-client-spring-bom-7.2.2</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
