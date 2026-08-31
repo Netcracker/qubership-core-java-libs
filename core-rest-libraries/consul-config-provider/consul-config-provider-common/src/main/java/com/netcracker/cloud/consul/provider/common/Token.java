@@ -26,8 +26,9 @@ public class Token {
     }
 
     /**
-     * The auth method Consul issued the token to, or {@code null} when it is not known. A login answer does not carry
-     * it; only {@code /v1/acl/token/self} does.
+     * The auth method Consul issued the token to, or {@code null} when it is not known. Both a login answer and
+     * {@code /v1/acl/token/self} carry the field, but only the self read parses it: a login already knows the way it
+     * took.
      */
     public String getAuthMethod() {
         return authMethod;

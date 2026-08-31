@@ -73,14 +73,16 @@ public class TokenUpdater {
         }
     }
 
-    //todo vlla правильно ли я понимаю, что прошлое решение создавало шедулер навсегда, новое же решение шедулит только одну следующую проверку?
-    // нет ли риска, что во время очерендой попытки произойдет ошибка и следующая проверка не зашедулится? Что случиться тогда с системой?
     /**
      * Schedules one relogin and, from its result, the next one. Every delay is measured against the expiration of the
      * token the pod holds right now rather than of the first one: the way of obtaining the token can change while the
      * pod lives, and the two auth methods carry different {@code MaxTokenTTL}. A failed relogin therefore shortens the
      * next delay instead of repeating the previous one, which would put the retry well past the expiration on a
      * short-lived token. A token without an expiration ends the schedule.
+     *
+     * <p>The task catches {@link Throwable} rather than {@link Exception}, against the rule of the module that lets an
+     * {@link Error} through. Here nobody would see it: the executor keeps it in a {@link java.util.concurrent.Future}
+     * no one reads, the task never runs again, and the pod silently keeps a token that eventually expires.
      */
     private void scheduleRelogin(Consumer<String> updater, OffsetDateTime expirationTime) {
         executor.schedule(() -> {
@@ -93,7 +95,7 @@ public class TokenUpdater {
                     return;
                 }
                 scheduleRelogin(updater, newToken.getExpirationTime());
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log.error("Error occurred during getting new consul token. Will try in {} seconds.",
                         reloginDelaySeconds(expirationTime), e);
                 scheduleRelogin(updater, expirationTime);

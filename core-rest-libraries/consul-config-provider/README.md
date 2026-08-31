@@ -25,7 +25,7 @@ back on its own.
 In `kubernetes-with-m2m-fallback` mode the `kubernetes` way is tried first. If it fails, the pod falls back to the
 `m2m` way and logs one `INFO` record with the reason, the Consul response code, and a truncated response body. In
 `kubernetes` mode there is no probe and no fallback, and neither `M2MManager` nor the namespace is needed. In `m2m`
-mode the auth method name and the audience are not read at all.
+mode the auth method name and the audience are not used at all.
 
 The fallback is temporary. Once `fallback-recheck-interval` has passed, the next scheduled relogin tries the
 `kubernetes` way again, and the first success switches the pod over for good, with a second `INFO` record. Going back

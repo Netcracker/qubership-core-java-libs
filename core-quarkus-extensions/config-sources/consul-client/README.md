@@ -46,7 +46,7 @@ when the `TokenStorage` bean is built, so the way can be switched without rebuil
 
 In `kubernetes-with-m2m-fallback` mode the `kubernetes` way is tried first, and on failure the pod falls back to the
 `m2m` way and logs one `INFO` record with the reason, the Consul response code, and a truncated response body. In
-`kubernetes` mode there is no probe and no fallback. In `m2m` mode the auth method name and the audience are not read
+`kubernetes` mode there is no probe and no fallback. In `m2m` mode the auth method name and the audience are not used
 at all.
 
 The fallback is temporary. Once `fallback-recheck-interval` has passed, the next scheduled relogin tries the

@@ -70,7 +70,7 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
         }
         if (recheckIsDue()) {
             try {
-                Token token = probe();
+                Token token = probeKubernetesWay();
                 confirmKubernetesWay();
                 return token;
             } catch (Exception e) {
@@ -131,8 +131,14 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
         fellBackAt = clock.instant();
     }
 
-    //todo vlla может назвать метод как-то более говорящим образом? И зочем обязательно выбрасывать IOException, если единственный вызывающий метод все равно ловит Exception?
-    private Token probe() throws IOException {
+    /**
+     * Runs the kubernetes login with the probe budget.
+     *
+     * @throws IOException the failure failsafe wrapped, unwrapped back. The caller catches {@link Exception} either
+     *         way, so this is for the log: {@link #describe(Exception)} would otherwise name the record after
+     *         {@code FailsafeException} instead of the response code and body that explain the fallback
+     */
+    private Token probeKubernetesWay() throws IOException {
         try {
             return Failsafe.with(LoginRetryPolicies.<Token>onTransportFailure(tries, probeDelay)
                             .onFailedAttempt(event -> log.debug("Failed probe attempt {} of the {} auth method",

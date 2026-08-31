@@ -290,4 +290,19 @@ class TokenUpdaterTest {
 
         verify(scheduledExecutorService, times(1)).schedule(any(Runnable.class), anyLong(), eq(TimeUnit.SECONDS));
     }
+
+    @Test
+    void anErrorInTheScheduledTaskDoesNotKillTheSchedule() throws IOException {
+        OffsetDateTime expiration = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusMinutes(30);
+        when(tokenProvider.getToken())
+                .thenReturn(new Token("test-token", expiration))
+                .thenThrow(new Error("Unable to locate implementation for TokenSource"))
+                .thenThrow(new Error("Unable to locate implementation for TokenSource"));
+
+        runScheduledTaskOnce();
+        tokenUpdater.watch(unused -> {
+        }, "");
+
+        verify(scheduledExecutorService, times(2)).schedule(any(Runnable.class), anyLong(), eq(TimeUnit.SECONDS));
+    }
 }

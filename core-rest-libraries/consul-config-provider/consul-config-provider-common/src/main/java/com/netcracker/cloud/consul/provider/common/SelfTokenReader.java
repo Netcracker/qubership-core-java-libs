@@ -11,8 +11,9 @@ import java.io.IOException;
 import java.time.OffsetDateTime;
 
 /**
- * Reads the expiration of an ACL token the pod already holds. The operation does not depend on how the token was
- * obtained, which is why it lives apart from {@link ConsulTokenProvider}.
+ * Reads an ACL token the pod already holds: its expiration and the auth method Consul issued it to. The read sends the
+ * token itself and never looks at credentials, so it does not depend on how the token was obtained — one instance
+ * serves every {@link ConsulTokenProvider}.
  */
 public class SelfTokenReader {
 
