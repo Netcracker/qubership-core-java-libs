@@ -44,8 +44,11 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
     /**
      * Logs in once and writes the {@code SecretID} into {@link ConsulConfigProperties}, so that Consul is readable
      * before the application context exists. The phase runs without a context, so the mode is bound through {@link
-     * Binder} rather than injected, and a failed login is logged rather than thrown: the application still starts,
-     * just without an ACL token.
+     * Binder} rather than injected.
+     *
+     * <p>A failed login is logged rather than thrown, in every mode: the application still starts, just without an ACL
+     * token, and the {@code TokenStorage} bean tries again. The catch covers {@link Exception}, not only {@link
+     * IOException}, so that a non-2xx answer from Consul and a malformed one leave the phase the same way.
      */
     @Override
     protected ConsulConfigProperties loadConfigProperties(ConfigDataLocationResolverContext resolverContext) {
@@ -61,21 +64,17 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
                     .orElseGet(ConsulLoginProperties::new);
             Supplier<String> m2mTokenSupplier = () ->
                     resolverContext.getBootstrapContext().get(M2MManager.class).getToken().getTokenValue();
-            ConsulRestClient client = createConsulRestClient(Utils.formatConsulAddress(properties), m2mTokenSupplier);
+            String consulAddress = Utils.formatConsulAddress(properties);
+            ConsulRestClient client = createConsulRestClient(consulAddress, m2mTokenSupplier);
 
-            TokenStorageFactory.CreateOptions.Builder options = new TokenStorageFactory.CreateOptions.Builder()
-                    .consulUrl(Utils.formatConsulAddress(properties))
-                    .mode(login.getMode())
-                    .authMethod(login.getAuthMethod())
-                    .audience(login.getAudience())
-                    .fallbackRecheckInterval(login.getFallbackRecheckInterval());
+            TokenStorageFactory.CreateOptions.Builder options = login.toOptionsBuilder().consulUrl(consulAddress);
             if (login.getMode() != ConsulLoginMode.KUBERNETES) {
                 options.namespace(getPropsOrEnvsMust(args(PROP_CLOUD_NAMESPACE), args(ENV_NAMESPACE, ENV_CLOUD_NAMESPACE)))
                         .m2mSupplier(m2mTokenSupplier);
             }
 
             consulConfigProperties.setAclToken(TokenStorageFactory.from(client, options.build()).getToken().getSecretId());
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("can not get consul token: ", e);
         }
         registerAndPromoteBean(resolverContext, ConsulProperties.class, BootstrapRegistry.InstanceSupplier.of(properties));

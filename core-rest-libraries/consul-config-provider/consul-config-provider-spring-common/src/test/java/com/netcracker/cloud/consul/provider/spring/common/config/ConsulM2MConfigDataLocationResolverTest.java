@@ -205,6 +205,27 @@ class ConsulM2MConfigDataLocationResolverTest {
     }
 
     @Test
+    void aFailedLoginLeavesTheStartupAliveWithoutATokenInEveryMode() throws IOException {
+        Mockito.when(consulRestClient.login(Mockito.any(ConsulLoginCredentials.class)))
+                .thenThrow(new IOException("consul auth method is not ready: response code=403; body='ACL not found'"));
+
+        for (String mode : new String[]{"kubernetes", "kubernetes-with-m2m-fallback", "m2m"}) {
+            properties.put(PROP_LOGIN_MODE, mode);
+
+            Assertions.assertNull(resolve().getAclToken(), mode);
+        }
+    }
+
+    @Test
+    void aMalformedAnswerEndsTheSameWayAsARejectedLogin() throws IOException {
+        properties.put(PROP_LOGIN_MODE, "kubernetes");
+        Mockito.when(consulRestClient.login(Mockito.any(ConsulLoginCredentials.class)))
+                .thenReturn(new ConsulClientResponse("{\"NoSecretHere\":true}", 200));
+
+        Assertions.assertNull(resolve().getAclToken());
+    }
+
+    @Test
     void unknownModeBreaksTheBinding() {
         properties.put(PROP_LOGIN_MODE, "cloud-foundry");
 

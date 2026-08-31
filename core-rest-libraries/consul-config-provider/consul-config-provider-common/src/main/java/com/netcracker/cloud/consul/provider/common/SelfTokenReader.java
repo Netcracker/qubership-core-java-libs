@@ -12,8 +12,8 @@ import java.time.OffsetDateTime;
 
 /**
  * Reads an ACL token the pod already holds: its expiration and the auth method Consul issued it to. The read sends the
- * token itself and never looks at credentials, so it does not depend on how the token was obtained — one instance
- * serves every {@link ConsulTokenProvider}.
+ * token itself and never looks at credentials, so it does not depend on how the token was obtained — every {@link
+ * ConsulTokenProvider} gets the same answer from a reader over the same client.
  */
 public class SelfTokenReader {
 
@@ -29,7 +29,7 @@ public class SelfTokenReader {
      * Reads the token behind {@code currentSecretId}. A token without an expiration is valid: Consul omits the field
      * for an auth method without {@code MaxTokenTTL}.
      *
-     * @throws IOException on a non-2xx answer; the caller may retry
+     * @throws IOException on a non-2xx answer or an empty body; the caller may retry
      * @throws RuntimeException on a transport failure, in whatever type the client throws. Unlike {@link
      *         ConsulClient#login(ConsulLoginCredentials)}, {@link ConsulClient#getSelfToken(String)} does not report
      *         it as an {@link IOException}, so the retry policies of the module do not cover it
@@ -39,6 +39,9 @@ public class SelfTokenReader {
         String bodyJson = response.getBodyJson();
         if (response.getCode() != 200) {
             throw new IOException(String.format("can not get self token from consul; response code=%s; body='%s'", response.getCode(), bodyJson));
+        }
+        if (bodyJson == null || bodyJson.isEmpty()) {
+            throw new IOException("can not get self token from consul: response body is empty");
         }
 
         String secretId = JsonPath.read(bodyJson, "$.SecretID");

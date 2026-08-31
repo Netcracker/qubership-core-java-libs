@@ -92,4 +92,15 @@ class SelfTokenReaderTest {
 
         assertThrows(IOException.class, () -> selfTokenReader.read("test-current-secret-id"));
     }
+
+    @Test
+    void readFailsWithIOExceptionOnEmptyBody() {
+        when(consulClient.getSelfToken(anyString())).thenReturn(new ConsulClientResponse(null, 200));
+
+        assertThrows(IOException.class, () -> selfTokenReader.read("test-current-secret-id"));
+
+        when(consulClient.getSelfToken(anyString())).thenReturn(new ConsulClientResponse("", 200));
+
+        assertThrows(IOException.class, () -> selfTokenReader.read("test-current-secret-id"));
+    }
 }
