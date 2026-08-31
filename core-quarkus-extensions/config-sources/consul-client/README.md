@@ -57,8 +57,8 @@ expires, nothing is scheduled, and nothing is rechecked.
 An unknown value of `quarkus.consul-source-config.login.mode` fails the startup. With
 `quarkus.consul-source-config.m2m.enabled=false` none of the four properties are read.
 
-The default auth method name is a placeholder. Set `quarkus.consul-source-config.login.auth-method` to the name of the
-auth method registered in your Consul.
+The default is the auth method the platform registers. Set `quarkus.consul-source-config.login.auth-method` only if
+your Consul names it differently.
 
 The `kubernetes` way reads the token from `/var/run/secrets/tokens/<audience>/token`. To run it outside a cluster, point
 the token directory elsewhere with `com.netcracker.cloud.security.kubernetes.tokens.dir`.
@@ -72,6 +72,6 @@ the token directory elsewhere with `com.netcracker.cloud.security.kubernetes.tok
 | quarkus.consul-source-config.wait-time       | Maximum Value for Consul blocking queries wait time (seconds) | 570                                                       |
 | quarkus.consul-source-config.m2m.enabled     | Enable the Consul ACL token exchange (bool, build time)       | true                                                      |
 | quarkus.consul-source-config.login.mode      | Way to obtain the ACL token: kubernetes-with-m2m-fallback, kubernetes or m2m          | kubernetes-with-m2m-fallback                              |
-| quarkus.consul-source-config.login.auth-method | Consul auth method name, used by the kubernetes way         | kubernetes-auth-method-placeholder                        |
+| quarkus.consul-source-config.login.auth-method | Consul auth method name, used by the kubernetes way         | applications-k8s-m2m                                      |
 | quarkus.consul-source-config.login.audience  | Projected token audience, used by the kubernetes way          | netcracker                                                |
 | quarkus.consul-source-config.login.fallback-recheck-interval | How often the fallback retries the kubernetes way | PT5H                                  |

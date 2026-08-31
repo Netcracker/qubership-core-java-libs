@@ -18,7 +18,7 @@ back on its own.
 | Property name                                       | Type                          | Default                              | Read when                                                    |
 |-----------------------------------------------------|-------------------------------|--------------------------------------|--------------------------------------------------------------|
 | `spring.cloud.consul.config.login.mode`             | `kubernetes-with-m2m-fallback`, `kubernetes` or `m2m` | `kubernetes-with-m2m-fallback`       | ConfigData phase and `TokenStorage` bean creation            |
-| `spring.cloud.consul.config.login.auth-method`      | string                        | `kubernetes-auth-method-placeholder` | same, and only when the `kubernetes` way is used             |
+| `spring.cloud.consul.config.login.auth-method`      | string                        | `applications-k8s-m2m`               | same, and only when the `kubernetes` way is used             |
 | `spring.cloud.consul.config.login.audience`         | string                        | `netcracker`                         | same, and only when the `kubernetes` way is used             |
 | `spring.cloud.consul.config.login.fallback-recheck-interval` | duration          | `5h`                                 | same, and only in the fallback mode                          |
 
@@ -37,8 +37,8 @@ nothing is rechecked.
 
 An unknown value of `spring.cloud.consul.config.login.mode` fails the startup.
 
-The default auth method name is a placeholder. Set
-`spring.cloud.consul.config.login.auth-method` to the name of the auth method registered in your Consul.
+The default is the auth method the platform registers. Set `spring.cloud.consul.config.login.auth-method` only if
+your Consul names it differently.
 
 To turn the ACL token exchange off altogether — for local runs and tests — set
 `spring.cloud.consul.config.m2m.enabled=false`. None of the login properties are read then.

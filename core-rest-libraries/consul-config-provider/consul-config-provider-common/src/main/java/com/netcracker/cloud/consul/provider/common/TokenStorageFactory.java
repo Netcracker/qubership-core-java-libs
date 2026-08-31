@@ -56,7 +56,7 @@ public abstract class TokenStorageFactory {
 
     public static class CreateOptions {
 
-        public static final String DEFAULT_AUTH_METHOD = "kubernetes-auth-method-placeholder";
+        public static final String DEFAULT_AUTH_METHOD = "applications-k8s-m2m";
         public static final Duration DEFAULT_FALLBACK_RECHECK_INTERVAL = Duration.ofHours(5);
 
         String consulUrl;
