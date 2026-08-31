@@ -8,8 +8,8 @@ import java.time.temporal.ChronoUnit;
 
 /**
  * Retry policies shared by the login callers. Only {@link IOException} is retried: by the exception contract of the
- * module it means a transport failure or a non-2xx answer, where another attempt may help, while anything else means
- * the input itself is wrong.
+ * module it means a transport failure or a non-2xx answer, where another attempt may help. Anything else — a missing
+ * projected token, an answer without a {@code SecretID} — comes out the same however many times it is tried.
  */
 final class LoginRetryPolicies {
 

@@ -44,17 +44,27 @@ The Consul ACL token is exchanged through `POST /v1/acl/login`. Two ways to obta
 the projected service account token of the pod, `m2m` sends an M2M token. The four properties below are read at runtime
 when the `TokenStorage` bean is built, so the way can be switched without rebuilding the application.
 
-In `kubernetes-with-m2m-fallback` mode the `kubernetes` way is tried first, and on failure the pod falls back to the
-`m2m` way and logs one `INFO` record with the reason, the Consul response code, and a truncated response body. In
-`kubernetes` mode there is no probe and no fallback. In `m2m` mode the auth method name and the audience are not used
-at all.
+In `kubernetes-with-m2m-fallback` mode the `kubernetes` way is tried first. If it fails, the pod falls back to the
+`m2m` way and logs the reason, the Consul response code, and a truncated response body in a single `INFO` record. That
+record marks the decision, so it appears once rather than on every retry; each login attempt logs an `INFO` record of
+its own, naming the auth method it went to. In `kubernetes` mode there is no probe and no fallback. In `m2m` mode the
+auth method name and the audience are not used at all.
+
+`cloud.microservice.namespace` stays required in every mode, including `kubernetes`, where the namespace never reaches
+Consul: the producer reads it whatever the mode says.
 
 The fallback is temporary. Once `fallback-recheck-interval` has passed, the next scheduled relogin tries the
 `kubernetes` way again, and the first success switches the pod over for good. Going back to `m2m` never happens. The
 recheck rides on the scheduled relogin, so it needs `MaxTokenTTL` on the auth method: without it the token never
 expires, nothing is scheduled, and nothing is rechecked.
 
-An unknown value of `quarkus.consul-source-config.login.mode` fails the startup. With
+`fallback-recheck-interval` therefore sets the lower bound on how often the pod retries, not the actual period. The
+relogin runs at 80% of `MaxTokenTTL`, and the recheck waits for the first relogin past the interval, so with a
+`MaxTokenTTL` of 24 hours a pod retries about every 19 hours whatever the interval says. Plan the migration of a fleet
+against `MaxTokenTTL`, and lower it on the auth method if the pods have to move over sooner.
+
+An unknown value of `quarkus.consul-source-config.login.mode` fails the startup, and so does a login failure the
+retries do not fix: the `TokenStorage` bean cannot be produced without a token. With
 `quarkus.consul-source-config.m2m.enabled=false` none of the four properties are read.
 
 The default is the auth method the platform registers. Set `quarkus.consul-source-config.login.auth-method` only if
