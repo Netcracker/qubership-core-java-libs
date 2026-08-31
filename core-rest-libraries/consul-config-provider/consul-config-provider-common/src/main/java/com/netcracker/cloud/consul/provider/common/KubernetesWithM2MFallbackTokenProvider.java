@@ -20,15 +20,13 @@ import java.time.Instant;
  * taking two interchangeable providers.
  */
 final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvider {
+    private static final Logger log = LoggerFactory.getLogger(KubernetesWithM2MFallbackTokenProvider.class);
 
     static final int PROBE_TRIES = 3;
-    static final int ERROR_MESSAGE_LIMIT = 512;
-
+    private static final int ERROR_MESSAGE_LIMIT = 512;
     private static final Duration DEFAULT_PROBE_PAUSE = Duration.ofSeconds(1);
     private static final String KUBERNETES_WAY = "kubernetes";
     private static final String M2M_WAY = "m2m";
-
-    private static final Logger log = LoggerFactory.getLogger(KubernetesWithM2MFallbackTokenProvider.class);
 
     private final ConsulTokenProvider kubernetesProvider;
     private final ConsulTokenProvider m2mProvider;
@@ -38,7 +36,7 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
     private final Duration recheckInterval;
     private final Clock clock;
 
-    private volatile boolean kubernetesConfirmed;
+    private volatile boolean isKubernetesConfirmed;
     private Instant fellBackAt;
 
     KubernetesWithM2MFallbackTokenProvider(ConsulTokenProvider kubernetesProvider, ConsulTokenProvider m2mProvider,
@@ -67,13 +65,13 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
      */
     @Override
     public synchronized Token getToken() throws IOException {
-        if (kubernetesConfirmed) {
+        if (isKubernetesConfirmed) {
             return kubernetesProvider.getToken();
         }
         if (recheckIsDue()) {
             try {
                 Token token = probe();
-                confirmKubernetes();
+                confirmKubernetesWay();
                 return token;
             } catch (Exception e) {
                 fallBack(e);
@@ -99,11 +97,11 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
     }
 
     private void adopt(String authMethod) {
-        if (kubernetesConfirmed || fellBackAt != null || authMethod == null) {
+        if (isKubernetesConfirmed || fellBackAt != null || authMethod == null) {
             return;
         }
         if (kubernetesAuthMethod.equals(authMethod)) {
-            confirmKubernetes();
+            confirmKubernetesWay();
         } else {
             fellBackAt = clock.instant();
         }
@@ -113,9 +111,10 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
         return fellBackAt == null || !clock.instant().isBefore(fellBackAt.plus(recheckInterval));
     }
 
-    private void confirmKubernetes() {
+    private void confirmKubernetesWay() {
+        isKubernetesConfirmed = true;
+
         boolean afterFallback = fellBackAt != null;
-        kubernetesConfirmed = true;
         if (afterFallback) {
             log.info("Consul ACL token is obtained by the {} auth method from now on, the fallback to the {} one is over",
                     KUBERNETES_WAY, M2M_WAY);
@@ -132,6 +131,7 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
         fellBackAt = clock.instant();
     }
 
+    //todo vlla может назвать метод как-то более говорящим образом? И зочем обязательно выбрасывать IOException, если единственный вызывающий метод все равно ловит Exception?
     private Token probe() throws IOException {
         try {
             return Failsafe.with(LoginRetryPolicies.<Token>onTransportFailure(tries, probeDelay)

@@ -4,10 +4,10 @@ import net.jodah.failsafe.Failsafe;
 import net.jodah.failsafe.FailsafeException;
 import net.jodah.failsafe.RetryPolicy;
 import net.jodah.failsafe.function.CheckedSupplier;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -22,8 +22,8 @@ import java.util.function.Consumer;
  * nothing about how the token is obtained.
  */
 public class TokenUpdater {
-
     private static final Logger log = LoggerFactory.getLogger(TokenUpdater.class);
+
     private static final int DEFAULT_TRIES = 10;
     private static final Duration DEFAULT_RETRY_PAUSE = Duration.ofSeconds(1);
     private static final double DELAY_MULTIPLIER = 0.8;
@@ -61,7 +61,7 @@ public class TokenUpdater {
     synchronized public void watch(Consumer<String> updater, String currentSecretId) {
         log.debug("Start token refreshing process for consul");
         Token token;
-        if (currentSecretId == null || currentSecretId.isEmpty()) {
+        if (StringUtils.isEmpty(currentSecretId)) {
             token = withRetry(tokenProvider::getToken, tries);
             updater.accept(token.getSecretId());
         } else {
@@ -73,6 +73,8 @@ public class TokenUpdater {
         }
     }
 
+    //todo vlla правильно ли я понимаю, что прошлое решение создавало шедулер навсегда, новое же решение шедулит только одну следующую проверку?
+    // нет ли риска, что во время очерендой попытки произойдет ошибка и следующая проверка не зашедулится? Что случиться тогда с системой?
     /**
      * Schedules one relogin and, from its result, the next one. Every delay is measured against the expiration of the
      * token the pod holds right now rather than of the first one: the way of obtaining the token can change while the
