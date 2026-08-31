@@ -122,8 +122,17 @@ class TokenStorageFactoryTest {
     }
 
     @Test
-    void unknownModeIsNotCreated() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> ConsulLoginMode.valueOf("cloud-foundry"));
+    void everyModeBuildsAProvider() {
+        for (ConsulLoginMode mode : ConsulLoginMode.values()) {
+            TokenStorageFactory.CreateOptions opts = new TokenStorageFactory.CreateOptions.Builder()
+                    .consulUrl(CONSUL_URL)
+                    .namespace(NAMESPACE)
+                    .m2mSupplier(() -> "token")
+                    .mode(mode)
+                    .build();
+
+            Assertions.assertNotNull(TokenStorageFactory.from(mock(ConsulClient.class), opts), mode.name());
+        }
     }
 
     private static ConsulLoginCredentials credentialsUsedBy(ConsulTokenProvider login, ConsulClient client) throws IOException {

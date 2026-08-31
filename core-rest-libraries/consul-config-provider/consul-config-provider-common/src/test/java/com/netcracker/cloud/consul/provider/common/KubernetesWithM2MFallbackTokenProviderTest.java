@@ -198,34 +198,6 @@ class KubernetesWithM2MFallbackTokenProviderTest {
         assertFalse(logged.contains(SECRET_ID));
     }
 
-    private static final class TestClock extends Clock {
-
-        private Instant now;
-
-        private TestClock(Instant now) {
-            this.now = now;
-        }
-
-        private void advance(Duration duration) {
-            now = now.plus(duration);
-        }
-
-        @Override
-        public ZoneId getZone() {
-            return ZoneOffset.UTC;
-        }
-
-        @Override
-        public Clock withZone(ZoneId zone) {
-            return this;
-        }
-
-        @Override
-        public Instant instant() {
-            return now;
-        }
-    }
-
     @Test
     void fallbackIsNotRecheckedBeforeTheIntervalPasses() throws IOException {
         when(kubernetes.getToken()).thenThrow(new IllegalArgumentException("Unknown token audience: netcracker"));
@@ -372,5 +344,33 @@ class KubernetesWithM2MFallbackTokenProviderTest {
 
         assertEquals(selfToken, probing().getSelfToken(CURRENT_SECRET_ID));
         verifyNoInteractions(m2m);
+    }
+
+    private static final class TestClock extends Clock {
+
+        private Instant now;
+
+        private TestClock(Instant now) {
+            this.now = now;
+        }
+
+        private void advance(Duration duration) {
+            now = now.plus(duration);
+        }
+
+        @Override
+        public ZoneId getZone() {
+            return ZoneOffset.UTC;
+        }
+
+        @Override
+        public Clock withZone(ZoneId zone) {
+            return this;
+        }
+
+        @Override
+        public Instant instant() {
+            return now;
+        }
     }
 }

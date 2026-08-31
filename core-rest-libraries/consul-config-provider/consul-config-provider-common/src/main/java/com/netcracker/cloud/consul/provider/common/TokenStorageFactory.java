@@ -36,9 +36,11 @@ public abstract class TokenStorageFactory {
                 return m2mProvider(client, options);
             case KUBERNETES:
                 return kubernetesProvider(client, options);
-            default:
+            case KUBERNETES_WITH_M2M_FALLBACK:
                 return new KubernetesWithM2MFallbackTokenProvider(kubernetesProvider(client, options),
                         m2mProvider(client, options), options.authMethod, options.fallbackRecheckInterval);
+            default:
+                throw new IllegalStateException("no provider is built for the " + options.mode + " consul login mode");
         }
     }
 

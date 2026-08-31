@@ -13,11 +13,14 @@ import java.time.Instant;
 /**
  * Probes the kubernetes way and falls back to m2m if the probe fails. The fallback is temporary: every so often the
  * pod tries the kubernetes way again, and the first success switches it over for good. Going back to m2m never
- * happens, so the state is a ratchet, and a later failure of the kubernetes way is a plain failure.
+ * happens, so a later failure of the kubernetes way is a plain failure.
  *
  * <p>The recheck rides on the scheduled relogin rather than on a timer of its own, so it happens only while someone
  * asks for tokens. The whole class goes away with the m2m way, which is why it names the pair it serves instead of
  * taking two interchangeable providers.
+ *
+ * <p>Both entry points are synchronized, and the instance lock guards the choice of the way: a probe must not run
+ * next to the relogin that could confirm it.
  */
 final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvider {
     private static final Logger log = LoggerFactory.getLogger(KubernetesWithM2MFallbackTokenProvider.class);
@@ -36,7 +39,7 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
     private final Duration recheckInterval;
     private final Clock clock;
 
-    private volatile boolean isKubernetesConfirmed;
+    private boolean isKubernetesConfirmed;
     private Instant fellBackAt;
 
     KubernetesWithM2MFallbackTokenProvider(ConsulTokenProvider kubernetesProvider, ConsulTokenProvider m2mProvider,
@@ -58,9 +61,9 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
     }
 
     /**
-     * Returns a token from the kubernetes way once it is confirmed, and otherwise probes it whenever the recheck
-     * interval has passed since the last failure. The probe spends fewer attempts than the scheduler so that an
-     * unmigrated pod pays little for it. Any {@link Exception} out of the kubernetes way means the m2m way for now;
+     * Returns a token from the kubernetes way once it is confirmed. Otherwise probes that way — on the first call, and
+     * after that whenever the recheck interval has passed since the last failure — and serves the m2m way in between.
+     * The probe spends fewer attempts than the scheduler so that an unmigrated pod pays little for it. Any {@link Exception} out of the kubernetes way means the m2m way for now;
      * an {@link Error} passes through untouched.
      */
     @Override

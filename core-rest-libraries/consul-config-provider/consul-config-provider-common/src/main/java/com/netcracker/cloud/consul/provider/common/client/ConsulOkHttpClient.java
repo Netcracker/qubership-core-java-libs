@@ -49,25 +49,11 @@ public class ConsulOkHttpClient implements ConsulClient {
 
     @Override
     public ConsulClientResponse login(String authMethod) {
-        Map<String, String> payload = new HashMap<>();
-        payload.put(AUTH_METHOD_FIELD, authMethod);
-        payload.put(BEARER_TOKEN_FIELD, m2mTokenSupplier.get());
-        String json = new Gson().toJson(payload);
-        log.info("Perform login to {} with {} auth method", consulAddr, authMethod);
-        Response response;
-        String responseBody = "";
         try {
-            response = client.newCall(new Request.Builder()
-                    .post(RequestBody.create(MediaType.parse(APPLICATION_JSON), json))
-                    .url(consulAddr + V1_ACL_LOGIN)
-                    .addHeader(CONTENT_TYPE, APPLICATION_JSON)
-                    .build()
-            ).execute();
-            responseBody = response.body().string();
+            return login(authMethod, m2mTokenSupplier.get());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return new ConsulClientResponse(responseBody, response.code());
     }
 
     /**
@@ -76,11 +62,15 @@ public class ConsulOkHttpClient implements ConsulClient {
      */
     @Override
     public ConsulClientResponse login(ConsulLoginCredentials credentials) throws IOException {
+        return login(credentials.getAuthMethod(), credentials.getBearerToken());
+    }
+
+    private ConsulClientResponse login(String authMethod, String bearerToken) throws IOException {
         Map<String, String> payload = new HashMap<>();
-        payload.put(AUTH_METHOD_FIELD, credentials.getAuthMethod());
-        payload.put(BEARER_TOKEN_FIELD, credentials.getBearerToken());
+        payload.put(AUTH_METHOD_FIELD, authMethod);
+        payload.put(BEARER_TOKEN_FIELD, bearerToken);
         String json = new Gson().toJson(payload);
-        log.info("Perform login to {} with {} auth method", consulAddr, credentials.getAuthMethod());
+        log.info("Perform login to {} with {} auth method", consulAddr, authMethod);
         Response response = client.newCall(new Request.Builder()
                 .post(RequestBody.create(MediaType.parse(APPLICATION_JSON), json))
                 .url(consulAddr + V1_ACL_LOGIN)

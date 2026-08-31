@@ -6,6 +6,7 @@ import io.smallrye.config.SmallRyeConfigBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.Map;
 
 class ConsulLoginModeConfigTest {
@@ -33,5 +34,15 @@ class ConsulLoginModeConfigTest {
 
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> config.getValue(ConsulClientConfiguration.PROP_LOGIN_MODE, ConsulLoginMode.class));
+    }
+
+    @Test
+    void theFallbackRecheckIntervalIsReadFromItsPropertyValue() {
+        SmallRyeConfig config = new SmallRyeConfigBuilder()
+                .withDefaultValues(Map.of(ConsulClientConfiguration.PROP_LOGIN_FALLBACK_RECHECK_INTERVAL, "PT30M"))
+                .build();
+
+        Assertions.assertEquals(Duration.ofMinutes(30),
+                config.getValue(ConsulClientConfiguration.PROP_LOGIN_FALLBACK_RECHECK_INTERVAL, Duration.class));
     }
 }
