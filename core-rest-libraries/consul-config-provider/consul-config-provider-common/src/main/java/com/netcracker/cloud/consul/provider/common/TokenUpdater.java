@@ -4,7 +4,6 @@ import net.jodah.failsafe.Failsafe;
 import net.jodah.failsafe.FailsafeException;
 import net.jodah.failsafe.RetryPolicy;
 import net.jodah.failsafe.function.CheckedSupplier;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +60,7 @@ public class TokenUpdater {
     synchronized public void watch(Consumer<String> updater, String currentSecretId) {
         log.debug("Start token refreshing process for consul");
         Token token;
-        if (StringUtils.isEmpty(currentSecretId)) {
+        if (currentSecretId == null || currentSecretId.isEmpty()) {
             token = withRetry(tokenProvider::getToken, tries);
             updater.accept(token.getSecretId());
         } else {
@@ -85,6 +84,10 @@ public class TokenUpdater {
      * no one reads, the task never runs again, and the pod silently keeps a token that eventually expires.
      */
     private void scheduleRelogin(Consumer<String> updater, OffsetDateTime expirationTime) {
+        scheduleReloginIn(updater, expirationTime, reloginDelaySeconds(expirationTime));
+    }
+
+    private void scheduleReloginIn(Consumer<String> updater, OffsetDateTime expirationTime, long delaySeconds) {
         executor.schedule(() -> {
             log.debug("Get new consul token with {} retry attempts", tries);
             try {
@@ -96,11 +99,11 @@ public class TokenUpdater {
                 }
                 scheduleRelogin(updater, newToken.getExpirationTime());
             } catch (Throwable e) {
-                log.error("Error occurred during getting new consul token. Will try in {} seconds.",
-                        reloginDelaySeconds(expirationTime), e);
-                scheduleRelogin(updater, expirationTime);
+                long retryDelaySeconds = reloginDelaySeconds(expirationTime);
+                log.error("Error occurred during getting new consul token. Will try in {} seconds.", retryDelaySeconds, e);
+                scheduleReloginIn(updater, expirationTime, retryDelaySeconds);
             }
-        }, reloginDelaySeconds(expirationTime), TimeUnit.SECONDS);
+        }, delaySeconds, TimeUnit.SECONDS);
     }
 
     /**
