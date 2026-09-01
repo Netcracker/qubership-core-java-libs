@@ -83,6 +83,16 @@ class LoginTokenProviderTest {
     }
 
     @Test
+    void nonSuccessCodeIsReportedWhenResponseBodyIsEmpty() throws IOException {
+        when(consulClient.login(any(ConsulLoginCredentials.class)))
+                .thenReturn(new ConsulClientResponse("", 403));
+
+        IOException exception = assertThrows(IOException.class, () -> tokenProvider.getToken());
+
+        assertEquals("consul auth method is not ready: response code=403; body=''", exception.getMessage());
+    }
+
+    @Test
     void performFailsWithPathNotFoundExceptionWhenSecretIdIsMissing() throws IOException {
         when(consulClient.login(any(ConsulLoginCredentials.class)))
                 .thenReturn(new ConsulClientResponse("{\"AccessorID\":\"test-accessor-id\"}", 200));

@@ -29,8 +29,8 @@ public class LoginTokenProvider implements ConsulTokenProvider {
     }
 
     /**
-     * @throws IOException on an empty body or a non-2xx answer; the message carries the response code, and a
-     *         {@code 403} is reported as a Consul configuration that is not ready yet
+     * @throws IOException on a non-2xx answer or a successful answer with an empty body; a non-2xx message carries
+     *         the response code, and a {@code 403} is reported as a Consul configuration that is not ready yet
      * @throws com.jayway.jsonpath.PathNotFoundException when the answer carries no {@code SecretID}; retrying that
      *         does not help
      */
@@ -38,12 +38,12 @@ public class LoginTokenProvider implements ConsulTokenProvider {
     public Token getToken() throws IOException {
         ConsulClientResponse response = client.login(credentials);
         String responseBody = response.getBodyJson();
-        if (responseBody == null || responseBody.isEmpty()) {
-            throw new IOException("can not get consul token: response body is empty");
-        }
         if (response.getCode() != 200) {
             String reason = response.getCode() == 403 ? "consul auth method is not ready" : "login to consul failed";
             throw new IOException(String.format("%s: response code=%s; body='%s'", reason, response.getCode(), responseBody));
+        }
+        if (responseBody == null || responseBody.isEmpty()) {
+            throw new IOException("can not get consul token: response body is empty");
         }
         String secretId = JsonPath.read(responseBody, "$.SecretID");
         OffsetDateTime expirationTime = null;
