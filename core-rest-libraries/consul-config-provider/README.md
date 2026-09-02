@@ -5,8 +5,9 @@ Obtains a Consul ACL token for a microservice and keeps it fresh. The token is e
 
 Two ways to obtain the token are supported:
 
-- `kubernetes` — the projected Kubernetes service account token of the pod is sent to a Consul auth method of type
-  `kubernetes`.
+- `kubernetes` — the projected Kubernetes service account token of the pod is sent to the auth method the platform
+  registers for it. Whether Consul reviews that token at the API server or validates its signature on its own is a
+  property of the auth method, and the login request is the same either way.
 - `m2m` — an M2M token issued by `M2MManager` is sent to a Consul auth method named after the namespace.
 
 ## Login properties
