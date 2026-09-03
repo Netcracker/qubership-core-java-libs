@@ -7,7 +7,6 @@ import com.netcracker.cloud.maas.client.impl.ApiUrlProvider;
 import com.netcracker.cloud.maas.client.impl.Env;
 import com.netcracker.cloud.maas.client.impl.apiversion.ServerApiVersion;
 import com.netcracker.cloud.maas.client.impl.http.HttpClient;
-import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,7 @@ class RabbitFailoverTest {
 
     @BeforeEach
     void reset(ClientAndServer mockServer) {
-        savedAgentUrl = System.getProperty(M2MClientFactory.MAAS_AGENT_URL_PROP);
+        savedAgentUrl = System.getProperty(Env.PROP_MAAS_AGENT_URL);
         mockServer.reset();
         mockServer.when(request().withPath("/api-version"))
                 .respond(response().withBody("{\"major\":2, \"minor\": 16}"));
@@ -43,9 +42,9 @@ class RabbitFailoverTest {
     @AfterEach
     void restoreAgentUrl() {
         if (savedAgentUrl == null) {
-            System.clearProperty(M2MClientFactory.MAAS_AGENT_URL_PROP);
+            System.clearProperty(Env.PROP_MAAS_AGENT_URL);
         } else {
-            System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, savedAgentUrl);
+            System.setProperty(Env.PROP_MAAS_AGENT_URL, savedAgentUrl);
         }
     }
 
@@ -119,7 +118,7 @@ class RabbitFailoverTest {
     }
 
     private static RabbitMaaSClientImpl createRabbitClient(String agentUrl) {
-        System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, agentUrl);
+        System.setProperty(Env.PROP_MAAS_AGENT_URL, agentUrl);
         var httpClient = HttpClient.getMaasClient(() -> "faketoken");
         var serverApiVersion = new ServerApiVersion(httpClient, agentUrl);
         return new RabbitMaaSClientImpl(httpClient, new ApiUrlProvider(serverApiVersion, agentUrl));

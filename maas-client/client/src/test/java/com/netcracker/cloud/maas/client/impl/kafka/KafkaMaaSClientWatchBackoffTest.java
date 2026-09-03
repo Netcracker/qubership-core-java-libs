@@ -23,7 +23,6 @@ import com.netcracker.cloud.maas.client.impl.ApiUrlProvider;
 import com.netcracker.cloud.maas.client.impl.Env;
 import com.netcracker.cloud.maas.client.impl.apiversion.ServerApiVersion;
 import com.netcracker.cloud.maas.client.impl.http.HttpClient;
-import com.netcracker.cloud.security.core.utils.k8s.M2MClientFactory;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -108,10 +107,10 @@ class KafkaMaaSClientWatchBackoffTest {
     }
 
     private static KafkaMaaSClientImpl createKafkaClient(String agentUrl) {
-        System.setProperty(M2MClientFactory.MAAS_AGENT_URL_PROP, agentUrl);
+        System.setProperty(Env.PROP_MAAS_AGENT_URL, agentUrl);
         var httpClient = HttpClient.getMaasClient(() -> "faketoken");
         var serverApiVersion = new ServerApiVersion(httpClient, agentUrl);
-        System.clearProperty(M2MClientFactory.MAAS_AGENT_URL_PROP);
+        System.clearProperty(Env.PROP_MAAS_AGENT_URL);
 
         return new KafkaMaaSClientImpl(httpClient,
                 () -> { throw new UnsupportedOperationException("tenant manager is not used in this test"); },
