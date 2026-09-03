@@ -111,11 +111,12 @@ public class HttpExecution {
     private static final String MAAS_ERROR_CODE = "MAAS-0600";
 
     /**
-     * Whether the status is worth another attempt. 405 and 401 are here because maas-service
-     * reports a read-only database as 405, and a token can expire in flight.
+     * Whether the status is worth another attempt. 405 is here because maas-service reports a
+     * read-only database that way; 401 is not, because the token source refreshes on its own
+     * schedule and M2MInterceptor has already retried by the time we see one.
      */
     private static boolean isRetryableStatus(int code, String body) {
-        if (code >= 500 || code == 429 || code == 401) {
+        if (code >= 500 || code == 429) {
             return true;
         }
         return code == 405 && isDatabaseUnavailable(body);
@@ -131,15 +132,8 @@ public class HttpExecution {
                 || reason.contains("not in 'active' mode");
     }
 
-    /** One is enough: further attempts would re-send the same token. */
-    static final int MAX_AUTH_RETRIES = 1;
-
-    private int authAttempts = 0;
-
-    /** Asked once per failed attempt, so the 401 is counted here. */
-    private boolean worthAnotherAttempt(RetryableStatus status) {
-        return status.code != 401 || ++authAttempts <= MAX_AUTH_RETRIES;
-    }
+    /** Keeps the client's own timeouts for an attempt that is not bounded by a total duration. */
+    private static final long NO_CLAMP = -1;
 
     /** First backoff pause, and the fraction of the total duration a single pause may reach. */
     private static final Duration BASE_DELAY = Duration.ofSeconds(1);
@@ -171,7 +165,6 @@ public class HttpExecution {
         if (!retryEnabled || maxTotalMillis <= 0) {
             return attemptOnce(compiledReq);
         }
-        authAttempts = 0;
         try {
             return Failsafe.with(retryPolicy(compiledReq, maxTotalMillis)).get(context ->
                     attempt(compiledReq, maxTotalMillis - context.getElapsedTime().toMillis(), true));
@@ -197,9 +190,7 @@ public class HttpExecution {
             policy.withDelay(maxDelay); // too short for the pause to grow
         }
         return policy
-                .handle(IOException.class)
-                .handleIf((ignored, failure) ->
-                        failure instanceof RetryableStatus status && worthAnotherAttempt(status))
+                .handle(IOException.class, RetryableStatus.class)
                 .withJitter(JITTER)
                 .withMaxAttempts(-1)
                 .withMaxDuration(Duration.ofMillis(maxTotalMillis))
@@ -211,9 +202,10 @@ public class HttpExecution {
     /** One request/response exchange. Throws {@link RetryableStatus} for an outcome worth repeating. */
     private Optional<String> attempt(Request compiledReq, long remainingMs, boolean retrying) throws IOException {
         Call call = httpClient.newCall(compiledReq);
-        if (remainingMs > 0) {
-            // an attempt starting near the deadline must not overrun the total duration
-            call.timeout().timeout(remainingMs, TimeUnit.MILLISECONDS);
+        if (remainingMs >= 0) {
+            // an attempt starting near the deadline must not overrun the total duration; Failsafe
+            // truncates the last backoff to land on it, so the last attempt gets the 1ms floor
+            call.timeout().timeout(Math.max(1, remainingMs), TimeUnit.MILLISECONDS);
         }
         try (Response response = call.execute()) {
             // check response codes against acceptable list
@@ -229,7 +221,7 @@ public class HttpExecution {
                 if (retrying && isRetryableStatus(response.code(), errorBody)) {
                     throw new RetryableStatus(response.code(), errorBody);
                 }
-                throw new MaaSHttpException("Unexpected status code " + response.code()
+                throw MaaSHttpException.of("Unexpected status code " + response.code()
                         + " for request: " + compiledReq + "\n\tResponse body: " + errorBody);
             }
 
@@ -242,7 +234,7 @@ public class HttpExecution {
     /** The {@link #noRetry()} path, and a total duration configured to zero. */
     private Optional<String> attemptOnce(Request compiledReq) {
         try {
-            return attempt(compiledReq, 0, false);
+            return attempt(compiledReq, NO_CLAMP, false);
         } catch (IOException e) {
             throw new MaaSHttpException("Error executing " + compiledReq, e);
         }
@@ -250,11 +242,9 @@ public class HttpExecution {
 
     /** A status the caller did not expect, but one worth another attempt. Never leaves this class. */
     private static final class RetryableStatus extends RuntimeException {
-        private final transient int code;
 
         RetryableStatus(int code, String body) {
             super("status " + code + ", body: " + body, null, false, false);
-            this.code = code;
         }
 
         @Override

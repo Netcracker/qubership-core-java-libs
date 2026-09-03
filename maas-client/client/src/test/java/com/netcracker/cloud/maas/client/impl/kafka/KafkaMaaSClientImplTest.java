@@ -596,6 +596,22 @@ class KafkaMaaSClientImplTest {
         });
     }
 
+    /** An empty 200 used to reach the response fields and throw NPE instead of answering "nothing deleted". */
+    @Test
+    void testTopicDeleteEmptyBody(ClientAndServer mockServer) throws Exception {
+        withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
+
+                mockServer.when(
+                        request().withMethod("DELETE").withPath("/api/v2/kafka/topic"), Times.once()
+                ).respond(response().withBody(""));
+
+                KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", null, null).getKafkaClient();
+                assertFalse(kafkaClient.deleteTopic(new Classifier("orders")));
+            });
+        });
+    }
+
     @Test
     void testTopicDeleteError(ClientAndServer mockServer) throws Exception {
         withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {

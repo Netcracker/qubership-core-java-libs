@@ -8,9 +8,13 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -48,25 +52,26 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     private final Duration watchTimeout = watchTimeout(Env.httpTimeout());
 
     /** Largest gap left between the watch window and the read timeout. */
-    private static final long MAX_WATCH_MARGIN_SECONDS = 5;
+    private static final Duration MAX_WATCH_MARGIN = Duration.ofSeconds(5);
 
-    /** The margin is clamped, so a small read timeout narrows the window instead of inverting it. */
+    /** Half the read timeout at most, so even a one-second timeout keeps the window under it. */
     static Duration watchTimeout(Duration httpTimeout) {
-        long timeoutSeconds = httpTimeout.getSeconds();
-        long marginSeconds = Math.min(MAX_WATCH_MARGIN_SECONDS, timeoutSeconds / 2);
-        return Duration.ofSeconds(Math.max(1, timeoutSeconds - marginSeconds));
+        Duration margin = httpTimeout.dividedBy(2);
+        return httpTimeout.minus(margin.compareTo(MAX_WATCH_MARGIN) < 0 ? margin : MAX_WATCH_MARGIN);
     }
 
     private static final Duration WATCH_RETRY_INTERVAL = Duration.ofSeconds(1);
     private static final Duration WATCH_MAX_RETRY_INTERVAL = Duration.ofSeconds(30);
+
+    /** Grows by one interval per consecutive failure, up to the cap. */
+    static long watchBackoffMillis(int failures) {
+        return Math.min(failures * WATCH_RETRY_INTERVAL.toMillis(), WATCH_MAX_RETRY_INTERVAL.toMillis());
+    }
     // there is no need in highly concurrent map/lists implementation, we will wait for network responses most of the time
     private final Map<Classifier, List<Consumer<TopicAddress>>> topicCreateListeners = Collections.synchronizedMap(new HashMap<>());
     private volatile boolean closed = false;
-    /**
-     * Monitor for parking the watch thread. Not the thread itself: {@link Thread#join()} waits on
-     * that monitor too, and would steal the notification meant for the loop.
-     */
-    private final Object watchLock = new Object();
+
+    private final Semaphore watchSignal = new Semaphore(0);
     private final Lazy<Thread> watchThread = new Lazy<>(() -> {
         Thread exec = new Thread(this::watchTenantCreateTopics, "watchTopicCreate");
         exec.setDaemon(true);
@@ -110,6 +115,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
         TopicDeleteResponse resp = httpClient.request(apiProvider.getKafkaTopicUrl(null))
                 .delete(new TopicDeleteRequest(classifier))
                 .expect(HTTP_OK)
+                .noRetry()
                 .sendAndReceive(TopicDeleteResponse.class)
                 .orElse(null);
 
@@ -165,7 +171,9 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
                     return false; // shutting down, not a failure worth reporting
                 }
                 if (Thread.currentThread().isInterrupted()) {
-                    log.warn("Watch thread interrupted without close(), stopping to watch {}", url, e);
+                    log.error("Watch thread interrupted without close(). Topic create callbacks for {} "
+                            + "will no longer fire; recreate the client to resume watching",
+                            topicCreateListeners.keySet(), e);
                     return false;
                 }
                 failures++;
@@ -185,8 +193,12 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
 
     /** One long poll for topics created since the previous call. */
     private List<TopicInfo> poll(String url) {
+        Set<Classifier> watched;
+        synchronized (topicCreateListeners) {
+            watched = new HashSet<>(topicCreateListeners.keySet());
+        }
         return httpClient.request(url)
-                .post(topicCreateListeners.keySet())
+                .post(watched)
                 .expect(200)
                 .noRetry()
                 .sendAndReceive(TOPIC_LIST)
@@ -220,12 +232,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     private boolean parkUntilThereIsSomethingToWatch() {
         try {
             log.info("Nothing to watch, sleep thread.");
-            synchronized (watchLock) {
-                // guarded wait: a bare wait() would also return on a spurious wakeup
-                while (!closed && topicCreateListeners.isEmpty()) {
-                    watchLock.wait();
-                }
-            }
+            watchSignal.acquire();
             log.info("Woke up!");
             return true;
         } catch (InterruptedException e) {
@@ -235,21 +242,19 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     }
 
     /**
-     * Linear, capped backoff between failed watch polls, reset on every success. Waits on the
-     * watch monitor rather than sleeping, so close() cuts the wait short.
+     * Linear, capped backoff between failed watch polls, reset on every success. A permit released
+     * by close() ends the pause early; one released by a new watch does not shorten it, because
+     * the permit is put back.
      *
      * @return false if the client was closed or the thread interrupted, meaning the caller stops
      */
     private boolean awaitWatchBackoff(int failures) {
-        long delayMillis = Math.min(
-                failures * WATCH_RETRY_INTERVAL.toMillis(),
-                WATCH_MAX_RETRY_INTERVAL.toMillis());
-        long deadline = System.currentTimeMillis() + delayMillis;
+        long deadline = System.currentTimeMillis() + watchBackoffMillis(failures);
         try {
-            synchronized (watchLock) {
-                // waits out the whole pause: only close() ends it early, a new watch does not
-                for (long left = delayMillis; !closed && left > 0; left = deadline - System.currentTimeMillis()) {
-                    watchLock.wait(left);
+            for (long left = watchBackoffMillis(failures); !closed && left > 0;
+                 left = deadline - System.currentTimeMillis()) {
+                if (watchSignal.tryAcquire(left, TimeUnit.MILLISECONDS) && !closed) {
+                    watchSignal.release(); // a new watch, not a close: keep the permit for the park
                 }
             }
             return !closed;
@@ -271,9 +276,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
         log.info("Add watch for topic by: {}, callback: {}", name, callback);
         topicCreateListeners.computeIfAbsent(new Classifier(name), k -> Collections.synchronizedList(new ArrayList<>())).add(callback);
         watchThread.get(); // start the thread if this is the first watch
-        synchronized (watchLock) {
-            watchLock.notifyAll();
-        }
+        watchSignal.release();
     }
 
     @Override
@@ -334,9 +337,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     @Override
     public void close() {
         closed = true;
-        synchronized (watchLock) {
-            watchLock.notifyAll(); // release the watch thread if it is parked
-        }
+        watchSignal.release(); // release the watch thread if it is parked or backing off
         if (watchThread.isInitialized()) {
             watchThread.get().interrupt();
             try {

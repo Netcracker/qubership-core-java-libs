@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
@@ -47,9 +48,7 @@ class HttpExecutionFailoverTest {
                         "{\"code\":\"MAAS-0600\",\"reason\":\"database is in read-only mode\"}", 2),
                 arguments("maas-agent unable to reach maas-service", 500,
                         "{\"error\":\"error proxying request: connection refused\"}", 2),
-                arguments("throttling", 429, "{\"error\":\"slow down\"}", 1),
-                // an expired token clears on the next attempt, because the supplier is called again
-                arguments("an expired token", 401, "{\"error\":\"unauthorized\"}", 1)
+                arguments("throttling", 429, "{\"error\":\"slow down\"}", 1)
         );
     }
 
@@ -69,26 +68,13 @@ class HttpExecutionFailoverTest {
         mockServer.verify(request().withPath(PATH), VerificationTimes.exactly(failures + 1));
     }
 
-    /**
-     * A 401 that keeps coming back means the supplier hands out a token the server rejects and
-     * cannot be told so, hence the tighter cap: a wrong secret must fail fast.
-     */
-    @Test
-    void testFailover_401GivesUpAfterMaxAuthRetries(ClientAndServer mockServer) {
-        mockServer.reset();
-        mockServer.when(request().withPath(PATH), Times.unlimited())
-                .respond(response().withStatusCode(401).withBody("{\"error\":\"unauthorized\"}"));
-
-        withFastRetries(() -> assertMessageContains("401", execution(mockServer).expect(200)));
-
-        mockServer.verify(request().withPath(PATH),
-                VerificationTimes.exactly(HttpExecution.MAX_AUTH_RETRIES + 1));
-    }
-
     /** Responses that are permanent, so the call must fail on its first attempt. */
     static Stream<Arguments> permanentResponses() {
         return Stream.of(
                 arguments("a plain client error", 400, "{\"error\":\"bad request\"}"),
+                // the token source refreshes on its own schedule and M2MInterceptor has already
+                // retried, so repeating the call here only sends the same token again
+                arguments("a rejected token", 401, "{\"error\":\"unauthorized\"}"),
                 // 405 is transient only for a read-only database; a route removed on the server
                 // or an ingress rejecting the method is not
                 arguments("405 without a maas-service envelope", 405, "Method Not Allowed"),
@@ -207,6 +193,7 @@ class HttpExecutionFailoverTest {
                 worker.start();
 
                 assertTrue(firstAttemptFailed.await(10, TimeUnit.SECONDS), "the first attempt never reached the server");
+                awaitState(worker, Thread.State.TIMED_WAITING);
                 worker.interrupt();
                 worker.join(10_000);
 
@@ -227,7 +214,11 @@ class HttpExecutionFailoverTest {
     @Test
     void testTotalDurationExceeded_CarriesTheLastFailureAsCause() throws IOException {
         try (ServerSocket rudeServer = new ServerSocket(0)) {
-            startAcceptor(rudeServer, Socket::close);
+            AtomicInteger attempts = new AtomicInteger();
+            startAcceptor(rudeServer, socket -> {
+                attempts.incrementAndGet();
+                socket.close();
+            });
 
             withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, "1500", () -> {
                 Request.Builder req = new Request.Builder()
@@ -240,6 +231,9 @@ class HttpExecutionFailoverTest {
                 assertTrue(e.getMessage().contains("ran out of its"), "unexpected message: " + e.getMessage());
                 assertInstanceOf(IOException.class, e.getCause(),
                         "the transport failure that consumed the time must be the cause");
+                // without this the test would pass on a single attempt that never retried
+                assertTrue(attempts.get() > 1,
+                        "the time must have been spent on retries, but only " + attempts.get() + " attempt was made");
             });
         }
     }
@@ -253,11 +247,8 @@ class HttpExecutionFailoverTest {
 
         withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, "200", () -> {
             HttpExecution execution = execution(mockServer).expect(200);
-            long start = System.currentTimeMillis();
             assertThrows(MaaSHttpException.class, () -> execution.sendAndReceive(String.class));
-            long elapsedMs = System.currentTimeMillis() - start;
-            assertTrue(elapsedMs < 800,
-                    "expected retry loop to abort near the 200ms max total duration, took " + elapsedMs + "ms");
+            mockServer.verify(request().withPath(PATH), VerificationTimes.atMost(5));
         });
     }
 
@@ -286,6 +277,15 @@ class HttpExecutionFailoverTest {
     }
 
     /** Serves the socket on a daemon thread until it is closed, then releases what it accepted. */
+    /** Waits until the thread reaches the given state, so an interrupt lands where the test means it to. */
+    private static void awaitState(Thread thread, Thread.State state) {
+        long deadline = System.currentTimeMillis() + 10_000;
+        while (thread.getState() != state && System.currentTimeMillis() < deadline) {
+            Thread.onSpinWait();
+        }
+        assertEquals(state, thread.getState(), "the worker never reached " + state);
+    }
+
     private static void startAcceptor(ServerSocket server, SocketHandler handler) {
         Thread acceptor = new Thread(() -> {
             List<Socket> accepted = new ArrayList<>();

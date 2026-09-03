@@ -3,10 +3,15 @@
 ## Unreleased
 * `Features`
   - HTTP calls to maas-agent are now retried on retryable status codes, not only on `IOException`.
-    Retryable: 5xx, 429, **405** (only when the body carries a maas-service error) and **401**
-    (once). See "Retry behaviour and configuration" in README for why the two 4xx codes are
-    included — without them the client does not survive a Postgres leader switchover.
-  - Backoff is exponential with jitter instead of a fixed 1s delay.
+    Retryable: 5xx, 429 and **405**, the last one only when the body carries a maas-service error.
+    See "Retry behaviour and configuration" in README for why a 4xx is included — without it the
+    client does not survive a Postgres leader switchover. 401 is not retried: the token source
+    refreshes on its own schedule, so a retry would re-send the same token.
+  - Backoff is exponential with jitter instead of a fixed 1s delay, implemented with a new runtime
+    dependency, `dev.failsafe:failsafe`. It has no transitive dependencies, but services with
+    dependency convergence rules will see it appear.
+  - `deleteTopic` is deliberately not retried: it is not idempotent, and a lost response after a
+    completed delete would make the next attempt report the topic as still present.
   - New configuration: `maas.http.retry.max-total-duration-ms` (`60s` by default) — a single
     setting bounding the whole call. The attempt count and the backoff growth are derived from
     it, so there are no separate knobs to keep consistent. Every attempt is bounded by what is
@@ -17,7 +22,7 @@
     down maas-agent is no longer polled in a hot loop.
 * `Behaviour changes`
   - **A call that fails with a retryable status now takes longer before failing.** Previously an
-    unexpected 5xx/405/401 threw immediately; it is now retried within the configured limits.
+    unexpected 5xx or 405 threw immediately; it is now retried within the configured limits.
   - Interrupting a thread during a retry wait now restores the interrupt flag and aborts the loop,
     instead of swallowing `InterruptedException`.
   - `KafkaMaaSClient.watchTopicCreate` throws `IllegalStateException` after `close()`, instead of

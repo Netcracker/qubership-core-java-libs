@@ -2,6 +2,7 @@ package com.netcracker.cloud.maas.client.impl.kafka;
 
 import static com.netcracker.cloud.maas.client.Utils.withProp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -71,15 +72,25 @@ class KafkaMaaSClientWatchBackoffTest {
     @Test
     void watchWindowStaysBelowTheReadTimeout() {
         // the invariant, checked across the range rather than at one point
-        for (long readTimeoutSeconds : new long[]{2, 5, 6, 10, 30, 60, 120}) {
-            Duration window = KafkaMaaSClientImpl.watchTimeout(Duration.ofSeconds(readTimeoutSeconds));
-            assertTrue(window.getSeconds() < readTimeoutSeconds,
+        for (long readTimeoutSeconds : new long[]{1, 2, 5, 6, 10, 30, 60, 120}) {
+            Duration readTimeout = Duration.ofSeconds(readTimeoutSeconds);
+            Duration window = KafkaMaaSClientImpl.watchTimeout(readTimeout);
+            assertTrue(window.compareTo(readTimeout) < 0,
                     "a " + readTimeoutSeconds + "s read timeout must leave room for the answer, got " + window);
-            assertTrue(window.getSeconds() >= 1,
-                    "the window travels in whole seconds, so it must not round down to zero: " + window);
+            assertFalse(window.isZero() || window.isNegative(),
+                    "the window must stay positive, got " + window);
         }
         assertEquals(Duration.ofSeconds(25), KafkaMaaSClientImpl.watchTimeout(Duration.ofSeconds(30)),
                 "the default read timeout should keep the full margin");
+    }
+
+    @Test
+    void backoffGrowsWithConsecutiveFailures() {
+        assertEquals(1_000, KafkaMaaSClientImpl.watchBackoffMillis(1));
+        assertEquals(2_000, KafkaMaaSClientImpl.watchBackoffMillis(2));
+        assertEquals(3_000, KafkaMaaSClientImpl.watchBackoffMillis(3));
+        assertEquals(30_000, KafkaMaaSClientImpl.watchBackoffMillis(30), "capped");
+        assertEquals(30_000, KafkaMaaSClientImpl.watchBackoffMillis(1_000), "stays at the cap");
     }
 
     @Test
@@ -94,23 +105,19 @@ class KafkaMaaSClientWatchBackoffTest {
                         "the watch loop reached the agent stub only " + pollMillis.size()
                                 + " times out of " + OBSERVED_POLLS + ", so nothing was measured");
 
-                long firstPause = pollMillis.get(1) - pollMillis.get(0);
-                long secondPause = pollMillis.get(2) - pollMillis.get(1);
-                // A hot loop would show pauses near zero; a fixed delay would show two equal ones.
-                assertTrue(firstPause > 500,
-                        "expected the watch loop to pause after a failure, but it polled again in " + firstPause + "ms");
-                assertTrue(secondPause > firstPause,
-                        "expected the pause to grow with consecutive failures, but got "
-                                + firstPause + "ms then " + secondPause + "ms");
+                for (int poll = 1; poll < OBSERVED_POLLS; poll++) {
+                    long pause = pollMillis.get(poll) - pollMillis.get(poll - 1);
+                    assertTrue(pause > 500,
+                            "expected the watch loop to pause after a failure, but poll " + poll
+                                    + " followed the previous one in " + pause + "ms");
+                }
             });
         });
     }
 
     private static KafkaMaaSClientImpl createKafkaClient(String agentUrl) {
-        System.setProperty(Env.PROP_MAAS_AGENT_URL, agentUrl);
         var httpClient = HttpClient.getMaasClient(() -> "faketoken");
         var serverApiVersion = new ServerApiVersion(httpClient, agentUrl);
-        System.clearProperty(Env.PROP_MAAS_AGENT_URL);
 
         return new KafkaMaaSClientImpl(httpClient,
                 () -> { throw new UnsupportedOperationException("tenant manager is not used in this test"); },
