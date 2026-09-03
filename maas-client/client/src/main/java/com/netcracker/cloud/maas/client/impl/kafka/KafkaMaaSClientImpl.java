@@ -170,8 +170,8 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
                 }
                 failures++;
                 log.warn("Error execute request to {}. Attempt {}, will back off before retrying", url, failures, e);
-                if (!sleepWatchBackoff(failures)) {
-                    return false; // interrupted while backing off
+                if (!awaitWatchBackoff(failures)) {
+                    return false; // closed or interrupted while backing off
                 }
                 continue; // nothing was received, nothing to deliver
             }
@@ -235,17 +235,24 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     }
 
     /**
-     * Linear, capped backoff between failed watch polls, reset on every success.
+     * Linear, capped backoff between failed watch polls, reset on every success. Waits on the
+     * watch monitor rather than sleeping, so close() cuts the wait short.
      *
-     * @return false if the thread was interrupted while waiting, meaning the caller should stop
+     * @return false if the client was closed or the thread interrupted, meaning the caller stops
      */
-    private static boolean sleepWatchBackoff(int failures) {
+    private boolean awaitWatchBackoff(int failures) {
         long delayMillis = Math.min(
                 failures * WATCH_RETRY_INTERVAL.toMillis(),
                 WATCH_MAX_RETRY_INTERVAL.toMillis());
+        long deadline = System.currentTimeMillis() + delayMillis;
         try {
-            Thread.sleep(delayMillis);
-            return true;
+            synchronized (watchLock) {
+                // waits out the whole pause: only close() ends it early, a new watch does not
+                for (long left = delayMillis; !closed && left > 0; left = deadline - System.currentTimeMillis()) {
+                    watchLock.wait(left);
+                }
+            }
+            return !closed;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return false;

@@ -2,7 +2,6 @@ package com.netcracker.cloud.maas.client.impl.rabbit;
 
 import com.netcracker.cloud.maas.client.api.Classifier;
 import com.netcracker.cloud.maas.client.api.MaaSHttpException;
-import com.netcracker.cloud.maas.client.api.rabbit.VHost;
 import com.netcracker.cloud.maas.client.impl.ApiUrlProvider;
 import com.netcracker.cloud.maas.client.impl.Env;
 import com.netcracker.cloud.maas.client.impl.apiversion.ServerApiVersion;
