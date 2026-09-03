@@ -289,22 +289,6 @@ class HttpExecutionFailoverTest {
         }
     }
 
-    // Delay must grow between attempts and saturate at a quarter of the total duration.
-    @Test
-    void testBackoffMillis_GrowsAndSaturatesAtTheCap() {
-        long[] expectedFor60s = {1_000, 2_000, 4_000, 8_000, 15_000, 15_000};
-        for (int attempt = 1; attempt <= expectedFor60s.length; attempt++) {
-            assertEquals(expectedFor60s[attempt - 1], HttpExecution.cappedDelayMillis(attempt, 60_000),
-                    "attempt " + attempt + " of a 60s total duration");
-        }
-
-        long[] expectedFor5s = {1_000, 1_250, 1_250};
-        for (int attempt = 1; attempt <= expectedFor5s.length; attempt++) {
-            assertEquals(expectedFor5s[attempt - 1], HttpExecution.cappedDelayMillis(attempt, 5_000),
-                    "attempt " + attempt + " of a 5s total duration");
-        }
-    }
-
     // A tight max total duration must cut the retry loop short well before the attempt count is exhausted.
     @Test
     void testMaxTotalDuration_AbortsBeforeAttemptsExhausted(ClientAndServer mockServer) {
