@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -71,7 +69,11 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     private final Map<Classifier, List<Consumer<TopicAddress>>> topicCreateListeners = Collections.synchronizedMap(new HashMap<>());
     private volatile boolean closed = false;
 
-    private final Semaphore watchSignal = new Semaphore(0);
+    /**
+     * Monitor for parking the watch thread. Not the thread itself: {@link Thread#join()} waits on
+     * that monitor too, and would steal the notification meant for the loop.
+     */
+    private final Object watchLock = new Object();
     private final Lazy<Thread> watchThread = new Lazy<>(() -> {
         Thread exec = new Thread(this::watchTenantCreateTopics, "watchTopicCreate");
         exec.setDaemon(true);
@@ -232,7 +234,11 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     private boolean parkUntilThereIsSomethingToWatch() {
         try {
             log.info("Nothing to watch, sleep thread.");
-            watchSignal.acquire();
+            synchronized (watchLock) {
+                while (!closed && topicCreateListeners.isEmpty()) {
+                    watchLock.wait();
+                }
+            }
             log.info("Woke up!");
             return true;
         } catch (InterruptedException e) {
@@ -242,19 +248,19 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     }
 
     /**
-     * Linear, capped backoff between failed watch polls, reset on every success. A permit released
-     * by close() ends the pause early; one released by a new watch does not shorten it, because
-     * the permit is put back.
+     * Linear, capped backoff between failed watch polls, reset on every success. Waits on the
+     * watch monitor rather than sleeping, so close() cuts the pause short.
      *
      * @return false if the client was closed or the thread interrupted, meaning the caller stops
      */
     private boolean awaitWatchBackoff(int failures) {
         long deadline = System.currentTimeMillis() + watchBackoffMillis(failures);
         try {
-            for (long left = watchBackoffMillis(failures); !closed && left > 0;
-                 left = deadline - System.currentTimeMillis()) {
-                if (watchSignal.tryAcquire(left, TimeUnit.MILLISECONDS) && !closed) {
-                    watchSignal.release(); // a new watch, not a close: keep the permit for the park
+            synchronized (watchLock) {
+                // waits out the whole pause: only close() ends it early, a new watch does not
+                for (long left = watchBackoffMillis(failures); !closed && left > 0;
+                     left = deadline - System.currentTimeMillis()) {
+                    watchLock.wait(left);
                 }
             }
             return !closed;
@@ -276,7 +282,9 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
         log.info("Add watch for topic by: {}, callback: {}", name, callback);
         topicCreateListeners.computeIfAbsent(new Classifier(name), k -> Collections.synchronizedList(new ArrayList<>())).add(callback);
         watchThread.get(); // start the thread if this is the first watch
-        watchSignal.release();
+        synchronized (watchLock) {
+            watchLock.notifyAll();
+        }
     }
 
     @Override
@@ -337,7 +345,9 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     @Override
     public void close() {
         closed = true;
-        watchSignal.release(); // release the watch thread if it is parked or backing off
+        synchronized (watchLock) {
+            watchLock.notifyAll(); // release the watch thread if it is parked or backing off
+        }
         if (watchThread.isInitialized()) {
             watchThread.get().interrupt();
             try {

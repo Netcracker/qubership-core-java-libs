@@ -276,7 +276,6 @@ class HttpExecutionFailoverTest {
         void handle(Socket socket) throws IOException;
     }
 
-    /** Serves the socket on a daemon thread until it is closed, then releases what it accepted. */
     /** Waits until the thread reaches the given state, so an interrupt lands where the test means it to. */
     private static void awaitState(Thread thread, Thread.State state) {
         long deadline = System.currentTimeMillis() + 10_000;
@@ -286,6 +285,7 @@ class HttpExecutionFailoverTest {
         assertEquals(state, thread.getState(), "the worker never reached " + state);
     }
 
+    /** Serves the socket on a daemon thread until it is closed, then releases what it accepted. */
     private static void startAcceptor(ServerSocket server, SocketHandler handler) {
         Thread acceptor = new Thread(() -> {
             List<Socket> accepted = new ArrayList<>();

@@ -598,7 +598,7 @@ class KafkaMaaSClientImplTest {
 
     /** An empty 200 used to reach the response fields and throw NPE instead of answering "nothing deleted". */
     @Test
-    void testTopicDeleteEmptyBody(ClientAndServer mockServer) throws Exception {
+    void testTopicDeleteEmptyBody(ClientAndServer mockServer) {
         withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
             withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
 
