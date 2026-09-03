@@ -42,21 +42,15 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     private final ApiUrlProvider apiProvider;
 
     /**
-     * How long maas-service is asked to hold a watch poll open. It must stay below the client's
-     * own read timeout, otherwise every quiet poll dies locally instead of returning an empty
-     * 200 — which counts as a failure and walks the backoff up to its cap, delaying the next
-     * real topic-create event. maas-service caps the window at 120s in any case.
+     * How long maas-service is asked to hold a watch poll open. Stays below the read timeout,
+     * otherwise a quiet poll dies locally instead of returning an empty 200.
      */
     private final Duration watchTimeout = watchTimeout(Env.httpTimeout());
 
     /** Largest gap left between the watch window and the read timeout. */
     private static final long MAX_WATCH_MARGIN_SECONDS = 5;
 
-    /**
-     * The margin is clamped rather than subtracted outright, so that a small read timeout
-     * narrows the window instead of pushing it past the timeout. Whole seconds, because that
-     * is how the window travels in the query string.
-     */
+    /** The margin is clamped, so a small read timeout narrows the window instead of inverting it. */
     static Duration watchTimeout(Duration httpTimeout) {
         long timeoutSeconds = httpTimeout.getSeconds();
         long marginSeconds = Math.min(MAX_WATCH_MARGIN_SECONDS, timeoutSeconds / 2);
@@ -69,11 +63,8 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     private final Map<Classifier, List<Consumer<TopicAddress>>> topicCreateListeners = Collections.synchronizedMap(new HashMap<>());
     private volatile boolean closed = false;
     /**
-     * Monitor for parking the watch thread while there is nothing to watch.
-     * <p>
-     * Not the thread itself: {@link Thread#join()} waits on that same monitor and the JVM
-     * notifies it when the thread ends, so a notification meant for the watch loop can be
-     * consumed by a {@code join()} in {@link #close()} and the loop never wakes up.
+     * Monitor for parking the watch thread. Not the thread itself: {@link Thread#join()} waits on
+     * that monitor too, and would steal the notification meant for the loop.
      */
     private final Object watchLock = new Object();
     private final Lazy<Thread> watchThread = new Lazy<>(() -> {
@@ -123,8 +114,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
                 .orElse(null);
 
         if (resp == null) {
-            // empty body: nothing was reported as deleted
-            return false;
+            return false; // empty body
         }
         if (!resp.getFailedToDelete().isEmpty()) {
             throw new MaaSException("Error delete topic by classifier: %s. Error: %s", classifier, resp.getFailedToDelete().get(0).getMessage());
@@ -212,17 +202,13 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
                 continue;
             }
             for (Consumer<TopicAddress> callback : callbacks) {
-                notifyCallback(addr, callback);
+                try {
+                    log.info("Topic create event for {} received, execute callback {}", addr.getClassifier(), callback);
+                    callback.accept(new TopicAddressImpl(addr));
+                } catch (Exception e) {
+                    log.error("Error execute callback {}", callback, e);
+                }
             }
-        }
-    }
-
-    private void notifyCallback(TopicInfo addr, Consumer<TopicAddress> callback) {
-        try {
-            log.info("Topic create event for {} received, execute callback {}", addr.getClassifier(), callback);
-            callback.accept(new TopicAddressImpl(addr));
-        } catch (Exception e) {
-            log.error("Error execute callback {}", callback, e);
         }
     }
 
@@ -332,7 +318,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
                 .post(criteria)
                 .expect(HTTP_OK)
                 .sendAndReceive(typeRef)
-                .get()
+                .orElseGet(Collections::emptyList)
                 .stream()
                 .map(TopicAddressImpl::new)
                 .collect(Collectors.toList());

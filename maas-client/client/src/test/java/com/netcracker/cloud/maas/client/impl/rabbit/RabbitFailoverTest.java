@@ -11,6 +11,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.junit.jupiter.MockServerExtension;
 import org.mockserver.matchers.Times;
@@ -48,11 +50,15 @@ class RabbitFailoverTest {
         }
     }
 
-    @Test
-    void testFailover_405TwiceThenSuccess(ClientAndServer mockServer) {
+    @ParameterizedTest(name = "{0} is retried on the vhost path")
+    @CsvSource(delimiter = '|', textBlock = """
+            a read-only database | 405 | {"code":"MAAS-0600","reason":"database is in read-only mode"}
+            an unreachable agent | 500 | {"error":"error proxying request: connection refused"}
+            """)
+    void testFailover_RetryableResponseSucceedsOnRetry(String description, int status, String body,
+                                                       ClientAndServer mockServer) {
         mockServer.when(request().withMethod("POST").withPath(PATH), Times.exactly(2))
-                .respond(response().withStatusCode(405)
-                        .withBody("{\"code\":\"MAAS-0600\",\"reason\":\"database is in read-only mode\"}"));
+                .respond(response().withStatusCode(status).withBody(body));
         mockServer.when(request().withMethod("POST").withPath(PATH), Times.unlimited())
                 .respond(response().withStatusCode(200).withBody("""
                         {
@@ -65,32 +71,7 @@ class RabbitFailoverTest {
         withProp(Env.PROP_NAMESPACE, "core-dev", () ->
                 withFastRetries(() -> {
                     RabbitMaaSClientImpl client = createRabbitClient("http://localhost:" + mockServer.getPort());
-                    VHost vhost = client.getOrCreateVirtualHost(new Classifier("commands"));
-                    assertNotNull(vhost);
-                }));
-
-        mockServer.verify(request().withMethod("POST").withPath(PATH), VerificationTimes.exactly(3));
-    }
-
-    @Test
-    void testFailover_500TwiceThenSuccess(ClientAndServer mockServer) {
-        mockServer.when(request().withMethod("POST").withPath(PATH), Times.exactly(2))
-                .respond(response().withStatusCode(500)
-                        .withBody("{\"error\":\"error proxying request: connection refused\"}"));
-        mockServer.when(request().withMethod("POST").withPath(PATH), Times.unlimited())
-                .respond(response().withStatusCode(200).withBody("""
-                        {
-                          "cnn": "ampq://rabbit-cluster:4321/maas.core-dev.123456",
-                          "username": "testuser",
-                          "password": "plain:testpassword"
-                        }
-                        """));
-
-        withProp(Env.PROP_NAMESPACE, "core-dev", () ->
-                withFastRetries(() -> {
-                    RabbitMaaSClientImpl client = createRabbitClient("http://localhost:" + mockServer.getPort());
-                    VHost vhost = client.getOrCreateVirtualHost(new Classifier("commands"));
-                    assertNotNull(vhost);
+                    assertNotNull(client.getOrCreateVirtualHost(new Classifier("commands")));
                 }));
 
         mockServer.verify(request().withMethod("POST").withPath(PATH), VerificationTimes.exactly(3));

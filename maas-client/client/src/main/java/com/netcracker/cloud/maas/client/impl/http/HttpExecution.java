@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netcracker.cloud.maas.client.api.MaaSHttpException;
 import com.netcracker.cloud.maas.client.impl.Env;
-import dev.failsafe.ExecutionContext;
 import dev.failsafe.Failsafe;
 import dev.failsafe.FailsafeException;
 import dev.failsafe.RetryPolicy;
@@ -17,6 +16,7 @@ import okhttp3.*;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -111,29 +111,17 @@ public class HttpExecution {
     private static final String MAAS_ERROR_CODE = "MAAS-0600";
 
     /**
-     * Two 4xx are transient here rather than permanent: 405 is how maas-service reports a
-     * read-only Postgres during a leader switchover, and 401 clears when the token is
-     * re-supplied on the next attempt.
-     * <p>
-     * The 405 case is gated on the response body, because a plain 405 — a route removed on
-     * the server, an ingress rejecting the method — is permanent and must fail fast.
+     * Whether the status is worth another attempt. 405 and 401 are here because maas-service
+     * reports a read-only database as 405, and a token can expire in flight.
      */
     private static boolean isRetryableStatus(int code, String body) {
-        if (code >= 500) {
-            return true;
-        }
-        if (code == 429 || code == 401) {
+        if (code >= 500 || code == 429 || code == 401) {
             return true;
         }
         return code == 405 && isDatabaseUnavailable(body);
     }
 
-    /**
-     * Recognises the 405 that maas-service returns for PostgreSQL error 25006, mapped from
-     * {@code DatabaseIsReadonlyError} ("database is in read-only mode") and
-     * {@code DatabaseIsNotActiveError} ("database is not in 'active' mode"), both declared in
-     * maas-service and mapped to 405.
-     */
+    /** Tells the 405 of a read-only database apart from a plain one, which is permanent. */
     private static boolean isDatabaseUnavailable(String body) {
         if (body == null || !body.contains(MAAS_ERROR_CODE)) {
             return false;
@@ -143,11 +131,7 @@ public class HttpExecution {
                 || reason.contains("not in 'active' mode");
     }
 
-    /**
-     * How many times a single call retries a 401. One is enough: it covers a token that
-     * expired in flight. A token the supplier still considers valid but the server rejects
-     * comes back identical on every further attempt.
-     */
+    /** One is enough: further attempts would re-send the same token. */
     static final int MAX_AUTH_RETRIES = 1;
 
     private int authAttempts = 0;
@@ -168,10 +152,7 @@ public class HttpExecution {
         return body == null ? "" : body.string();
     }
 
-    /**
-     * Body of a non-2xx response, for the retry decision and the error message. Never throws:
-     * a body that cannot be read must not turn a permanent status into a retry.
-     */
+    /** Body of a non-2xx response. Never throws: an unreadable body must not become a retry. */
     private static String errorBodyOrPlaceholder(Response response) {
         try {
             return bodyAsString(response);
@@ -181,33 +162,7 @@ public class HttpExecution {
         }
     }
 
-    private static String giveUpSuffix(int attempt) {
-        return attempt == 0 ? "" : ", gave up after " + attempt + " retries";
-    }
-
-    /**
-     * Client for one attempt, bounded by what is left of the total duration. Without it an
-     * attempt starting just before the deadline still runs for the full
-     * {@code maas.http.timeout} and the call overruns its total duration.
-     * <p>
-     * Not applied under {@link #noRetry()}: there the caller owns the lifecycle, and the
-     * watch long poll legitimately runs as long as the total duration itself.
-     */
-    private OkHttpClient clientForAttempt(long remainingMs) {
-        if (!retryEnabled || remainingMs <= 0) {
-            // no retries, or a zero total duration: the single attempt keeps the client's own timeouts
-            return httpClient;
-        }
-        // newBuilder shares the connection pool and dispatcher, so this is cheap
-        return httpClient.newBuilder()
-                .callTimeout(Duration.ofMillis(remainingMs))
-                .build();
-    }
-
-    /**
-     * Backoff, jitter, attempt counting and the overall deadline belong to the retry policy;
-     * what is left here is what one attempt is and which of its outcomes is worth repeating.
-     */
+    /** Sends the request, retrying under the policy below until it succeeds or runs out of time. */
     private Optional<String> sendAndReceive() {
         Request compiledReq = req.build();
         log.debug("Send request: {}", compiledReq);
@@ -219,16 +174,17 @@ public class HttpExecution {
         authAttempts = 0;
         try {
             return Failsafe.with(retryPolicy(compiledReq, maxTotalMillis)).get(context ->
-                    attempt(compiledReq, maxTotalMillis - context.getElapsedTime().toMillis(), context));
-        } catch (RetryableStatus e) {
-            throw exhausted(compiledReq, maxTotalMillis, e.describe(), null);
-        } catch (FailsafeException e) {
-            if (e.getCause() instanceof InterruptedException interrupted) {
+                    attempt(compiledReq, maxTotalMillis - context.getElapsedTime().toMillis(), true));
+        } catch (RetryableStatus | FailsafeException e) {
+            Throwable last = e instanceof FailsafeException failsafe ? failsafe.getCause() : null;
+            if (last instanceof InterruptedException interrupted) {
                 // Failsafe restores the flag; the call still has to abort rather than retry
                 Thread.currentThread().interrupt();
                 throw new MaaSHttpException("Interrupted while waiting to retry maas-agent request", interrupted);
             }
-            throw exhausted(compiledReq, maxTotalMillis, String.valueOf(e.getCause()), e.getCause());
+            throw new MaaSHttpException("Gave up on " + compiledReq + ": ran out of its "
+                    + maxTotalMillis + "ms total duration.\n\tLast attempt: "
+                    + (last != null ? last : e), last);
         }
     }
 
@@ -238,8 +194,7 @@ public class HttpExecution {
         if (BASE_DELAY.compareTo(maxDelay) < 0) {
             policy.withBackoff(BASE_DELAY, maxDelay, 2.0);
         } else {
-            // a total duration too short for the pause to grow leaves one pause of the capped size
-            policy.withDelay(maxDelay);
+            policy.withDelay(maxDelay); // too short for the pause to grow
         }
         return policy
                 .handle(IOException.class)
@@ -249,14 +204,18 @@ public class HttpExecution {
                 .withMaxAttempts(-1)
                 .withMaxDuration(Duration.ofMillis(maxTotalMillis))
                 .onRetry(event -> log.warn("Retrying request: {}. Attempt {} failed with {}, within {}ms total",
-                        compiledReq, event.getAttemptCount(), describe(event.getLastException()), maxTotalMillis))
+                        compiledReq, event.getAttemptCount(), event.getLastException(), maxTotalMillis))
                 .build();
     }
 
     /** One request/response exchange. Throws {@link RetryableStatus} for an outcome worth repeating. */
-    private Optional<String> attempt(Request compiledReq, long remainingMs,
-                                     ExecutionContext<Optional<String>> context) throws IOException {
-        try (Response response = clientForAttempt(remainingMs).newCall(compiledReq).execute()) {
+    private Optional<String> attempt(Request compiledReq, long remainingMs, boolean retrying) throws IOException {
+        Call call = httpClient.newCall(compiledReq);
+        if (remainingMs > 0) {
+            // an attempt starting near the deadline must not overrun the total duration
+            call.timeout().timeout(remainingMs, TimeUnit.MILLISECONDS);
+        }
+        try (Response response = call.execute()) {
             // check response codes against acceptable list
             log.debug("Received status code: {}, expected codes: {}", response.code(), expectedCodes);
 
@@ -266,16 +225,12 @@ public class HttpExecution {
             }
 
             if (!expectedCodes.contains(response.code())) {
-                // read once, without throwing: a body that cannot be read must not turn a permanent
-                // status into a retry
                 String errorBody = errorBodyOrPlaceholder(response);
-                if (isRetryableStatus(response.code(), errorBody)) {
+                if (retrying && isRetryableStatus(response.code(), errorBody)) {
                     throw new RetryableStatus(response.code(), errorBody);
                 }
                 throw new MaaSHttpException("Unexpected status code " + response.code()
-                        + " for request: " + compiledReq
-                        + giveUpSuffix(context == null ? 0 : context.getAttemptCount())
-                        + "\n\tResponse body: " + errorBody);
+                        + " for request: " + compiledReq + "\n\tResponse body: " + errorBody);
             }
 
             String body = bodyAsString(response);
@@ -287,42 +242,24 @@ public class HttpExecution {
     /** The {@link #noRetry()} path, and a total duration configured to zero. */
     private Optional<String> attemptOnce(Request compiledReq) {
         try {
-            return attempt(compiledReq, 0, null);
-        } catch (RetryableStatus e) {
-            throw new MaaSHttpException("Unexpected status code " + e.code
-                    + " for request: " + compiledReq + "\n\tResponse body: " + e.body);
+            return attempt(compiledReq, 0, false);
         } catch (IOException e) {
             throw new MaaSHttpException("Error executing " + compiledReq, e);
         }
     }
 
-    private static String describe(Throwable failure) {
-        return failure instanceof RetryableStatus status ? status.describe() : String.valueOf(failure);
-    }
-
-    /**
-     * The usual terminal failure: a call that keeps failing lands on the deadline. Carries what the
-     * last attempt saw, otherwise the trace says only that a minute went by.
-     */
-    private static MaaSHttpException exhausted(Request req, long maxTotalMillis, String lastAttempt, Throwable cause) {
-        String message = "Gave up on " + req + ": ran out of its " + maxTotalMillis
-                + "ms total duration.\n\tLast attempt: " + lastAttempt;
-        return cause == null ? new MaaSHttpException(message) : new MaaSHttpException(message, cause);
-    }
-
     /** A status the caller did not expect, but one worth another attempt. Never leaves this class. */
     private static final class RetryableStatus extends RuntimeException {
         private final transient int code;
-        private final transient String body;
 
         RetryableStatus(int code, String body) {
-            super(null, null, false, false);
+            super("status " + code + ", body: " + body, null, false, false);
             this.code = code;
-            this.body = body;
         }
 
-        String describe() {
-            return "status " + code + ", body: " + body;
+        @Override
+        public String toString() {
+            return getMessage();
         }
     }
 }

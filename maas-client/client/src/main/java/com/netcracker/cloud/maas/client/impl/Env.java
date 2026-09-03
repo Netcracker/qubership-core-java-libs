@@ -113,12 +113,8 @@ public class Env {
     static final long DEFAULT_HTTP_RETRY_MAX_TOTAL_DURATION_MS = 60_000L;
 
     /**
-     * How long one call to maas-agent may take in total, retries included. The only retry
-     * knob: attempt count and backoff growth are derived from it. The 60s default outlasts
-     * a database leader switchover.
-     * <p>
-     * Zero disables retries, leaving a single attempt. An unreadable or negative value falls
-     * back to the default with a warning, rather than failing the call that happens to be first.
+     * How long one call may take in total, retries included. Zero leaves a single
+     * attempt; an unreadable or negative value falls back to the default with a warning.
      */
     public static Duration httpRetryMaxTotalDuration() {
         return Duration.ofMillis(

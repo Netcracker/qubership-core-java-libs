@@ -42,65 +42,37 @@ class HttpExecutionFailoverTest {
 
     private static final String PATH = "/api/v1/kafka/topic";
 
-    @Test
-    void testFailover_405TwiceThenSuccess(ClientAndServer mockServer) {
-        mockServer.reset();
-        mockServer.when(request().withPath(PATH), Times.exactly(2))
-                .respond(response().withStatusCode(405)
-                        .withBody("{\"code\":\"MAAS-0600\",\"reason\":\"database is in read-only mode\"}"));
-        mockServer.when(request().withPath(PATH), Times.unlimited())
-                .respond(response().withStatusCode(200).withBody("\"ok\""));
-
-        withFastRetries(() -> {
-            Optional<String> body = execution(mockServer).expect(200).sendAndReceive(String.class);
-            assertTrue(body.isPresent());
-            assertEquals("ok", body.get());
-        });
-
-        mockServer.verify(request().withPath(PATH), VerificationTimes.exactly(3));
+    static Stream<Arguments> retryableResponses() {
+        return Stream.of(
+                arguments("a read-only database", 405,
+                        "{\"code\":\"MAAS-0600\",\"reason\":\"database is in read-only mode\"}", 2),
+                arguments("maas-agent unable to reach maas-service", 500,
+                        "{\"error\":\"error proxying request: connection refused\"}", 2),
+                arguments("throttling", 429, "{\"error\":\"slow down\"}", 1),
+                // an expired token clears on the next attempt, because the supplier is called again
+                arguments("an expired token", 401, "{\"error\":\"unauthorized\"}", 1)
+        );
     }
 
-    @Test
-    void testFailover_500TwiceThenSuccess(ClientAndServer mockServer) {
+    @ParameterizedTest(name = "{0} is retried")
+    @MethodSource("retryableResponses")
+    void testFailover_RetryableResponseSucceedsOnRetry(String description, int status, String body, int failures,
+                                                       ClientAndServer mockServer) {
         mockServer.reset();
-        mockServer.when(request().withPath(PATH), Times.exactly(2))
-                .respond(response().withStatusCode(500)
-                        .withBody("{\"error\":\"error proxying request: connection refused\"}"));
+        mockServer.when(request().withPath(PATH), Times.exactly(failures))
+                .respond(response().withStatusCode(status).withBody(body));
         mockServer.when(request().withPath(PATH), Times.unlimited())
                 .respond(response().withStatusCode(200).withBody("\"ok\""));
 
-        withFastRetries(() -> {
-            Optional<String> body = execution(mockServer).expect(200).sendAndReceive(String.class);
-            assertTrue(body.isPresent());
-            assertEquals("ok", body.get());
-        });
+        withFastRetries(() ->
+                assertEquals("ok", execution(mockServer).expect(200).sendAndReceive(String.class).orElseThrow()));
 
-        mockServer.verify(request().withPath(PATH), VerificationTimes.exactly(3));
-    }
-
-    /** An expired token clears on the next attempt, because the supplier is called again. */
-    @Test
-    void testFailover_401ThenSuccess(ClientAndServer mockServer) {
-        mockServer.reset();
-        mockServer.when(request().withPath(PATH), Times.exactly(1))
-                .respond(response().withStatusCode(401).withBody("{\"error\":\"unauthorized\"}"));
-        mockServer.when(request().withPath(PATH), Times.unlimited())
-                .respond(response().withStatusCode(200).withBody("\"ok\""));
-
-        withFastRetries(() -> {
-            Optional<String> body = execution(mockServer).expect(200).sendAndReceive(String.class);
-            assertTrue(body.isPresent());
-            assertEquals("ok", body.get());
-        });
-
-        mockServer.verify(request().withPath(PATH), VerificationTimes.exactly(2));
+        mockServer.verify(request().withPath(PATH), VerificationTimes.exactly(failures + 1));
     }
 
     /**
-     * A 401 that keeps coming back means the supplier is handing out a token the server
-     * rejects, and it has no way of being told so. Further attempts resend the same token,
-     * so retrying it is deliberately capped tighter than the total duration: a wrong secret must
-     * fail fast instead of hanging for the whole minute.
+     * A 401 that keeps coming back means the supplier hands out a token the server rejects and
+     * cannot be told so, hence the tighter cap: a wrong secret must fail fast.
      */
     @Test
     void testFailover_401GivesUpAfterMaxAuthRetries(ClientAndServer mockServer) {
@@ -168,22 +140,6 @@ class HttpExecutionFailoverTest {
                                 + "one minute read timeout, took " + elapsedMs + "ms");
             });
         }
-    }
-
-    @Test
-    void testFailover_429Retried(ClientAndServer mockServer) {
-        mockServer.reset();
-        mockServer.when(request().withPath(PATH), Times.exactly(1))
-                .respond(response().withStatusCode(429).withBody("{\"error\":\"slow down\"}"));
-        mockServer.when(request().withPath(PATH), Times.unlimited())
-                .respond(response().withStatusCode(200).withBody("\"ok\""));
-
-        withFastRetries(() -> {
-            Optional<String> body = execution(mockServer).expect(200).sendAndReceive(String.class);
-            assertEquals("ok", body.orElseThrow());
-        });
-
-        mockServer.verify(request().withPath(PATH), VerificationTimes.exactly(2));
     }
 
     /** The watch long poll owns its own loop, so its execution must send the request exactly once. */
