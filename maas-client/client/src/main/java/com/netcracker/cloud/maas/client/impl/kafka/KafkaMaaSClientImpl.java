@@ -146,57 +146,8 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     }
 
     private void watchTenantCreateTopics() {
-        int failures = 0;
-        TypeReference<List<TopicInfo>> typeRef = new TypeReference<>() {
-        };
         while (!closed) {
-            while (!closed && !topicCreateListeners.isEmpty()) {
-                String url = apiProvider.getKafkaTopicWatchCreateUrl(watchTimeout);
-                List<TopicInfo> found = Collections.emptyList();
-                try {
-                    found = httpClient.request(url)
-                            .post(topicCreateListeners.keySet())
-                            .expect(200)
-                            .noRetry()
-                            .sendAndReceive(typeRef)
-                            .orElse(Collections.emptyList());
-                    failures = 0;
-                } catch (Exception e) {
-                    // `closed` is checked too: an interrupt can be swallowed further down
-                    if (closed) {
-                        return; // shutting down, not a failure worth reporting
-                    }
-                    if (Thread.currentThread().isInterrupted()) {
-                        log.warn("Watch thread interrupted without close(), stopping to watch {}", url, e);
-                        return;
-                    }
-                    failures++;
-                    log.warn("Error execute request to {}. Attempt {}, will back off before retrying", url, failures, e);
-                    if (!sleepWatchBackoff(failures)) {
-                        return; // interrupted while backing off
-                    }
-                    continue; // `found` is still empty, nothing to deliver
-                }
-
-                for (TopicInfo addr : found) {
-                    List<Consumer<TopicAddress>> callbacks = topicCreateListeners.remove(addr.getClassifier());
-                    if (callbacks == null) {
-                        // this is unexpected situation in theory, but with this, code will be a little safer
-                        continue;
-                    }
-
-                    for (Consumer<TopicAddress> callback : callbacks) {
-                        try {
-                            log.info("Topic create event for {} received, execute callback {}", addr.getClassifier(), callback);
-                            callback.accept(new TopicAddressImpl(addr));
-                        } catch (Exception e) {
-                            log.error("Error execute callback {}", callback, e);
-                        }
-                    }
-                }
-            }
-
-            if (closed) {
+            if (!pollWhileThereIsSomethingToWatch()) {
                 return;
             }
             if (closed || !parkUntilThereIsSomethingToWatch()) {
