@@ -45,7 +45,7 @@
         <jackson-bom.version>2.21.5</jackson-bom.version>
 
         <!-- Metrics -->
-        <micrometer-bom.version>1.16.6</micrometer-bom.version>
+        <micrometer-bom.version>1.17.0</micrometer-bom.version>
 
         <!-- Annotations -->
         <jetbrains-annotations.version>26.0.2</jetbrains-annotations.version>
