@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-class RetrableConsulClientTest {
+class RetryableConsulClientTest {
 
     ConsulSourceConfig consulDefaultSourceConfig;
 
@@ -28,7 +28,7 @@ class RetrableConsulClientTest {
 
             @Override
             public AgentConfig agent() {
-                return () -> Optional.empty();
+                return Optional::empty;
             }
 
             @Override
