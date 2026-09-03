@@ -50,12 +50,12 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     private final Duration watchTimeout = watchTimeout(Env.httpTimeout());
 
     /** Largest gap left between the watch window and the read timeout. */
-    private static final Duration MAX_WATCH_MARGIN = Duration.ofSeconds(5);
+    private static final long MAX_WATCH_MARGIN_SECONDS = 5;
 
-    /** Half the read timeout at most, so even a one-second timeout keeps the window under it. */
     static Duration watchTimeout(Duration httpTimeout) {
-        Duration margin = httpTimeout.dividedBy(2);
-        return httpTimeout.minus(margin.compareTo(MAX_WATCH_MARGIN) < 0 ? margin : MAX_WATCH_MARGIN);
+        long timeoutSeconds = httpTimeout.getSeconds();
+        long marginSeconds = Math.min(MAX_WATCH_MARGIN_SECONDS, timeoutSeconds / 2);
+        return Duration.ofSeconds(Math.max(1, timeoutSeconds - marginSeconds));
     }
 
     private static final Duration WATCH_RETRY_INTERVAL = Duration.ofSeconds(1);
@@ -175,7 +175,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
                 if (Thread.currentThread().isInterrupted()) {
                     log.error("Watch thread interrupted without close(). Topic create callbacks for {} "
                             + "will no longer fire; recreate the client to resume watching",
-                            topicCreateListeners.keySet(), e);
+                            watchedClassifiers(), e);
                     return false;
                 }
                 failures++;
@@ -193,14 +193,16 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     private static final TypeReference<List<TopicInfo>> TOPIC_LIST = new TypeReference<>() {
     };
 
+    private Set<Classifier> watchedClassifiers() {
+        synchronized (topicCreateListeners) {
+            return new HashSet<>(topicCreateListeners.keySet());
+        }
+    }
+
     /** One long poll for topics created since the previous call. */
     private List<TopicInfo> poll(String url) {
-        Set<Classifier> watched;
-        synchronized (topicCreateListeners) {
-            watched = new HashSet<>(topicCreateListeners.keySet());
-        }
         return httpClient.request(url)
-                .post(watched)
+                .post(watchedClassifiers())
                 .expect(200)
                 .noRetry()
                 .sendAndReceive(TOPIC_LIST)

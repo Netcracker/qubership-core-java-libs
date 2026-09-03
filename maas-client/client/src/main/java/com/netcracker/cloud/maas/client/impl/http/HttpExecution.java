@@ -132,9 +132,6 @@ public class HttpExecution {
                 || reason.contains("not in 'active' mode");
     }
 
-    /** Keeps the client's own timeouts for an attempt that is not bounded by a total duration. */
-    private static final long NO_CLAMP = -1;
-
     /** First backoff pause, and the fraction of the total duration a single pause may reach. */
     private static final Duration BASE_DELAY = Duration.ofSeconds(1);
     private static final int MAX_DELAY_FRACTION_OF_TOTAL = 4;
@@ -202,9 +199,7 @@ public class HttpExecution {
     /** One request/response exchange. Throws {@link RetryableStatus} for an outcome worth repeating. */
     private Optional<String> attempt(Request compiledReq, long remainingMs, boolean retrying) throws IOException {
         Call call = httpClient.newCall(compiledReq);
-        if (remainingMs >= 0) {
-            // an attempt starting near the deadline must not overrun the total duration; Failsafe
-            // truncates the last backoff to land on it, so the last attempt gets the 1ms floor
+        if (retrying) {
             call.timeout().timeout(Math.max(1, remainingMs), TimeUnit.MILLISECONDS);
         }
         try (Response response = call.execute()) {
@@ -234,7 +229,7 @@ public class HttpExecution {
     /** The {@link #noRetry()} path, and a total duration configured to zero. */
     private Optional<String> attemptOnce(Request compiledReq) {
         try {
-            return attempt(compiledReq, NO_CLAMP, false);
+            return attempt(compiledReq, 0, false);
         } catch (IOException e) {
             throw new MaaSHttpException("Error executing " + compiledReq, e);
         }

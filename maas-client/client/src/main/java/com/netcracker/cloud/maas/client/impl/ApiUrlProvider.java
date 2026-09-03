@@ -37,7 +37,7 @@ public class ApiUrlProvider {
     }
 
     public String getKafkaTopicWatchCreateUrl(Duration timeout) {
-        return String.format("%s/api/v2/kafka/topic/watch-create?timeout=%dms", maasAgentUrl, timeout.toMillis());
+        return String.format("%s/api/v2/kafka/topic/watch-create?timeout=%ds", maasAgentUrl, timeout.getSeconds());
     }
 
     public String getKafkaTopicGetByClassifierUrl() {

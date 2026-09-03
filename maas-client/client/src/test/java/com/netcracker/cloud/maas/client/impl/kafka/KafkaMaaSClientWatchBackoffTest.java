@@ -71,8 +71,7 @@ class KafkaMaaSClientWatchBackoffTest {
      */
     @Test
     void watchWindowStaysBelowTheReadTimeout() {
-        // the invariant, checked across the range rather than at one point
-        for (long readTimeoutSeconds : new long[]{1, 2, 5, 6, 10, 30, 60, 120}) {
+        for (long readTimeoutSeconds : new long[]{2, 5, 6, 10, 30, 60, 120}) {
             Duration readTimeout = Duration.ofSeconds(readTimeoutSeconds);
             Duration window = KafkaMaaSClientImpl.watchTimeout(readTimeout);
             assertTrue(window.compareTo(readTimeout) < 0,

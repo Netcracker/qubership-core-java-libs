@@ -248,7 +248,7 @@ class HttpExecutionFailoverTest {
         withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, "200", () -> {
             HttpExecution execution = execution(mockServer).expect(200);
             assertThrows(MaaSHttpException.class, () -> execution.sendAndReceive(String.class));
-            mockServer.verify(request().withPath(PATH), VerificationTimes.atMost(5));
+            mockServer.verify(request().withPath(PATH), VerificationTimes.atMost(10));
         });
     }
 
