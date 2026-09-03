@@ -21,7 +21,8 @@ import static com.netcracker.cloud.junit.cloudcore.extension.provider.OrderedSer
 public class DefaultKubernetesClientFactory implements AutoCloseable, KubernetesClientFactory {
 
     public static final String PORTFORWARD_FQDN_ENABLED_PROP = "portforward.fqdn.enabled";
-
+    public final static Boolean in_k8s = "true".equalsIgnoreCase(System.getenv("IN_K8S"));
+    private final static ConcurrentHashMap<CloudAndNamespace, KubernetesClient> clientsMap = new ConcurrentHashMap<>();
     private final Config config;
 
     public DefaultKubernetesClientFactory() {
@@ -31,8 +32,6 @@ public class DefaultKubernetesClientFactory implements AutoCloseable, Kubernetes
     public DefaultKubernetesClientFactory(Config config) {
         this.config = config;
     }
-
-    private final static ConcurrentHashMap<CloudAndNamespace, KubernetesClient> clientsMap = new ConcurrentHashMap<>();
 
     public Collection<String> getKubernetesContexts() {
         return config.getContexts().stream().map(NamedContext::getName).toList();
@@ -49,7 +48,7 @@ public class DefaultKubernetesClientFactory implements AutoCloseable, Kubernetes
             if (Objects.equals(cloud, this.config.getCurrentContext().getName())) {
                 config = this.config;
             } else {
-                config = Config.autoConfigure(namedContext.getName());
+                config = in_k8s ? Config.autoConfigure(null) : Config.autoConfigure(namedContext.getName());
             }
             List<Fabric8ConfigBuilderAdapter> fabric8ConfigBuilderAdapters =
                     OrderedServiceLoader.loadAll(Fabric8ConfigBuilderAdapter.class, ASC);
@@ -77,7 +76,7 @@ public class DefaultKubernetesClientFactory implements AutoCloseable, Kubernetes
 
     @Override
     public String getCurrentContext() {
-        return config.getCurrentContext().getName();
+        return in_k8s ? "local" : config.getCurrentContext().getName();
     }
 
     @Override

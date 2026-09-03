@@ -2,6 +2,8 @@ package com.netcracker.cloud.junit.cloudcore.extension.provider;
 
 import com.netcracker.cloud.junit.cloudcore.extension.annotations.Priority;
 import com.netcracker.cloud.junit.cloudcore.extension.client.KubernetesClientFactory;
+import com.netcracker.cloud.junit.cloudcore.extension.service.InsideK8S;
+import com.netcracker.cloud.junit.cloudcore.extension.service.OutsideK8S;
 import com.netcracker.cloud.junit.cloudcore.extension.service.PortForwardService;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.extern.slf4j.Slf4j;
@@ -19,15 +21,20 @@ import java.util.stream.Collectors;
 public class DefaultPortForwardServiceManager implements PortForwardServiceManager {
 
     protected static Map<PortForwardConfig, PortForwardService> portForwardServiceMap = new ConcurrentHashMap<>();
-    public static String PORTFORWARD_FQDN_ENABLED_PROP = "portforward.fqdn.hosts.enabled";
-    public static String USE_FREE_LOCAL_PORTS_PROP = "portforward.use.free.local.ports";
+    public final static String PORTFORWARD_FQDN_ENABLED_PROP = "portforward.fqdn.hosts.enabled";
+    public final static String USE_FREE_LOCAL_PORTS_PROP = "portforward.use.free.local.ports";
+    public final static Boolean in_k8s = "true".equalsIgnoreCase(System.getenv("IN_K8S"));
 
     @Override
     public PortForwardService getPortForwardService(PortForwardConfig config) {
         return portForwardServiceMap.computeIfAbsent(config, c -> {
+            if (in_k8s){
+                return new InsideK8S();
+            }
             KubernetesClientFactory kubernetesClientFactory = OrderedServiceLoader.load(KubernetesClientFactory.class)
                     .orElseThrow(() -> new IllegalStateException("No KubernetesClientFactory implementation found"));
-            KubernetesClient kubernetesClient = kubernetesClientFactory.getKubernetesClient(c.getCloud(), c.getNamespace());
+            KubernetesClient kubernetesClient;
+            kubernetesClient = kubernetesClientFactory.getKubernetesClient(c.getCloud(), c.getNamespace());
             boolean fqdnFromProp = Boolean.parseBoolean(System.getProperty(PORTFORWARD_FQDN_ENABLED_PROP, "false"));
             boolean useFreeLocalPorts = Boolean.parseBoolean(System.getProperty(USE_FREE_LOCAL_PORTS_PROP, "false"));
             Pattern cloudPropPattern = Pattern.compile("^clouds\\.(?<name>[^.]+)\\.name$");
@@ -37,7 +44,7 @@ public class DefaultPortForwardServiceManager implements PortForwardServiceManag
                     .map(m -> m.group("name"))
                     .collect(Collectors.toSet());
             boolean fqdn = fqdnFromProp || clouds.size() > 1;
-            return new PortForwardService(kubernetesClient, fqdn, useFreeLocalPorts);
+            return new OutsideK8S(kubernetesClient, fqdn, useFreeLocalPorts);
         });
     }
 
