@@ -21,6 +21,7 @@ import org.mockserver.matchers.MatchType;
 import org.mockserver.matchers.Times;
 import org.mockserver.mock.action.ExpectationResponseCallback;
 import org.mockserver.model.HttpRequest;
+import org.mockserver.verify.VerificationTimes;
 
 import com.netcracker.cloud.maas.client.Utils;
 import com.netcracker.cloud.maas.client.api.Classifier;
@@ -43,6 +44,41 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 // TODO tests with kafka SSL+password
 class KafkaMaaSClientImplTest {
+    /** maas-agent's answer for the `orders' topic, shared by the tests that just need a valid one. */
+    private static final String ORDERS_TOPIC_RESPONSE = """
+            {
+              "addresses": {
+                  "PLAINTEXT": [
+                      "my-kafka.kafka-cluster:9092"
+                   ]
+              },
+              "name": "maas.core_dev.orders.1234567",
+              "classifier": {
+                "name": "orders",
+                "namespace": "core-dev",
+                "tenantId": "d047619f-6886-4842-81a7-3f87cb748ac1"
+              },
+              "namespace": "core-dev",
+              "instance": "default",
+              "requestedSettings": {
+                "numPartitions": 1,
+                "replicationFactor": 1,
+                "replicaAssignment": null,
+                "configs": null
+              },
+              "actualSettings": {
+                "numPartitions": 1,
+                "replicationFactor": 1,
+                "replicaAssignment": {
+                  "0": [ 0 ]
+                },
+                "configs": {
+                  "cleanup.policy": "delete"
+                }
+              }
+            }
+            """;
+
     @BeforeEach
     public void setup(ClientAndServer mockServer) {
         mockServer.reset();
@@ -102,37 +138,7 @@ class KafkaMaaSClientImplTest {
             ).respond(
                     response()
                             .withStatusCode(200)
-                            .withBody("{\n" +
-                                    "  \"addresses\": {\n" +
-                                    "      \"PLAINTEXT\": [\n" +
-                                    "          \"my-kafka.kafka-cluster:9092\"\n" +
-                                    "       ]\n" +
-                                    "  }, \n" +
-                                    "  \"name\": \"maas.core_dev.orders.1234567\",\n" +
-                                    "  \"classifier\": {\n" +
-                                    "    \"name\": \"orders\",\n" +
-                                    "    \"namespace\": \"core-dev\",\n" +
-                                    "    \"tenantId\": \"d047619f-6886-4842-81a7-3f87cb748ac1\"\n" +
-                                    "  }, \n" +
-                                    "  \"namespace\": \"core-dev\",\n" +
-                                    "  \"instance\": \"default\",\n" +
-                                    "  \"requestedSettings\": {\n" +
-                                    "    \"numPartitions\": 1,\n" +
-                                    "    \"replicationFactor\": 1,\n" +
-                                    "    \"replicaAssignment\": null,\n" +
-                                    "    \"configs\": null\n" +
-                                    "  },\n" +
-                                    "  \"actualSettings\": {\n" +
-                                    "    \"numPartitions\": 1,\n" +
-                                    "    \"replicationFactor\": 1,\n" +
-                                    "    \"replicaAssignment\": {\n" +
-                                    "      \"0\": [ 0 ]\n" +
-                                    "    },\n" +
-                                    "    \"configs\": {\n" +
-                                    "      \"cleanup.policy\": \"delete\"\n" +
-                                    "      }\n" +
-                                    "    } \n" +
-                                    "}\n")
+                            .withBody(ORDERS_TOPIC_RESPONSE)
             );
 
             // run test
@@ -245,37 +251,7 @@ class KafkaMaaSClientImplTest {
             ).respond(
                     response()
                             .withStatusCode(200)
-                            .withBody("{\n" +
-                                    "  \"addresses\": {\n" +
-                                    "      \"PLAINTEXT\": [\n" +
-                                    "          \"my-kafka.kafka-cluster:9092\"\n" +
-                                    "       ]\n" +
-                                    "  }, \n" +
-                                    "  \"name\": \"maas.core_dev.orders.1234567\",\n" +
-                                    "  \"classifier\": {\n" +
-                                    "    \"name\": \"orders\",\n" +
-                                    "    \"namespace\": \"core-dev\",\n" +
-                                    "    \"tenantId\": \"d047619f-6886-4842-81a7-3f87cb748ac1\"\n" +
-                                    "  }, \n" +
-                                    "  \"namespace\": \"core-dev\",\n" +
-                                    "  \"instance\": \"default\",\n" +
-                                    "  \"requestedSettings\": {\n" +
-                                    "    \"numPartitions\": 1,\n" +
-                                    "    \"replicationFactor\": 1,\n" +
-                                    "    \"replicaAssignment\": null,\n" +
-                                    "    \"configs\": null\n" +
-                                    "  },\n" +
-                                    "  \"actualSettings\": {\n" +
-                                    "    \"numPartitions\": 1,\n" +
-                                    "    \"replicationFactor\": 1,\n" +
-                                    "    \"replicaAssignment\": {\n" +
-                                    "      \"0\": [ 0 ]\n" +
-                                    "    },\n" +
-                                    "    \"configs\": {\n" +
-                                    "      \"cleanup.policy\": \"delete\"\n" +
-                                    "      }\n" +
-                                    "    } \n" +
-                                    "}\n")
+                            .withBody(ORDERS_TOPIC_RESPONSE)
             );
 
             topicAddress = client.getTopic(new Classifier("orders").tenantId("d047619f-6886-4842-81a7-3f87cb748ac1"));
@@ -303,37 +279,7 @@ class KafkaMaaSClientImplTest {
             ).respond(
                     response()
                             .withStatusCode(200)
-                            .withBody("{\n" +
-                                    "  \"addresses\": {\n" +
-                                    "      \"PLAINTEXT\": [\n" +
-                                    "          \"my-kafka.kafka-cluster:9092\"\n" +
-                                    "       ]\n" +
-                                    "  }, \n" +
-                                    "  \"name\": \"maas.core_dev.orders.1234567\",\n" +
-                                    "  \"classifier\": {\n" +
-                                    "    \"name\": \"orders\",\n" +
-                                    "    \"namespace\": \"core-dev\",\n" +
-                                    "    \"tenantId\": \"d047619f-6886-4842-81a7-3f87cb748ac1\"\n" +
-                                    "  }, \n" +
-                                    "  \"namespace\": \"core-dev\",\n" +
-                                    "  \"instance\": \"default\",\n" +
-                                    "  \"requestedSettings\": {\n" +
-                                    "    \"numPartitions\": 1,\n" +
-                                    "    \"replicationFactor\": 1,\n" +
-                                    "    \"replicaAssignment\": null,\n" +
-                                    "    \"configs\": null\n" +
-                                    "  },\n" +
-                                    "  \"actualSettings\": {\n" +
-                                    "    \"numPartitions\": 1,\n" +
-                                    "    \"replicationFactor\": 1,\n" +
-                                    "    \"replicaAssignment\": {\n" +
-                                    "      \"0\": [ 0 ]\n" +
-                                    "    },\n" +
-                                    "    \"configs\": {\n" +
-                                    "      \"cleanup.policy\": \"delete\"\n" +
-                                    "      }\n" +
-                                    "    } \n" +
-                                    "}\n")
+                            .withBody(ORDERS_TOPIC_RESPONSE)
             );
 
             // run test
@@ -450,12 +396,11 @@ class KafkaMaaSClientImplTest {
                                         "}\n")
                 );
 
-                // run test
+                // default options: maas-service resolves the classifier before it looks at
+                // onTopicExists, so the retry after the timed-out first attempt gets the same topic
                 var client = createKafkaClient("http://localhost:" + mockServer.getPort());
                 TopicAddress topicAddress = client.getOrCreateTopic(new Classifier("orders"),
-                        TopicCreateOptions.builder()
-                                .name("user-test1")
-                                .build());
+                        TopicCreateOptions.builder().name("user-test1").build());
                 assertEquals("user-test1", topicAddress.getTopicName());
             });
         });
@@ -592,6 +537,66 @@ class KafkaMaaSClientImplTest {
                 KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", null, null).getKafkaClient();
                 assertTrue(kafkaClient.deleteTopic(new Classifier("orders")));
                 assertFalse(kafkaClient.deleteTopic(new Classifier("orders")));
+            });
+        });
+    }
+
+    /** An empty 200 used to reach the response fields and throw NPE instead of answering "nothing deleted". */
+    @Test
+    void testTopicDeleteEmptyBody(ClientAndServer mockServer) {
+        withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
+
+                mockServer.when(
+                        request().withMethod("DELETE").withPath("/api/v2/kafka/topic"), Times.once()
+                ).respond(response().withBody(""));
+
+                KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", null, null).getKafkaClient();
+                assertFalse(kafkaClient.deleteTopic(new Classifier("orders")));
+            });
+        });
+    }
+
+    /**
+     * A retry after the server completed a delete comes back with empty lists, which the client
+     * reads as "nothing was deleted".
+     */
+    @Test
+    void testTopicDeleteIsNotRetried(ClientAndServer mockServer) {
+        withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
+
+                mockServer.when(request().withMethod("DELETE").withPath("/api/v2/kafka/topic"), Times.unlimited())
+                        .respond(response().withStatusCode(500).withBody("{\"error\":\"agent down\"}"));
+
+                KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", null, null).getKafkaClient();
+                Classifier orders = new Classifier("orders");
+                assertThrows(MaaSException.class, () -> kafkaClient.deleteTopic(orders));
+
+                mockServer.verify(request().withMethod("DELETE").withPath("/api/v2/kafka/topic"),
+                        VerificationTimes.exactly(1));
+            });
+        });
+    }
+
+    /** Create is the operation a switchover interrupts most often, and it retries on any options. */
+    @Test
+    void testGetOrCreateTopicIsRetriedOnDefaultOptions(ClientAndServer mockServer) {
+        withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
+                withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, "1000", () -> {
+
+                    mockServer.when(request().withMethod("POST").withPath("/api/v2/kafka/topic"), Times.unlimited())
+                            .respond(response().withStatusCode(500).withBody("{\"error\":\"agent down\"}"));
+
+                    KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", null, null).getKafkaClient();
+                    Classifier orders = new Classifier("orders");
+                    assertThrows(MaaSException.class,
+                            () -> kafkaClient.getOrCreateTopic(orders, TopicCreateOptions.DEFAULTS));
+
+                    mockServer.verify(request().withMethod("POST").withPath("/api/v2/kafka/topic"),
+                            VerificationTimes.atLeast(2));
+                });
             });
         });
     }
@@ -772,6 +777,16 @@ class KafkaMaaSClientImplTest {
 
                 assertDoesNotThrow(client::close);
             });
+        });
+    }
+
+    @Test
+    void testWatchTopicCreateThrowsAfterClose(ClientAndServer mockServer) {
+        withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
+            KafkaMaaSClientImpl client = createKafkaClient("http://localhost:" + mockServer.getPort());
+            client.close();
+
+            assertThrows(IllegalStateException.class, () -> client.watchTopicCreate("orders", addr -> {}));
         });
     }
 

@@ -58,6 +58,62 @@ MaaSClient client = new MaaSAPIClientImpl(() -> M2MManager.getInstance().getToke
 ```
    
 
+## Retry behaviour and configuration
+
+Every call to maas-agent is retried before giving up, bounded by a single
+setting: the maximum total duration of the call.
+
+| Property | Default | Meaning |
+|---|---|---|
+| `maas.http.timeout` | `30` (seconds) | connect/read/write timeout of a **single** attempt |
+| `maas.http.retry.max-total-duration-ms` | `60000` | how long one call may take in **total**, retries included. `0` disables retries |
+
+`max-total-duration-ms` is the only retry knob: the attempt count and the pauses
+between attempts are derived from it. The first pause is 1s, each next one
+doubles, and the cap is a quarter of the total — with the default 60s that gives
+1s, 2s, 4s, 8s, 15s, 15s, roughly six attempts when each attempt fails fast. If
+attempts hang instead, fewer of them fit into the same duration. Backoff carries
++/-20% jitter so concurrent callers do not retry in lockstep.
+
+Each attempt is additionally bounded by what is left of the total duration, so
+the worst case a caller sees is that total duration itself rather than the total
+duration plus one `maas.http.timeout`.
+
+The 60s default is meant to outlast a database leader switchover while still
+failing fast enough to react to a real outage.
+
+The watch endpoint (`watch-create`) is excluded: it is a long poll with its own
+loop and its own backoff. Its window is derived from `maas.http.timeout` and stays
+below it — maas-service holds the request open for the whole window and then answers
+with an empty list, which the client has to be able to receive. With the default 30s
+timeout the window is 25s.
+
+`deleteTopic` is excluded as well, on any options: its response carries how many
+topics were deleted, and a repeat of a delete whose response was lost reports zero
+for a topic that is already gone. `getOrCreateTopic` is retried on any options —
+maas-service resolves the classifier before it looks at `onTopicExists`, so a
+repeated create returns the registration the first attempt made.
+
+Which responses are retried:
+
+| Response | Retried | Why |
+|---|---|---|
+| `IOException` | yes | connection refused/reset while the agent is being rescheduled |
+| 5xx | yes | includes the `500` maas-agent returns when it cannot reach maas-service at all |
+| 429 | yes | throttling |
+| **405** | **only when the `reason` names a database that cannot be written** | maas-service maps PostgreSQL error `25006` (READ ONLY SQL TRANSACTION) to `405`, so a write against a demoted Patroni node during a switchover arrives as `405`, not as `5xx`. A plain `405` — a route removed on the server, an ingress rejecting the method — is permanent and fails fast |
+| 401 | no | `CachingTokenSource` refreshes on its own polling interval, so a retry within the backoff reads the same token, and `M2MInterceptor` has already made its own 401 round trip by then |
+| other 4xx | no | permanent client errors, failed on the first attempt |
+
+The 405 entry is deliberate: the usual "retry 5xx, fail fast on 4xx" rule does not
+survive a database leader switchover here.
+
+The `reason` of the error envelope is what decides, not the error code: every
+maas-service error carries the same code, so the envelope alone says nothing. The
+match is loose — the reason has to mention a database together with `read-only`
+or `not active` — so a reworded message on the server still counts, while a `405`
+about a read-only *field* does not.
+
 ## Kafka client usage example
 All MaaS operations for Kafka is collected in [KafkaMaaSClient](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/com/netcracker/cloud/maas/client/api/kafka/KafkaMaaSClient.java). To obtain *new* instance of MaaS Kafka client just call: 
 ```java
