@@ -21,6 +21,7 @@ import org.mockserver.matchers.MatchType;
 import org.mockserver.matchers.Times;
 import org.mockserver.mock.action.ExpectationResponseCallback;
 import org.mockserver.model.HttpRequest;
+import org.mockserver.verify.VerificationTimes;
 
 import com.netcracker.cloud.maas.client.Utils;
 import com.netcracker.cloud.maas.client.api.Classifier;
@@ -450,13 +451,58 @@ class KafkaMaaSClientImplTest {
                                         "}\n")
                 );
 
-                // run test
+                // run test. MERGE is what keeps this recoverable: hitting an already-created
+                // topic again is harmless, so the retry after the timed-out first attempt is safe.
                 var client = createKafkaClient("http://localhost:" + mockServer.getPort());
                 TopicAddress topicAddress = client.getOrCreateTopic(new Classifier("orders"),
                         TopicCreateOptions.builder()
+                                .onTopicExists(OnTopicExists.MERGE)
                                 .name("user-test1")
                                 .build());
                 assertEquals("user-test1", topicAddress.getTopicName());
+            });
+        });
+    }
+
+    /**
+     * Under FAIL semantics a retry after a locally-timed-out request could be replaying a create
+     * that already succeeded server-side, and would fail permanently against an existing topic.
+     * So, unlike {@link #testGetOrCreateTopicWithRetry}, this must not retry and must surface the
+     * timeout instead of silently recovering.
+     */
+    @Test
+    public void testGetOrCreateTopicFailOnExistsDoesNotRetry(ClientAndServer mockServer) throws IOException {
+        withProp(Env.PROP_NAMESPACE, "cloudbss-kube-core-demo-2", () -> {
+            withProp(Env.PROP_HTTP_TIMEOUT, "1", () -> {
+
+                mockServer.when(
+                        request()
+                                .withPath("/api/v2/kafka/topic"),
+                        Times.once()
+                ).respond(
+                        response()
+                                .withStatusCode(200)
+                                .withDelay(TimeUnit.SECONDS, 2)
+                );
+
+                mockServer.when(
+                        request()
+                                .withPath("/api/v2/kafka/topic"),
+                        Times.once()
+                ).respond(
+                        response()
+                                .withStatusCode(200)
+                                .withBody("{\n" +
+                                        "  \"name\": \"user-test1\"\n" +
+                                        "}\n")
+                );
+
+                var client = createKafkaClient("http://localhost:" + mockServer.getPort());
+                assertThrows(MaaSException.class, () -> client.getOrCreateTopic(new Classifier("orders"),
+                        TopicCreateOptions.builder()
+                                .onTopicExists(OnTopicExists.FAIL)
+                                .name("user-test1")
+                                .build()));
             });
         });
     }
@@ -608,6 +654,49 @@ class KafkaMaaSClientImplTest {
 
                 KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", null, null).getKafkaClient();
                 assertFalse(kafkaClient.deleteTopic(new Classifier("orders")));
+            });
+        });
+    }
+
+    /**
+     * A delete is not idempotent: a retry after the server completed one comes back with empty
+     * lists and would report the topic as still present.
+     */
+    @Test
+    void testTopicDeleteIsNotRetried(ClientAndServer mockServer) {
+        withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
+
+                mockServer.when(request().withMethod("DELETE").withPath("/api/v2/kafka/topic"), Times.unlimited())
+                        .respond(response().withStatusCode(500).withBody("{\"error\":\"agent down\"}"));
+
+                KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", null, null).getKafkaClient();
+                assertThrows(MaaSException.class, () -> kafkaClient.deleteTopic(new Classifier("orders")));
+
+                mockServer.verify(request().withMethod("DELETE").withPath("/api/v2/kafka/topic"),
+                        VerificationTimes.exactly(1));
+            });
+        });
+    }
+
+    /** Same reasoning as the delete: under FAIL a retry hits the topic the first attempt created. */
+    @Test
+    void testGetOrCreateTopicIsNotRetriedWhenItMustFailOnExisting(ClientAndServer mockServer) {
+        withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
+
+                mockServer.when(request().withMethod("POST").withPath("/api/v2/kafka/topic"), Times.unlimited())
+                        .respond(response().withStatusCode(500).withBody("{\"error\":\"agent down\"}"));
+
+                KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", null, null).getKafkaClient();
+                TopicCreateOptions failOnExisting = TopicCreateOptions.builder()
+                        .onTopicExists(OnTopicExists.FAIL)
+                        .build();
+                assertThrows(MaaSException.class,
+                        () -> kafkaClient.getOrCreateTopic(new Classifier("orders"), failOnExisting));
+
+                mockServer.verify(request().withMethod("POST").withPath("/api/v2/kafka/topic"),
+                        VerificationTimes.exactly(1));
             });
         });
     }
@@ -788,6 +877,16 @@ class KafkaMaaSClientImplTest {
 
                 assertDoesNotThrow(client::close);
             });
+        });
+    }
+
+    @Test
+    void testWatchTopicCreateThrowsAfterClose(ClientAndServer mockServer) {
+        withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
+            KafkaMaaSClientImpl client = createKafkaClient("http://localhost:" + mockServer.getPort());
+            client.close();
+
+            assertThrows(IllegalStateException.class, () -> client.watchTopicCreate("orders", addr -> {}));
         });
     }
 

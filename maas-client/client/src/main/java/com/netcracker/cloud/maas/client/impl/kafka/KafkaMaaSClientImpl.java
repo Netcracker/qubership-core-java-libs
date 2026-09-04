@@ -24,6 +24,7 @@ import com.netcracker.cloud.maas.client.api.kafka.KafkaMaaSClient;
 import com.netcracker.cloud.maas.client.api.kafka.SearchCriteria;
 import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
 import com.netcracker.cloud.maas.client.api.kafka.TopicCreateOptions;
+import com.netcracker.cloud.maas.client.api.kafka.protocolextractors.OnTopicExists;
 import com.netcracker.cloud.maas.client.impl.ApiUrlProvider;
 import com.netcracker.cloud.maas.client.impl.Env;
 import com.netcracker.cloud.maas.client.impl.Lazy;
@@ -33,8 +34,12 @@ import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicInfo;
 import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicRequest;
 import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicTemplate;
 import com.netcracker.cloud.maas.client.impl.http.HttpClient;
+import com.netcracker.cloud.maas.client.impl.http.HttpExecution;
 import com.netcracker.cloud.tenantmanager.client.TenantManagerConnector;
 
+import dev.failsafe.Failsafe;
+import dev.failsafe.FailsafeException;
+import dev.failsafe.RetryPolicy;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -52,6 +57,10 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     /** Largest gap left between the watch window and the read timeout. */
     private static final long MAX_WATCH_MARGIN_SECONDS = 5;
 
+    /**
+     * The margin is clamped, so a small read timeout narrows the window instead of inverting it.
+     * The window travels in whole seconds, so {@code maas.http.timeout} below 2s is unsupported.
+     */
     static Duration watchTimeout(Duration httpTimeout) {
         long timeoutSeconds = httpTimeout.getSeconds();
         long marginSeconds = Math.min(MAX_WATCH_MARGIN_SECONDS, timeoutSeconds / 2);
@@ -60,14 +69,19 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
 
     private static final Duration WATCH_RETRY_INTERVAL = Duration.ofSeconds(1);
     private static final Duration WATCH_MAX_RETRY_INTERVAL = Duration.ofSeconds(30);
+    private static final double WATCH_BACKOFF_MULTIPLIER = 2.0;
 
-    /** Grows by one interval per consecutive failure, up to the cap. */
-    static long watchBackoffMillis(int failures) {
-        return Math.min(failures * WATCH_RETRY_INTERVAL.toMillis(), WATCH_MAX_RETRY_INTERVAL.toMillis());
-    }
+    /** Keeps instances that lost the same agent from returning to it at the same moment. */
+    private static final double WATCH_BACKOFF_JITTER = 0.2;
     // there is no need in highly concurrent map/lists implementation, we will wait for network responses most of the time
     private final Map<Classifier, List<Consumer<TopicAddress>>> topicCreateListeners = Collections.synchronizedMap(new HashMap<>());
     private volatile boolean closed = false;
+
+    /**
+     * Set when the watch thread exits without {@link #close()}. Nothing restarts it, so a later
+     * {@link #watchTopicCreate} must refuse rather than register a callback that cannot fire.
+     */
+    private volatile boolean watchThreadDead = false;
 
     /**
      * Monitor for parking the watch thread. Not the thread itself: {@link Thread#join()} waits on
@@ -99,9 +113,13 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
         String url = apiProvider.getKafkaTopicUrl(options.getOnTopicExists());
 
         log.info("Get or create topic by classifier=`{}' and options=`{}'", classifier, options);
-        return httpClient.request(url)
+        HttpExecution request = httpClient.request(url)
                 .post(TopicRequest.builder(classifier).build().options(options))
-                .expect(HTTP_OK, HTTP_CREATED)
+                .expect(HTTP_OK, HTTP_CREATED);
+        if (options.getOnTopicExists() == OnTopicExists.FAIL) {
+            request.noRetry();
+        }
+        return request
                 .sendAndReceive(TopicInfo.class)
                 .map(TopicAddressImpl::new)
                 .get();
@@ -144,12 +162,19 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     }
 
     private void watchTenantCreateTopics() {
-        while (!closed) {
-            if (!pollWhileThereIsSomethingToWatch()) {
-                return;
+        try {
+            while (!closed) {
+                if (!pollWhileThereIsSomethingToWatch()) {
+                    return;
+                }
+                if (closed || !parkUntilThereIsSomethingToWatch()) {
+                    return;
+                }
             }
-            if (closed || !parkUntilThereIsSomethingToWatch()) {
-                return;
+        } finally {
+            if (!closed) {
+                // exiting without close(): let watchTopicCreate refuse further registrations
+                watchThreadDead = true;
             }
         }
     }
@@ -160,14 +185,17 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
      * @return false if the thread must stop
      */
     private boolean pollWhileThereIsSomethingToWatch() {
-        int failures = 0;
         while (!closed && !topicCreateListeners.isEmpty()) {
             String url = apiProvider.getKafkaTopicWatchCreateUrl(watchTimeout);
             List<TopicInfo> found;
             try {
-                found = poll(url);
-                failures = 0;
+                found = Failsafe.with(watchRetryPolicy(url)).get(() -> poll(url));
             } catch (Exception e) {
+                Throwable cause = e instanceof FailsafeException failsafe ? failsafe.getCause() : e;
+                if (cause instanceof InterruptedException) {
+                    // Failsafe clears the flag when it catches this, so the check below cannot see it
+                    Thread.currentThread().interrupt();
+                }
                 // `closed` is checked too: an interrupt can be swallowed further down
                 if (closed) {
                     return false; // shutting down, not a failure worth reporting
@@ -175,19 +203,34 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
                 if (Thread.currentThread().isInterrupted()) {
                     log.error("Watch thread interrupted without close(). Topic create callbacks for {} "
                             + "will no longer fire; recreate the client to resume watching",
-                            watchedClassifiers(), e);
+                            watchedNames(), cause);
                     return false;
                 }
-                failures++;
-                log.warn("Error execute request to {}. Attempt {}, will back off before retrying", url, failures, e);
-                if (!awaitWatchBackoff(failures)) {
-                    return false; // closed or interrupted while backing off
-                }
-                continue; // nothing was received, nothing to deliver
+                // the policy only gives up on interrupt, so this should be unreachable
+                log.error("Watch poll for {} stopped unexpectedly. Topic create callbacks for {} "
+                        + "will no longer fire; recreate the client to resume watching",
+                        url, watchedNames(), cause);
+                return false;
             }
             deliver(found);
         }
         return true;
+    }
+
+    /**
+     * Backoff between failed watch polls. Unbounded in attempts, because the subscription lives as
+     * long as the client; a fresh policy per poll resets the sequence after every success, and the
+     * interrupt from {@link #close()} ends the wait.
+     */
+    private RetryPolicy<List<TopicInfo>> watchRetryPolicy(String url) {
+        return RetryPolicy.<List<TopicInfo>>builder()
+                .handle(Exception.class)
+                .withBackoff(WATCH_RETRY_INTERVAL, WATCH_MAX_RETRY_INTERVAL, WATCH_BACKOFF_MULTIPLIER)
+                .withJitter(WATCH_BACKOFF_JITTER)
+                .withMaxAttempts(-1)
+                .onRetry(event -> log.warn("Error execute request to {}. Attempt {} failed with {}, will back off before retrying",
+                        url, event.getAttemptCount(), event.getLastException()))
+                .build();
     }
 
     private static final TypeReference<List<TopicInfo>> TOPIC_LIST = new TypeReference<>() {
@@ -197,6 +240,11 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
         synchronized (topicCreateListeners) {
             return new HashSet<>(topicCreateListeners.keySet());
         }
+    }
+
+    /** Names only: a classifier is an open map and may carry whatever the caller put in it. */
+    private List<String> watchedNames() {
+        return watchedClassifiers().stream().map(Classifier::getName).toList();
     }
 
     /** One long poll for topics created since the previous call. */
@@ -249,35 +297,14 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
         }
     }
 
-    /**
-     * Linear, capped backoff between failed watch polls, reset on every success. Waits on the
-     * watch monitor rather than sleeping, so close() cuts the pause short.
-     *
-     * @return false if the client was closed or the thread interrupted, meaning the caller stops
-     */
-    private boolean awaitWatchBackoff(int failures) {
-        long deadline = System.currentTimeMillis() + watchBackoffMillis(failures);
-        try {
-            synchronized (watchLock) {
-                // waits out the whole pause: only close() ends it early, a new watch does not
-                for (long left = watchBackoffMillis(failures); !closed && left > 0;
-                     left = deadline - System.currentTimeMillis()) {
-                    watchLock.wait(left);
-                }
-            }
-            return !closed;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return false;
-        }
-    }
-
     @Override
     public void watchTopicCreate(String name, Consumer<TopicAddress> callback) {
         if (closed) {
-            // the watch thread has already exited and nothing restarts it, so the callback
-            // would never fire
             throw new IllegalStateException("Client is closed, cannot watch topic: " + name);
+        }
+        if (watchThreadDead) {
+            throw new IllegalStateException("Watch thread has stopped unexpectedly, cannot watch topic: "
+                    + name + "; recreate the client to resume watching");
         }
         apiProvider.getServerApiVersion().requiresApiVersion(2, 8);
 
@@ -348,10 +375,10 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     public void close() {
         closed = true;
         synchronized (watchLock) {
-            watchLock.notifyAll(); // release the watch thread if it is parked or backing off
+            watchLock.notifyAll(); // release the watch thread if it is parked
         }
         if (watchThread.isInitialized()) {
-            watchThread.get().interrupt();
+            watchThread.get().interrupt(); // also cuts a backoff sleep short
             try {
                 watchThread.get().join(1000);
             } catch (InterruptedException e) {

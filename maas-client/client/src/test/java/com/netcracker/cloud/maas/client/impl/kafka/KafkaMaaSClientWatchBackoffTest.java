@@ -43,6 +43,7 @@ class KafkaMaaSClientWatchBackoffTest {
     private static final int OBSERVED_POLLS = 3;
 
     private final List<Long> pollMillis = Collections.synchronizedList(new ArrayList<>());
+    private final List<String> pollQueries = Collections.synchronizedList(new ArrayList<>());
     private final CountDownLatch pollsObserved = new CountDownLatch(OBSERVED_POLLS);
     private HttpServer agentStub;
     private KafkaMaaSClientImpl client;
@@ -64,13 +65,11 @@ class KafkaMaaSClientWatchBackoffTest {
     }
 
     /**
-     * maas-service holds a watch poll open for the whole requested window and then answers 200
-     * with an empty list. If the window outlasts the client read timeout, that answer never
-     * arrives: every quiet poll fails locally, walks the backoff up to its 30s cap and delays
-     * the next real topic-create event.
+     * A window that outlasts the read timeout means the empty 200 ending a quiet poll never
+     * arrives, so every such poll fails locally and walks the backoff up to its cap.
      */
     @Test
-    void watchWindowStaysBelowTheReadTimeout() {
+    void watchWindowFormulaStaysBelowTheReadTimeout() {
         for (long readTimeoutSeconds : new long[]{2, 5, 6, 10, 30, 60, 120}) {
             Duration readTimeout = Duration.ofSeconds(readTimeoutSeconds);
             Duration window = KafkaMaaSClientImpl.watchTimeout(readTimeout);
@@ -79,17 +78,6 @@ class KafkaMaaSClientWatchBackoffTest {
             assertFalse(window.isZero() || window.isNegative(),
                     "the window must stay positive, got " + window);
         }
-        assertEquals(Duration.ofSeconds(25), KafkaMaaSClientImpl.watchTimeout(Duration.ofSeconds(30)),
-                "the default read timeout should keep the full margin");
-    }
-
-    @Test
-    void backoffGrowsWithConsecutiveFailures() {
-        assertEquals(1_000, KafkaMaaSClientImpl.watchBackoffMillis(1));
-        assertEquals(2_000, KafkaMaaSClientImpl.watchBackoffMillis(2));
-        assertEquals(3_000, KafkaMaaSClientImpl.watchBackoffMillis(3));
-        assertEquals(30_000, KafkaMaaSClientImpl.watchBackoffMillis(30), "capped");
-        assertEquals(30_000, KafkaMaaSClientImpl.watchBackoffMillis(1_000), "stays at the cap");
     }
 
     @Test
@@ -110,6 +98,9 @@ class KafkaMaaSClientWatchBackoffTest {
                             "expected the watch loop to pause after a failure, but poll " + poll
                                     + " followed the previous one in " + pause + "ms");
                 }
+
+                assertEquals("timeout=25s", pollQueries.get(0),
+                        "the poll must carry the window derived from maas.http.timeout");
             });
         });
     }
@@ -126,6 +117,7 @@ class KafkaMaaSClientWatchBackoffTest {
     /** Answers every poll with 500, the code maas-agent returns when it cannot reach maas-service. */
     private void failWatchPoll(HttpExchange exchange) throws IOException {
         pollMillis.add(System.currentTimeMillis());
+        pollQueries.add(exchange.getRequestURI().getQuery());
         pollsObserved.countDown();
         respond(exchange, 500, "{\"error\":\"error proxying request: maas-service unavailable\"}");
     }
