@@ -1,7 +1,6 @@
 package com.netcracker.cloud.junit.cloudcore.extension.service;
 
 import io.fabric8.kubernetes.client.LocalPortForward;
-import lombok.Getter;
 
 import java.net.InetAddress;
 import java.time.Duration;

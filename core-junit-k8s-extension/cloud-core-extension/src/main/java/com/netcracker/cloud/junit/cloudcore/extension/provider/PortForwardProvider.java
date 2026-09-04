@@ -17,8 +17,6 @@ import static com.netcracker.cloud.junit.cloudcore.extension.callbacks.CloudCore
 
 public class PortForwardProvider implements FieldInstanceProvider {
 
-    public final static String IN_K8S = "IN_K8S";
-
     @Override
     public Object createInstance(Object testInstance, Field field) throws Exception {
         PortForwardServiceManager portForwardServiceManager = OrderedServiceLoader.load(PortForwardServiceManager.class)

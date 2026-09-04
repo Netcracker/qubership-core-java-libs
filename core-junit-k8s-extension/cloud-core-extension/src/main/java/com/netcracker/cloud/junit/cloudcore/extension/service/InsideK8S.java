@@ -1,21 +1,11 @@
 package com.netcracker.cloud.junit.cloudcore.extension.service;
 
-import com.netcracker.cloud.junit.cloudcore.extension.provider.LocalHostAddressGenerator;
-import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.LocalPortForward;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.sound.sampled.Port;
 import java.io.IOException;
-import java.net.BindException;
 import java.net.InetAddress;
 import java.time.Duration;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public class InsideK8S implements PortForwardService {
