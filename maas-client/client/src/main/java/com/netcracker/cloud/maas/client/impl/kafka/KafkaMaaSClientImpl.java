@@ -24,7 +24,6 @@ import com.netcracker.cloud.maas.client.api.kafka.KafkaMaaSClient;
 import com.netcracker.cloud.maas.client.api.kafka.SearchCriteria;
 import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
 import com.netcracker.cloud.maas.client.api.kafka.TopicCreateOptions;
-import com.netcracker.cloud.maas.client.api.kafka.protocolextractors.OnTopicExists;
 import com.netcracker.cloud.maas.client.impl.ApiUrlProvider;
 import com.netcracker.cloud.maas.client.impl.Env;
 import com.netcracker.cloud.maas.client.impl.Lazy;
@@ -34,7 +33,6 @@ import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicInfo;
 import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicRequest;
 import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicTemplate;
 import com.netcracker.cloud.maas.client.impl.http.HttpClient;
-import com.netcracker.cloud.maas.client.impl.http.HttpExecution;
 import com.netcracker.cloud.tenantmanager.client.TenantManagerConnector;
 
 import dev.failsafe.Failsafe;
@@ -113,13 +111,12 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
         String url = apiProvider.getKafkaTopicUrl(options.getOnTopicExists());
 
         log.info("Get or create topic by classifier=`{}' and options=`{}'", classifier, options);
-        HttpExecution request = httpClient.request(url)
+        // Retried on the default options too: maas-service resolves the classifier first, under a
+        // lock, and only consults onTopicExists for a topic missing from its registry. A repeat of
+        // a create whose response was lost therefore returns the registration the first one made.
+        return httpClient.request(url)
                 .post(TopicRequest.builder(classifier).build().options(options))
-                .expect(HTTP_OK, HTTP_CREATED);
-        if (options.getOnTopicExists() == OnTopicExists.FAIL) {
-            request.noRetry();
-        }
-        return request
+                .expect(HTTP_OK, HTTP_CREATED)
                 .sendAndReceive(TopicInfo.class)
                 .map(TopicAddressImpl::new)
                 .get();
@@ -130,6 +127,10 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
         return Optional.ofNullable(searchTopic(classifier));
     }
 
+    /**
+     * Not retried: the response says how many topics were deleted, and a repeat of a delete whose
+     * response was lost reports zero for a topic that is gone.
+     */
     @Override
     public boolean deleteTopic(Classifier classifier) {
         TopicDeleteResponse resp = httpClient.request(apiProvider.getKafkaTopicUrl(null))
@@ -191,30 +192,33 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
             try {
                 found = Failsafe.with(watchRetryPolicy(url)).get(() -> poll(url));
             } catch (Exception e) {
-                Throwable cause = e instanceof FailsafeException failsafe ? failsafe.getCause() : e;
-                if (cause instanceof InterruptedException) {
-                    // Failsafe clears the flag when it catches this, so the check below cannot see it
-                    Thread.currentThread().interrupt();
-                }
-                // `closed` is checked too: an interrupt can be swallowed further down
-                if (closed) {
-                    return false; // shutting down, not a failure worth reporting
-                }
-                if (Thread.currentThread().isInterrupted()) {
-                    log.error("Watch thread interrupted without close(). Topic create callbacks for {} "
-                            + "will no longer fire; recreate the client to resume watching",
-                            watchedNames(), cause);
-                    return false;
-                }
-                // the policy only gives up on interrupt, so this should be unreachable
-                log.error("Watch poll for {} stopped unexpectedly. Topic create callbacks for {} "
-                        + "will no longer fire; recreate the client to resume watching",
-                        url, watchedNames(), cause);
+                reportWatchStopped(url, e);
                 return false;
             }
             deliver(found);
         }
         return true;
+    }
+
+    /** Reports why the watch thread is stopping, unless it is a normal {@link #close()}. */
+    private void reportWatchStopped(String url, Exception e) {
+        Throwable cause = e instanceof FailsafeException failsafe ? failsafe.getCause() : e;
+        if (cause instanceof InterruptedException) {
+            // Failsafe clears the flag when it catches this, so the check below cannot see it
+            Thread.currentThread().interrupt();
+        }
+        // `closed` is checked too: an interrupt can be swallowed further down
+        if (closed) {
+            return; // shutting down, not a failure worth reporting
+        }
+        if (Thread.currentThread().isInterrupted()) {
+            log.error("Watch thread interrupted without close(). Topic create callbacks for {} "
+                    + "will no longer fire; recreate the client to resume watching", watchedNames(), cause);
+            return;
+        }
+        // the policy only gives up on interrupt, so this should be unreachable
+        log.error("Watch poll for {} stopped unexpectedly. Topic create callbacks for {} "
+                + "will no longer fire; recreate the client to resume watching", url, watchedNames(), cause);
     }
 
     /**

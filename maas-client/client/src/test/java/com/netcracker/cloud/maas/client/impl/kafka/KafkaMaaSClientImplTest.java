@@ -451,58 +451,12 @@ class KafkaMaaSClientImplTest {
                                         "}\n")
                 );
 
-                // run test. MERGE is what keeps this recoverable: hitting an already-created
-                // topic again is harmless, so the retry after the timed-out first attempt is safe.
+                // default options: maas-service resolves the classifier before it looks at
+                // onTopicExists, so the retry after the timed-out first attempt gets the same topic
                 var client = createKafkaClient("http://localhost:" + mockServer.getPort());
                 TopicAddress topicAddress = client.getOrCreateTopic(new Classifier("orders"),
-                        TopicCreateOptions.builder()
-                                .onTopicExists(OnTopicExists.MERGE)
-                                .name("user-test1")
-                                .build());
+                        TopicCreateOptions.builder().name("user-test1").build());
                 assertEquals("user-test1", topicAddress.getTopicName());
-            });
-        });
-    }
-
-    /**
-     * Under FAIL semantics a retry after a locally-timed-out request could be replaying a create
-     * that already succeeded server-side, and would fail permanently against an existing topic.
-     * So, unlike {@link #testGetOrCreateTopicWithRetry}, this must not retry and must surface the
-     * timeout instead of silently recovering.
-     */
-    @Test
-    public void testGetOrCreateTopicFailOnExistsDoesNotRetry(ClientAndServer mockServer) throws IOException {
-        withProp(Env.PROP_NAMESPACE, "cloudbss-kube-core-demo-2", () -> {
-            withProp(Env.PROP_HTTP_TIMEOUT, "1", () -> {
-
-                mockServer.when(
-                        request()
-                                .withPath("/api/v2/kafka/topic"),
-                        Times.once()
-                ).respond(
-                        response()
-                                .withStatusCode(200)
-                                .withDelay(TimeUnit.SECONDS, 2)
-                );
-
-                mockServer.when(
-                        request()
-                                .withPath("/api/v2/kafka/topic"),
-                        Times.once()
-                ).respond(
-                        response()
-                                .withStatusCode(200)
-                                .withBody("{\n" +
-                                        "  \"name\": \"user-test1\"\n" +
-                                        "}\n")
-                );
-
-                var client = createKafkaClient("http://localhost:" + mockServer.getPort());
-                assertThrows(MaaSException.class, () -> client.getOrCreateTopic(new Classifier("orders"),
-                        TopicCreateOptions.builder()
-                                .onTopicExists(OnTopicExists.FAIL)
-                                .name("user-test1")
-                                .build()));
             });
         });
     }
@@ -659,8 +613,8 @@ class KafkaMaaSClientImplTest {
     }
 
     /**
-     * A delete is not idempotent: a retry after the server completed one comes back with empty
-     * lists and would report the topic as still present.
+     * A retry after the server completed a delete comes back with empty lists, which the client
+     * reads as "nothing was deleted".
      */
     @Test
     void testTopicDeleteIsNotRetried(ClientAndServer mockServer) {
@@ -671,7 +625,8 @@ class KafkaMaaSClientImplTest {
                         .respond(response().withStatusCode(500).withBody("{\"error\":\"agent down\"}"));
 
                 KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", null, null).getKafkaClient();
-                assertThrows(MaaSException.class, () -> kafkaClient.deleteTopic(new Classifier("orders")));
+                Classifier orders = new Classifier("orders");
+                assertThrows(MaaSException.class, () -> kafkaClient.deleteTopic(orders));
 
                 mockServer.verify(request().withMethod("DELETE").withPath("/api/v2/kafka/topic"),
                         VerificationTimes.exactly(1));
@@ -679,24 +634,24 @@ class KafkaMaaSClientImplTest {
         });
     }
 
-    /** Same reasoning as the delete: under FAIL a retry hits the topic the first attempt created. */
+    /** Create is the operation a switchover interrupts most often, and it retries on any options. */
     @Test
-    void testGetOrCreateTopicIsNotRetriedWhenItMustFailOnExisting(ClientAndServer mockServer) {
+    void testGetOrCreateTopicIsRetriedOnDefaultOptions(ClientAndServer mockServer) {
         withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
             withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
+                withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, "1000", () -> {
 
-                mockServer.when(request().withMethod("POST").withPath("/api/v2/kafka/topic"), Times.unlimited())
-                        .respond(response().withStatusCode(500).withBody("{\"error\":\"agent down\"}"));
+                    mockServer.when(request().withMethod("POST").withPath("/api/v2/kafka/topic"), Times.unlimited())
+                            .respond(response().withStatusCode(500).withBody("{\"error\":\"agent down\"}"));
 
-                KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", null, null).getKafkaClient();
-                TopicCreateOptions failOnExisting = TopicCreateOptions.builder()
-                        .onTopicExists(OnTopicExists.FAIL)
-                        .build();
-                assertThrows(MaaSException.class,
-                        () -> kafkaClient.getOrCreateTopic(new Classifier("orders"), failOnExisting));
+                    KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", null, null).getKafkaClient();
+                    Classifier orders = new Classifier("orders");
+                    assertThrows(MaaSException.class,
+                            () -> kafkaClient.getOrCreateTopic(orders, TopicCreateOptions.DEFAULTS));
 
-                mockServer.verify(request().withMethod("POST").withPath("/api/v2/kafka/topic"),
-                        VerificationTimes.exactly(1));
+                    mockServer.verify(request().withMethod("POST").withPath("/api/v2/kafka/topic"),
+                            VerificationTimes.atLeast(2));
+                });
             });
         });
     }

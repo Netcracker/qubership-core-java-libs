@@ -19,9 +19,10 @@
     extends `MaaSException`, so existing `catch` blocks keep working — note the widening:
     `catch (MaaSException)` used to mean a MaaS business error and now also catches transport
     failures.
-  - `deleteTopic` and `getOrCreateTopic` with `OnTopicExists.FAIL` are not retried: neither is
-    idempotent, and a lost response after the server completed the operation would make the retry
-    report a failure that did not happen.
+  - **`deleteTopic` is not retried, on any options.** It used to be, as any other call. Its response
+    carries how many topics were deleted, and a repeat of a delete whose response was lost reports
+    zero for a topic that is already gone. Callers that need the old behaviour must retry themselves
+    and treat `false` as "not found" rather than "not deleted".
   - The Kafka `watch-create` long poll is paced. A down maas-agent used to be re-polled as fast as
     the socket could refuse the connection; the poll now backs off exponentially up to 30s with
     jitter, so instances that lose the same agent do not all return at the same moment. It keeps

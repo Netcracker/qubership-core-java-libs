@@ -88,6 +88,12 @@ below it — maas-service holds the request open for the whole window and then a
 with an empty list, which the client has to be able to receive. With the default 30s
 timeout the window is 25s.
 
+`deleteTopic` is excluded as well, on any options: its response carries how many
+topics were deleted, and a repeat of a delete whose response was lost reports zero
+for a topic that is already gone. `getOrCreateTopic` is retried on any options —
+maas-service resolves the classifier before it looks at `onTopicExists`, so a
+repeated create returns the registration the first attempt made.
+
 Which responses are retried:
 
 | Response | Retried | Why |
