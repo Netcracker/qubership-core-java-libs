@@ -3,10 +3,10 @@
 ## Unreleased
 * `Features`
   - Calls to maas-agent survive a database leader switchover. Retryable: `IOException`, 5xx, 429,
-    and 405 when the body carries a maas-service error — maas-service reports a read-only database
-    that way, so the usual "fail fast on 4xx" rule does not hold here. 401 is not retried, because
-    the token source refreshes on its own schedule. See "Retry behaviour and configuration" in
-    README.
+    and 405 when the response reason names a database that cannot be written — maas-service reports
+    a read-only database that way, so the usual "fail fast on 4xx" rule does not hold here. 401 is
+    not retried, because the token source refreshes on its own schedule. See "Retry behaviour and
+    configuration" in README.
   - New configuration: `maas.http.retry.max-total-duration-ms`, 60s by default, bounding a whole
     call including retries. Attempt count and backoff growth derive from it, and each attempt is
     capped by what is left, so the worst case a caller sees is that duration rather than the

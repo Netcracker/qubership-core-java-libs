@@ -44,6 +44,41 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 // TODO tests with kafka SSL+password
 class KafkaMaaSClientImplTest {
+    /** maas-agent's answer for the `orders' topic, shared by the tests that just need a valid one. */
+    private static final String ORDERS_TOPIC_RESPONSE = """
+            {
+              "addresses": {
+                  "PLAINTEXT": [
+                      "my-kafka.kafka-cluster:9092"
+                   ]
+              },
+              "name": "maas.core_dev.orders.1234567",
+              "classifier": {
+                "name": "orders",
+                "namespace": "core-dev",
+                "tenantId": "d047619f-6886-4842-81a7-3f87cb748ac1"
+              },
+              "namespace": "core-dev",
+              "instance": "default",
+              "requestedSettings": {
+                "numPartitions": 1,
+                "replicationFactor": 1,
+                "replicaAssignment": null,
+                "configs": null
+              },
+              "actualSettings": {
+                "numPartitions": 1,
+                "replicationFactor": 1,
+                "replicaAssignment": {
+                  "0": [ 0 ]
+                },
+                "configs": {
+                  "cleanup.policy": "delete"
+                }
+              }
+            }
+            """;
+
     @BeforeEach
     public void setup(ClientAndServer mockServer) {
         mockServer.reset();
@@ -103,37 +138,7 @@ class KafkaMaaSClientImplTest {
             ).respond(
                     response()
                             .withStatusCode(200)
-                            .withBody("{\n" +
-                                    "  \"addresses\": {\n" +
-                                    "      \"PLAINTEXT\": [\n" +
-                                    "          \"my-kafka.kafka-cluster:9092\"\n" +
-                                    "       ]\n" +
-                                    "  }, \n" +
-                                    "  \"name\": \"maas.core_dev.orders.1234567\",\n" +
-                                    "  \"classifier\": {\n" +
-                                    "    \"name\": \"orders\",\n" +
-                                    "    \"namespace\": \"core-dev\",\n" +
-                                    "    \"tenantId\": \"d047619f-6886-4842-81a7-3f87cb748ac1\"\n" +
-                                    "  }, \n" +
-                                    "  \"namespace\": \"core-dev\",\n" +
-                                    "  \"instance\": \"default\",\n" +
-                                    "  \"requestedSettings\": {\n" +
-                                    "    \"numPartitions\": 1,\n" +
-                                    "    \"replicationFactor\": 1,\n" +
-                                    "    \"replicaAssignment\": null,\n" +
-                                    "    \"configs\": null\n" +
-                                    "  },\n" +
-                                    "  \"actualSettings\": {\n" +
-                                    "    \"numPartitions\": 1,\n" +
-                                    "    \"replicationFactor\": 1,\n" +
-                                    "    \"replicaAssignment\": {\n" +
-                                    "      \"0\": [ 0 ]\n" +
-                                    "    },\n" +
-                                    "    \"configs\": {\n" +
-                                    "      \"cleanup.policy\": \"delete\"\n" +
-                                    "      }\n" +
-                                    "    } \n" +
-                                    "}\n")
+                            .withBody(ORDERS_TOPIC_RESPONSE)
             );
 
             // run test
@@ -246,37 +251,7 @@ class KafkaMaaSClientImplTest {
             ).respond(
                     response()
                             .withStatusCode(200)
-                            .withBody("{\n" +
-                                    "  \"addresses\": {\n" +
-                                    "      \"PLAINTEXT\": [\n" +
-                                    "          \"my-kafka.kafka-cluster:9092\"\n" +
-                                    "       ]\n" +
-                                    "  }, \n" +
-                                    "  \"name\": \"maas.core_dev.orders.1234567\",\n" +
-                                    "  \"classifier\": {\n" +
-                                    "    \"name\": \"orders\",\n" +
-                                    "    \"namespace\": \"core-dev\",\n" +
-                                    "    \"tenantId\": \"d047619f-6886-4842-81a7-3f87cb748ac1\"\n" +
-                                    "  }, \n" +
-                                    "  \"namespace\": \"core-dev\",\n" +
-                                    "  \"instance\": \"default\",\n" +
-                                    "  \"requestedSettings\": {\n" +
-                                    "    \"numPartitions\": 1,\n" +
-                                    "    \"replicationFactor\": 1,\n" +
-                                    "    \"replicaAssignment\": null,\n" +
-                                    "    \"configs\": null\n" +
-                                    "  },\n" +
-                                    "  \"actualSettings\": {\n" +
-                                    "    \"numPartitions\": 1,\n" +
-                                    "    \"replicationFactor\": 1,\n" +
-                                    "    \"replicaAssignment\": {\n" +
-                                    "      \"0\": [ 0 ]\n" +
-                                    "    },\n" +
-                                    "    \"configs\": {\n" +
-                                    "      \"cleanup.policy\": \"delete\"\n" +
-                                    "      }\n" +
-                                    "    } \n" +
-                                    "}\n")
+                            .withBody(ORDERS_TOPIC_RESPONSE)
             );
 
             topicAddress = client.getTopic(new Classifier("orders").tenantId("d047619f-6886-4842-81a7-3f87cb748ac1"));
@@ -304,37 +279,7 @@ class KafkaMaaSClientImplTest {
             ).respond(
                     response()
                             .withStatusCode(200)
-                            .withBody("{\n" +
-                                    "  \"addresses\": {\n" +
-                                    "      \"PLAINTEXT\": [\n" +
-                                    "          \"my-kafka.kafka-cluster:9092\"\n" +
-                                    "       ]\n" +
-                                    "  }, \n" +
-                                    "  \"name\": \"maas.core_dev.orders.1234567\",\n" +
-                                    "  \"classifier\": {\n" +
-                                    "    \"name\": \"orders\",\n" +
-                                    "    \"namespace\": \"core-dev\",\n" +
-                                    "    \"tenantId\": \"d047619f-6886-4842-81a7-3f87cb748ac1\"\n" +
-                                    "  }, \n" +
-                                    "  \"namespace\": \"core-dev\",\n" +
-                                    "  \"instance\": \"default\",\n" +
-                                    "  \"requestedSettings\": {\n" +
-                                    "    \"numPartitions\": 1,\n" +
-                                    "    \"replicationFactor\": 1,\n" +
-                                    "    \"replicaAssignment\": null,\n" +
-                                    "    \"configs\": null\n" +
-                                    "  },\n" +
-                                    "  \"actualSettings\": {\n" +
-                                    "    \"numPartitions\": 1,\n" +
-                                    "    \"replicationFactor\": 1,\n" +
-                                    "    \"replicaAssignment\": {\n" +
-                                    "      \"0\": [ 0 ]\n" +
-                                    "    },\n" +
-                                    "    \"configs\": {\n" +
-                                    "      \"cleanup.policy\": \"delete\"\n" +
-                                    "      }\n" +
-                                    "    } \n" +
-                                    "}\n")
+                            .withBody(ORDERS_TOPIC_RESPONSE)
             );
 
             // run test

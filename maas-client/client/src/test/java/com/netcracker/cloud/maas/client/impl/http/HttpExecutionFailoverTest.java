@@ -46,6 +46,11 @@ class HttpExecutionFailoverTest {
         return Stream.of(
                 arguments("a read-only database", 405,
                         "{\"code\":\"MAAS-0600\",\"reason\":\"database is in read-only mode\"}", 2),
+                arguments("a database out of 'active' mode", 405,
+                        "{\"code\":\"MAAS-0600\",\"reason\":\"database is not in 'active' mode\"}", 2),
+                // the reason is matched loosely, so a reworded one still counts
+                arguments("a reworded read-only database", 405,
+                        "{\"reason\":\"Database is read only\"}", 1),
                 arguments("maas-agent unable to reach maas-service", 500,
                         "{\"error\":\"error proxying request: connection refused\"}", 2),
                 arguments("throttling", 429, "{\"error\":\"slow down\"}", 1)
@@ -78,10 +83,14 @@ class HttpExecutionFailoverTest {
                 // 405 is transient only for a read-only database; a route removed on the server
                 // or an ingress rejecting the method is not
                 arguments("405 without a maas-service envelope", 405, "Method Not Allowed"),
-                // every maas-service error carries MAAS-0600, so the envelope alone means nothing:
-                // the reason has to name the read-only database, not merely contain its words
+                // every maas-service error carries the same code, so the envelope alone means
+                // nothing: the reason has to name a database that cannot be written
                 arguments("405 whose maas-service reason is unrelated", 405,
-                        "{\"code\":\"MAAS-0600\",\"reason\":\"topic 'active-orders' is inactive\"}")
+                        "{\"code\":\"MAAS-0600\",\"reason\":\"topic 'active-orders' is inactive\"}"),
+                arguments("405 about a read-only field rather than the database", 405,
+                        "{\"reason\":\"the read-only field cannot be updated\"}"),
+                arguments("405 with the marker outside the reason", 405,
+                        "{\"message\":\"database is in read-only mode\"}")
         );
     }
 

@@ -101,12 +101,18 @@ Which responses are retried:
 | `IOException` | yes | connection refused/reset while the agent is being rescheduled |
 | 5xx | yes | includes the `500` maas-agent returns when it cannot reach maas-service at all |
 | 429 | yes | throttling |
-| **405** | **only with a maas-service error body** | maas-service maps PostgreSQL error `25006` (READ ONLY SQL TRANSACTION) to `405`, so a write against a demoted Patroni node during a switchover arrives as `405`, not as `5xx`. A plain `405` — a route removed on the server, an ingress rejecting the method — is permanent and fails fast |
+| **405** | **only when the `reason` names a database that cannot be written** | maas-service maps PostgreSQL error `25006` (READ ONLY SQL TRANSACTION) to `405`, so a write against a demoted Patroni node during a switchover arrives as `405`, not as `5xx`. A plain `405` — a route removed on the server, an ingress rejecting the method — is permanent and fails fast |
 | 401 | no | `CachingTokenSource` refreshes on its own polling interval, so a retry within the backoff reads the same token, and `M2MInterceptor` has already made its own 401 round trip by then |
 | other 4xx | no | permanent client errors, failed on the first attempt |
 
 The 405 entry is deliberate: the usual "retry 5xx, fail fast on 4xx" rule does not
 survive a database leader switchover here.
+
+The `reason` of the error envelope is what decides, not the error code: every
+maas-service error carries the same code, so the envelope alone says nothing. The
+match is loose — the reason has to mention a database together with `read-only`
+or `not active` — so a reworded message on the server still counts, while a `405`
+about a read-only *field* does not.
 
 ## Kafka client usage example
 All MaaS operations for Kafka is collected in [KafkaMaaSClient](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/com/netcracker/cloud/maas/client/api/kafka/KafkaMaaSClient.java). To obtain *new* instance of MaaS Kafka client just call: 

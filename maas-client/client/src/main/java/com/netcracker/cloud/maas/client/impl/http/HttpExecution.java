@@ -107,9 +107,6 @@ public class HttpExecution {
         return sendAndReceive().map(der(responseDeserializer));
     }
 
-    /** Code carried by every maas-service TMF error envelope. */
-    private static final String MAAS_ERROR_CODE = "MAAS-0600";
-
     /**
      * Whether the status is worth another attempt. 405 is here because maas-service reports a
      * read-only database that way; 401 is not, because the token source refreshes on its own
@@ -122,14 +119,26 @@ public class HttpExecution {
         return code == 405 && isDatabaseUnavailable(body);
     }
 
-    /** Tells the 405 of a read-only database apart from a plain one, which is permanent. */
+    /** Wordings of the two maas-service errors a leader switchover produces, and rewordings. */
+    private static final List<String> DATABASE_UNAVAILABLE_MARKERS =
+            List.of("read-only", "read only", "not in 'active' mode", "not active");
+
+    /**
+     * Reads the reason of a maas-service error envelope. The word "database" is required next to
+     * the marker, so an unrelated 405 that happens to mention read-only data stays permanent.
+     */
     private static boolean isDatabaseUnavailable(String body) {
-        if (body == null || !body.contains(MAAS_ERROR_CODE)) {
+        if (body == null || body.isEmpty()) {
             return false;
         }
-        String reason = body.toLowerCase(Locale.ROOT);
-        return reason.contains("read-only") || reason.contains("read only")
-                || reason.contains("not in 'active' mode");
+        String reason;
+        try {
+            reason = MAPPER.readTree(body).path("reason").asText("").toLowerCase(Locale.ROOT);
+        } catch (JsonProcessingException e) {
+            return false; // not a maas-service envelope
+        }
+        return reason.contains("database")
+                && DATABASE_UNAVAILABLE_MARKERS.stream().anyMatch(reason::contains);
     }
 
     /** First backoff pause, and the fraction of the total duration a single pause may reach. */

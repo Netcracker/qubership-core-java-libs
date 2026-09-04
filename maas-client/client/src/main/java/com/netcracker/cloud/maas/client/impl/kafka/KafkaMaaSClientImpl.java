@@ -111,9 +111,8 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
         String url = apiProvider.getKafkaTopicUrl(options.getOnTopicExists());
 
         log.info("Get or create topic by classifier=`{}' and options=`{}'", classifier, options);
-        // Retried on the default options too: maas-service resolves the classifier first, under a
-        // lock, and only consults onTopicExists for a topic missing from its registry. A repeat of
-        // a create whose response was lost therefore returns the registration the first one made.
+        // Retried on any options: maas-service resolves the classifier before it looks at
+        // onTopicExists, so a repeat returns the registration the first attempt made.
         return httpClient.request(url)
                 .post(TopicRequest.builder(classifier).build().options(options))
                 .expect(HTTP_OK, HTTP_CREATED)
@@ -127,10 +126,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
         return Optional.ofNullable(searchTopic(classifier));
     }
 
-    /**
-     * Not retried: the response says how many topics were deleted, and a repeat of a delete whose
-     * response was lost reports zero for a topic that is gone.
-     */
+    /** Not retried: a repeat reports zero deleted for a topic the first attempt already removed. */
     @Override
     public boolean deleteTopic(Classifier classifier) {
         TopicDeleteResponse resp = httpClient.request(apiProvider.getKafkaTopicUrl(null))
