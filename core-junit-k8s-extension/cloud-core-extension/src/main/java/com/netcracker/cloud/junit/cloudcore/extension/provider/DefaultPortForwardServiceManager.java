@@ -2,8 +2,7 @@ package com.netcracker.cloud.junit.cloudcore.extension.provider;
 
 import com.netcracker.cloud.junit.cloudcore.extension.annotations.Priority;
 import com.netcracker.cloud.junit.cloudcore.extension.client.KubernetesClientFactory;
-import com.netcracker.cloud.junit.cloudcore.extension.service.InsideK8S;
-import com.netcracker.cloud.junit.cloudcore.extension.service.OutsideK8S;
+import com.netcracker.cloud.junit.cloudcore.extension.service.DirectHostService;
 import com.netcracker.cloud.junit.cloudcore.extension.service.PortForwardService;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +27,8 @@ public class DefaultPortForwardServiceManager implements PortForwardServiceManag
     @Override
     public PortForwardService getPortForwardService(PortForwardConfig config) {
         return portForwardServiceMap.computeIfAbsent(config, c -> {
-            if (in_k8s){
-                return new InsideK8S();
+            if (in_k8s) {
+                return new DirectHostService();
             }
             KubernetesClientFactory kubernetesClientFactory = OrderedServiceLoader.load(KubernetesClientFactory.class)
                     .orElseThrow(() -> new IllegalStateException("No KubernetesClientFactory implementation found"));
@@ -44,7 +43,7 @@ public class DefaultPortForwardServiceManager implements PortForwardServiceManag
                     .map(m -> m.group("name"))
                     .collect(Collectors.toSet());
             boolean fqdn = fqdnFromProp || clouds.size() > 1;
-            return new OutsideK8S(kubernetesClient, fqdn, useFreeLocalPorts);
+            return new PortForwardService(kubernetesClient, fqdn, useFreeLocalPorts);
         });
     }
 

@@ -39,16 +39,21 @@ public class DefaultKubernetesClientFactory implements AutoCloseable, Kubernetes
 
     public KubernetesClient getKubernetesClient(String context, String namespace) {
         return clientsMap.computeIfAbsent(new CloudAndNamespace(context, namespace), cloudAndNamespace -> {
-            String cloud = cloudAndNamespace.getCloud();
-            NamedContext namedContext = config.getContexts().stream()
-                    .filter(c -> Objects.equals(c.getName(), cloud)).findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException(String.format("Unknown context: '%s'. Known contexts:\n[%s]",
-                            cloud, String.join(",\n", getKubernetesContexts()))));
             Config config;
-            if (Objects.equals(cloud, this.config.getCurrentContext().getName())) {
-                config = this.config;
+            if (in_k8s) {
+                config = Config.autoConfigure(null);
             } else {
-                config = in_k8s ? Config.autoConfigure(null) : Config.autoConfigure(namedContext.getName());
+                String cloud = cloudAndNamespace.getCloud();
+                NamedContext namedContext = this.config.getContexts().stream()
+                        .filter(c -> Objects.equals(c.getName(), cloud)).findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException(String.format("Unknown context: '%s'. Known contexts:\n[%s]",
+                                cloud, String.join(",\n", getKubernetesContexts()))));
+
+                if (Objects.equals(cloud, this.config.getCurrentContext().getName())) {
+                    config = this.config;
+                } else {
+                    config = Config.autoConfigure(namedContext.getName());
+                }
             }
             List<Fabric8ConfigBuilderAdapter> fabric8ConfigBuilderAdapters =
                     OrderedServiceLoader.loadAll(Fabric8ConfigBuilderAdapter.class, ASC);

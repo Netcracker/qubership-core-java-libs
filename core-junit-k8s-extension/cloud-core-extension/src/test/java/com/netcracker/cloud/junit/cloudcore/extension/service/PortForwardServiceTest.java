@@ -67,7 +67,7 @@ public class PortForwardServiceTest {
             });
 
             Map<Endpoint, LocalPortForward> cache = new HashMap<>();
-            PortForwardService portForwardService = new OutsideK8S(kubernetesClient, cache, true, false);
+            PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache, true, false);
 
             NetSocketAddress netSocketAddress1_attempt1 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
             assertNotNull(netSocketAddress1_attempt1);
@@ -131,7 +131,7 @@ public class PortForwardServiceTest {
             });
 
             Map<Endpoint, LocalPortForward> cache = new HashMap<>();
-            PortForwardService portForwardService = new OutsideK8S(kubernetesClient, cache, false, false);
+            PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache, false, false);
 
             NetSocketAddress netSocketAddress1_attempt1 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
             assertNotNull(netSocketAddress1_attempt1);
@@ -201,7 +201,7 @@ public class PortForwardServiceTest {
             });
 
             Map<Endpoint, LocalPortForward> cache = new HashMap<>();
-            PortForwardService portForwardService = new OutsideK8S(kubernetesClient, cache, false, false);
+            PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache, false, false);
 
             NetSocketAddress netSocketAddress1_attempt1 = portForwardService.portForward(PodPortForwardParams.builder(SERVICE_NAME, 8080).podName("pod-1").build());
             assertNotNull(netSocketAddress1_attempt1);
@@ -265,7 +265,7 @@ public class PortForwardServiceTest {
             });
 
             Map<Endpoint, LocalPortForward> cache = new HashMap<>();
-            PortForwardService portForwardService = new OutsideK8S(kubernetesClient, cache, false, false);
+            PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache, false, false);
 
             NetSocketAddress netSocketAddress1_attempt1 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
             assertNotNull(netSocketAddress1_attempt1);
@@ -336,7 +336,7 @@ public class PortForwardServiceTest {
             });
 
             Map<Endpoint, LocalPortForward> cache = new HashMap<>();
-            PortForwardService portForwardService = new OutsideK8S(kubernetesClient, cache, false, true);
+            PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache, false, true);
 
             NetSocketAddress netSocketAddress1_attempt1 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
             assertNotNull(netSocketAddress1_attempt1);
@@ -379,7 +379,7 @@ public class PortForwardServiceTest {
             LocalPortForward localPortForward8080 = mock(LocalPortForward.class);
             LocalPortForward localPortForward8181 = mock(LocalPortForward.class);
 
-            PortForwardService directCommunicationService = new InsideK8S();
+            PortForwardService directCommunicationService = new DirectHostService();
 
             NetSocketAddress netSocketAddress1_attempt1 = directCommunicationService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
             assertNotNull(netSocketAddress1_attempt1);
