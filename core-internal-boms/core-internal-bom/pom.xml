@@ -45,14 +45,14 @@
         <jackson-bom.version>2.21.5</jackson-bom.version>
 
         <!-- Metrics -->
-        <micrometer-bom.version>1.16.6</micrometer-bom.version>
+        <micrometer-bom.version>1.17.0</micrometer-bom.version>
 
         <!-- Annotations -->
         <jetbrains-annotations.version>26.0.2</jetbrains-annotations.version>
 
         <!-- HTTP clients -->
         <okhttp3.version>4.12.0</okhttp3.version>
-        <okio.version>3.18.1</okio.version>
+        <okio.version>3.18.2</okio.version>
 
         <!-- JSON / YAML / protobuf -->
         <gson.version>2.13.2</gson.version>
