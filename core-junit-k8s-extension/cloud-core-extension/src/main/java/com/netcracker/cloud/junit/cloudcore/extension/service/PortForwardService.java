@@ -95,7 +95,6 @@ public class PortForwardService {
                 log.info("Closed port forward for endpoint: {}", endpoint);
             }
         } catch (Exception e) {
-            System.out.println(e);
             log.warn("Error while closing portForwarder, e: {} - {}", e.getClass().getSimpleName(), e.getMessage() != null ? e.getMessage() : "");
         }
     }
