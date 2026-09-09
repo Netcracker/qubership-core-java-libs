@@ -19,10 +19,11 @@
     extends `MaaSException`, so existing `catch` blocks keep working — note the widening:
     `catch (MaaSException)` used to mean a MaaS business error and now also catches transport
     failures.
-  - **`deleteTopic` is not retried, on any options.** It used to be, as any other call. Its response
-    carries how many topics were deleted, and a repeat of a delete whose response was lost reports
-    zero for a topic that is already gone. Callers that need the old behaviour must retry themselves
-    and treat `false` as "not found" rather than "not deleted".
+  - **`deleteTopic` and `deleteTopicTemplate` are not retried.** They used to be, as any other call.
+    Neither is idempotent: a repeat of a delete whose response was lost reports zero deleted topics
+    for a topic that is already gone, and answers 404 for a template that is already gone. Callers
+    that need the old behaviour must retry themselves and treat those outcomes as "already deleted"
+    rather than as a failure.
   - The Kafka `watch-create` long poll is paced. A down maas-agent used to be re-polled as fast as
     the socket could refuse the connection; the poll now backs off exponentially up to 30s with
     jitter, so instances that lose the same agent do not all return at the same moment. It keeps
