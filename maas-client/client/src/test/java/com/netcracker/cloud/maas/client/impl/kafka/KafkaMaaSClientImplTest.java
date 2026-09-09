@@ -579,6 +579,26 @@ class KafkaMaaSClientImplTest {
         });
     }
 
+    /**
+     * A retry after the server completed a delete finds no template and answers 404, which the
+     * client reports as a failure for a delete that succeeded.
+     */
+    @Test
+    void testTopicTemplateDeleteIsNotRetried(ClientAndServer mockServer) {
+        withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
+
+            mockServer.when(request().withMethod("DELETE").withPath("/api/v2/kafka/topic-template"),
+                            Times.unlimited())
+                    .respond(response().withStatusCode(500).withBody("{\"error\":\"agent down\"}"));
+
+            var client = createKafkaClient("http://localhost:" + mockServer.getPort());
+            assertThrows(MaaSException.class, () -> client.deleteTopicTemplate("my-template"));
+
+            mockServer.verify(request().withMethod("DELETE").withPath("/api/v2/kafka/topic-template"),
+                    VerificationTimes.exactly(1));
+        });
+    }
+
     /** Create is the operation a switchover interrupts most often, and it retries on any options. */
     @Test
     void testGetOrCreateTopicIsRetriedOnDefaultOptions(ClientAndServer mockServer) {

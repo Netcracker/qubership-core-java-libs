@@ -348,11 +348,13 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
                 .orElse(null);
     }
 
+    /** Not retried: a repeat finds no template and answers 404 for a delete that succeeded. */
     public TopicTemplate deleteTopicTemplate(String name) {
         log.info("Delete topic template by name: {}", name);
         return httpClient.request(apiProvider.getKafkaTopicTemplateUrl())
                 .delete(TopicTemplate.builder().name(name).build())
                 .expect(HTTP_OK)
+                .noRetry()
                 .sendAndReceive(TopicTemplate.class)
                 .orElse(null);
     }
