@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
+import static com.netcracker.cloud.consul.provider.spring.common.config.ConsulM2MConfigDataLocationResolver.ENV_CLOUD_NAMESPACE;
+import static com.netcracker.cloud.consul.provider.spring.common.config.ConsulM2MConfigDataLocationResolver.ENV_NAMESPACE;
 import static com.netcracker.cloud.consul.provider.spring.common.config.ConsulM2MConfigDataLocationResolver.PROP_CLOUD_NAMESPACE;
 import static com.netcracker.cloud.consul.provider.spring.common.config.ConsulM2MConfigDataLocationResolver.PROP_CONSUL_M2M_ENABLED;
 
@@ -226,11 +228,26 @@ class ConsulM2MConfigDataLocationResolverTest {
     }
 
     @Test
-    void unknownModeBreaksTheBinding() {
+    void unknownModeBreaksTheConfigDataPhase() {
         properties.put(PROP_LOGIN_MODE, "cloud-foundry");
 
-        Assertions.assertThrows(BindException.class, () ->
-                new Binder(new MapConfigurationPropertySource(properties))
-                        .bind(ConsulLoginProperties.PREFIX, ConsulLoginProperties.class));
+        Assertions.assertThrows(BindException.class, this::resolve);
+    }
+
+    @Test
+    void aMissingNamespaceBreaksTheConfigDataPhase() {
+        Assumptions.assumeTrue(System.getenv(ENV_NAMESPACE) == null && System.getenv(ENV_CLOUD_NAMESPACE) == null);
+        System.clearProperty(PROP_CLOUD_NAMESPACE);
+        properties.put(PROP_LOGIN_MODE, "kubernetes-with-m2m-fallback");
+
+        Assertions.assertThrows(IllegalArgumentException.class, this::resolve);
+    }
+
+    @Test
+    void unknownModeIsNotReadWhenTheExchangeIsOff() {
+        properties.put(PROP_CONSUL_M2M_ENABLED, "false");
+        properties.put(PROP_LOGIN_MODE, "cloud-foundry");
+
+        Assertions.assertNull(resolve().getAclToken());
     }
 }

@@ -42,10 +42,11 @@ relogin runs at 80% of `MaxTokenTTL`, and the recheck waits for the first relogi
 `MaxTokenTTL` of 24 hours a pod retries about every 19 hours whatever the interval says. Plan the migration of a fleet
 against `MaxTokenTTL`, and lower it on the auth method if the pods have to move over sooner.
 
-An unknown value of `spring.cloud.consul.config.login.mode` fails the startup. A failed login in the ConfigData phase
-does not, in any mode: the phase logs one `ERROR` record and the application starts without an ACL token, leaving the
-`TokenStorage` bean to obtain one, and Consul reads fail until it does. The bean is stricter — a login failure its
-retries do not fix ends the startup.
+An unknown `spring.cloud.consul.config.login.mode`, or no namespace in the `m2m` and `kubernetes-with-m2m-fallback`
+modes (`NAMESPACE` or `cloud.microservice.namespace`), ends the startup before the first login attempt. A failed login
+does not: the ConfigData phase logs one `ERROR` record and the application starts without an ACL token, so Consul reads
+fail until the `TokenStorage` bean obtains one. The bean is stricter — a login failure its retries do not fix ends the
+startup.
 
 The default is the auth method the platform registers. Set `spring.cloud.consul.config.login.auth-method` only if
 your Consul names it differently.

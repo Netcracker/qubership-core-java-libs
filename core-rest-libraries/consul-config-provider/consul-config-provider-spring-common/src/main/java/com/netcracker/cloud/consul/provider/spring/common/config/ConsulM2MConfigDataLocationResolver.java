@@ -2,6 +2,7 @@ package com.netcracker.cloud.consul.provider.spring.common.config;
 
 import org.apache.commons.logging.Log;
 import com.netcracker.cloud.consul.provider.common.ConsulLoginMode;
+import com.netcracker.cloud.consul.provider.common.ConsulTokenProvider;
 import com.netcracker.cloud.consul.provider.common.TokenStorageFactory;
 import com.netcracker.cloud.consul.provider.common.client.ConsulRestClient;
 import com.netcracker.cloud.consul.provider.spring.common.Utils;
@@ -19,7 +20,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponents;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -46,9 +46,9 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
      * before the application context exists. The phase runs without a context, so the mode is bound through {@link
      * Binder} rather than injected.
      *
-     * <p>A failed login is logged rather than thrown, in every mode: the application still starts, just without an ACL
-     * token, and the {@code TokenStorage} bean tries again. The catch covers {@link Exception}, not only {@link
-     * IOException}, so that a non-2xx answer from Consul and a malformed one leave the phase the same way.
+     * <p>Only the login is guarded: any failure of it is logged rather than thrown, and the application starts without
+     * an ACL token for the {@code TokenStorage} bean to obtain. An unusable configuration ends the phase — no attempt
+     * fixes it.
      */
     @Override
     protected ConsulConfigProperties loadConfigProperties(ConfigDataLocationResolverContext resolverContext) {
@@ -58,22 +58,23 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
         if (!isConsulM2MEnabled) {
             return consulConfigProperties;
         }
+        ConsulLoginProperties login = binder.bind(ConsulLoginProperties.PREFIX, ConsulLoginProperties.class)
+                .orElseGet(ConsulLoginProperties::new);
         ConsulProperties properties = resolverContext.getBootstrapContext().get(ConsulProperties.class);
+        Supplier<String> m2mTokenSupplier = () ->
+                resolverContext.getBootstrapContext().get(M2MManager.class).getToken().getTokenValue();
+        String consulAddress = Utils.formatConsulAddress(properties);
+        ConsulRestClient client = createConsulRestClient(consulAddress, m2mTokenSupplier);
+
+        TokenStorageFactory.CreateOptions.Builder options = login.toOptionsBuilder().consulUrl(consulAddress);
+        if (login.getMode() != ConsulLoginMode.KUBERNETES) {
+            options.namespace(getPropsOrEnvsMust(args(PROP_CLOUD_NAMESPACE), args(ENV_NAMESPACE, ENV_CLOUD_NAMESPACE)))
+                    .m2mSupplier(m2mTokenSupplier);
+        }
+        ConsulTokenProvider tokenProvider = TokenStorageFactory.from(client, options.build());
+
         try {
-            ConsulLoginProperties login = binder.bind(ConsulLoginProperties.PREFIX, ConsulLoginProperties.class)
-                    .orElseGet(ConsulLoginProperties::new);
-            Supplier<String> m2mTokenSupplier = () ->
-                    resolverContext.getBootstrapContext().get(M2MManager.class).getToken().getTokenValue();
-            String consulAddress = Utils.formatConsulAddress(properties);
-            ConsulRestClient client = createConsulRestClient(consulAddress, m2mTokenSupplier);
-
-            TokenStorageFactory.CreateOptions.Builder options = login.toOptionsBuilder().consulUrl(consulAddress);
-            if (login.getMode() != ConsulLoginMode.KUBERNETES) {
-                options.namespace(getPropsOrEnvsMust(args(PROP_CLOUD_NAMESPACE), args(ENV_NAMESPACE, ENV_CLOUD_NAMESPACE)))
-                        .m2mSupplier(m2mTokenSupplier);
-            }
-
-            consulConfigProperties.setAclToken(TokenStorageFactory.from(client, options.build()).getToken().getSecretId());
+            consulConfigProperties.setAclToken(tokenProvider.getToken().getSecretId());
         } catch (Exception e) {
             log.error("can not get consul token: ", e);
         }
