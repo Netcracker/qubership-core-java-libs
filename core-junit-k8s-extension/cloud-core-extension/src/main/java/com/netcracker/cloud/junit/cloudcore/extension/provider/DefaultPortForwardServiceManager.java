@@ -22,12 +22,12 @@ public class DefaultPortForwardServiceManager implements PortForwardServiceManag
     protected static Map<PortForwardConfig, PortForwardService> portForwardServiceMap = new ConcurrentHashMap<>();
     public static final String PORTFORWARD_FQDN_ENABLED_PROP = "portforward.fqdn.hosts.enabled";
     public static final String USE_FREE_LOCAL_PORTS_PROP = "portforward.use.free.local.ports";
-    public static final Boolean inCloudExecutionMode = "true".equalsIgnoreCase(System.getenv("IN_CLOUD_EXECUTION_MODE"));
+    public static final boolean IN_CLOUD_EXECUTION_MODE = "true".equalsIgnoreCase(System.getenv("IN_CLOUD_EXECUTION_MODE"));
 
     @Override
     public PortForwardService getPortForwardService(PortForwardConfig config) {
         return portForwardServiceMap.computeIfAbsent(config, c -> {
-            if (inCloudExecutionMode) {
+            if (IN_CLOUD_EXECUTION_MODE) {
                 return new DirectHostService();
             }
             KubernetesClientFactory kubernetesClientFactory = OrderedServiceLoader.load(KubernetesClientFactory.class)
