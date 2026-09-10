@@ -26,6 +26,10 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>dev.failsafe</groupId>
+            <artifactId>failsafe</artifactId>
+        </dependency>
         <!-- needed because of control-plane websock client implemented using okhttp client -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
