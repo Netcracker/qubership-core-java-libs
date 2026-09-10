@@ -7,6 +7,7 @@ This module can be included as a dependency directly to your microservice.
 - [How to use](#how-to-use)
   * [Steps to set up library](#steps-to-set-up-library)
   * [Redis creation params](#redis-creation-params)
+  * [SSL/TLS support](#ssltls-support)
   * [Usage of Spring beans created by library](#usage-of-spring-beans-created-by-library)
     + [Available beans when using `@EnableServiceDbaasRedis`](#available-beans-when-using-enableservicedbaasredis)
     + [Available beans when using `@EnableTenantDbaasRedis`](#available-beans-when-using-enabletenantdbaasredis)
@@ -60,7 +61,6 @@ Following properties can be used to configure Redis Connection:
 | dbaas.redis.timeout                            | Read timeout.                                                                                                                                                      | `2000`        |
 | dbaas.redis.connectTimeout                     | Connection timeout.                                                                                                                                                | `2000`        |
 | dbaas.redis.clientName                         | Client name to be set on connections with CLIENT SETNAME.                                                                                                          | `0`           |
-| dbaas.redis.ssl.enabled                        | Whether to enable SSL support.                                                                                                                                     | `false`       |
 | dbaas.redis.jedis.pool.maxActive               | Maximum number of connections that can be allocated by the pool at a given time. Use a negative value for no limit.                                                | `8`           |
 | dbaas.redis.jedis.pool.maxIdle                 | Maximum number of "idle" connections in the pool. Use a negative value to indicate an unlimited number of idle connections.                                        | `8`           |
 | dbaas.redis.jedis.pool.minIdle                 | Target for the minimum number of idle connections to maintain in the pool. This setting only has an effect if both it and time between eviction runs are positive. | `0`           |
@@ -75,6 +75,35 @@ They may be set in application.properties/application.yml file.
 | Property                             | Description                                                                   | Default Value |
 |--------------------------------------|-------------------------------------------------------------------------------|---------------|
 | dbaas.api.redis.db-prefix            | Prefix to the database name                                                   | -             |
+
+### SSL/TLS support
+
+This library supports work with secured connections to redis. Connection will be secured if TLS mode is enabled in
+redis-adapter.
+
+For correct work with secured connections, the library requires having a truststore with certificate.
+It may be public cloud certificate, cert-manager's certificate or any type of certificates related to database.
+We do not recommend use self-signed certificates. Instead, use default NC-CA.
+
+To start using TLS feature user has to enable it on the physical database (adapter's) side and add certificate to service truststore.
+
+#### Physical database switching
+
+> These parameters are given as an example. For reliable information, check adapter's documentation: https://github.com/Netcracker/qubership-redis/blob/main/redis-operator/docs/public/installation_guide.md#redis-parameters
+
+To enable TLS support in physical database redeploy redis with mandatory parameters
+```yaml
+redis.tls.enabled=true
+```
+
+In case of using cert-manager as certificates source add extra parameters
+```yaml
+redis.tls.generateCerts.enabled=true
+redis.tls.generateCerts.clusterIssuerName=<cluster issuer name>
+```
+
+ClusterIssuerName identifies which Certificate Authority cert-manager will use to issue a certificate.
+It can be obtained from the person in charge of the cert-manager on the environment.
 
 
 ### Usage of Spring beans created by library

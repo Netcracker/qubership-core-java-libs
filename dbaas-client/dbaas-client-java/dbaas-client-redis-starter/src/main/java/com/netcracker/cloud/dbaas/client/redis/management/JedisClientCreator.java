@@ -33,6 +33,9 @@ public class JedisClientCreator implements DatabaseClientCreator<RedisDatabase, 
         redisStandaloneConfiguration.setPassword(password);
 
         JedisClientConfiguration.JedisClientConfigurationBuilder configBuilder = JedisClientConfiguration.builder();
+        if(connectionProperties.isTls()) {
+            configBuilder.useSsl();
+        }
         applyPropertiesConfiguration(configBuilder);
         JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory(redisStandaloneConfiguration, configBuilder.build());
         jedisConnectionFactory.afterPropertiesSet();
@@ -46,7 +49,6 @@ public class JedisClientCreator implements DatabaseClientCreator<RedisDatabase, 
 
     private void applyPropertiesConfiguration(JedisClientConfiguration.JedisClientConfigurationBuilder configBuilder) {
         PropertyMapper mapper = PropertyMapper.get();
-        mapper.from(redisProperties.getSsl().isEnabled()).whenTrue().toCall(configBuilder::useSsl);
         mapper.from(redisProperties.getTimeout()).to(configBuilder::readTimeout);
         mapper.from(redisProperties.getConnectTimeout()).to(configBuilder::connectTimeout);
         mapper.from(redisProperties.getClientName()).to(configBuilder::clientName);
