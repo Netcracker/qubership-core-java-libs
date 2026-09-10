@@ -2,6 +2,7 @@ package com.netcracker.maas.declarative.kafka.client.impl.client.consumer.execut
 
 import com.netcracker.maas.declarative.kafka.client.impl.common.bg.KafkaConsumerConfiguration;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.errors.CoordinatorNotAvailableException;
 import org.apache.kafka.common.errors.FencedInstanceIdException;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.AfterEach;
@@ -15,6 +16,7 @@ import com.netcracker.cloud.bluegreen.impl.util.EnvUtil;
 import com.netcracker.cloud.maas.bluegreen.kafka.BGKafkaConsumer;
 import com.netcracker.cloud.maas.bluegreen.kafka.CommitMarker;
 import com.netcracker.cloud.maas.bluegreen.kafka.Record;
+import com.netcracker.cloud.maas.bluegreen.kafka.PartitionsAssignedListener;
 import com.netcracker.cloud.maas.bluegreen.kafka.RecordsBatch;
 import com.netcracker.maas.declarative.kafka.client.api.exception.MaasKafkaIllegalStateException;
 import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
@@ -690,6 +692,108 @@ class MaasConsumingExecutorTest {
             // queueSize drops below resumeThreshold(1) → resume applied
             verify(consumer, timeout(5_000).atLeastOnce()).resume();
         } finally {
+            executor.close();
+        }
+    }
+
+    @Test
+    void testCommitFailureRecoversAndTheOffsetIsCommittedOnRedelivery() {
+        var consumer = mock(BGKafkaConsumer.class);
+        var barrier = new SyncBarrier();
+        var consumerCreatorService = mock(KafkaClientCreationService.class);
+        when(consumerCreatorService.createKafkaConsumer(any(), any(), any(), any(), any(), any())).thenReturn(consumer);
+
+        var recordHandler = mock(Consumer.class);
+        ctx.setHandler(recordHandler);
+
+        // the coordinator goes away between two polls: the first commit fails, and the marker it
+        // carried is already out of readyToCommit, so only redelivery can get that offset committed
+        doThrow(new CoordinatorNotAvailableException("coordinator gone"))
+                .doNothing()
+                .when(consumer).commitSync(any());
+
+        when(consumer.poll(any()))
+                .thenAnswer(i -> recordsGenerator.next())
+                .thenAnswer(i -> recordsGenerator.next())
+                .thenAnswer(i -> {
+                    barrier.notify("drained");
+                    return Optional.empty();
+                });
+
+        var executor = new MaasConsumingExecutor(ctx,
+                (exception, errorRecord, handledRecords) -> {
+                },
+                consumerCreatorService,
+                List.of(),
+                new InMemoryBlueGreenStatePublisher());
+
+        try {
+            executor.start();
+            executor.init();
+            barrier.await("drained", Duration.ofSeconds(10));
+
+            // the failed commit is treated like any other consuming error: the consumer is dropped
+            // and rebuilt, and the executor keeps running rather than stopping on it
+            verify(consumer, timeout(10_000).atLeastOnce()).close();
+            verify(consumerCreatorService, timeout(10_000).atLeast(2))
+                    .createKafkaConsumer(any(), any(), any(), any(), any(), any());
+            verify(consumer, timeout(10_000).atLeast(2)).commitSync(any());
+        } finally {
+            executor.close();
+        }
+    }
+
+    @Test
+    void testPauseIsReappliedOnTheConsumerBuiltAfterAFailure() {
+        var failing = mock(BGKafkaConsumer.class);
+        var replacement = mock(BGKafkaConsumer.class);
+        var barrier = new SyncBarrier();
+        var consumerCreatorService = mock(KafkaClientCreationService.class);
+        when(consumerCreatorService.createKafkaConsumer(any(), any(), any(), any(), any(), any()))
+                .thenReturn(failing)
+                .thenReturn(replacement);
+
+        // max.poll.records=2 -> pauseThreshold=3, so two polls with a blocked worker pause the consumer
+        var configs = new HashMap<String, Object>();
+        configs.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "2");
+        ctx.setBlueGreenConfiguration(KafkaConsumerConfiguration.builder(configs).build());
+
+        var recordHandler = mock(Consumer.class);
+        ctx.setHandler(recordHandler);
+        doAnswer(i -> {
+            barrier.await("release-worker", Duration.ofSeconds(10));
+            return null;
+        })
+                .doNothing()
+                .when(recordHandler).accept(any());
+
+        when(failing.poll(any()))
+                .thenAnswer(i -> recordsGenerator.next())
+                .thenAnswer(i -> recordsGenerator.next())
+                .thenThrow(new FencedInstanceIdException("connection lost while paused"));
+        when(replacement.poll(any())).thenReturn(Optional.empty());
+
+        var executor = new MaasConsumingExecutor(ctx,
+                (exception, errorRecord, handledRecords) -> {
+                },
+                consumerCreatorService,
+                List.of(),
+                new InMemoryBlueGreenStatePublisher());
+
+        try {
+            executor.start();
+            executor.init();
+            verify(failing, timeout(10_000).atLeastOnce()).pause();
+
+            var listener = ArgumentCaptor.forClass(PartitionsAssignedListener.class);
+            verify(replacement, timeout(10_000)).setPartitionsAssignedListener(listener.capture());
+
+            // kafka clears the pause on revoke, so the replacement has to pause again as soon as it
+            // is given partitions; otherwise the records the worker cannot take yet are fetched anyway
+            listener.getValue().onPartitionsAssigned(List.of(new TopicPartition("orders", 0)));
+            verify(replacement, timeout(10_000).atLeastOnce()).pause();
+        } finally {
+            barrier.notify("release-worker");
             executor.close();
         }
     }
