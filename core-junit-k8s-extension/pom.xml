@@ -3,7 +3,7 @@
     <packaging>pom</packaging>
     <groupId>com.netcracker.cloud.junit.cloudcore</groupId>
     <artifactId>cloud-core-parent</artifactId>
-    <version>8.10.3-SNAPSHOT</version>
+    <version>8.10.3-JUNIT-K8S-SNAPSHOT</version>
 
     <licenses>
         <license>

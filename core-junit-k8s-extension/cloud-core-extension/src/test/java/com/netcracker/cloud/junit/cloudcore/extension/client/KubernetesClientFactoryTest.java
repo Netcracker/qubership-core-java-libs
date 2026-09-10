@@ -30,6 +30,7 @@ public class KubernetesClientFactoryTest {
         try {
             System.setProperty("clouds.cloud.name", cloud);
             System.setProperty("clouds.cloud.namespaces.namespace", namespace);
+            System.setProperty("config.local.development", "true");
 
             Config config = Mockito.mock(Config.class);
             AtomicReference<Consumer<HttpClient.Builder>> consumer = new AtomicReference<>();

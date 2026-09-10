@@ -2,6 +2,7 @@ package com.netcracker.cloud.junit.cloudcore.extension.provider;
 
 import com.netcracker.cloud.junit.cloudcore.extension.annotations.Priority;
 import com.netcracker.cloud.junit.cloudcore.extension.client.KubernetesClientFactory;
+import com.netcracker.cloud.junit.cloudcore.extension.service.DirectHostService;
 import com.netcracker.cloud.junit.cloudcore.extension.service.PortForwardService;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.extern.slf4j.Slf4j;
@@ -19,15 +20,20 @@ import java.util.stream.Collectors;
 public class DefaultPortForwardServiceManager implements PortForwardServiceManager {
 
     protected static Map<PortForwardConfig, PortForwardService> portForwardServiceMap = new ConcurrentHashMap<>();
-    public static String PORTFORWARD_FQDN_ENABLED_PROP = "portforward.fqdn.hosts.enabled";
-    public static String USE_FREE_LOCAL_PORTS_PROP = "portforward.use.free.local.ports";
+    public static final String PORTFORWARD_FQDN_ENABLED_PROP = "portforward.fqdn.hosts.enabled";
+    public static final String USE_FREE_LOCAL_PORTS_PROP = "portforward.use.free.local.ports";
+    public static final boolean IN_CLOUD_EXECUTION_MODE = "true".equalsIgnoreCase(System.getenv("IN_CLOUD_EXECUTION_MODE"));
 
     @Override
     public PortForwardService getPortForwardService(PortForwardConfig config) {
         return portForwardServiceMap.computeIfAbsent(config, c -> {
+            if (IN_CLOUD_EXECUTION_MODE) {
+                return new DirectHostService();
+            }
             KubernetesClientFactory kubernetesClientFactory = OrderedServiceLoader.load(KubernetesClientFactory.class)
                     .orElseThrow(() -> new IllegalStateException("No KubernetesClientFactory implementation found"));
-            KubernetesClient kubernetesClient = kubernetesClientFactory.getKubernetesClient(c.getCloud(), c.getNamespace());
+            KubernetesClient kubernetesClient;
+            kubernetesClient = kubernetesClientFactory.getKubernetesClient(c.getCloud(), c.getNamespace());
             boolean fqdnFromProp = Boolean.parseBoolean(System.getProperty(PORTFORWARD_FQDN_ENABLED_PROP, "false"));
             boolean useFreeLocalPorts = Boolean.parseBoolean(System.getProperty(USE_FREE_LOCAL_PORTS_PROP, "false"));
             Pattern cloudPropPattern = Pattern.compile("^clouds\\.(?<name>[^.]+)\\.name$");

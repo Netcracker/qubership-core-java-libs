@@ -1,6 +1,5 @@
 package com.netcracker.cloud.junit.cloudcore.extension.service;
 
-import com.netcracker.cloud.junit.cloudcore.extension.provider.DefaultPortForwardServiceManager;
 import com.netcracker.cloud.junit.cloudcore.extension.provider.LocalHostAddressGenerator;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodList;
@@ -70,16 +69,16 @@ public class PortForwardServiceTest {
             Map<Endpoint, LocalPortForward> cache = new HashMap<>();
             PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache, true, false);
 
-            NetSocketAddress netSocketAddress1_attempt1 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
-            assertNotNull(netSocketAddress1_attempt1);
+            NetSocketAddress netSocketAddress1Attempt1 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
+            assertNotNull(netSocketAddress1Attempt1);
 
-            NetSocketAddress netSocketAddress1_attempt2 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
-            assertNotNull(netSocketAddress1_attempt2);
-            assertEquals(netSocketAddress1_attempt1, netSocketAddress1_attempt2);
+            NetSocketAddress netSocketAddress1Attempt2 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
+            assertNotNull(netSocketAddress1Attempt2);
+            assertEquals(netSocketAddress1Attempt1, netSocketAddress1Attempt2);
 
             NetSocketAddress netSocketAddress2 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8181).build());
             assertNotNull(netSocketAddress2);
-            assertNotEquals(netSocketAddress1_attempt1, netSocketAddress2);
+            assertNotEquals(netSocketAddress1Attempt1, netSocketAddress2);
 
             portForwardService.closePortForward(new Endpoint(host, 8080));
             assertEquals(1, cache.size());
@@ -134,16 +133,16 @@ public class PortForwardServiceTest {
             Map<Endpoint, LocalPortForward> cache = new HashMap<>();
             PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache, false, false);
 
-            NetSocketAddress netSocketAddress1_attempt1 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
-            assertNotNull(netSocketAddress1_attempt1);
+            NetSocketAddress netSocketAddress1Attempt1 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
+            assertNotNull(netSocketAddress1Attempt1);
 
-            NetSocketAddress netSocketAddress1_attempt2 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
-            assertNotNull(netSocketAddress1_attempt2);
-            assertEquals(netSocketAddress1_attempt1, netSocketAddress1_attempt2);
+            NetSocketAddress netSocketAddress1Attempt2 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
+            assertNotNull(netSocketAddress1Attempt2);
+            assertEquals(netSocketAddress1Attempt1, netSocketAddress1Attempt2);
 
             NetSocketAddress netSocketAddress2 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8181).build());
             assertNotNull(netSocketAddress2);
-            assertNotEquals(netSocketAddress1_attempt1, netSocketAddress2);
+            assertNotEquals(netSocketAddress1Attempt1, netSocketAddress2);
 
             portForwardService.closePortForward(new Endpoint(host, 8080));
             assertEquals(1, cache.size());
@@ -204,16 +203,16 @@ public class PortForwardServiceTest {
             Map<Endpoint, LocalPortForward> cache = new HashMap<>();
             PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache, false, false);
 
-            NetSocketAddress netSocketAddress1_attempt1 = portForwardService.portForward(PodPortForwardParams.builder(SERVICE_NAME, 8080).podName("pod-1").build());
-            assertNotNull(netSocketAddress1_attempt1);
+            NetSocketAddress netSocketAddressAttempt1 = portForwardService.portForward(PodPortForwardParams.builder(SERVICE_NAME, 8080).podName("pod-1").build());
+            assertNotNull(netSocketAddressAttempt1);
 
-            NetSocketAddress netSocketAddress1_attempt2 = portForwardService.portForward(PodPortForwardParams.builder(SERVICE_NAME, 8080).podName("pod-1").build());
-            assertNotNull(netSocketAddress1_attempt2);
-            assertEquals(netSocketAddress1_attempt1, netSocketAddress1_attempt2);
+            NetSocketAddress netSocketAddressAttempt2 = portForwardService.portForward(PodPortForwardParams.builder(SERVICE_NAME, 8080).podName("pod-1").build());
+            assertNotNull(netSocketAddressAttempt2);
+            assertEquals(netSocketAddressAttempt1, netSocketAddressAttempt2);
 
             NetSocketAddress netSocketAddress2 = portForwardService.portForward(PodPortForwardParams.builder(SERVICE_NAME, 8080).podName("pod-2").build());
             assertNotNull(netSocketAddress2);
-            assertNotEquals(netSocketAddress1_attempt1, netSocketAddress2);
+            assertNotEquals(netSocketAddressAttempt1, netSocketAddress2);
 
             assertEquals(2, cache.size());
 
@@ -268,16 +267,16 @@ public class PortForwardServiceTest {
             Map<Endpoint, LocalPortForward> cache = new HashMap<>();
             PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache, false, false);
 
-            NetSocketAddress netSocketAddress1_attempt1 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
-            assertNotNull(netSocketAddress1_attempt1);
+            NetSocketAddress netSocketAddressAttempt1 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
+            assertNotNull(netSocketAddressAttempt1);
 
-            NetSocketAddress netSocketAddress1_attempt2 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
-            assertNotNull(netSocketAddress1_attempt2);
-            assertEquals(netSocketAddress1_attempt1, netSocketAddress1_attempt2);
+            NetSocketAddress netSocketAddressAttempt2 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
+            assertNotNull(netSocketAddressAttempt2);
+            assertEquals(netSocketAddressAttempt1, netSocketAddressAttempt2);
 
             NetSocketAddress netSocketAddress2 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8181).build());
             assertNotNull(netSocketAddress2);
-            assertNotEquals(netSocketAddress1_attempt1, netSocketAddress2);
+            assertNotEquals(netSocketAddressAttempt1, netSocketAddress2);
 
             portForwardService.closePortForward(new Endpoint(host, 8080));
             assertEquals(1, cache.size());
@@ -339,18 +338,18 @@ public class PortForwardServiceTest {
             Map<Endpoint, LocalPortForward> cache = new HashMap<>();
             PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache, false, true);
 
-            NetSocketAddress netSocketAddress1_attempt1 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
-            assertNotNull(netSocketAddress1_attempt1);
+            NetSocketAddress netSocketAddressAttempt1 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
+            assertNotNull(netSocketAddressAttempt1);
 
-            NetSocketAddress netSocketAddress1_attempt2 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
-            assertNotNull(netSocketAddress1_attempt2);
-            assertEquals(netSocketAddress1_attempt1, netSocketAddress1_attempt2);
+            NetSocketAddress netSocketAddressAttempt2 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
+            assertNotNull(netSocketAddressAttempt2);
+            assertEquals(netSocketAddressAttempt1, netSocketAddressAttempt2);
 
             NetSocketAddress netSocketAddress2 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8181).build());
             assertNotNull(netSocketAddress2);
-            assertNotEquals(netSocketAddress1_attempt1, netSocketAddress2);
+            assertNotEquals(netSocketAddressAttempt1, netSocketAddress2);
 
-            Assertions.assertEquals(10101, netSocketAddress1_attempt2.getPort());
+            Assertions.assertEquals(10101, netSocketAddressAttempt2.getPort());
             Assertions.assertEquals(10102, netSocketAddress2.getPort());
 
             portForwardService.closePortForward(new Endpoint(host, 8080));
@@ -368,6 +367,39 @@ public class PortForwardServiceTest {
             verify(localPortForward8181).close();
 
             assertEquals(true, supplierArgumentCaptor.getValue().get());
+        }
+    }
+
+    @Test
+    void testDirectCommunication() throws Exception {
+        String host = "test-service";
+        try (MockedStatic<LocalHostAddressGenerator> localHostAddressGeneratorMockedStatic =
+                     Mockito.mockStatic(LocalHostAddressGenerator.class)) {
+
+            LocalPortForward localPortForward8080 = mock(LocalPortForward.class);
+            LocalPortForward localPortForward8181 = mock(LocalPortForward.class);
+
+            PortForwardService directCommunicationService = new DirectHostService();
+
+            NetSocketAddress netSocketAddressAttempt1 = directCommunicationService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
+            assertNotNull(netSocketAddressAttempt1);
+
+            NetSocketAddress netSocketAddressAttempt2 = directCommunicationService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
+            assertNotNull(netSocketAddressAttempt2);
+            assertEquals(netSocketAddressAttempt1, netSocketAddressAttempt2);
+
+            NetSocketAddress netSocketAddress2 = directCommunicationService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8181).build());
+            assertNotNull(netSocketAddress2);
+            assertNotEquals(netSocketAddressAttempt1, netSocketAddress2);
+
+            directCommunicationService.closePortForward(new Endpoint(host, 8080));
+            verify(localPortForward8080, times(0)).close();
+            verify(localPortForward8181, times(0)).close();
+
+            localHostAddressGeneratorMockedStatic.verify(() -> LocalHostAddressGenerator.cleanup(any(),any()), times(0));
+
+            directCommunicationService.closePortForwards();
+            verify(localPortForward8181, times(0)).close();
         }
     }
 

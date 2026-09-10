@@ -21,7 +21,8 @@ import static com.netcracker.cloud.junit.cloudcore.extension.provider.OrderedSer
 public class DefaultKubernetesClientFactory implements AutoCloseable, KubernetesClientFactory {
 
     public static final String PORTFORWARD_FQDN_ENABLED_PROP = "portforward.fqdn.enabled";
-
+    public static final boolean IN_CLOUD_EXECUTION_MODE = "true".equalsIgnoreCase(System.getenv("IN_CLOUD_EXECUTION_MODE"));
+    private static final ConcurrentHashMap<CloudAndNamespace, KubernetesClient> clientsMap = new ConcurrentHashMap<>();
     private final Config config;
 
     public DefaultKubernetesClientFactory() {
@@ -32,25 +33,29 @@ public class DefaultKubernetesClientFactory implements AutoCloseable, Kubernetes
         this.config = config;
     }
 
-    private final static ConcurrentHashMap<CloudAndNamespace, KubernetesClient> clientsMap = new ConcurrentHashMap<>();
-
     public Collection<String> getKubernetesContexts() {
         return config.getContexts().stream().map(NamedContext::getName).toList();
     }
 
     public KubernetesClient getKubernetesClient(String context, String namespace) {
         return clientsMap.computeIfAbsent(new CloudAndNamespace(context, namespace), cloudAndNamespace -> {
-            String cloud = cloudAndNamespace.getCloud();
-            NamedContext namedContext = config.getContexts().stream()
-                    .filter(c -> Objects.equals(c.getName(), cloud)).findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException(String.format("Unknown context: '%s'. Known contexts:\n[%s]",
-                            cloud, String.join(",\n", getKubernetesContexts()))));
             Config config;
-            if (Objects.equals(cloud, this.config.getCurrentContext().getName())) {
-                config = this.config;
+            if (IN_CLOUD_EXECUTION_MODE) {
+                config = Config.autoConfigure(null);
             } else {
-                config = Config.autoConfigure(namedContext.getName());
+                String cloud = cloudAndNamespace.getCloud();
+                NamedContext namedContext = this.config.getContexts().stream()
+                        .filter(c -> Objects.equals(c.getName(), cloud)).findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException(String.format("Unknown context: '%s'. Known contexts:\n[%s]",
+                                cloud, String.join(",\n", getKubernetesContexts()))));
+
+                if (Objects.equals(cloud, this.config.getCurrentContext().getName())) {
+                    config = this.config;
+                } else {
+                    config = Config.autoConfigure(namedContext.getName());
+                }
             }
+
             List<Fabric8ConfigBuilderAdapter> fabric8ConfigBuilderAdapters =
                     OrderedServiceLoader.loadAll(Fabric8ConfigBuilderAdapter.class, ASC);
             if (fabric8ConfigBuilderAdapters.isEmpty()) {
@@ -77,7 +82,7 @@ public class DefaultKubernetesClientFactory implements AutoCloseable, Kubernetes
 
     @Override
     public String getCurrentContext() {
-        return config.getCurrentContext().getName();
+        return IN_CLOUD_EXECUTION_MODE ? "local" : config.getCurrentContext().getName();
     }
 
     @Override
