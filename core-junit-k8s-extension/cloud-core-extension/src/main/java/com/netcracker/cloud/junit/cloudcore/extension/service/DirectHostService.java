@@ -26,13 +26,16 @@ public class DirectHostService  extends PortForwardService {
 
     @Override
     public void closePortForwards() {
+        /* No need to close port forward that does not exist */
     }
 
     @Override
     public void closePortForward(Endpoint endpoint) {
+        /* No need to close port forward that does not exist */
     }
 
     @Override
     public void closePortForward(LocalPortForward portForward) {
+        /* No need to close port forward that does not exist */
     }
 }

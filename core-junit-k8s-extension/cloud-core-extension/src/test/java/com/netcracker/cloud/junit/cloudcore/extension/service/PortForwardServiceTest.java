@@ -69,16 +69,16 @@ public class PortForwardServiceTest {
             Map<Endpoint, LocalPortForward> cache = new HashMap<>();
             PortForwardService portForwardService = new PortForwardService(kubernetesClient, cache, true, false);
 
-            NetSocketAddress netSocketAddress1_attempt1 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
-            assertNotNull(netSocketAddress1_attempt1);
+            NetSocketAddress netSocketAddress1Attempt1 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
+            assertNotNull(netSocketAddress1Attempt1);
 
-            NetSocketAddress netSocketAddress1_attempt2 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
-            assertNotNull(netSocketAddress1_attempt2);
-            assertEquals(netSocketAddress1_attempt1, netSocketAddress1_attempt2);
+            NetSocketAddress netSocketAddress1Attempt2 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
+            assertNotNull(netSocketAddress1Attempt2);
+            assertEquals(netSocketAddress1Attempt1, netSocketAddress1Attempt2);
 
             NetSocketAddress netSocketAddress2 = portForwardService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8181).build());
             assertNotNull(netSocketAddress2);
-            assertNotEquals(netSocketAddress1_attempt1, netSocketAddress2);
+            assertNotEquals(netSocketAddress1Attempt1, netSocketAddress2);
 
             portForwardService.closePortForward(new Endpoint(host, 8080));
             assertEquals(1, cache.size());

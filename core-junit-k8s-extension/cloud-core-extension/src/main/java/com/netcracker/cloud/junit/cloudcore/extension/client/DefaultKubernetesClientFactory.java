@@ -21,8 +21,8 @@ import static com.netcracker.cloud.junit.cloudcore.extension.provider.OrderedSer
 public class DefaultKubernetesClientFactory implements AutoCloseable, KubernetesClientFactory {
 
     public static final String PORTFORWARD_FQDN_ENABLED_PROP = "portforward.fqdn.enabled";
-    public final static Boolean in_cloud_execution_mode = "true".equalsIgnoreCase(System.getenv("IN_CLOUD_EXECUTION_MODE"));
-    private final static ConcurrentHashMap<CloudAndNamespace, KubernetesClient> clientsMap = new ConcurrentHashMap<>();
+    public static final Boolean inCloudExecutionMode = "true".equalsIgnoreCase(System.getenv("IN_CLOUD_EXECUTION_MODE"));
+    private static final ConcurrentHashMap<CloudAndNamespace, KubernetesClient> clientsMap = new ConcurrentHashMap<>();
     private final Config config;
 
     public DefaultKubernetesClientFactory() {
@@ -40,7 +40,7 @@ public class DefaultKubernetesClientFactory implements AutoCloseable, Kubernetes
     public KubernetesClient getKubernetesClient(String context, String namespace) {
         return clientsMap.computeIfAbsent(new CloudAndNamespace(context, namespace), cloudAndNamespace -> {
             Config config;
-            if (in_cloud_execution_mode) {
+            if (inCloudExecutionMode) {
                 config = Config.autoConfigure(null);
             } else {
                 String cloud = cloudAndNamespace.getCloud();
@@ -82,7 +82,7 @@ public class DefaultKubernetesClientFactory implements AutoCloseable, Kubernetes
 
     @Override
     public String getCurrentContext() {
-        return in_cloud_execution_mode ? "local" : config.getCurrentContext().getName();
+        return inCloudExecutionMode ? "local" : config.getCurrentContext().getName();
     }
 
     @Override
