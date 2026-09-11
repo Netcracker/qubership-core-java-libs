@@ -3,6 +3,7 @@ package com.netcracker.cloud.consul.provider.spring.resttemplate.config;
 import com.netcracker.cloud.consul.provider.common.TokenStorage;
 import com.netcracker.cloud.consul.provider.common.TokenStorageFactory;
 import com.netcracker.cloud.consul.provider.spring.common.SpringTokenStorageFactory;
+import com.netcracker.cloud.consul.provider.spring.common.config.ConsulLoginProperties;
 import com.netcracker.cloud.consul.provider.spring.common.Utils;
 import com.netcracker.cloud.restclient.resttemplate.MicroserviceRestTemplate;
 import com.netcracker.cloud.security.core.auth.DummyM2MManager;
@@ -15,10 +16,12 @@ import org.springframework.cloud.consul.ConditionalOnConsulEnabled;
 import org.springframework.cloud.consul.ConsulProperties;
 import org.springframework.cloud.consul.config.ConsulConfigProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
+@EnableConfigurationProperties(ConsulLoginProperties.class)
 @ConditionalOnConsulEnabled
 //@EnableM2MManager // TODO why it is commented out?
 @ConditionalOnProperty(value = "spring.cloud.consul.config.m2m.enabled", havingValue = "true", matchIfMissing = true)
@@ -28,14 +31,22 @@ public class ConsulM2MRestTemplateAutoConfiguration {
     @Bean
     public TokenStorage consulTokenStorageViaM2MRestTemplate(ConsulConfigProperties consulConfigProperties,
                                                              ConsulProperties consulProperties,
-                                                             M2MManager m2MManager) {
+                                                             M2MManager m2MManager,
+                                                             ConsulLoginProperties loginProperties) {
         TokenStorageFactory factory = new SpringTokenStorageFactory(consulConfigProperties, new MicroserviceRestTemplate());
 
-        return factory.create(new TokenStorageFactory.CreateOptions.Builder()
+        return factory.create(createOptions(loginProperties, consulProperties, m2MManager, System.getenv("NAMESPACE")));
+    }
+
+    static TokenStorageFactory.CreateOptions createOptions(ConsulLoginProperties loginProperties,
+                                                           ConsulProperties consulProperties,
+                                                           M2MManager m2MManager,
+                                                           String namespace) {
+        return loginProperties.toOptionsBuilder()
                 .consulUrl(Utils.formatConsulAddress(consulProperties))
-                .namespace(System.getenv("NAMESPACE"))
+                .namespace(namespace)
                 .m2mSupplier(() -> m2MManager.getToken().getTokenValue())
-                .build());
+                .build();
     }
 
 

@@ -1,7 +1,9 @@
 package com.netcracker.cloud.consul.provider.spring.common.config;
 
 import org.apache.commons.logging.Log;
-import com.netcracker.cloud.consul.provider.common.TokenProvider;
+import com.netcracker.cloud.consul.provider.common.ConsulLoginMode;
+import com.netcracker.cloud.consul.provider.common.ConsulTokenProvider;
+import com.netcracker.cloud.consul.provider.common.TokenStorageFactory;
 import com.netcracker.cloud.consul.provider.common.client.ConsulRestClient;
 import com.netcracker.cloud.consul.provider.spring.common.Utils;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
@@ -9,6 +11,7 @@ import com.netcracker.cloud.security.core.auth.M2MManager;
 import org.springframework.boot.bootstrap.BootstrapRegistry;
 import org.springframework.boot.context.config.ConfigDataLocation;
 import org.springframework.boot.context.config.ConfigDataLocationResolverContext;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.cloud.consul.ConsulProperties;
 import org.springframework.cloud.consul.config.ConsulConfigDataLocationResolver;
@@ -17,7 +20,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponents;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,21 +41,42 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
         this.log = log.getLog(ConsulM2MConfigDataLocationResolver.class);
     }
 
+    /**
+     * Logs in once and writes the {@code SecretID} into {@link ConsulConfigProperties}, so that Consul is readable
+     * before the application context exists. The phase runs without a context, so the mode is bound through {@link
+     * Binder} rather than injected.
+     *
+     * <p>Only the login is guarded: any failure of it is logged rather than thrown, and the application starts without
+     * an ACL token for the {@code TokenStorage} bean to obtain. An unusable configuration ends the phase — no attempt
+     * fixes it.
+     */
     @Override
     protected ConsulConfigProperties loadConfigProperties(ConfigDataLocationResolverContext resolverContext) {
         ConsulConfigProperties consulConfigProperties = super.loadConfigProperties(resolverContext);
-        boolean isConsulM2MEnabled = resolverContext.getBinder().bind(PROP_CONSUL_M2M_ENABLED, Boolean.class).orElse(true);
+        Binder binder = resolverContext.getBinder();
+        boolean isConsulM2MEnabled = binder.bind(PROP_CONSUL_M2M_ENABLED, Boolean.class).orElse(true);
         if (!isConsulM2MEnabled) {
             return consulConfigProperties;
         }
+        ConsulLoginProperties login = binder.bind(ConsulLoginProperties.PREFIX, ConsulLoginProperties.class)
+                .orElseGet(ConsulLoginProperties::new);
         ConsulProperties properties = resolverContext.getBootstrapContext().get(ConsulProperties.class);
+        Supplier<String> m2mTokenSupplier = () ->
+                resolverContext.getBootstrapContext().get(M2MManager.class).getToken().getTokenValue();
+        String consulAddress = Utils.formatConsulAddress(properties);
+        ConsulRestClient client = createConsulRestClient(consulAddress, m2mTokenSupplier);
+
+        TokenStorageFactory.CreateOptions.Builder options = login.toOptionsBuilder().consulUrl(consulAddress);
+        if (login.getMode() != ConsulLoginMode.KUBERNETES) {
+            options.namespace(getPropsOrEnvsMust(args(PROP_CLOUD_NAMESPACE), args(ENV_NAMESPACE, ENV_CLOUD_NAMESPACE)))
+                    .m2mSupplier(m2mTokenSupplier);
+        }
+        ConsulTokenProvider tokenProvider = TokenStorageFactory.from(client, options.build());
+
         try {
-            M2MManager m2MManager = resolverContext.getBootstrapContext().get(M2MManager.class);
-            ConsulRestClient client = createConsulRestClient(Utils.formatConsulAddress(properties), () -> m2MManager.getToken().getTokenValue());
-            TokenProvider tokenProvider = new TokenProvider(client, getPropsOrEnvsMust(args(PROP_CLOUD_NAMESPACE), args(ENV_NAMESPACE, ENV_CLOUD_NAMESPACE)));
-            consulConfigProperties.setAclToken(tokenProvider.getNewConsulToken().getSecretId());
-        } catch (IOException e) {
-            log.error("can not get consul token by m2m: ", e);
+            consulConfigProperties.setAclToken(tokenProvider.getToken().getSecretId());
+        } catch (Exception e) {
+            log.error("can not get consul token: ", e);
         }
         registerAndPromoteBean(resolverContext, ConsulProperties.class, BootstrapRegistry.InstanceSupplier.of(properties));
         return consulConfigProperties;

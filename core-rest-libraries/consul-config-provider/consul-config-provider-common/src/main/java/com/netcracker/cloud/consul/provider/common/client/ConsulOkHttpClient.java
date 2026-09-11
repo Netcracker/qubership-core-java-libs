@@ -1,6 +1,7 @@
 package com.netcracker.cloud.consul.provider.common.client;
 
 import com.google.gson.Gson;
+import com.netcracker.cloud.consul.provider.common.ConsulLoginCredentials;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -48,25 +49,35 @@ public class ConsulOkHttpClient implements ConsulClient {
 
     @Override
     public ConsulClientResponse login(String authMethod) {
-        Map<String, String> payload = new HashMap<>();
-        payload.put(AUTH_METHOD_FIELD, authMethod);
-        payload.put(BEARER_TOKEN_FIELD, m2mTokenSupplier.get());
-        String json = new Gson().toJson(payload);
-        log.info("Perform login to {} with {} auth method", consulAddr, authMethod);
-        Response response;
-        String responseBody = "";
         try {
-            response = client.newCall(new Request.Builder()
-                    .post(RequestBody.create(MediaType.parse(APPLICATION_JSON), json))
-                    .url(consulAddr + V1_ACL_LOGIN)
-                    .addHeader(CONTENT_TYPE, APPLICATION_JSON)
-                    .build()
-            ).execute();
-            responseBody = response.body().string();
+            return login(authMethod, m2mTokenSupplier.get());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return new ConsulClientResponse(responseBody, response.code());
     }
-}
 
+    /**
+     * Unlike the deprecated {@link #login(String)}, lets a transport {@link IOException} out instead of wrapping it:
+     * retries and the fallback decision act on that type.
+     */
+    @Override
+    public ConsulClientResponse login(ConsulLoginCredentials credentials) throws IOException {
+        return login(credentials.getAuthMethod(), credentials.getBearerToken());
+    }
+
+    private ConsulClientResponse login(String authMethod, String bearerToken) throws IOException {
+        Map<String, String> payload = new HashMap<>();
+        payload.put(AUTH_METHOD_FIELD, authMethod);
+        payload.put(BEARER_TOKEN_FIELD, bearerToken);
+        String json = new Gson().toJson(payload);
+        log.info("Perform login to {} with {} auth method", consulAddr, authMethod);
+        Response response = client.newCall(new Request.Builder()
+                .post(RequestBody.create(MediaType.parse(APPLICATION_JSON), json))
+                .url(consulAddr + V1_ACL_LOGIN)
+                .addHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .build()
+        ).execute();
+        return new ConsulClientResponse(response.body().string(), response.code());
+    }
+
+}

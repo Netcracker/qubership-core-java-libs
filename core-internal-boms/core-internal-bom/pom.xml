@@ -98,6 +98,7 @@
         <flyway.version>12.4.0</flyway.version>
 
         <!-- Other compile/runtime -->
+        <failsafe.version>2.4.4</failsafe.version>
         <guava.version>33.5.0-jre</guava.version>
         <rxjava.version>2.2.21</rxjava.version>
         <hikaricp.version>7.0.2</hikaricp.version>
@@ -422,6 +423,14 @@
             </dependency>
 
             <!-- ===== Other compile/runtime ===== -->
+            <!-- todo vlla: this is the old group id, unmaintained since 2021. Should we migrate to
+                 dev.failsafe:failsafe? Its 3.x line is pinned in core-junit-k8s-extension, the one module
+                 already on it. -->
+            <dependency>
+                <groupId>net.jodah</groupId>
+                <artifactId>failsafe</artifactId>
+                <version>${failsafe.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
