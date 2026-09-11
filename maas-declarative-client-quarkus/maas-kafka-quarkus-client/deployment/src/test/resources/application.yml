@@ -36,3 +36,7 @@ maas:
                 serializer: org.apache.kafka.common.serialization.StringSerializer
     local-dev:
       enabled: true
+
+quarkus:
+  otel:
+    propagators: b3multi

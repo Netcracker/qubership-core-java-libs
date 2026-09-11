@@ -19,6 +19,9 @@ class MongoEvolutionConcurrentTest extends MongoServerConfiguration {
 
     private static final int THREAD_COUNT_EVOLVE = 3;
 
+    /** Upper bound for the concurrent evolution: past it the threads are cancelled and the test fails. */
+    private static final long EVOLVE_TIMEOUT_SEC = 60;
+
     private final ConnectionSearchKey connectionSearchKeyDefault = new ConnectionSearchKey(TestConstants.TENANT_ID, TestConstants.DEFAULT_DB_NAME);
 
     private MongoCollection<Document> mongoCollection;
@@ -55,7 +58,7 @@ class MongoEvolutionConcurrentTest extends MongoServerConfiguration {
 
     private void evolveConcurrent() throws Exception {
         ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT_EVOLVE);
-        List<Future<Long>> futures = executorService.invokeAll(spawnThreads());
+        List<Future<Long>> futures = executorService.invokeAll(spawnThreads(), EVOLVE_TIMEOUT_SEC, TimeUnit.SECONDS);
         executorService.shutdown();
         try {
             if (!executorService.awaitTermination(120, TimeUnit.SECONDS)) {
@@ -66,9 +69,11 @@ class MongoEvolutionConcurrentTest extends MongoServerConfiguration {
         }
         futures.forEach(result -> {
             try {
-                assertEquals(Long.valueOf(1L), result.get());
+                assertEquals(Long.valueOf(1L), result.get(), "the tracker collection must keep exactly one record");
+            } catch (CancellationException ex) {
+                fail("evolve did not finish within " + EVOLVE_TIMEOUT_SEC + " s");
             } catch (Exception ex) {
-                fail();
+                fail(ex);
             }
         });
     }

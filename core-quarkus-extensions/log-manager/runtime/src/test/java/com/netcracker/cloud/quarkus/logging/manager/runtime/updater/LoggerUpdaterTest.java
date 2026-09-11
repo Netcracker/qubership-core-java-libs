@@ -1,10 +1,12 @@
 package com.netcracker.cloud.quarkus.logging.manager.runtime.updater;
 
 import com.netcracker.cloud.quarkus.logging.manager.runtime.updater.event.ConfigUpdatedEvent;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -19,9 +21,26 @@ class LoggerUpdaterTest {
     static String quarkusCategoryLevelTemplate = "quarkus.log.category.\"%s\".level";
     private static LoggerUpdater loggerUpdater;
 
+    private static final List<String> MUTATED_LOGGERS = List.of(
+            "",
+            "org.hibernate",
+            "com.netcracker.cloud",
+            "com.example",
+            "io.vertx.core.impl.ContextImpl",
+            "io.vertx.core.impl.ContextImplLexicographicallyHigher");
+
+    private final Map<String, Level> levelsBeforeTest = new HashMap<>();
+
     @BeforeEach
     void beforeEach() {
         loggerUpdater = spy(LoggerUpdater.class);
+        MUTATED_LOGGERS.forEach(name -> levelsBeforeTest.put(name, Logger.getLogger(name).getLevel()));
+    }
+
+    @AfterEach
+    void restoreLogLevels() {
+        levelsBeforeTest.forEach((name, level) -> Logger.getLogger(name).setLevel(level));
+        levelsBeforeTest.clear();
     }
 
     @Test

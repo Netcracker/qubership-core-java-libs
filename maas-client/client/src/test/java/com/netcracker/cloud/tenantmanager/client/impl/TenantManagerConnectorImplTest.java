@@ -7,7 +7,6 @@ import com.netcracker.cloud.testharness.MaaSCocoonExtension;
 import com.netcracker.cloud.testharness.TenantManagerMockInject;
 import com.netcracker.cloud.testharness.TenantManagerMockServer;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -22,41 +21,43 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MaaSCocoonExtension.class)
 @Slf4j
-@Disabled // TODO fix this problem
 class TenantManagerConnectorImplTest {
 
     @TenantManagerMockInject
     TenantManagerMockServer tmMock;
+
+    private static final long EVENT_TIMEOUT_SEC = 10;
+    private static final long NO_EVENT_TIMEOUT_SEC = 1;
 
     @Test
     public void testApi() throws Exception {
         BlockingQueue<List<Tenant>> events = new LinkedBlockingDeque<>();
         try (TenantManagerConnectorImpl client = new TenantManagerConnectorImpl(tmMock.getUrl(), HttpClient.getM2mClient(() -> "faketoken"))) {
             client.subscribe(events::add);
-            List<Tenant> tenants = events.poll(1, TimeUnit.SECONDS);
+            List<Tenant> tenants = events.poll(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
             assertNotNull(tenants);
             assertEquals(0, tenants.size());
 
             String firstId = tmMock.addFirstActivatedTenant();
-            tenants = events.poll(1, TimeUnit.SECONDS);
+            tenants = events.poll(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
             assertNotNull(tenants);
             assertEquals(1, tenants.size());
             assertEquals(firstId, tenants.get(0).getExternalId());
 
             String secondId = tmMock.addSecondActivatedTenant();
-            tenants = events.poll(1, TimeUnit.SECONDS);
+            tenants = events.poll(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
             assertNotNull(tenants);
             assertEquals(2, tenants.size());
             assertArrayEquals(new String[]{firstId, secondId}, tenants.stream().map(Tenant::getExternalId).toArray());
 
             tmMock.deactivateSecondTenant();
-            tenants = events.poll(1, TimeUnit.SECONDS);
+            tenants = events.poll(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
             assertNotNull(tenants);
             assertEquals(1, tenants.size());
             assertEquals(firstId, tenants.get(0).getExternalId());
 
             tmMock.deleteFirstTenant();
-            tenants = events.poll(1, TimeUnit.SECONDS);
+            tenants = events.poll(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
             assertNotNull(tenants);
             assertEquals(0, tenants.size());
         }
@@ -64,17 +65,17 @@ class TenantManagerConnectorImplTest {
 
     @Test
     public void testReconnect() throws Exception {
-        withProp(Env.PROP_TENANT_MANAGER_RECONNECT_TIMEOUT, "1", () -> {
+        withProp(Env.PROP_TENANT_MANAGER_RECONNECT_TIMEOUT, "PT1S", () -> {
             BlockingQueue<List<Tenant>> events = new LinkedBlockingDeque<>();
             try (TenantManagerConnectorImpl client = new TenantManagerConnectorImpl(tmMock.getUrl(), HttpClient.getM2mClient(() -> "faketoken"))) {
 
                 client.subscribe(events::add);
-                List<Tenant> tenants = events.poll(1, TimeUnit.SECONDS);
+                List<Tenant> tenants = events.poll(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
                 assertNotNull(tenants);
                 assertEquals(0, tenants.size());
 
                 String firstId = tmMock.addFirstActivatedTenant();
-                tenants = events.poll(1, TimeUnit.SECONDS);
+                tenants = events.poll(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
                 assertNotNull(tenants);
                 assertEquals(1, tenants.size());
                 assertEquals(firstId, tenants.get(0).getExternalId());
@@ -83,17 +84,20 @@ class TenantManagerConnectorImplTest {
                 tmMock.stop();
                 tmMock.start();
 
-                Thread.sleep(2); // wait PROP_RECONNECT_TIMEOUT
+                // The reconnect itself emits no event, so wait for the connection.
+                assertTrue(tmMock.awaitClientConnected(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS),
+                        "the client did not reconnect to the restarted tenant-manager");
 
                 // tenant should be cache from previous connection session
                 assertEquals(1, client.getTenantList().size());
 
-                tenants = events.poll(1, TimeUnit.SECONDS);
+                tenants = events.poll(NO_EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
                 assertNull(tenants); // no messages should be send due of reconnection
 
                 // check that tenant list change is processed normally
                 tmMock.addSecondActivatedTenant();
-                tenants = events.poll(2, TimeUnit.SECONDS);
+                tenants = events.poll(EVENT_TIMEOUT_SEC, TimeUnit.SECONDS);
+                assertNotNull(tenants, "no tenant list update arrived after the reconnect");
                 assertEquals(2, tenants.size());
                 assertEquals(2, client.getTenantList().size());
             }

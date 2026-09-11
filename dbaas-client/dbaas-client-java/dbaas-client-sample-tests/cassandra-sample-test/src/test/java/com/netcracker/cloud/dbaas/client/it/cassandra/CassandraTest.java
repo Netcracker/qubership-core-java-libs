@@ -2,7 +2,6 @@ package com.netcracker.cloud.dbaas.client.it.cassandra;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import com.netcracker.cloud.context.propagation.core.ContextManager;
@@ -15,6 +14,7 @@ import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,8 +38,11 @@ import static com.netcracker.cloud.framework.contexts.tenant.BaseTenantProvider.
         TestController.class,
         ServiceDataAccessConfiguration.class,
         TenantDataAccessConfiguration.class})
+@TestPropertySource(properties = {
+        "cloud.microservice.namespace=test-namespace",
+        "cloud.microservice.name=test-service",
+})
 @EnableDbaasCassandra
-@Disabled //TODO need to fix - failed in monorepo
 public class CassandraTest {
 
     @Autowired
