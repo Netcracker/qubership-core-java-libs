@@ -13,12 +13,12 @@ class ConsulLoginModeConfigTest {
 
     private static SmallRyeConfig configWithMode(String mode) {
         return new SmallRyeConfigBuilder()
-                .withDefaultValues(Map.of(ConsulClientConfiguration.PROP_LOGIN_MODE, mode))
+                .withDefaultValues(Map.of(ConsulClientConfiguration.PROP_AUTH_MODE, mode))
                 .build();
     }
 
     private static ConsulLoginMode read(String mode) {
-        return configWithMode(mode).getValue(ConsulClientConfiguration.PROP_LOGIN_MODE, ConsulLoginMode.class);
+        return configWithMode(mode).getValue(ConsulClientConfiguration.PROP_AUTH_MODE, ConsulLoginMode.class);
     }
 
     @Test
@@ -33,16 +33,21 @@ class ConsulLoginModeConfigTest {
         SmallRyeConfig config = configWithMode("cloud-foundry");
 
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> config.getValue(ConsulClientConfiguration.PROP_LOGIN_MODE, ConsulLoginMode.class));
+                () -> config.getValue(ConsulClientConfiguration.PROP_AUTH_MODE, ConsulLoginMode.class));
     }
 
+    /**
+     * The plain SmallRye config of this test converts an ISO-8601 duration only. The simple form the documentation
+     * gives, {@code 5h}, needs the converter Quarkus registers, and
+     * {@link ConsulClientConfigurationKubernetesModeTest} reads it in a running application.
+     */
     @Test
     void theFallbackRecheckIntervalIsReadFromItsPropertyValue() {
         SmallRyeConfig config = new SmallRyeConfigBuilder()
-                .withDefaultValues(Map.of(ConsulClientConfiguration.PROP_LOGIN_FALLBACK_RECHECK_INTERVAL, "PT30M"))
+                .withDefaultValues(Map.of(ConsulClientConfiguration.PROP_AUTH_FALLBACK_RECHECK_INTERVAL, "PT30M"))
                 .build();
 
         Assertions.assertEquals(Duration.ofMinutes(30),
-                config.getValue(ConsulClientConfiguration.PROP_LOGIN_FALLBACK_RECHECK_INTERVAL, Duration.class));
+                config.getValue(ConsulClientConfiguration.PROP_AUTH_FALLBACK_RECHECK_INTERVAL, Duration.class));
     }
 }

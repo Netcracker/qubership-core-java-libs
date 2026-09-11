@@ -24,7 +24,7 @@ class ConsulClientConfigurationM2MDisabledTest {
                     "quarkus.consul-source-config.enabled", "false",
                     "quarkus.consul-source-config.agent.url", "http://localhost:8500",
                     "quarkus.consul-source-config.m2m.enabled", "false",
-                    ConsulClientConfiguration.PROP_LOGIN_MODE, "cloud-foundry"
+                    ConsulClientConfiguration.PROP_AUTH_MODE, "cloud-foundry"
             );
         }
     }

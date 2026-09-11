@@ -32,10 +32,10 @@ class ConsulClientConfigurationKubernetesModeTest {
                     "cloud.microservice.namespace", "test-namespace",
                     "quarkus.consul-source-config.enabled", "false",
                     "quarkus.consul-source-config.agent.url", "http://localhost:8500",
-                    ConsulClientConfiguration.PROP_LOGIN_MODE, "kubernetes",
-                    ConsulClientConfiguration.PROP_LOGIN_AUTH_METHOD, "core-k8s",
-                    ConsulClientConfiguration.PROP_LOGIN_AUDIENCE, "dbaas",
-                    ConsulClientConfiguration.PROP_LOGIN_FALLBACK_RECHECK_INTERVAL, "PT30M"
+                    ConsulClientConfiguration.PROP_AUTH_MODE, "kubernetes",
+                    ConsulClientConfiguration.PROP_AUTH_METHOD, "core-k8s",
+                    ConsulClientConfiguration.PROP_AUTH_AUDIENCE, "dbaas",
+                    ConsulClientConfiguration.PROP_AUTH_FALLBACK_RECHECK_INTERVAL, "30m"
             );
         }
     }

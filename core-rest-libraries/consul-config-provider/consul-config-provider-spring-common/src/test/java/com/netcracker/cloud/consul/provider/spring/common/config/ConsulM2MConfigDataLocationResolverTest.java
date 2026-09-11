@@ -68,8 +68,8 @@ class ConsulM2MConfigDataLocationResolverTest {
 
 
     private static final String SECRET_ID = "test-secret-id";
-    private static final String PROP_LOGIN_MODE = ConsulLoginProperties.PREFIX + ".mode";
-    private static final String PROP_LOGIN_AUTH_METHOD = ConsulLoginProperties.PREFIX + ".auth-method";
+    private static final String PROP_AUTH_MODE = ConsulLoginProperties.PREFIX + ".mode";
+    private static final String PROP_AUTH_METHOD = ConsulLoginProperties.PREFIX + ".method";
 
     private final Map<String, Object> properties = new HashMap<>();
     private final AtomicInteger m2mLookups = new AtomicInteger();
@@ -151,8 +151,8 @@ class ConsulM2MConfigDataLocationResolverTest {
 
     @Test
     void kubernetesModeWritesSecretIdWithoutTouchingTheBootstrapRegistry() {
-        properties.put(PROP_LOGIN_MODE, "kubernetes");
-        properties.put(PROP_LOGIN_AUTH_METHOD, "core-k8s");
+        properties.put(PROP_AUTH_MODE, "kubernetes");
+        properties.put(PROP_AUTH_METHOD, "core-k8s");
 
         ConsulConfigProperties resolved = resolve();
 
@@ -162,8 +162,8 @@ class ConsulM2MConfigDataLocationResolverTest {
 
     @Test
     void fallbackModeLeavesTheRegistryAloneWhileTheNewWayWorks() {
-        properties.put(PROP_LOGIN_MODE, "kubernetes-with-m2m-fallback");
-        properties.put(PROP_LOGIN_AUTH_METHOD, "core-k8s");
+        properties.put(PROP_AUTH_MODE, "kubernetes-with-m2m-fallback");
+        properties.put(PROP_AUTH_METHOD, "core-k8s");
 
         ConsulConfigProperties resolved = resolve();
 
@@ -173,8 +173,8 @@ class ConsulM2MConfigDataLocationResolverTest {
 
     @Test
     void fallbackModeAsksTheRegistryOnlyWhenBearerTokenIsNeeded() {
-        properties.put(PROP_LOGIN_MODE, "kubernetes-with-m2m-fallback");
-        properties.put(PROP_LOGIN_AUTH_METHOD, "core-k8s");
+        properties.put(PROP_AUTH_MODE, "kubernetes-with-m2m-fallback");
+        properties.put(PROP_AUTH_METHOD, "core-k8s");
         rejectedAuthMethod = "core-k8s";
         clientReadsBearerToken = true;
 
@@ -197,7 +197,7 @@ class ConsulM2MConfigDataLocationResolverTest {
 
     @Test
     void m2mModeSkipsTheNewWayEntirely() {
-        properties.put(PROP_LOGIN_MODE, "m2m");
+        properties.put(PROP_AUTH_MODE, "m2m");
         clientReadsBearerToken = true;
 
         ConsulConfigProperties resolved = resolve();
@@ -212,7 +212,7 @@ class ConsulM2MConfigDataLocationResolverTest {
                 .thenThrow(new IOException("consul auth method is not ready: response code=403; body='ACL not found'"));
 
         for (String mode : new String[]{"kubernetes", "kubernetes-with-m2m-fallback", "m2m"}) {
-            properties.put(PROP_LOGIN_MODE, mode);
+            properties.put(PROP_AUTH_MODE, mode);
 
             Assertions.assertNull(resolve().getAclToken(), mode);
         }
@@ -220,7 +220,7 @@ class ConsulM2MConfigDataLocationResolverTest {
 
     @Test
     void aMalformedAnswerEndsTheSameWayAsARejectedLogin() throws IOException {
-        properties.put(PROP_LOGIN_MODE, "kubernetes");
+        properties.put(PROP_AUTH_MODE, "kubernetes");
         Mockito.when(consulRestClient.login(Mockito.any(ConsulLoginCredentials.class)))
                 .thenReturn(new ConsulClientResponse("{\"NoSecretHere\":true}", 200));
 
@@ -229,7 +229,7 @@ class ConsulM2MConfigDataLocationResolverTest {
 
     @Test
     void unknownModeBreaksTheConfigDataPhase() {
-        properties.put(PROP_LOGIN_MODE, "cloud-foundry");
+        properties.put(PROP_AUTH_MODE, "cloud-foundry");
 
         Assertions.assertThrows(BindException.class, this::resolve);
     }
@@ -238,7 +238,7 @@ class ConsulM2MConfigDataLocationResolverTest {
     void aMissingNamespaceBreaksTheConfigDataPhase() {
         Assumptions.assumeTrue(System.getenv(ENV_NAMESPACE) == null && System.getenv(ENV_CLOUD_NAMESPACE) == null);
         System.clearProperty(PROP_CLOUD_NAMESPACE);
-        properties.put(PROP_LOGIN_MODE, "kubernetes-with-m2m-fallback");
+        properties.put(PROP_AUTH_MODE, "kubernetes-with-m2m-fallback");
 
         Assertions.assertThrows(IllegalArgumentException.class, this::resolve);
     }
@@ -246,7 +246,7 @@ class ConsulM2MConfigDataLocationResolverTest {
     @Test
     void unknownModeIsNotReadWhenTheExchangeIsOff() {
         properties.put(PROP_CONSUL_M2M_ENABLED, "false");
-        properties.put(PROP_LOGIN_MODE, "cloud-foundry");
+        properties.put(PROP_AUTH_MODE, "cloud-foundry");
 
         Assertions.assertNull(resolve().getAclToken());
     }

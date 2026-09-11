@@ -14,10 +14,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = ConsulLoginProperties.PREFIX)
 public class ConsulLoginProperties {
 
-    public static final String PREFIX = "spring.cloud.consul.config.login";
+    public static final String PREFIX = "consul.auth";
 
     private ConsulLoginMode mode;
-    private String authMethod;
+    private String method;
     private String audience;
     private Duration fallbackRecheckInterval;
 
@@ -29,12 +29,12 @@ public class ConsulLoginProperties {
         this.mode = mode;
     }
 
-    public String getAuthMethod() {
-        return authMethod;
+    public String getMethod() {
+        return method;
     }
 
-    public void setAuthMethod(String authMethod) {
-        this.authMethod = authMethod;
+    public void setMethod(String method) {
+        this.method = method;
     }
 
     public String getAudience() {
@@ -61,7 +61,7 @@ public class ConsulLoginProperties {
     public TokenStorageFactory.CreateOptions.Builder toOptionsBuilder() {
         return new TokenStorageFactory.CreateOptions.Builder()
                 .mode(mode)
-                .authMethod(authMethod)
+                .authMethod(method)
                 .audience(audience)
                 .fallbackRecheckInterval(fallbackRecheckInterval);
     }

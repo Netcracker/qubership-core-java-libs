@@ -16,12 +16,12 @@ The four properties below are read at startup, in the ConfigData phase and again
 built. In `kubernetes-with-m2m-fallback` mode the first login picks the way the pod starts on, a recheck can move it
 to the `kubernetes` way later, and nothing ever moves it back.
 
-| Property name                                       | Type                          | Default                              | Read when                                                    |
-|-----------------------------------------------------|-------------------------------|--------------------------------------|--------------------------------------------------------------|
-| `spring.cloud.consul.config.login.mode`             | `kubernetes-with-m2m-fallback`, `kubernetes` or `m2m` | `kubernetes-with-m2m-fallback`       | ConfigData phase and `TokenStorage` bean creation            |
-| `spring.cloud.consul.config.login.auth-method`      | string                        | `applications-k8s-m2m`               | same; not used in `m2m` mode                                 |
-| `spring.cloud.consul.config.login.audience`         | string                        | `netcracker`                         | same; read only when the `kubernetes` way logs in            |
-| `spring.cloud.consul.config.login.fallback-recheck-interval` | duration          | `5h`                                 | same, and only in the fallback mode                          |
+| Property name                           | Environment variable                    | Type                          | Default                        | Read when                                         |
+|-----------------------------------------|-----------------------------------------|-------------------------------|--------------------------------|---------------------------------------------------|
+| `consul.auth.mode`                      | `CONSUL_AUTH_MODE`                      | `kubernetes-with-m2m-fallback`, `kubernetes` or `m2m` | `kubernetes-with-m2m-fallback` | ConfigData phase and `TokenStorage` bean creation |
+| `consul.auth.method`                    | `CONSUL_AUTH_METHOD`                    | string                        | `applications-k8s-m2m`         | same; not used in `m2m` mode                      |
+| `consul.auth.audience`                  | `CONSUL_AUTH_AUDIENCE`                  | string                        | `netcracker`                   | same; read only when the `kubernetes` way logs in |
+| `consul.auth.fallback-recheck-interval` | `CONSUL_AUTH_FALLBACK_RECHECK_INTERVAL` | duration                      | `5h`                           | same, and only in the fallback mode               |
 
 In `kubernetes-with-m2m-fallback` mode the `kubernetes` way is tried first. If it fails, the pod falls back to the
 `m2m` way and logs the reason, the Consul response code, and a truncated response body in a single `INFO` record. That
@@ -42,14 +42,14 @@ relogin runs at 80% of `MaxTokenTTL`, and the recheck waits for the first relogi
 `MaxTokenTTL` of 24 hours a pod retries about every 19 hours whatever the interval says. Plan the migration of a fleet
 against `MaxTokenTTL`, and lower it on the auth method if the pods have to move over sooner.
 
-An unknown `spring.cloud.consul.config.login.mode`, or no namespace in the `m2m` and `kubernetes-with-m2m-fallback`
+An unknown `consul.auth.mode`, or no namespace in the `m2m` and `kubernetes-with-m2m-fallback`
 modes (`NAMESPACE` or `cloud.microservice.namespace`), ends the startup before the first login attempt. A failed login
 does not: the ConfigData phase logs one `ERROR` record and the application starts without an ACL token, so Consul reads
 fail until the `TokenStorage` bean obtains one. The bean is stricter — a login failure its retries do not fix ends the
 startup.
 
-The default is the auth method the platform registers. Set `spring.cloud.consul.config.login.auth-method` only if
-your Consul names it differently.
+The default is the auth method the platform registers. Set `consul.auth.method` only if your Consul names it
+differently.
 
 To turn the ACL token exchange off altogether — for local runs and tests — set
 `spring.cloud.consul.config.m2m.enabled=false`. None of the login properties are read then.
