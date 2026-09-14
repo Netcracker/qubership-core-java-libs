@@ -13,10 +13,10 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.time.Duration;
 import java.util.HashSet;
@@ -28,16 +28,14 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import static com.netcracker.cloud.maas.bluegreen.kafka.util.TestUtils.uniqueGroupId;
-import static com.netcracker.cloud.maas.bluegreen.kafka.util.TestUtils.uniqueTopicName;
 import static org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * The broker leading the partition is killed while a consumer is reading. The same
- * consumer instance has to read and commit the rest of the topic.
+ * The broker leading the partition goes while a consumer is reading. The same consumer
+ * instance has to read and commit the rest of the topic.
  */
 @Slf4j
 class BGKafkaConsumerFailoverTest {
@@ -48,20 +46,42 @@ class BGKafkaConsumerFailoverTest {
     private static final int REPLICATION_FACTOR = 2;
     private static final int RECORDS_BEFORE_LOSS = 5;
     private static final int RECORDS_AFTER_LOSS = 5;
-    // a killed broker is noticed on the session timeout, and the group has to find
-    // its coordinator again; observed recovery is 8 to 13 seconds
+    // the group has to find its coordinator again, which is most of the wait
     private static final Duration RECOVERY_ALLOWANCE = Duration.ofSeconds(60);
     private static final Duration POLL_TIMEOUT = Duration.ofSeconds(5);
 
     private static final Supplier<String> M2M_TOKEN_SUPPLIER = () -> "fake";
 
-    private static KafkaContainerCluster cluster;
-    private static Admin admin;
-    private static String bootstrapServers;
-    private static Properties producerProps;
+    /**
+     * How a broker leaves. A node replacement drains it, so it hands its partitions over
+     * before it exits; a node that dies does not. Both are real events.
+     */
+    enum BrokerFault {
+        DRAINED {
+            @Override
+            void apply(KafkaContainerCluster cluster, int broker) {
+                cluster.drainBroker(broker);
+            }
+        },
+        KILLED {
+            @Override
+            void apply(KafkaContainerCluster cluster, int broker) {
+                cluster.killBroker(broker);
+            }
+        };
 
-    @BeforeAll
-    static void setupKafka() {
+        abstract void apply(KafkaContainerCluster cluster, int broker);
+    }
+
+    private KafkaContainerCluster cluster;
+    private Admin admin;
+    private String bootstrapServers;
+    private Properties producerProps;
+
+    // a cluster per test: the two faults leave it in different states, and a killed
+    // broker does not come back quickly enough to be reused
+    @BeforeEach
+    void setupKafka() {
         System.setProperty(Env.PROP_NAMESPACE, NAMESPACE);
         cluster = new KafkaContainerCluster("7.4.0", BROKERS, REPLICATION_FACTOR, false);
         cluster.start();
@@ -83,20 +103,21 @@ class BGKafkaConsumerFailoverTest {
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName()));
     }
 
-    @AfterAll
-    static void stopKafka() {
+    @AfterEach
+    void stopKafka() {
         Optional.ofNullable(admin).ifPresent(Admin::close);
         Optional.ofNullable(cluster).ifPresent(KafkaContainerCluster::stop);
     }
 
-    @Test
-    void testConsumerSurvivesPartitionLeaderLoss(TestInfo testInfo) throws Exception {
-        String topicName = uniqueTopicName(testInfo, TOPIC_NAME);
+    @ParameterizedTest
+    @EnumSource(BrokerFault.class)
+    void testConsumerSurvivesPartitionLeaderLoss(BrokerFault fault) throws Exception {
+        String topicName = TOPIC_NAME + "-" + fault.name().toLowerCase();
         admin.createTopics(List.of(new NewTopic(topicName, 1, (short) REPLICATION_FACTOR))).all().get();
 
         var connectionProperties = Map.<String, Object>of(
                 BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
-                "group.id", uniqueGroupId(testInfo, "failover"),
+                "group.id", "failover-" + fault.name().toLowerCase(),
                 "enable.auto.commit", "false",
                 // one batch per poll, so the second half is still unread when the
                 // leader goes away
@@ -123,24 +144,22 @@ class BGKafkaConsumerFailoverTest {
             // a batch can overshoot the target, so this is a lower bound
             drainInto(consumer, seen, RECORDS_BEFORE_LOSS);
             assertTrue(seen.size() >= RECORDS_BEFORE_LOSS,
-                    "part of the topic must be read before the leader is stopped, got " + seen.size());
+                    "part of the topic must be read before the leader goes, got " + seen.size());
 
             int leader = partitionLeader(topicName);
-            // a node that died rather than one that was drained: no handover
-            log.info("killing broker {}, which leads partition 0 of {}", leader, topicName);
-            cluster.killBroker(leader);
-            try {
-                // delivery is at least once: a record whose commit did not land is read
-                // again, so the measure is the set of keys, not the count of records
-                long start = System.nanoTime();
-                drainInto(consumer, seen, RECORDS_BEFORE_LOSS + RECORDS_AFTER_LOSS);
-                log.info("the consumer read and committed the remaining records in {}ms",
-                        TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start));
-                assertEquals(RECORDS_BEFORE_LOSS + RECORDS_AFTER_LOSS, seen.size(),
-                        "losing the partition leader must not lose a record");
-            } finally {
-                cluster.startBroker(leader);
-            }
+            log.info("{} broker {}, which leads partition 0 of {}", fault, leader, topicName);
+            // from the fault, because where the time lands between the cluster settling
+            // and the consumer reconnecting depends on what happens in between
+            long start = System.nanoTime();
+            fault.apply(cluster, leader);
+
+            // delivery is at least once: a record whose commit did not land is read
+            // again, so the measure is the set of keys, not the count of records
+            drainInto(consumer, seen, RECORDS_BEFORE_LOSS + RECORDS_AFTER_LOSS);
+            log.info("leader {}: the consumer read and committed the rest {}ms after the fault",
+                    fault, TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start));
+            assertEquals(RECORDS_BEFORE_LOSS + RECORDS_AFTER_LOSS, seen.size(),
+                    "losing the partition leader must not lose a record");
         }
     }
 
@@ -169,12 +188,12 @@ class BGKafkaConsumerFailoverTest {
         }
     }
 
-    private static int partitionLeader(String topicName) throws Exception {
+    private int partitionLeader(String topicName) throws Exception {
         return admin.describeTopics(List.of(topicName)).allTopicNames().get()
                 .get(topicName).partitions().get(0).leader().id();
     }
 
-    private static void produce(String topicName, int from, int count) {
+    private void produce(String topicName, int from, int count) {
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(producerProps)) {
             for (int i = from; i < from + count; i++) {
                 String key = String.format("%04d", i);

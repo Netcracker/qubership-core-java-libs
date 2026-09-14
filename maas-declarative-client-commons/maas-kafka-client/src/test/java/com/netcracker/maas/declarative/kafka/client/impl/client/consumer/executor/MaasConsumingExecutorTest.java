@@ -797,4 +797,105 @@ class MaasConsumingExecutorTest {
             executor.close();
         }
     }
+
+    @Test
+    void testTheConsumerRebuiltAfterAFailureTakesTheCurrentTopicAddress() {
+        var failing = mock(BGKafkaConsumer.class);
+        var replacement = mock(BGKafkaConsumer.class);
+        var barrier = new SyncBarrier();
+        var consumerCreatorService = mock(KafkaClientCreationService.class);
+        when(consumerCreatorService.createKafkaConsumer(any(), any(), any(), any(), any(), any()))
+                .thenReturn(failing)
+                .thenReturn(replacement);
+
+        var initial = new HashMap<String, Object>();
+        initial.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "broker-1:9092");
+        ctx.setBlueGreenConfiguration(KafkaConsumerConfiguration.builder(initial).build());
+        ctx.setHandler(mock(Consumer.class));
+
+        when(failing.poll(any())).thenAnswer(i -> {
+            barrier.notify("polled");
+            barrier.await("address-moved", Duration.ofSeconds(10));
+            throw new CoordinatorNotAvailableException("connection lost");
+        });
+        when(replacement.poll(any())).thenReturn(Optional.empty());
+
+        var executor = new MaasConsumingExecutor(ctx,
+                (exception, errorRecord, handledRecords) -> {
+                },
+                consumerCreatorService,
+                List.of(),
+                new InMemoryBlueGreenStatePublisher());
+
+        try {
+            executor.start();
+            executor.init();
+            barrier.await("polled", Duration.ofSeconds(10));
+
+            // MaaS moved the topic while the connection was down: a new broker list and a
+            // new name. Both live in the context, and the rebuild has to read them again
+            // rather than the values it was created with
+            var moved = new HashMap<String, Object>();
+            moved.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "broker-2:9092");
+            ctx.setBlueGreenConfiguration(KafkaConsumerConfiguration.builder(moved).build());
+            var movedAddress = mock(TopicAddress.class);
+            when(movedAddress.getTopicName()).thenReturn("orders-moved");
+            ctx.setTopic(movedAddress);
+            barrier.notify("address-moved");
+
+            verify(consumerCreatorService, timeout(10_000)).createKafkaConsumer(
+                    argThat(configuration -> configuration != null && "broker-2:9092"
+                            .equals(configuration.getConfigs().get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG))),
+                    any(), any(),
+                    argThat("orders-moved"::equals),
+                    any(), any());
+        } finally {
+            barrier.notify("address-moved");
+            executor.close();
+        }
+    }
+
+    @Test
+    void testSuspendingReleasesTheConsumerAndResumingBringsItBack() {
+        var consumer = mock(BGKafkaConsumer.class);
+        var barrier = new SyncBarrier();
+        var consumerCreatorService = mock(KafkaClientCreationService.class);
+        when(consumerCreatorService.createKafkaConsumer(any(), any(), any(), any(), any(), any())).thenReturn(consumer);
+
+        ctx.setHandler(mock(Consumer.class));
+        when(consumer.poll(any())).thenAnswer(i -> {
+            barrier.notify("polled");
+            return Optional.empty();
+        });
+
+        var executor = new MaasConsumingExecutor(ctx,
+                (exception, errorRecord, handledRecords) -> {
+                },
+                consumerCreatorService,
+                List.of(),
+                new InMemoryBlueGreenStatePublisher());
+
+        try {
+            executor.start();
+            executor.init();
+            barrier.await("polled", Duration.ofSeconds(10));
+
+            executor.suspend();
+            verify(consumer, timeout(10_000).atLeastOnce()).close();
+
+            // a suspended executor keeps rescheduling but must not hold a consumer, so a
+            // switchover that suspends it does not leave a member in the group
+            clearInvocations(consumerCreatorService);
+            verify(consumerCreatorService, after(500).never())
+                    .createKafkaConsumer(any(), any(), any(), any(), any(), any());
+
+            // and nothing but resume() is needed to get it consuming again
+            executor.resume();
+            verify(consumerCreatorService, timeout(10_000))
+                    .createKafkaConsumer(any(), any(), any(), any(), any(), any());
+            verify(consumer, timeout(10_000).atLeast(2)).poll(any());
+        } finally {
+            executor.close();
+        }
+    }
 }

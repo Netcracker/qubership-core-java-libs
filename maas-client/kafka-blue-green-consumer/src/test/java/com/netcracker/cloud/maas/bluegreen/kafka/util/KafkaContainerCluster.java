@@ -1,7 +1,5 @@
 package com.netcracker.cloud.maas.bluegreen.kafka.util;
 
-import com.github.dockerjava.api.model.ExposedPort;
-import com.github.dockerjava.api.model.Ports;
 import org.apache.kafka.common.Uuid;
 import org.rnorth.ducttape.unreliables.Unreliables;
 import org.testcontainers.containers.Container;
@@ -12,11 +10,7 @@ import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.lifecycle.Startable;
 import org.testcontainers.utility.DockerImageName;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.net.ServerSocket;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -44,9 +38,6 @@ public class KafkaContainerCluster implements Startable {
 
         this.brokersNum = brokersNum;
         this.network = Network.newNetwork();
-        // bound at creation, so a broker that is stopped and started again comes back at
-        // the address clients already know
-        List<Integer> hostPorts = reservePorts(brokersNum);
 
         String controllerQuorumVoters = IntStream.range(0, brokersNum)
                 .mapToObj(brokerNum -> String.format("%d@broker-%d:9094", brokerNum, brokerNum))
@@ -62,7 +53,6 @@ public class KafkaContainerCluster implements Startable {
             zookeeper.start();
         }
         this.brokers = IntStream.range(0, brokersNum).mapToObj(brokerNum -> {
-                    int hostPort = hostPorts.get(brokerNum);
                     KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag(confluentPlatformVersion))
                             .withNetwork(this.network)
                             .withNetworkAliases("broker-" + brokerNum)
@@ -74,13 +64,9 @@ public class KafkaContainerCluster implements Startable {
                             .withEnv("KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS", replicationFactor + "")
                             .withEnv("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", replicationFactor + "")
                             .withEnv("KAFKA_TRANSACTION_STATE_LOG_MIN_ISR", replicationFactor + "")
+                            .withEnv("KAFKA_BROKER_SESSION_TIMEOUT_MS", "6000")
+                            .withEnv("KAFKA_BROKER_HEARTBEAT_INTERVAL_MS", "1000")
                             .withStartupTimeout(Duration.ofMinutes(1));
-                    kafkaContainer.withCreateContainerCmdModifier(cmd -> Optional.ofNullable(cmd.getHostConfig())
-                            .ifPresent(hostConfig -> {
-                                Ports bindings = Optional.ofNullable(hostConfig.getPortBindings()).orElseGet(Ports::new);
-                                bindings.bind(ExposedPort.tcp(KafkaContainer.KAFKA_PORT), Ports.Binding.bindPort(hostPort));
-                                hostConfig.withPortBindings(bindings);
-                            }));
                     if (useZookeeper) {
                         kafkaContainer.withExternalZookeeper("zookeeper:2181");
                     } else {
@@ -115,13 +101,19 @@ public class KafkaContainerCluster implements Startable {
         broker.getDockerClient().stopContainerCmd(broker.getContainerId()).withTimeout(0).exec();
     }
 
-    /** Starts a stopped broker back at the address and with the data it had. */
-    public void startBroker(int brokerId) {
+    /**
+     * Drains one broker the way a node replacement does, so it hands its partitions
+     * over before it exits. The stop signal cannot do it: the image keeps it in a
+     * wrapper shell, so the request has to be made inside the container.
+     */
+    public void drainBroker(int brokerId) {
         KafkaContainer broker = getBroker(brokerId);
-        if (!isRunning(broker)) {
-            broker.getDockerClient().startContainerCmd(broker.getContainerId()).exec();
+        try {
+            broker.execInContainer("kafka-server-stop");
+            Unreliables.retryUntilTrue(30, TimeUnit.SECONDS, () -> !isRunning(broker));
+        } catch (Exception e) {
+            throw new IllegalStateException("failed to drain broker " + brokerId, e);
         }
-        awaitBrokersRegistered();
     }
 
     private boolean isRunning(KafkaContainer broker) {
@@ -164,32 +156,5 @@ public class KafkaContainerCluster implements Startable {
                     return Integer.valueOf(brokers) == this.brokersNum;
                 }
         );
-    }
-
-    /**
-     * Picks one free port per broker, holding every socket open until all of them are
-     * chosen so that two brokers cannot be handed the same port.
-     */
-    private static List<Integer> reservePorts(int count) {
-        List<ServerSocket> sockets = new ArrayList<>(count);
-        try {
-            List<Integer> ports = new ArrayList<>(count);
-            for (int i = 0; i < count; i++) {
-                ServerSocket socket = new ServerSocket(0);
-                sockets.add(socket);
-                ports.add(socket.getLocalPort());
-            }
-            return ports;
-        } catch (IOException e) {
-            throw new UncheckedIOException("failed to reserve host ports for the brokers", e);
-        } finally {
-            sockets.forEach(socket -> {
-                try {
-                    socket.close();
-                } catch (IOException ignored) {
-                    // closing is what leaves the port free for the container to bind
-                }
-            });
-        }
     }
 }
