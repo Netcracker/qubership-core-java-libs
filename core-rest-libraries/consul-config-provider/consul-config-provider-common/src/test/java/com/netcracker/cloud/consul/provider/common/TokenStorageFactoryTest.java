@@ -122,6 +122,19 @@ class TokenStorageFactoryTest {
     }
 
     @Test
+    void blankAuthMethodAndAudienceFallBackToTheDefaults() {
+        TokenStorageFactory.CreateOptions opts = new TokenStorageFactory.CreateOptions.Builder()
+                .consulUrl(CONSUL_URL)
+                .mode(ConsulLoginMode.KUBERNETES)
+                .authMethod("")
+                .audience("   ")
+                .build();
+
+        Assertions.assertEquals(TokenStorageFactory.CreateOptions.DEFAULT_AUTH_METHOD, opts.authMethod);
+        Assertions.assertEquals(AudienceName.NETCRACKER, opts.audience);
+    }
+
+    @Test
     void everyModeBuildsAProvider() {
         for (ConsulLoginMode mode : ConsulLoginMode.values()) {
             TokenStorageFactory.CreateOptions opts = new TokenStorageFactory.CreateOptions.Builder()

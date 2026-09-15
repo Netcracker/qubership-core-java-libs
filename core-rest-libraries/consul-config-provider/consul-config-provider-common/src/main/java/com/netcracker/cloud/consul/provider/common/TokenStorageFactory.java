@@ -128,7 +128,8 @@ public abstract class TokenStorageFactory {
 
             /**
              * Applies the defaults and checks the inputs the mode needs. Defaults live here rather than in the entry
-             * points so that an external caller of the builder gets them too.
+             * points so that an external caller of the builder gets them too. A blank auth method or audience counts
+             * as absent.
              *
              * @throws IllegalArgumentException naming the missing input and the mode that requires it
              */
@@ -136,10 +137,10 @@ public abstract class TokenStorageFactory {
                 if (options.mode == null) {
                     options.mode = ConsulLoginMode.KUBERNETES_WITH_M2M_FALLBACK;
                 }
-                if (options.authMethod == null) {
+                if (isBlank(options.authMethod)) {
                     options.authMethod = DEFAULT_AUTH_METHOD;
                 }
-                if (options.audience == null) {
+                if (isBlank(options.audience)) {
                     options.audience = AudienceName.NETCRACKER;
                 }
                 if (options.fallbackRecheckInterval == null) {
@@ -153,6 +154,10 @@ public abstract class TokenStorageFactory {
                 CreateOptions result = options;
                 options = new CreateOptions();
                 return result;
+            }
+
+            private static boolean isBlank(String value) {
+                return value == null || value.isBlank();
             }
 
             private static void require(boolean given, String input, ConsulLoginMode mode) {
