@@ -12,6 +12,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -183,10 +184,14 @@ class TokenUpdaterTest {
     }
 
     private void runScheduledTaskOnce(TestClock clock) {
+        runScheduledTasks(1, clock);
+    }
+
+    private void runScheduledTasks(int times, TestClock clock) {
         AtomicInteger runs = new AtomicInteger();
         when(scheduledExecutorService.schedule(any(Runnable.class), anyLong(), eq(TimeUnit.SECONDS)))
                 .thenAnswer(invocationOnMock -> {
-                    if (runs.getAndIncrement() == 0) {
+                    if (runs.getAndIncrement() < times) {
                         if (clock != null) {
                             clock.advance(Duration.ofSeconds(invocationOnMock.<Long>getArgument(1)));
                         }
@@ -263,6 +268,46 @@ class TokenUpdaterTest {
         assertEquals(288L, delays.getAllValues().get(1));
         Assertions.assertTrue(delays.getAllValues().get(1) < 1800L - delays.getAllValues().get(0),
                 "the retry must land before the current token expires, got " + delays.getAllValues());
+    }
+
+    @Test
+    void consecutiveFailedReloginsDoubleTheRetryDelayUpToTheCeiling() throws IOException {
+        TestClock clock = new TestClock(currentTime);
+        OffsetDateTime expiration = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusSeconds(20);
+        when(tokenProvider.getToken())
+                .thenReturn(new Token("test-token", expiration))
+                .thenThrow(new IOException());
+        TokenUpdater updater = new TokenUpdater(tokenProvider, scheduledExecutorService, clock, 1, Duration.ZERO);
+
+        runScheduledTasks(7, clock);
+        updater.watch(unused -> {
+        }, "");
+
+        ArgumentCaptor<Long> delays = ArgumentCaptor.forClass(Long.class);
+        verify(scheduledExecutorService, times(8)).schedule(any(Runnable.class), delays.capture(), eq(TimeUnit.SECONDS));
+        assertEquals(List.of(16L, 10L, 20L, 40L, 80L, 160L, 300L, 300L), delays.getAllValues());
+    }
+
+    @Test
+    void aSuccessfulReloginResetsTheRetryDelay() throws IOException {
+        TestClock clock = new TestClock(currentTime);
+        OffsetDateTime firstExpiration = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusSeconds(20);
+        OffsetDateTime secondExpiration = OffsetDateTime.ofInstant(currentTime, ZoneId.of("UTC")).plusSeconds(66);
+        when(tokenProvider.getToken())
+                .thenReturn(new Token("test-token", firstExpiration))
+                .thenThrow(new IOException())
+                .thenThrow(new IOException())
+                .thenReturn(new Token("test-rotated-token", secondExpiration))
+                .thenThrow(new IOException());
+        TokenUpdater updater = new TokenUpdater(tokenProvider, scheduledExecutorService, clock, 1, Duration.ZERO);
+
+        runScheduledTasks(4, clock);
+        updater.watch(unused -> {
+        }, "");
+
+        ArgumentCaptor<Long> delays = ArgumentCaptor.forClass(Long.class);
+        verify(scheduledExecutorService, times(5)).schedule(any(Runnable.class), delays.capture(), eq(TimeUnit.SECONDS));
+        assertEquals(List.of(16L, 10L, 20L, 16L, 10L), delays.getAllValues());
     }
 
     @Test

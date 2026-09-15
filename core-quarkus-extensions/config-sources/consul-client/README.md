@@ -62,9 +62,12 @@ recheck rides on the scheduled relogin, so it needs `MaxTokenTTL` on the auth me
 expires, nothing is scheduled, and nothing is rechecked.
 
 `fallback-recheck-interval` therefore sets the lower bound on how often the pod retries, not the actual period. The
-relogin runs at 80% of `MaxTokenTTL`, and the recheck waits for the first relogin past the interval, so with a
-`MaxTokenTTL` of 24 hours a pod retries about every 19 hours whatever the interval says. Plan the migration of a fleet
-against `MaxTokenTTL`, and lower it on the auth method if the pods have to move over sooner.
+relogin runs at 80% of the remaining lifetime of the current token, and the recheck waits for the first relogin past
+the interval, so with a `MaxTokenTTL` of 24 hours a pod retries about every 19 hours whatever the interval says. Plan
+the migration of a fleet against `MaxTokenTTL`, and lower it on the auth method if the pods have to move over sooner.
+
+A failed relogin is retried with a delay that starts at 10 seconds, doubles up to 5 minutes, and returns to 10 seconds
+on the next success. Until a relogin succeeds the pod keeps the token it holds, which may already have expired.
 
 An unknown value of `consul.auth.mode` fails the startup, and so does a login failure the retries do not fix: the
 `TokenStorage` bean cannot be produced without a token. With `quarkus.consul-source-config.m2m.enabled=false` none of

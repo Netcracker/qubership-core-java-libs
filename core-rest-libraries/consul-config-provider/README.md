@@ -38,9 +38,12 @@ of probing again. The recheck rides on the scheduled relogin instead of a timer 
 nothing is rechecked.
 
 `fallback-recheck-interval` therefore sets the lower bound on how often the pod retries, not the actual period. The
-relogin runs at 80% of `MaxTokenTTL`, and the recheck waits for the first relogin past the interval, so with a
-`MaxTokenTTL` of 24 hours a pod retries about every 19 hours whatever the interval says. Plan the migration of a fleet
-against `MaxTokenTTL`, and lower it on the auth method if the pods have to move over sooner.
+relogin runs at 80% of the remaining lifetime of the current token, and the recheck waits for the first relogin past
+the interval, so with a `MaxTokenTTL` of 24 hours a pod retries about every 19 hours whatever the interval says. Plan
+the migration of a fleet against `MaxTokenTTL`, and lower it on the auth method if the pods have to move over sooner.
+
+A failed relogin is retried with a delay that starts at 10 seconds, doubles up to 5 minutes, and returns to 10 seconds
+on the next success. Until a relogin succeeds the pod keeps the token it holds, which may already have expired.
 
 An unknown `consul.auth.mode`, or no namespace in the `m2m` and `kubernetes-with-m2m-fallback`
 modes (`NAMESPACE` or `cloud.microservice.namespace`), ends the startup before the first login attempt. A failed login

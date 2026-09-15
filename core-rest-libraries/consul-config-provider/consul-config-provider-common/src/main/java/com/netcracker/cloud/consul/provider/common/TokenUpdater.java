@@ -27,12 +27,14 @@ public class TokenUpdater {
     private static final Duration DEFAULT_RETRY_PAUSE = Duration.ofSeconds(1);
     private static final double DELAY_MULTIPLIER = 0.8;
     static final long MIN_DELAY_SECONDS = 10;
+    static final long MAX_RETRY_DELAY_SECONDS = 300;
 
     private final ConsulTokenProvider tokenProvider;
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
     private Clock clock = Clock.systemDefaultZone();
     private final Integer tries;
     private final Duration retryPause;
+    private long retryDelaySeconds = MIN_DELAY_SECONDS;
 
     public TokenUpdater(ConsulTokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
@@ -79,11 +81,15 @@ public class TokenUpdater {
      * next delay instead of repeating the previous one, which would put the retry well past the expiration on a
      * short-lived token. A token without an expiration ends the schedule.
      *
+     * <p>Repeated failures raise the lower bound on that delay: it doubles from {@link #MIN_DELAY_SECONDS} to
+     * {@link #MAX_RETRY_DELAY_SECONDS}, and a successful relogin returns it to the minimum.
+     *
      * <p>The task catches {@link Throwable} rather than {@link Exception}, against the rule of the module that lets an
      * {@link Error} through. Here nobody would see it: the executor keeps it in a {@link java.util.concurrent.Future}
      * no one reads, the task never runs again, and the pod silently keeps a token that eventually expires.
      */
     private void scheduleRelogin(Consumer<String> updater, OffsetDateTime expirationTime) {
+        retryDelaySeconds = MIN_DELAY_SECONDS;
         scheduleReloginIn(updater, expirationTime, reloginDelaySeconds(expirationTime));
     }
 
@@ -99,9 +105,10 @@ public class TokenUpdater {
                 }
                 scheduleRelogin(updater, newToken.getExpirationTime());
             } catch (Throwable e) {
-                long retryDelaySeconds = reloginDelaySeconds(expirationTime);
-                log.error("Error occurred during getting new consul token. Will try in {} seconds.", retryDelaySeconds, e);
-                scheduleReloginIn(updater, expirationTime, retryDelaySeconds);
+                long nextDelaySeconds = Math.max(reloginDelaySeconds(expirationTime), retryDelaySeconds);
+                retryDelaySeconds = Math.min(retryDelaySeconds * 2, MAX_RETRY_DELAY_SECONDS);
+                log.error("Error occurred during getting new consul token. Will try in {} seconds.", nextDelaySeconds, e);
+                scheduleReloginIn(updater, expirationTime, nextDelaySeconds);
             }
         }, delaySeconds, TimeUnit.SECONDS);
     }
@@ -109,7 +116,7 @@ public class TokenUpdater {
     /**
      * Returns the delay before the next relogin as a share of the remaining lifetime. The same value serves as the
      * period of the schedule, so a constant offset from the expiration would degenerate on short-lived tokens. Past
-     * the expiration the share turns negative, and the lower bound takes over as the retry cadence.
+     * the expiration the share turns negative, and the returned value is {@link #MIN_DELAY_SECONDS}.
      */
     private long reloginDelaySeconds(OffsetDateTime expirationTime) {
         long remaining = ChronoUnit.SECONDS.between(OffsetDateTime.now(clock), expirationTime);
