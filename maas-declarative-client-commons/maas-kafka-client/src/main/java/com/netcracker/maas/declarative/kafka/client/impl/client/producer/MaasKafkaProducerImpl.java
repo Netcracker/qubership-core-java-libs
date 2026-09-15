@@ -187,23 +187,22 @@ public class MaasKafkaProducerImpl extends MaasKafkaCommonClient implements Maas
     @Override
     protected void onDeactivateClientEvent() {
         execute(() -> {
+            LOG.info("Start deactivating maas kafka producer clients");
+            MaasKafkaClientState oldState = clientState;
             try {
-                LOG.info("Start deactivating maas kafka producer clients");
                 if (clientDefinition.isTenant()) {
                     producerMap.forEach((key, value) -> value.close());
                 } else {
                     producer.close();
                 }
-                clientState = MaasKafkaClientState.INACTIVE;
-
-                // notify state changing
-                notifyStateChanging(
-                        MaasKafkaClientState.ACTIVE,
-                        MaasKafkaClientState.INACTIVE
-                );
-                LOG.info("Finish deactivating maas kafka producer clients");
             } catch (Exception ex) {
+                // closing is best effort, the state is not: a client left reporting ACTIVE
+                // cannot be revived, because activateAsync refuses that state
                 LOG.error("Deactivation error", ex);
+            } finally {
+                clientState = MaasKafkaClientState.INACTIVE;
+                notifyStateChanging(oldState, MaasKafkaClientState.INACTIVE);
+                LOG.info("Finish deactivating maas kafka producer clients");
             }
         });
     }
