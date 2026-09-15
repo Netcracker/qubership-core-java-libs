@@ -26,6 +26,7 @@ import org.mockserver.verify.VerificationTimes;
 import com.netcracker.cloud.maas.client.Utils;
 import com.netcracker.cloud.maas.client.api.Classifier;
 import com.netcracker.cloud.maas.client.api.MaaSException;
+import com.netcracker.cloud.maas.client.api.MaaSHttpException;
 import com.netcracker.cloud.maas.client.api.kafka.KafkaMaaSClient;
 import com.netcracker.cloud.maas.client.api.kafka.SearchCriteria;
 import com.netcracker.cloud.maas.client.api.kafka.TopicAddress;
@@ -571,7 +572,7 @@ class KafkaMaaSClientImplTest {
 
                 KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", null, null).getKafkaClient();
                 Classifier orders = new Classifier("orders");
-                assertThrows(MaaSException.class, () -> kafkaClient.deleteTopic(orders));
+                assertThrows(MaaSHttpException.class, () -> kafkaClient.deleteTopic(orders));
 
                 mockServer.verify(request().withMethod("DELETE").withPath("/api/v2/kafka/topic"),
                         VerificationTimes.exactly(1));
@@ -592,7 +593,7 @@ class KafkaMaaSClientImplTest {
                     .respond(response().withStatusCode(500).withBody("{\"error\":\"agent down\"}"));
 
             var client = createKafkaClient("http://localhost:" + mockServer.getPort());
-            assertThrows(MaaSException.class, () -> client.deleteTopicTemplate("my-template"));
+            assertThrows(MaaSHttpException.class, () -> client.deleteTopicTemplate("my-template"));
 
             mockServer.verify(request().withMethod("DELETE").withPath("/api/v2/kafka/topic-template"),
                     VerificationTimes.exactly(1));
@@ -611,7 +612,7 @@ class KafkaMaaSClientImplTest {
 
                     KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", null, null).getKafkaClient();
                     Classifier orders = new Classifier("orders");
-                    assertThrows(MaaSException.class,
+                    assertThrows(MaaSHttpException.class,
                             () -> kafkaClient.getOrCreateTopic(orders, TopicCreateOptions.DEFAULTS));
 
                     mockServer.verify(request().withMethod("POST").withPath("/api/v2/kafka/topic"),

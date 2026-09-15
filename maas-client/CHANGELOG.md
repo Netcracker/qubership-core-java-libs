@@ -15,10 +15,12 @@
 * `Behaviour changes`
   - **A call that fails with a retryable status now takes longer before failing.** It used to throw
     on the first unexpected 5xx or 405; it is now retried within the configured duration.
-  - Failed calls to maas-agent throw `MaaSHttpException` instead of a bare `RuntimeException`. It
-    extends `MaaSException`, so existing `catch` blocks keep working — note the widening:
-    `catch (MaaSException)` used to mean a MaaS business error and now also catches transport
-    failures.
+  - Failed calls to maas-agent throw `MaaSHttpException`, which names the failure instead of the
+    bare `RuntimeException` they used to throw. It is deliberately not a `MaaSException`:
+    `MaaSException` means maas-service considered the request and refused it, which a caller can
+    handle as an outcome, while this one means the request got no answer at all. A
+    `catch (MaaSException)` written for the first therefore keeps its old meaning and does not
+    start swallowing outages.
   - **`deleteTopic` and `deleteTopicTemplate` are not retried.** They used to be, as any other call.
     Neither is idempotent: a repeat of a delete whose response was lost reports zero deleted topics
     for a topic that is already gone, and answers 404 for a template that is already gone. Callers
