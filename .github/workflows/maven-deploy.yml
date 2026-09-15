@@ -36,6 +36,7 @@ jobs:
       maven-username: 'NetcrackerCLPLCI'
       sonar-project-key: ${{ vars.SONAR_PROJECT_KEY }}
       ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.branch || github.ref }}
+      skip-docker: true
     secrets:
       MAVEN_TOKEN: ${{ secrets.GH_RWD_PACKAGE_TOKEN }}
       MAVEN_GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
