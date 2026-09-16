@@ -159,16 +159,17 @@ class KubernetesWithM2MFallbackTokenProviderTest {
     }
 
     @Test
-    void notReadyConfigurationIsNamedInTheFallbackRecord() throws IOException {
+    void refusedLoginIsNamedInTheFallbackRecord() throws IOException {
         when(kubernetes.getToken()).thenThrow(new IOException(
-                "consul auth method is not ready: response code=403; body='" + AUTH_METHOD_NOT_FOUND + "'"));
+                "consul refused the login (missing auth method, unmatched binding rule or wrong audience): "
+                        + "response code=403; body='" + AUTH_METHOD_NOT_FOUND + "'"));
         when(m2m.getToken()).thenReturn(new Token(SECRET_ID, null));
 
         probing().getToken();
 
         List<String> records = infoRecords();
         assertEquals(1, records.size());
-        assertTrue(records.get(0).contains("not ready"));
+        assertTrue(records.get(0).contains("refused the login"));
         assertTrue(records.get(0).contains("response code=403"));
     }
 

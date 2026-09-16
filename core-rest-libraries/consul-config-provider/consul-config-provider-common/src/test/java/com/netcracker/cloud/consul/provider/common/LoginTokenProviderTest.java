@@ -89,7 +89,8 @@ class LoginTokenProviderTest {
 
         IOException exception = assertThrows(IOException.class, () -> tokenProvider.getToken());
 
-        assertEquals("consul auth method is not ready: response code=403; body=''", exception.getMessage());
+        assertEquals("consul refused the login (missing auth method, unmatched binding rule or wrong audience): "
+                + "response code=403; body=''", exception.getMessage());
     }
 
     @Test

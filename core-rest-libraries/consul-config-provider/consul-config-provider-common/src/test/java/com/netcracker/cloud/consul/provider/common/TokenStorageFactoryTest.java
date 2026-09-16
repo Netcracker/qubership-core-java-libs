@@ -227,7 +227,7 @@ class TokenStorageFactoryTest {
 
         when(client.login(any(ConsulLoginCredentials.class))).thenAnswer(invocation -> {
             if (invocation.getArgument(0) instanceof KubernetesLoginCredentials) {
-                throw new IOException("consul auth method is not ready: response code=403; body='ACL not found'");
+                throw new IOException("consul refused the login (missing auth method, unmatched binding rule or wrong audience): response code=403; body='ACL not found'");
             }
             return new ConsulClientResponse("{\"SecretID\":\"test-secret-id\"}", 200);
         });

@@ -118,7 +118,7 @@ class ConsulM2MConfigDataLocationResolverTest {
         Mockito.when(consulRestClient.login(Mockito.any(ConsulLoginCredentials.class))).thenAnswer(invocation -> {
             ConsulLoginCredentials credentials = invocation.getArgument(0);
             if (rejectedAuthMethod != null && rejectedAuthMethod.equals(credentials.getAuthMethod())) {
-                throw new IOException("consul auth method is not ready: response code=403; body='ACL not found'");
+                throw new IOException("consul refused the login (missing auth method, unmatched binding rule or wrong audience): response code=403; body='ACL not found'");
             }
             if (clientReadsBearerToken) {
                 credentials.getBearerToken();
@@ -209,7 +209,7 @@ class ConsulM2MConfigDataLocationResolverTest {
     @Test
     void aFailedLoginLeavesTheStartupAliveWithoutATokenInEveryMode() throws IOException {
         Mockito.when(consulRestClient.login(Mockito.any(ConsulLoginCredentials.class)))
-                .thenThrow(new IOException("consul auth method is not ready: response code=403; body='ACL not found'"));
+                .thenThrow(new IOException("consul refused the login (missing auth method, unmatched binding rule or wrong audience): response code=403; body='ACL not found'"));
 
         for (String mode : new String[]{"kubernetes", "kubernetes-with-m2m-fallback", "m2m"}) {
             properties.put(PROP_AUTH_MODE, mode);
