@@ -42,14 +42,16 @@ relogin runs at 80% of the remaining lifetime of the current token, and the rech
 the interval, so with a `MaxTokenTTL` of 24 hours a pod retries about every 19 hours whatever the interval says. Plan
 the migration of a fleet against `MaxTokenTTL`, and lower it on the auth method if the pods have to move over sooner.
 
-A failed relogin is retried with a delay that starts at 10 seconds, doubles up to 5 minutes, and returns to 10 seconds
-on the next success. Until a relogin succeeds the pod keeps the token it holds, which may already have expired.
+A failed relogin is retried at 80% of the remaining lifetime of the token, or after a delay that starts at 10 seconds
+and doubles up to 5 minutes, whichever is later. The delay returns to 10 seconds on the next success. Until a relogin
+succeeds the pod keeps the token it holds, which may already have expired.
 
-An unknown `consul.auth.mode`, or no namespace in the `m2m` and `kubernetes-with-m2m-fallback`
-modes (`NAMESPACE` or `cloud.microservice.namespace`), ends the startup before the first login attempt. A failed login
+An unknown `consul.auth.mode`, or no namespace in the `m2m` and `kubernetes-with-m2m-fallback` modes, ends the startup
+before the first login attempt. A failed login
 does not: the ConfigData phase logs one `ERROR` record and the application starts without an ACL token, so Consul reads
 fail until the `TokenStorage` bean obtains one. The bean is stricter — a login failure its retries do not fix ends the
-startup.
+startup. The ConfigData phase takes the namespace from the `cloud.microservice.namespace` system property, or from
+`NAMESPACE` or `CLOUD_NAMESPACE`; the `TokenStorage` bean takes it from `NAMESPACE` alone.
 
 The default is the auth method the platform registers. Set `consul.auth.method` only if your Consul names it
 differently.

@@ -66,8 +66,9 @@ relogin runs at 80% of the remaining lifetime of the current token, and the rech
 the interval, so with a `MaxTokenTTL` of 24 hours a pod retries about every 19 hours whatever the interval says. Plan
 the migration of a fleet against `MaxTokenTTL`, and lower it on the auth method if the pods have to move over sooner.
 
-A failed relogin is retried with a delay that starts at 10 seconds, doubles up to 5 minutes, and returns to 10 seconds
-on the next success. Until a relogin succeeds the pod keeps the token it holds, which may already have expired.
+A failed relogin is retried at 80% of the remaining lifetime of the token, or after a delay that starts at 10 seconds
+and doubles up to 5 minutes, whichever is later. The delay returns to 10 seconds on the next success. Until a relogin
+succeeds the pod keeps the token it holds, which may already have expired.
 
 An unknown value of `consul.auth.mode` fails the startup, and so does a login failure the retries do not fix: the
 `TokenStorage` bean cannot be produced without a token. With `quarkus.consul-source-config.m2m.enabled=false` none of
@@ -90,4 +91,4 @@ the token directory elsewhere with `com.netcracker.cloud.security.kubernetes.tok
 | consul.auth.mode                             | Way to obtain the ACL token: kubernetes-with-m2m-fallback, kubernetes or m2m | kubernetes-with-m2m-fallback               |
 | consul.auth.method                           | Consul auth method name, used by the kubernetes way           | applications-k8s-m2m                                      |
 | consul.auth.audience                         | Projected token audience, used by the kubernetes way          | netcracker                                                |
-| consul.auth.fallback-recheck-interval        | How often the fallback retries the kubernetes way             | 5h                                                        |
+| consul.auth.fallback-recheck-interval        | Lower bound on how often the fallback retries the kubernetes way | 5h                                                        |
