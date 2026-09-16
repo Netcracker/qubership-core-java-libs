@@ -33,6 +33,7 @@ import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicInfo;
 import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicRequest;
 import com.netcracker.cloud.maas.client.impl.dto.kafka.v1.TopicTemplate;
 import com.netcracker.cloud.maas.client.impl.http.HttpClient;
+import com.netcracker.cloud.maas.client.impl.http.HttpExecution;
 import com.netcracker.cloud.tenantmanager.client.TenantManagerConnector;
 
 import dev.failsafe.Failsafe;
@@ -93,10 +94,30 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
         return exec;
     });
 
+    /** True on the view returned by {@link #singleAttempt()}: it sends one attempt per call. */
+    private final boolean singleAttempt;
+
     public KafkaMaaSClientImpl(HttpClient httpClient, Supplier<TenantManagerConnector> tmConn, ApiUrlProvider apiProvider) {
+        this(httpClient, tmConn, apiProvider, false);
+    }
+
+    private KafkaMaaSClientImpl(HttpClient httpClient, Supplier<TenantManagerConnector> tmConn,
+                                ApiUrlProvider apiProvider, boolean singleAttempt) {
         this.httpClient = httpClient;
         this.tenantManagerConnector = new Lazy<>(tmConn);
         this.apiProvider = apiProvider;
+        this.singleAttempt = singleAttempt;
+    }
+
+    @Override
+    public KafkaMaaSClient singleAttempt() {
+        return singleAttempt ? this : new KafkaMaaSClientImpl(
+                httpClient, tenantManagerConnector::get, apiProvider, true);
+    }
+
+    private HttpExecution request(String url) {
+        HttpExecution execution = httpClient.request(url);
+        return singleAttempt ? execution.noRetry() : execution;
     }
 
     @Override
@@ -113,7 +134,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
         log.info("Get or create topic by classifier=`{}' and options=`{}'", classifier, options);
         // Retried on any options: maas-service resolves the classifier before it looks at
         // onTopicExists, so a repeat returns the registration the first attempt made.
-        return httpClient.request(url)
+        return request(url)
                 .post(TopicRequest.builder(classifier).build().options(options))
                 .expect(HTTP_OK, HTTP_CREATED)
                 .sendAndReceive(TopicInfo.class)
@@ -129,7 +150,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     /** Not retried: a repeat reports zero deleted for a topic the first attempt already removed. */
     @Override
     public boolean deleteTopic(Classifier classifier) {
-        TopicDeleteResponse resp = httpClient.request(apiProvider.getKafkaTopicUrl(null))
+        TopicDeleteResponse resp = request(apiProvider.getKafkaTopicUrl(null))
                 .delete(new TopicDeleteRequest(classifier))
                 .expect(HTTP_OK)
                 .noRetry()
@@ -249,7 +270,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
 
     /** One long poll for topics created since the previous call. */
     private List<TopicInfo> poll(String url) {
-        return httpClient.request(url)
+        return request(url)
                 .post(watchedClassifiers())
                 .expect(200)
                 .noRetry()
@@ -299,6 +320,9 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
 
     @Override
     public void watchTopicCreate(String name, Consumer<TopicAddress> callback) {
+        if (singleAttempt) {
+            throw new IllegalStateException("The single-attempt view cannot watch topic: " + name);
+        }
         if (closed) {
             throw new IllegalStateException("Client is closed, cannot watch topic: " + name);
         }
@@ -329,7 +353,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
 
     private TopicAddressImpl getOrCreateLazyTopic(Classifier classifier) {
         log.info("Request lazy topic by classifier=`{}'", classifier);
-        return httpClient.request(apiProvider.getKafkaLazyTopicUrl())
+        return request(apiProvider.getKafkaLazyTopicUrl())
                 .post(classifier)
                 .expect(HTTP_OK, HTTP_CREATED)
                 .sendAndReceive(TopicInfo.class)
@@ -339,7 +363,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
 
     private TopicAddressImpl searchTopic(Classifier classifier) {
         log.info("Search topic by classifier: {}", classifier);
-        return httpClient.request(apiProvider.getKafkaTopicGetByClassifierUrl())
+        return request(apiProvider.getKafkaTopicGetByClassifierUrl())
                 .post(classifier)
                 .expect(HTTP_OK)
                 .supressError(HTTP_NOT_FOUND, body -> log.info("Topic not found by {}", classifier))
@@ -351,7 +375,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     /** Not retried: a repeat finds no template and answers 404 for a delete that succeeded. */
     public TopicTemplate deleteTopicTemplate(String name) {
         log.info("Delete topic template by name: {}", name);
-        return httpClient.request(apiProvider.getKafkaTopicTemplateUrl())
+        return request(apiProvider.getKafkaTopicTemplateUrl())
                 .delete(TopicTemplate.builder().name(name).build())
                 .expect(HTTP_OK)
                 .noRetry()
@@ -363,7 +387,7 @@ public class KafkaMaaSClientImpl implements KafkaMaaSClient {
     public List<TopicAddress> search(SearchCriteria criteria) {
         log.info("Search for topics by criteria: {}", criteria);
         TypeReference<List<TopicInfo>> typeRef = new TypeReference<>(){};
-        return httpClient.request(apiProvider.getKafkaTopicSearchUrl())
+        return request(apiProvider.getKafkaTopicSearchUrl())
                 .post(criteria)
                 .expect(HTTP_OK)
                 .sendAndReceive(typeRef)

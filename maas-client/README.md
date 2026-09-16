@@ -88,6 +88,11 @@ below it — maas-service holds the request open for the whole window and then a
 with an empty list, which the client has to be able to receive. With the default 30s
 timeout the window is 25s.
 
+A caller that owns a retry loop takes `client.singleAttempt()`, a view that sends one
+attempt per call. The declarative Kafka client uses it: it repeats every five seconds
+until the topic answers, so a second retry layer under it would only hold the thread it
+shares with every other client it manages. Watching is not available on that view.
+
 Deletes are excluded as well, because neither is idempotent: a repeat of a delete
 whose response was lost reports zero deleted topics for a topic that is already
 gone, and answers 404 for a template that is already gone. `getOrCreateTopic` is

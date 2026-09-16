@@ -622,6 +622,31 @@ class KafkaMaaSClientImplTest {
         });
     }
 
+    /** The view for callers that own a retry loop, such as the declarative kafka client. */
+    @Test
+    void testSingleAttemptViewSendsOneRequest(ClientAndServer mockServer) {
+        withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {
+            withProp(Env.PROP_MAAS_AGENT_URL, "http://localhost:" + mockServer.getPort(), () -> {
+                withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, "60000", () -> {
+
+                    mockServer.when(request().withMethod("POST").withPath("/api/v2/kafka/topic"), Times.unlimited())
+                            .respond(response().withStatusCode(500).withBody("{\"error\":\"agent down\"}"));
+
+                    KafkaMaaSClient kafkaClient = new MaaSAPIClientImpl(() -> "faketoken", null, null)
+                            .getKafkaClient().singleAttempt();
+                    Classifier orders = new Classifier("orders");
+                    assertThrows(MaaSHttpException.class,
+                            () -> kafkaClient.getOrCreateTopic(orders, TopicCreateOptions.DEFAULTS));
+
+                    mockServer.verify(request().withMethod("POST").withPath("/api/v2/kafka/topic"),
+                            VerificationTimes.exactly(1));
+                    assertThrows(IllegalStateException.class,
+                            () -> kafkaClient.watchTopicCreate("orders", address -> { }));
+                });
+            });
+        });
+    }
+
     @Test
     void testTopicDeleteError(ClientAndServer mockServer) throws Exception {
         withProp(Env.PROP_NAMESPACE, "cloud-dev", () -> {

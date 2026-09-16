@@ -37,6 +37,10 @@
     watch thread has stopped on its own, instead of registering a callback that can never fire.
   - Interrupting a thread during a retry wait restores the interrupt flag and aborts, instead of
     swallowing `InterruptedException`.
+  - The declarative Kafka client keeps its previous timing. `KafkaMaaSClient.singleAttempt()`
+    returns a view that sends one attempt per call, and the declarative topic service uses it: that
+    client repeats every five seconds until the topic answers, on a thread shared by every client
+    it manages, so a second retry layer under it only holds that thread.
 * `Fixed`
   - `deleteTopic` threw `NullPointerException` and `search` threw `NoSuchElementException` when
     maas-agent answered 200 with an empty body. They now report nothing deleted and no topics found.
