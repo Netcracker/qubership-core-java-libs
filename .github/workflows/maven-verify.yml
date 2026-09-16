@@ -27,6 +27,7 @@ jobs:
       maven-command: 'verify -T 1C -Dorg.slf4j.simpleLogger.showThreadId=true'
       maven-username: 'NetcrackerCLPLCI'
       sonar-project-key: ${{ vars.SONAR_PROJECT_KEY }}
+      skip-docker: true
     secrets:
       MAVEN_TOKEN: ${{ secrets.GH_RWD_PACKAGE_TOKEN }}
       MAVEN_GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}

@@ -12,6 +12,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -23,7 +24,7 @@ public class KafkaContainerCluster implements Startable {
 
     private final Network network;
     private GenericContainer zookeeper;
-    private final Collection<KafkaContainer> brokers;
+    private final List<KafkaContainer> brokers;
 
     public KafkaContainerCluster(String confluentPlatformVersion, int brokersNum, int replicationFactor, boolean useZookeeper) {
         if (brokersNum < 0) {
@@ -63,6 +64,8 @@ public class KafkaContainerCluster implements Startable {
                             .withEnv("KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS", replicationFactor + "")
                             .withEnv("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", replicationFactor + "")
                             .withEnv("KAFKA_TRANSACTION_STATE_LOG_MIN_ISR", replicationFactor + "")
+                            .withEnv("KAFKA_BROKER_SESSION_TIMEOUT_MS", "6000")
+                            .withEnv("KAFKA_BROKER_HEARTBEAT_INTERVAL_MS", "1000")
                             .withStartupTimeout(Duration.ofMinutes(1));
                     if (useZookeeper) {
                         kafkaContainer.withExternalZookeeper("zookeeper:2181");
@@ -79,8 +82,43 @@ public class KafkaContainerCluster implements Startable {
         return this.brokers;
     }
 
+    /** The broker with the given id: ids match positions, KAFKA_BROKER_ID is the position. */
+    public KafkaContainer getBroker(int brokerId) {
+        return this.brokers.get(brokerId);
+    }
+
     public String getBootstrapServers() {
         return brokers.stream().map(KafkaContainer::getBootstrapServers).collect(Collectors.joining(","));
+    }
+
+    /**
+     * Kills one broker, leaving the container and its data in place so it can be started
+     * again. The stop signal reaches a wrapper shell rather than the broker itself, so
+     * there is no controlled shutdown to wait for and the timeout is zero.
+     */
+    public void killBroker(int brokerId) {
+        KafkaContainer broker = getBroker(brokerId);
+        broker.getDockerClient().stopContainerCmd(broker.getContainerId()).withTimeout(0).exec();
+    }
+
+    /**
+     * Drains one broker the way a node replacement does, so it hands its partitions
+     * over before it exits. The stop signal cannot do it: the image keeps it in a
+     * wrapper shell, so the request has to be made inside the container.
+     */
+    public void drainBroker(int brokerId) {
+        KafkaContainer broker = getBroker(brokerId);
+        try {
+            broker.execInContainer("kafka-server-stop");
+            Unreliables.retryUntilTrue(30, TimeUnit.SECONDS, () -> !isRunning(broker));
+        } catch (Exception e) {
+            throw new IllegalStateException("failed to drain broker " + brokerId, e);
+        }
+    }
+
+    private boolean isRunning(KafkaContainer broker) {
+        return Boolean.TRUE.equals(broker.getDockerClient()
+                .inspectContainerCmd(broker.getContainerId()).exec().getState().getRunning());
     }
 
     @Override
@@ -95,13 +133,7 @@ public class KafkaContainerCluster implements Startable {
                 return brokers != null && brokers.split(",").length == this.brokersNum;
             });
         } else {
-            Unreliables.retryUntilTrue(30, TimeUnit.SECONDS, () -> {
-                        Container.ExecResult result = this.brokers.stream().findFirst().get().execInContainer("sh", "-c",
-                                "kafka-metadata-shell --snapshot /var/lib/kafka/data/__cluster_metadata-0/00000000000000000000.log ls /brokers | wc -l");
-                        String brokers = result.getStdout().replace("\n", "");
-                        return Integer.valueOf(brokers) == this.brokersNum;
-                    }
-            );
+            awaitBrokersRegistered();
         }
     }
 
@@ -109,5 +141,20 @@ public class KafkaContainerCluster implements Startable {
     public void stop() {
         this.brokers.stream().parallel().forEach(GenericContainer::stop);
         Optional.ofNullable(zookeeper).ifPresent(GenericContainer::stop);
+    }
+
+    /** Waits until the cluster metadata lists every broker. */
+    private void awaitBrokersRegistered() {
+        Unreliables.retryUntilTrue(60, TimeUnit.SECONDS, () -> {
+                    KafkaContainer running = this.brokers.stream()
+                            .filter(GenericContainer::isRunning)
+                            .findFirst()
+                            .orElseThrow(() -> new IllegalStateException("no broker is running"));
+                    Container.ExecResult result = running.execInContainer("sh", "-c",
+                            "kafka-metadata-shell --snapshot /var/lib/kafka/data/__cluster_metadata-0/00000000000000000000.log ls /brokers | wc -l");
+                    String brokers = result.getStdout().replace("\n", "");
+                    return Integer.valueOf(brokers) == this.brokersNum;
+                }
+        );
     }
 }

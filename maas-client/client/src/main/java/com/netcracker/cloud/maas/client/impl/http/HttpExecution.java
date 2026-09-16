@@ -4,12 +4,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
+import com.netcracker.cloud.maas.client.api.MaaSHttpException;
+import com.netcracker.cloud.maas.client.impl.Env;
+import dev.failsafe.Failsafe;
+import dev.failsafe.FailsafeException;
+import dev.failsafe.RetryPolicy;
+import dev.failsafe.RetryPolicyBuilder;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -19,11 +26,11 @@ import java.util.function.Predicate;
 public class HttpExecution {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    private final int RETRIES_NUMBER = 30;
     private final OkHttpClient httpClient;
     private final Request.Builder req;
     private final List<Integer> expectedCodes = new ArrayList<>();
     private final Map<Integer, Consumer<String>> errorHandler = new HashMap<>();
+    private boolean retryEnabled = true;
 
     public static final ObjectMapper MAPPER = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -68,6 +75,12 @@ public class HttpExecution {
         return this;
     }
 
+    /** Performs a single attempt. For callers that own a retry loop, such as a long poll. */
+    public HttpExecution noRetry() {
+        this.retryEnabled = false;
+        return this;
+    }
+
     private <R> Function<String, R> der(OmnivoreFunction<String, R> deserializer) {
         return body -> {
             try {
@@ -94,37 +107,153 @@ public class HttpExecution {
         return sendAndReceive().map(der(responseDeserializer));
     }
 
-    @SneakyThrows
+    /**
+     * Whether the status is worth another attempt. 405 is here because maas-service reports a
+     * read-only database that way; 401 is not, because the token source refreshes on its own
+     * schedule and M2MInterceptor has already retried by the time we see one.
+     */
+    private static boolean isRetryableStatus(int code, String body) {
+        if (code >= 500 || code == 429) {
+            return true;
+        }
+        return code == 405 && isDatabaseUnavailable(body);
+    }
+
+    /** Wordings of the two maas-service errors a leader switchover produces, and rewordings. */
+    private static final List<String> DATABASE_UNAVAILABLE_MARKERS =
+            List.of("read-only", "read only", "not in 'active' mode", "not active");
+
+    /**
+     * Reads the reason of a maas-service error envelope. The word "database" is required next to
+     * the marker, so an unrelated 405 that happens to mention read-only data stays permanent.
+     */
+    private static boolean isDatabaseUnavailable(String body) {
+        if (body == null || body.isEmpty()) {
+            return false;
+        }
+        String reason;
+        try {
+            reason = MAPPER.readTree(body).path("reason").asText("").toLowerCase(Locale.ROOT);
+        } catch (JsonProcessingException e) {
+            return false; // not a maas-service envelope
+        }
+        return reason.contains("database")
+                && DATABASE_UNAVAILABLE_MARKERS.stream().anyMatch(reason::contains);
+    }
+
+    /** First backoff pause, and the fraction of the total duration a single pause may reach. */
+    private static final Duration BASE_DELAY = Duration.ofSeconds(1);
+    private static final int MAX_DELAY_FRACTION_OF_TOTAL = 4;
+    private static final double JITTER = 0.2;
+
+    // Response.body() is nullable in OkHttp; a missing body reads as empty.
+    private static String bodyAsString(Response response) throws IOException {
+        ResponseBody body = response.body();
+        return body == null ? "" : body.string();
+    }
+
+    /** Body of a non-2xx response. Never throws: an unreadable body must not become a retry. */
+    private static String errorBodyOrPlaceholder(Response response) {
+        try {
+            return bodyAsString(response);
+        } catch (IOException e) {
+            log.debug("Could not read error response body", e);
+            return "<unreadable: " + e.getMessage() + ">";
+        }
+    }
+
+    /** Sends the request, retrying under the policy below until it succeeds or runs out of time. */
     private Optional<String> sendAndReceive() {
         Request compiledReq = req.build();
         log.debug("Send request: {}", compiledReq);
 
-        int attempt = 0;
-        while (true) {
-            try (Response response = httpClient.newCall(compiledReq).execute()) {
-                // check response codes against acceptable list
-                log.debug("Received status code: {}, expected codes: {}", response.code(), expectedCodes);
-
-                if (errorHandler.containsKey(response.code())) {
-                    errorHandler.get(response.code()).accept(response.body().string());
-                    return Optional.empty();
-                }
-
-                if (!expectedCodes.contains(response.code())) {
-                    throw new RuntimeException("Unexpected status code " + response.code() + " for request: " + compiledReq + "\n\tResponse body: " + response.body().string());
-                }
-
-                String body = response.body().string();
-                log.debug("Response body: {}", body);
-                return Optional.of(body);
-            } catch (IOException e) {
-                if (attempt++ < RETRIES_NUMBER) {
-                    log.warn("Error execute http request: {}, Retry {} of {}", e.getMessage(), attempt, RETRIES_NUMBER);
-                    Thread.sleep(1000);
-                } else {
-                    throw new RuntimeException("Error executing " + compiledReq + ". Number of " + RETRIES_NUMBER + " retries exceeded", e);
-                }
+        long maxTotalMillis = Env.httpRetryMaxTotalDuration().toMillis();
+        if (!retryEnabled || maxTotalMillis <= 0) {
+            return attemptOnce(compiledReq);
+        }
+        try {
+            return Failsafe.with(retryPolicy(compiledReq, maxTotalMillis)).get(context ->
+                    attempt(compiledReq, maxTotalMillis - context.getElapsedTime().toMillis(), true));
+        } catch (RetryableStatus | FailsafeException e) {
+            Throwable last = e instanceof FailsafeException failsafe ? failsafe.getCause() : null;
+            if (last instanceof InterruptedException interrupted) {
+                // Failsafe restores the flag; the call still has to abort rather than retry
+                Thread.currentThread().interrupt();
+                throw new MaaSHttpException("Interrupted while waiting to retry maas-agent request", interrupted);
             }
+            throw new MaaSHttpException("Gave up on " + compiledReq + ": ran out of its "
+                    + maxTotalMillis + "ms total duration.\n\tLast attempt: "
+                    + (last != null ? last : e), last);
+        }
+    }
+
+    private RetryPolicy<Optional<String>> retryPolicy(Request compiledReq, long maxTotalMillis) {
+        Duration maxDelay = Duration.ofMillis(Math.max(1, maxTotalMillis / MAX_DELAY_FRACTION_OF_TOTAL));
+        RetryPolicyBuilder<Optional<String>> policy = RetryPolicy.builder();
+        if (BASE_DELAY.compareTo(maxDelay) < 0) {
+            policy.withBackoff(BASE_DELAY, maxDelay, 2.0);
+        } else {
+            policy.withDelay(maxDelay); // too short for the pause to grow
+        }
+        return policy
+                .handle(IOException.class, RetryableStatus.class)
+                .withJitter(JITTER)
+                .withMaxAttempts(-1)
+                .withMaxDuration(Duration.ofMillis(maxTotalMillis))
+                .onRetry(event -> log.warn("Retrying request: {}. Attempt {} failed with {}, within {}ms total",
+                        compiledReq, event.getAttemptCount(), event.getLastException(), maxTotalMillis))
+                .build();
+    }
+
+    /** One request/response exchange. Throws {@link RetryableStatus} for an outcome worth repeating. */
+    private Optional<String> attempt(Request compiledReq, long remainingMs, boolean retrying) throws IOException {
+        Call call = httpClient.newCall(compiledReq);
+        if (retrying) {
+            call.timeout().timeout(Math.max(1, remainingMs), TimeUnit.MILLISECONDS);
+        }
+        try (Response response = call.execute()) {
+            // check response codes against acceptable list
+            log.debug("Received status code: {}, expected codes: {}", response.code(), expectedCodes);
+
+            if (errorHandler.containsKey(response.code())) {
+                errorHandler.get(response.code()).accept(bodyAsString(response));
+                return Optional.empty();
+            }
+
+            if (!expectedCodes.contains(response.code())) {
+                String errorBody = errorBodyOrPlaceholder(response);
+                if (retrying && isRetryableStatus(response.code(), errorBody)) {
+                    throw new RetryableStatus(response.code(), errorBody);
+                }
+                throw MaaSHttpException.of("Unexpected status code " + response.code()
+                        + " for request: " + compiledReq + "\n\tResponse body: " + errorBody);
+            }
+
+            String body = bodyAsString(response);
+            log.debug("Response body: {}", body);
+            return Optional.of(body);
+        }
+    }
+
+    /** The {@link #noRetry()} path, and a total duration configured to zero. */
+    private Optional<String> attemptOnce(Request compiledReq) {
+        try {
+            return attempt(compiledReq, 0, false);
+        } catch (IOException e) {
+            throw new MaaSHttpException("Error executing " + compiledReq, e);
+        }
+    }
+
+    /** A status the caller did not expect, but one worth another attempt. Never leaves this class. */
+    private static final class RetryableStatus extends RuntimeException {
+
+        RetryableStatus(int code, String body) {
+            super("status " + code + ", body: " + body, null, false, false);
+        }
+
+        @Override
+        public String toString() {
+            return getMessage();
         }
     }
 }

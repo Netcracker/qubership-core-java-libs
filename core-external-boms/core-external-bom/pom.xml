@@ -46,9 +46,9 @@
         <!-- dbaas-client (pure-java modules) -->
         <cloud-core.dbaas-client.version>9.2.3-SNAPSHOT</cloud-core.dbaas-client.version>
         <!-- maas-client (pure-java modules) -->
-        <cloud-core.maas-client.version>12.3.3-SNAPSHOT</cloud-core.maas-client.version>
+        <cloud-core.maas-client.version>12.4.0-SNAPSHOT</cloud-core.maas-client.version>
         <!-- maas-declarative-client-commons -->
-        <cloud-core.maas-declarative-client.version>6.2.3-SNAPSHOT</cloud-core.maas-declarative-client.version>
+        <cloud-core.maas-declarative-client.version>6.3.0-SNAPSHOT</cloud-core.maas-declarative-client.version>
     </properties>
 
     <dependencyManagement>

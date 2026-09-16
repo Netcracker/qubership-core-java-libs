@@ -19,6 +19,16 @@ public interface KafkaMaaSClient extends AutoCloseable {
     TopicAddress getOrCreateTopic(Classifier classifier, TopicCreateOptions options);
 
     /**
+     * A view of this client that sends one attempt per call, for callers that own a retry loop.
+     * Watching is not available on it.
+     *
+     * @return the single-attempt view, or this client if it does not retry anyway
+     */
+    default KafkaMaaSClient singleAttempt() {
+        return this;
+    }
+
+    /**
      * Generic method to get topic by explicitly specified classifier. It may be
      * useful in case of composite deployment and requests for topic owned by
      * different namespace then this microservice deployment
