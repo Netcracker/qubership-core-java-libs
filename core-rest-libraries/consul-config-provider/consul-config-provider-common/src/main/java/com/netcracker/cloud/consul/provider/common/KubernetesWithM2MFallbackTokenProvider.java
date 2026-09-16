@@ -119,16 +119,16 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
 
         boolean afterFallback = fellBackAt != null;
         if (afterFallback) {
-            log.info("Consul ACL token is obtained by the {} auth method from now on, the fallback to the {} one is over",
+            log.info("Consul ACL token is obtained by the {} way from now on, the fallback to the {} one is over",
                     KUBERNETES_WAY, M2M_WAY);
         } else {
-            log.info("Consul ACL token is obtained by the {} auth method", KUBERNETES_WAY);
+            log.info("Consul ACL token is obtained by the {} way", KUBERNETES_WAY);
         }
     }
 
     private void fallBack(Exception e) {
         if (fellBackAt == null) {
-            log.info("Consul login by the {} auth method failed, falling back to the {} one and retrying it every {}: {}",
+            log.info("Consul login by the {} way failed, falling back to the {} one and retrying it every {}: {}",
                     KUBERNETES_WAY, M2M_WAY, recheckInterval, describe(e));
         }
         fellBackAt = clock.instant();
@@ -144,7 +144,7 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
     private Token probeKubernetesWay() throws IOException {
         try {
             return Failsafe.with(LoginRetryPolicies.<Token>onTransportFailure(tries, probeDelay)
-                            .onFailedAttempt(event -> log.debug("Failed probe attempt {} of the {} auth method",
+                            .onFailedAttempt(event -> log.debug("Failed probe attempt {} of the {} way",
                                     event.getAttemptCount(), KUBERNETES_WAY, event.getLastFailure())))
                     .get(kubernetesProvider::getToken);
         } catch (FailsafeException e) {
