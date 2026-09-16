@@ -3,7 +3,7 @@
     <parent>
         <artifactId>restlegacy-parent</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>7.4.3-SNAPSHOT</version>
+        <version>7.5.0-SNAPSHOT</version>
         <relativePath>../restlegacy-parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -104,10 +104,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <!--todo vlla: this is old group id. Should we migrate to dev.failsafe:failsafe and add it to bom?-->
             <groupId>net.jodah</groupId>
             <artifactId>failsafe</artifactId>
-            <version>2.4.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
