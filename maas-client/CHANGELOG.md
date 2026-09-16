@@ -1,6 +1,6 @@
 # This page contains notably changes of maas-client project.
 
-## Unreleased
+## 12.4.0
 * `Features`
   - Calls to maas-agent survive a database leader switchover. Retryable: `IOException`, 5xx, 429,
     and 405 when the response reason names a database that cannot be written — maas-service reports
