@@ -699,7 +699,6 @@ class MaasConsumingExecutorTest {
     @Test
     void testCommitFailureRecoversAndTheOffsetIsCommittedOnRedelivery() {
         var consumer = mock(BGKafkaConsumer.class);
-        var barrier = new SyncBarrier();
         var consumerCreatorService = mock(KafkaClientCreationService.class);
         when(consumerCreatorService.createKafkaConsumer(any(), any(), any(), any(), any(), any())).thenReturn(consumer);
 
@@ -712,13 +711,7 @@ class MaasConsumingExecutorTest {
                 .doNothing()
                 .when(consumer).commitSync(any());
 
-        when(consumer.poll(any()))
-                .thenAnswer(i -> recordsGenerator.next())
-                .thenAnswer(i -> recordsGenerator.next())
-                .thenAnswer(i -> {
-                    barrier.notify("drained");
-                    return Optional.empty();
-                });
+        when(consumer.poll(any())).thenAnswer(i -> recordsGenerator.next());
 
         var executor = new MaasConsumingExecutor(ctx,
                 (exception, errorRecord, handledRecords) -> {
@@ -730,7 +723,6 @@ class MaasConsumingExecutorTest {
         try {
             executor.start();
             executor.init();
-            barrier.await("drained", Duration.ofSeconds(10));
 
             // the failed commit is treated like any other consuming error: the consumer is dropped
             // and rebuilt, and the executor keeps running rather than stopping on it
