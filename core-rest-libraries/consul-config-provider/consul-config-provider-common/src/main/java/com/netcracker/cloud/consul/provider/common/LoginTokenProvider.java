@@ -30,7 +30,7 @@ public class LoginTokenProvider implements ConsulTokenProvider {
 
     /**
      * @throws IOException on a non-2xx answer or a successful answer with an empty body; a non-2xx message carries
-     *         the response code, and a {@code 403} is reported as a Consul configuration that is not ready yet
+     *         the response code, and a {@code 403} message names what could have refused the login
      * @throws com.jayway.jsonpath.PathNotFoundException when the answer carries no {@code SecretID}; retrying that
      *         does not help
      */
@@ -39,7 +39,9 @@ public class LoginTokenProvider implements ConsulTokenProvider {
         ConsulClientResponse response = client.login(credentials);
         String responseBody = response.getBodyJson();
         if (response.getCode() != 200) {
-            String reason = response.getCode() == 403 ? "consul auth method is not ready" : "login to consul failed";
+            String reason = response.getCode() == 403
+                    ? "consul refused the login (missing auth method, unmatched binding rule or wrong audience)"
+                    : "login to consul failed";
             throw new IOException(String.format("%s: response code=%s; body='%s'", reason, response.getCode(), responseBody));
         }
         if (responseBody == null || responseBody.isEmpty()) {
