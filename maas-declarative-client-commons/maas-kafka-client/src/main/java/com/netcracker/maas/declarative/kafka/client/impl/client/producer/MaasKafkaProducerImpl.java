@@ -191,9 +191,9 @@ public class MaasKafkaProducerImpl extends MaasKafkaCommonClient implements Maas
             MaasKafkaClientState oldState = clientState;
             try {
                 if (clientDefinition.isTenant()) {
-                    producerMap.forEach((key, value) -> value.close());
+                    producerMap.values().forEach(p -> safe(() -> p.close()));
                 } else {
-                    producer.close();
+                    safe(() -> producer.close());
                 }
             } catch (Exception ex) {
                 // closing is best effort, the state is not: a client left reporting ACTIVE

@@ -47,6 +47,7 @@ class MaasKafkaProducerDeactivationTest {
 
     private Producer kafkaProducer;
     private KafkaClientCreationService creationService;
+    private InternalTenantService tenantService;
     private MaasKafkaClientFactory kafkaClientFactory;
 
     @BeforeAll
@@ -63,14 +64,18 @@ class MaasKafkaProducerDeactivationTest {
         topicInfo.setClassifier(new Classifier(TOPIC));
 
         MaasKafkaTopicService topicService = mock(MaasKafkaTopicService.class);
+        // both lookups: an unstubbed one answers null, and the client then waits for the topic forever
         when(topicService.getTopicAddressByDefinition(any())).thenReturn(new TopicAddressImpl(topicInfo));
+        when(topicService.getTopicAddressByDefinitionAndTenantId(any(), any()))
+                .thenReturn(new TopicAddressImpl(topicInfo));
 
         kafkaProducer = mock(Producer.class);
         creationService = mock(KafkaClientCreationService.class);
         when(creationService.createKafkaProducer(any(), any(), any())).thenReturn(kafkaProducer);
+        tenantService = mock(InternalTenantService.class);
 
         kafkaClientFactory = new MaasKafkaClientFactoryImpl(
-                mock(InternalTenantService.class),
+                tenantService,
                 mock(InternalMaasTopicCredentialsExtractor.class),
                 topicService,
                 Collections.emptyList(),
@@ -90,7 +95,7 @@ class MaasKafkaProducerDeactivationTest {
     void testDeactivationReachesInactiveEvenWhenClosingThrows() {
         doThrow(new RuntimeException("close timed out with records in flight")).when(kafkaProducer).close();
 
-        MaasKafkaProducer producer = activatedProducer();
+        MaasKafkaProducer producer = activatedProducer(false);
         assertEquals(MaasKafkaClientState.ACTIVE, producer.getClientState());
 
         ((MaasKafkaProducerImpl) producer).onDeactivateClientEvent();
@@ -108,7 +113,7 @@ class MaasKafkaProducerDeactivationTest {
             return null;
         }).when(kafkaProducer).close();
 
-        MaasKafkaProducer producer = activatedProducer();
+        MaasKafkaProducer producer = activatedProducer(false);
         ((MaasKafkaProducerImpl) producer).onDeactivateClientEvent();
         awaitInactive(producer);
 
@@ -119,6 +124,26 @@ class MaasKafkaProducerDeactivationTest {
 
         assertEquals(MaasKafkaClientState.ACTIVE, producer.getClientState());
         verify(creationService, times(2)).createKafkaProducer(any(), any(), any());
+    }
+
+    @Test
+    void testOneProducerRefusingToCloseDoesNotKeepTheOthersOpen() {
+        Producer first = mock(Producer.class);
+        Producer second = mock(Producer.class);
+        // both refuse, so the assertion does not depend on which one the map is iterated first
+        doThrow(new RuntimeException("close timed out with records in flight")).when(first).close();
+        doThrow(new RuntimeException("close timed out with records in flight")).when(second).close();
+        when(creationService.createKafkaProducer(any(), any(), any())).thenReturn(first, second);
+        when(tenantService.listAvailableTenants()).thenReturn(List.of("tenant-1", "tenant-2"));
+
+        MaasKafkaProducer producer = activatedProducer(true);
+        ((MaasKafkaProducerImpl) producer).onDeactivateClientEvent();
+        awaitInactive(producer);
+
+        // the next activation overwrites the map, so a producer left open is never released:
+        // its broker connections, record buffer and sender thread stay for the life of the service
+        verify(first).close();
+        verify(second).close();
     }
 
     /** Deactivation runs on the shared executor, so the state settles after the call returns. */
@@ -135,7 +160,7 @@ class MaasKafkaProducerDeactivationTest {
                 "a deactivation that was requested has to end in INACTIVE, whatever closing did");
     }
 
-    private MaasKafkaProducer activatedProducer() {
+    private MaasKafkaProducer activatedProducer(boolean tenant) {
         MaasTopicDefinition topicDefinition = MaasTopicDefinition.builder()
                 .setName(TOPIC)
                 .setNamespace("test_namespace")
@@ -143,7 +168,7 @@ class MaasKafkaProducerDeactivationTest {
                 .build();
         MaasKafkaProducerDefinition definition = MaasKafkaProducerDefinition.builder()
                 .setTopic(topicDefinition)
-                .setTenant(false)
+                .setTenant(tenant)
                 .setClientConfig(Map.of(
                         ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName(),
                         ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName(),
