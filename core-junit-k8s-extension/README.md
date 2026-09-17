@@ -12,6 +12,7 @@
     * [Requirements:](#requirements)
       * [Supports only Kubernetes 1.27+](#supports-only-kubernetes-127)
       * [Requires Java 21+](#requires-java-21)
+      * [Run tests inside cluster via IN_CLOUD_EXECUTION_MODE env](#run-tests-inside-cluster-via-in_cloud_execution_mode-env-)
     * [How to use qubership extension library](#how-to-use-qubership-extension-library)
     * [Jacoco](#jacoco)
     * [How to enable extension](#how-to-enable-extension)
@@ -47,6 +48,11 @@
 #### Supports only Kubernetes 1.27+
 
 #### Requires Java 21+
+
+#### Run tests inside cluster via IN_CLOUD_EXECUTION_MODE env 
+To launch tests inside cluster, start tests with env IN_CLOUD_EXECUTION_MODE=true.
+In this mode fields annotated with @Cloud or @PortForward will be assigned with values as is without creating port-forwards
+By default, if IN_CLOUD_EXECUTION_MODE is not specified, tests will run with port forward enabled
 
 ### How to use qubership extension library
 
