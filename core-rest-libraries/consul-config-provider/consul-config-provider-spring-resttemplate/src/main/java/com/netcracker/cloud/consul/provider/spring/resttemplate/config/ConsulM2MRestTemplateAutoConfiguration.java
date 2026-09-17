@@ -3,6 +3,7 @@ package com.netcracker.cloud.consul.provider.spring.resttemplate.config;
 import com.netcracker.cloud.consul.provider.common.TokenStorage;
 import com.netcracker.cloud.consul.provider.common.TokenStorageFactory;
 import com.netcracker.cloud.consul.provider.spring.common.SpringTokenStorageFactory;
+import com.netcracker.cloud.consul.provider.spring.common.TokenRefusals;
 import com.netcracker.cloud.consul.provider.spring.common.config.ConsulLoginProperties;
 import com.netcracker.cloud.consul.provider.spring.common.Utils;
 import com.netcracker.cloud.restclient.resttemplate.MicroserviceRestTemplate;
@@ -10,6 +11,7 @@ import com.netcracker.cloud.security.core.auth.DummyM2MManager;
 import com.netcracker.cloud.security.core.auth.M2MManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.consul.ConditionalOnConsulEnabled;
@@ -32,10 +34,16 @@ public class ConsulM2MRestTemplateAutoConfiguration {
     public TokenStorage consulTokenStorageViaM2MRestTemplate(ConsulConfigProperties consulConfigProperties,
                                                              ConsulProperties consulProperties,
                                                              M2MManager m2MManager,
-                                                             ConsulLoginProperties loginProperties) {
+                                                             ConsulLoginProperties loginProperties,
+                                                             ObjectProvider<TokenRefusals> refusals) {
         TokenStorageFactory factory = new SpringTokenStorageFactory(consulConfigProperties, new MicroserviceRestTemplate());
 
-        return factory.create(createOptions(loginProperties, consulProperties, m2MManager, System.getenv("NAMESPACE")));
+        TokenStorage tokenStorage = factory.create(
+                createOptions(loginProperties, consulProperties, m2MManager, System.getenv("NAMESPACE")));
+        // The ConfigData phase promotes the refusals of its own Consul client only when it ran; without it the pod
+        // still recovers through the scheduled validation of the token updater.
+        refusals.ifAvailable(available -> available.reportTo(tokenStorage));
+        return tokenStorage;
     }
 
     static TokenStorageFactory.CreateOptions createOptions(ConsulLoginProperties loginProperties,
