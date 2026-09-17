@@ -32,9 +32,9 @@ public class OrderedServiceLoader {
                 .stream()
                 .map(ServiceLoader.Provider::get)
                 .sorted(Comparator.<T, Integer>comparing(instance ->
-                        Optional.ofNullable(instance.getClass().getDeclaredAnnotation(Priority.class))
-                                .map(Priority::value)
-                                .orElse(Integer.MAX_VALUE),
+                                Optional.ofNullable(instance.getClass().getDeclaredAnnotation(Priority.class))
+                                        .map(Priority::value)
+                                        .orElse(Integer.MAX_VALUE),
                         sort == SortByPriority.ASC ? Comparator.reverseOrder() : Comparator.naturalOrder()))
                 .toList();
     }
