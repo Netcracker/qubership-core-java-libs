@@ -1,14 +1,18 @@
 package com.netcracker.cloud.quarkus.consul.client.http;
 
+import com.netcracker.cloud.consul.provider.common.TokenStorage;
 import com.netcracker.cloud.quarkus.consul.client.model.GetValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,6 +44,32 @@ class ConsulRawClientTest {
     }
 
     @Test
+    void aRefusedTokenIsReportedWithTheValueThatWasSent() {
+        List<String> reported = new ArrayList<>();
+        ConsulRawClient client = new ConsulRawClient(httpTransport, consulUrl, recordingInto(reported));
+        when(httpTransport.makeGetRequestAsync(Mockito.anyString(), Mockito.eq(new String[]{"Authorization", "Bearer dead-token"})))
+                .thenReturn(answerWith(403));
+
+        assertThrows(CompletionException.class,
+                () -> client.makeGetRequest("/v1/kv/test", new QueryParams(-1, -1), "dead-token"));
+
+        assertEquals(List.of("dead-token"), reported);
+    }
+
+    @Test
+    void anErrorOtherThanARefusalIsNotReported() {
+        List<String> reported = new ArrayList<>();
+        ConsulRawClient client = new ConsulRawClient(httpTransport, consulUrl, recordingInto(reported));
+        when(httpTransport.makeGetRequestAsync(Mockito.anyString(), Mockito.eq(new String[]{"Authorization", "Bearer live-token"})))
+                .thenReturn(answerWith(500));
+
+        assertThrows(CompletionException.class,
+                () -> client.makeGetRequest("/v1/kv/test", new QueryParams(-1, -1), "live-token"));
+
+        assertTrue(reported.isEmpty(), "reported tokens");
+    }
+
+    @Test
     void testGenerateUrl() {
         String baseUrl = "http://localhost:8500/v1/kv/test";
         QueryParams queryParams = new QueryParams(10, 100);
@@ -48,5 +78,35 @@ class ConsulRawClientTest {
 
         assertTrue(generatedUrl.contains("wait=10s"));
         assertTrue(generatedUrl.contains("index=100"));
+    }
+
+    private static TokenStorage recordingInto(List<String> reported) {
+        return new TokenStorage() {
+            @Override
+            public String get() {
+                return "";
+            }
+
+            @Override
+            public void update(String token) {
+                // nothing
+            }
+
+            @Override
+            public void invalidate(String rejectedToken) {
+                reported.add(rejectedToken);
+            }
+        };
+    }
+
+    /**
+     * Fails the future the way {@link HttpTransport} does, so that the {@link OperationException} arrives wrapped in a
+     * {@link CompletionException} as it does in production.
+     */
+    private static CompletableFuture<Response<List<GetValue>>> answerWith(int statusCode) {
+        return CompletableFuture.<Response<List<GetValue>>>completedFuture(null)
+                .thenApply(ignored -> {
+                    throw new OperationException(statusCode, "An error occurred while executing the request", "");
+                });
     }
 }

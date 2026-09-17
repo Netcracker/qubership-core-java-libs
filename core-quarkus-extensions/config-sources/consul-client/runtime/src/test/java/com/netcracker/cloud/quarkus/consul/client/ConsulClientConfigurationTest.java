@@ -62,6 +62,8 @@ class ConsulClientConfigurationTest {
         Assertions.assertEquals(ConsulLoginMode.KUBERNETES_WITH_M2M_FALLBACK, options.getValue().getMode());
         Assertions.assertEquals(TokenStorageFactory.CreateOptions.DEFAULT_AUTH_METHOD, options.getValue().getAuthMethod());
         Assertions.assertEquals(AudienceName.NETCRACKER, options.getValue().getAudience());
+        Assertions.assertEquals(TokenStorageFactory.CreateOptions.DEFAULT_VALIDATION_INTERVAL,
+                options.getValue().getValidationInterval());
     }
 
     static class NoopTokenStorage implements TokenStorage {

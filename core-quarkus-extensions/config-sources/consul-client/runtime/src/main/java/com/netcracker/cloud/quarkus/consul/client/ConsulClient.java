@@ -1,5 +1,6 @@
 package com.netcracker.cloud.quarkus.consul.client;
 
+import com.netcracker.cloud.consul.provider.common.TokenStorage;
 import com.netcracker.cloud.quarkus.consul.client.http.ConsulRawClient;
 import com.netcracker.cloud.quarkus.consul.client.http.QueryParams;
 import com.netcracker.cloud.quarkus.consul.client.http.Response;
@@ -18,6 +19,13 @@ public class ConsulClient {
 
     public ConsulClient(String consulUrl) {
         this(new ConsulRawClient(consulUrl));
+    }
+
+    /**
+     * @param tokenStorage owner of the token, told whenever Consul answers {@code 403 ACL not found}
+     */
+    public ConsulClient(String consulUrl, TokenStorage tokenStorage) {
+        this(new ConsulRawClient(consulUrl, tokenStorage));
     }
 
     public Response<List<GetValue>> getKVValues(String keyPrefix, String token) {
