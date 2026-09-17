@@ -31,7 +31,8 @@ public class ConsulBlueGreenMicroserviceMutexConfiguration {
     @Named("microserviceMutexService")
     public MicroserviceMutexService microserviceMutexService(TokenStorage tokenStorage) {
         String podName = pod.orElseGet(EnvUtil::getPodName);
-        return new ConsulMicroserviceMutexService(tokenStorage::get, consulUrl, namespace, name, podName);
+        return new ConsulMicroserviceMutexService(tokenStorage::get, consulUrl, namespace, name, podName,
+                tokenStorage::invalidate);
     }
 
     public void close(@Disposes @Named("microserviceMutexService") MicroserviceMutexService service) throws Exception {

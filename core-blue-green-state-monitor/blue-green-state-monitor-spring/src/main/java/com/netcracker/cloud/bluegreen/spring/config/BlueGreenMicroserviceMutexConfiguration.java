@@ -34,6 +34,7 @@ public class BlueGreenMicroserviceMutexConfiguration {
                                                              @Value(POD_NAME_PROPERTY_SPEL) String pod,
                                                              TokenStorage tokenStorage) {
         String podName = Optional.ofNullable(pod.isBlank() ? null : pod).orElseGet(EnvUtil::getPodName);
-        return new ConsulMicroserviceMutexService(tokenStorage::get, consulUrl, namespace, name, podName);
+        return new ConsulMicroserviceMutexService(tokenStorage::get, consulUrl, namespace, name, podName,
+                tokenStorage::invalidate);
     }
 }

@@ -23,7 +23,7 @@ public class ConsulBlueGreenStatePublisherConfiguration {
     @ApplicationScoped
     @Named("blueGreenStatePublisher")
     public BlueGreenStatePublisher blueGreenStatePublisher(TokenStorage tokenStorage) {
-        return new ConsulBlueGreenStatePublisher(tokenStorage::get, consulUrl, namespace);
+        return new ConsulBlueGreenStatePublisher(tokenStorage::get, consulUrl, namespace, tokenStorage::invalidate);
     }
 
     public void close(@Disposes @Named("blueGreenStatePublisher") BlueGreenStatePublisher publisher) throws Exception {

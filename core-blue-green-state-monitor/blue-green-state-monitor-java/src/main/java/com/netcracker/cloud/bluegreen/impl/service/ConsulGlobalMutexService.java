@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,6 +53,14 @@ public class ConsulGlobalMutexService implements GlobalMutexService {
 
     public ConsulGlobalMutexService(Supplier<String> consulTokenSupplier, String consulUrl) {
         this(new HttpClientAdapter(consulTokenSupplier), consulUrl);
+    }
+
+    /**
+     * @param onTokenRejected receives the token this service sent whenever Consul answers {@code 403 ACL not found}
+     */
+    public ConsulGlobalMutexService(Supplier<String> consulTokenSupplier, String consulUrl,
+                                    Consumer<String> onTokenRejected) {
+        this(new HttpClientAdapter(consulTokenSupplier, onTokenRejected), consulUrl);
     }
 
     public ConsulGlobalMutexService(HttpClientAdapter client, String consulUrl) {

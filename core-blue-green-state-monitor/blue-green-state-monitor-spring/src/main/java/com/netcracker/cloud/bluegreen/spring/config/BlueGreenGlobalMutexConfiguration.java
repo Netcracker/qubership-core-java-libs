@@ -25,6 +25,6 @@ public class BlueGreenGlobalMutexConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public GlobalMutexService globalMutexService(@Value(CONSUL_URL_PROPERTY_SPEL) String consulUrl, TokenStorage tokenStorage) {
-        return new ConsulGlobalMutexService(tokenStorage::get, consulUrl);
+        return new ConsulGlobalMutexService(tokenStorage::get, consulUrl, tokenStorage::invalidate);
     }
 }

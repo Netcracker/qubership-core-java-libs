@@ -18,6 +18,6 @@ public class ConsulBlueGreenGlobalMutexConfiguration {
     @DefaultBean
     @ApplicationScoped
     public GlobalMutexService globalMutexService(TokenStorage tokenStorage) {
-        return new ConsulGlobalMutexService(tokenStorage::get, consulUrl);
+        return new ConsulGlobalMutexService(tokenStorage::get, consulUrl, tokenStorage::invalidate);
     }
 }

@@ -29,6 +29,6 @@ public class BlueGreenStatePublisherConfiguration {
     public BlueGreenStatePublisher blueGreenStatePublisher(@Value(CONSUL_URL_PROPERTY_SPEL) String consulUrl,
                                                            @Value(NAMESPACE_PROPERTY_SPEL) String namespace,
                                                            TokenStorage tokenStorage) {
-        return new ConsulBlueGreenStatePublisher(tokenStorage::get, consulUrl, namespace);
+        return new ConsulBlueGreenStatePublisher(tokenStorage::get, consulUrl, namespace, tokenStorage::invalidate);
     }
 }
