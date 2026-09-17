@@ -19,10 +19,10 @@ public abstract class TokenStorageFactory {
 
     public TokenStorage create(CreateOptions config) {
         ConsulClient consulClient = createTokenExchanger(config);
-        TokenUpdater tokenUpdater = new TokenUpdater(from(consulClient, config));
+        TokenUpdater tokenUpdater = new TokenUpdater(from(consulClient, config), config);
         TokenStorage tokenStorage = createTokenStorage(config);
         tokenUpdater.watch(tokenStorage::update, tokenStorage.get());
-        return tokenStorage;
+        return new SelfRefreshingTokenStorage(tokenStorage, tokenUpdater);
     }
 
     /**
@@ -60,6 +60,7 @@ public abstract class TokenStorageFactory {
 
         public static final String DEFAULT_AUTH_METHOD = "applications-k8s-m2m";
         public static final Duration DEFAULT_FALLBACK_RECHECK_INTERVAL = Duration.ofHours(5);
+        public static final Duration DEFAULT_VALIDATION_INTERVAL = Duration.ofMinutes(5);
 
         String consulUrl;
         String namespace;
@@ -68,6 +69,7 @@ public abstract class TokenStorageFactory {
         String authMethod;
         String audience;
         Duration fallbackRecheckInterval;
+        Duration validationInterval;
 
         public ConsulLoginMode getMode() {
             return mode;
@@ -83,6 +85,14 @@ public abstract class TokenStorageFactory {
 
         public Duration getFallbackRecheckInterval() {
             return fallbackRecheckInterval;
+        }
+
+        /**
+         * How often the pod reads the token it holds to learn whether Consul still resolves it. Zero or negative
+         * turns the check off, leaving the pod with the relogin schedule and with what its consumers report.
+         */
+        public Duration getValidationInterval() {
+            return validationInterval;
         }
 
         public static class Builder {
@@ -126,6 +136,11 @@ public abstract class TokenStorageFactory {
                 return this;
             }
 
+            public Builder validationInterval(Duration interval) {
+                options.validationInterval = interval;
+                return this;
+            }
+
             /**
              * Applies the defaults and checks the inputs the mode needs. Defaults live here rather than in the entry
              * points so that an external caller of the builder gets them too. A blank auth method or audience counts
@@ -145,6 +160,9 @@ public abstract class TokenStorageFactory {
                 }
                 if (options.fallbackRecheckInterval == null) {
                     options.fallbackRecheckInterval = DEFAULT_FALLBACK_RECHECK_INTERVAL;
+                }
+                if (options.validationInterval == null) {
+                    options.validationInterval = DEFAULT_VALIDATION_INTERVAL;
                 }
                 require(options.consulUrl != null, "consulUrl", options.mode);
                 if (options.mode != ConsulLoginMode.KUBERNETES) {

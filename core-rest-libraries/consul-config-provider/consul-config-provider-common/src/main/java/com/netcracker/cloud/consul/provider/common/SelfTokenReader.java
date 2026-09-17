@@ -29,7 +29,9 @@ public class SelfTokenReader {
      * Reads the token behind {@code currentSecretId}. A token without an expiration is valid: Consul omits the field
      * for an auth method without {@code MaxTokenTTL}.
      *
-     * @throws IOException on a non-2xx answer or an empty body; the caller may retry
+     * @throws ConsulResponseException on a non-2xx answer, carrying the response code; {@code 403} means Consul no
+     *         longer resolves the token and a retry gives the same answer
+     * @throws IOException on an empty body; the caller may retry
      * @throws RuntimeException on a transport failure, in whatever type the client throws. Unlike {@link
      *         ConsulClient#login(ConsulLoginCredentials)}, {@link ConsulClient#getSelfToken(String)} does not report
      *         it as an {@link IOException}, so the retry policies of the module do not cover it
@@ -38,7 +40,8 @@ public class SelfTokenReader {
         ConsulClientResponse response = client.getSelfToken(currentSecretId);
         String bodyJson = response.getBodyJson();
         if (response.getCode() != 200) {
-            throw new IOException(String.format("can not get self token from consul; response code=%s; body='%s'", response.getCode(), bodyJson));
+            throw new ConsulResponseException(response.getCode(),
+                    String.format("can not get self token from consul; response code=%s; body='%s'", response.getCode(), bodyJson));
         }
         if (bodyJson == null || bodyJson.isEmpty()) {
             throw new IOException("can not get self token from consul: response body is empty");
