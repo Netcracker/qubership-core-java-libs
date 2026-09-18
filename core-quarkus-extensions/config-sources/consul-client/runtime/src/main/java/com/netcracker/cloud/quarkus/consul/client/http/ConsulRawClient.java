@@ -2,6 +2,7 @@ package com.netcracker.cloud.quarkus.consul.client.http;
 
 import com.netcracker.cloud.consul.provider.common.TokenStorage;
 import com.netcracker.cloud.quarkus.consul.client.model.GetValue;
+import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,8 @@ import java.util.concurrent.ExecutionException;
 public class ConsulRawClient {
 
     private static final int REJECTED = 403;
+
+    private static final Logger log = Logger.getLogger(ConsulRawClient.class);
 
     private final HttpTransport httpTransport;
     private final String agentAddress;
@@ -66,6 +69,7 @@ public class ConsulRawClient {
             cause = cause.getCause();
         }
         if (cause instanceof OperationException && ((OperationException) cause).getStatusCode() == REJECTED) {
+            log.debug("Consul refused the ACL token this pod sent; reporting it to the token owner");
             tokenStorage.invalidate(token);
         }
     }

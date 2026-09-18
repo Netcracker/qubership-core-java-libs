@@ -2,6 +2,8 @@ package com.netcracker.cloud.consul.provider.common;
 
 import com.netcracker.cloud.consul.provider.common.client.ConsulClient;
 import com.netcracker.cloud.security.core.utils.k8s.AudienceName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.Locale;
@@ -13,6 +15,7 @@ import java.util.function.Supplier;
  */
 public abstract class TokenStorageFactory {
 
+    private static final Logger log = LoggerFactory.getLogger(TokenStorageFactory.class);
 
     protected TokenStorageFactory() {
     }
@@ -22,6 +25,8 @@ public abstract class TokenStorageFactory {
         TokenUpdater tokenUpdater = new TokenUpdater(from(consulClient, config), config);
         TokenStorage tokenStorage = createTokenStorage(config);
         tokenUpdater.watch(tokenStorage::update, tokenStorage.get());
+        log.info("Consul ACL token is owned by a token updater; a refused token is replaced at once and the token is "
+                + "read back every {}", config.getValidationInterval());
         return new SelfRefreshingTokenStorage(tokenStorage, tokenUpdater);
     }
 

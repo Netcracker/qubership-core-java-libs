@@ -124,7 +124,12 @@ public class TokenUpdater {
      * and no sooner than {@link #MIN_FORCED_RELOGIN_INTERVAL} after the previous one.
      */
     public void invalidate(String rejectedToken) {
-        if (rejectedToken == null || rejectedToken.isEmpty() || !rejectedToken.equals(currentSecretId)) {
+        if (rejectedToken == null || rejectedToken.isEmpty()) {
+            log.debug("Ignoring a refusal that names no token");
+            return;
+        }
+        if (!rejectedToken.equals(currentSecretId)) {
+            log.debug("Ignoring a refusal of a token this pod has already replaced");
             return;
         }
         forceRelogin();
@@ -135,11 +140,17 @@ public class TokenUpdater {
      * within {@link #FORCED_RELOGIN_JITTER_SECONDS} so that a fleet meeting the same refusal does not log in at once.
      */
     private void forceRelogin() {
-        if (updater == null || !forcedReloginInFlight.compareAndSet(false, true)) {
+        if (updater == null) {
+            log.debug("Ignoring a refusal that arrived before the first login");
+            return;
+        }
+        if (!forcedReloginInFlight.compareAndSet(false, true)) {
+            log.debug("Ignoring a refusal while a relogin is already under way");
             return;
         }
         Instant previous = lastForcedReloginAt;
         if (previous != null && clock.instant().isBefore(previous.plus(MIN_FORCED_RELOGIN_INTERVAL))) {
+            log.debug("Ignoring a refusal less than {} after the previous relogin", MIN_FORCED_RELOGIN_INTERVAL);
             forcedReloginInFlight.set(false);
             return;
         }

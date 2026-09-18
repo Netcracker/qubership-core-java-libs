@@ -6,24 +6,57 @@ import org.junit.jupiter.api.Test;
 import org.springframework.cloud.consul.ConsulClient;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.UnknownContentTypeException;
 import org.springframework.web.service.invoker.HttpExchangeAdapter;
 import org.springframework.web.service.invoker.HttpRequestValues;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RefusedTokenReportingAdapterTest {
+
+    private static final ParameterizedTypeReference<String> STRING = new ParameterizedTypeReference<>() {
+    };
 
     private final List<String> reported = new ArrayList<>();
 
     private final TokenRefusals refusals = refusalsRecordingInto(reported);
 
+    /**
+     * The shape a real Consul produces. It answers a refusal with {@code text/plain}, no converter maps that to the
+     * body type the client asked for, and the status then reaches the adapter on the exception rather than on a
+     * response. Reading only the response left a refused token unreported on the stand.
+     */
     @Test
-    void aRefusedTokenIsReportedWithTheValueTheRequestCarried() {
+    void aRefusalThatArrivesAsAnUnreadableBodyIsReported() {
+        HttpExchangeAdapter adapter = new RefusedTokenReportingAdapter(refusingWithPlainText(403), refusals);
+
+        assertThrows(UnknownContentTypeException.class,
+                () -> adapter.exchangeForEntity(requestWithToken("dead-token"), STRING));
+
+        assertEquals(List.of("dead-token"), reported);
+    }
+
+    @Test
+    void anUnreadableBodyUnderAnotherStatusIsNotReported() {
+        HttpExchangeAdapter adapter = new RefusedTokenReportingAdapter(refusingWithPlainText(500), refusals);
+
+        assertThrows(UnknownContentTypeException.class,
+                () -> adapter.exchangeForEntity(requestWithToken("live-token"), STRING));
+
+        assertTrue(reported.isEmpty(), "reported tokens");
+    }
+
+    @Test
+    void aRefusalThatArrivesOnAResponseIsReported() {
         HttpExchangeAdapter adapter = new RefusedTokenReportingAdapter(answering(403), refusals);
 
         adapter.exchangeForEntity(requestWithToken("dead-token"), STRING);
@@ -66,9 +99,6 @@ class RefusedTokenReportingAdapterTest {
         assertTrue(reported.isEmpty(), "reported tokens");
     }
 
-    private static final ParameterizedTypeReference<String> STRING = new ParameterizedTypeReference<>() {
-    };
-
     private static HttpRequestValues requestWithToken(String token) {
         return HttpRequestValues.builder().addHeader(ConsulClient.ACL_TOKEN_HEADER, token).build();
     }
@@ -95,43 +125,63 @@ class RefusedTokenReportingAdapterTest {
     }
 
     /**
-     * Answers every exchange with {@code statusCode}, which is what the Consul client sees: its own request factory
-     * treats a 4xx as an ordinary response rather than an error.
+     * Fails the exchange the way the Consul client does against a real Consul: its status handler lets a 4xx through,
+     * and the body then fails to convert.
      */
-    private static HttpExchangeAdapter answering(int statusCode) {
-        return new HttpExchangeAdapter() {
-
-            @Override
-            public boolean supportsRequestAttributes() {
-                return true;
-            }
-
-            @Override
-            public void exchange(HttpRequestValues requestValues) {
-                // nothing
-            }
-
-            @Override
-            public HttpHeaders exchangeForHeaders(HttpRequestValues requestValues) {
-                return HttpHeaders.EMPTY;
-            }
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public <T> T exchangeForBody(HttpRequestValues requestValues, ParameterizedTypeReference<T> bodyType) {
-                return (T) "body";
-            }
-
-            @Override
-            public ResponseEntity<Void> exchangeForBodilessEntity(HttpRequestValues requestValues) {
-                return ResponseEntity.status(statusCode).build();
-            }
-
+    private static HttpExchangeAdapter refusingWithPlainText(int statusCode) {
+        return new StubAdapter(statusCode) {
             @Override
             public <T> ResponseEntity<T> exchangeForEntity(HttpRequestValues requestValues,
                                                            ParameterizedTypeReference<T> bodyType) {
-                return ResponseEntity.status(statusCode).build();
+                throw new UnknownContentTypeException(bodyType.getType(), MediaType.TEXT_PLAIN,
+                        HttpStatusCode.valueOf(statusCode), "Forbidden", HttpHeaders.EMPTY,
+                        "ACL not found".getBytes(StandardCharsets.UTF_8));
             }
         };
+    }
+
+    private static HttpExchangeAdapter answering(int statusCode) {
+        return new StubAdapter(statusCode);
+    }
+
+    private static class StubAdapter implements HttpExchangeAdapter {
+
+        private final int statusCode;
+
+        private StubAdapter(int statusCode) {
+            this.statusCode = statusCode;
+        }
+
+        @Override
+        public boolean supportsRequestAttributes() {
+            return true;
+        }
+
+        @Override
+        public void exchange(HttpRequestValues requestValues) {
+            // nothing
+        }
+
+        @Override
+        public HttpHeaders exchangeForHeaders(HttpRequestValues requestValues) {
+            return HttpHeaders.EMPTY;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> T exchangeForBody(HttpRequestValues requestValues, ParameterizedTypeReference<T> bodyType) {
+            return (T) "body";
+        }
+
+        @Override
+        public ResponseEntity<Void> exchangeForBodilessEntity(HttpRequestValues requestValues) {
+            return ResponseEntity.status(statusCode).build();
+        }
+
+        @Override
+        public <T> ResponseEntity<T> exchangeForEntity(HttpRequestValues requestValues,
+                                                       ParameterizedTypeReference<T> bodyType) {
+            return ResponseEntity.status(statusCode).build();
+        }
     }
 }
