@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = {AbstractConsulTest.TestTokenStorageConfig.class, BlueGreenStatePublisherConfiguration.class, BGStateConfiguration.class},
+@SpringBootTest(classes = {AbstractConsulTest.TestTokenSourceConfig.class, BlueGreenStatePublisherConfiguration.class, BGStateConfiguration.class},
         properties = {"cloud.microservice.namespace=test-namespace-1"})
 class BGStateConverterIntegrationTest extends AbstractConsulTest {
 

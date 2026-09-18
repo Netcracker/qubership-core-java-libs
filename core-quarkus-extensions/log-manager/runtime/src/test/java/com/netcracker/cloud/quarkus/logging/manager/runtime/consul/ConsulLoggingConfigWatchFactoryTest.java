@@ -3,6 +3,9 @@ package com.netcracker.cloud.quarkus.logging.manager.runtime.consul;
 import com.netcracker.cloud.consul.provider.common.TokenStorage;
 import com.netcracker.cloud.quarkus.consul.client.ConsulClient;
 import com.netcracker.cloud.quarkus.consul.client.ConsulSourceConfig;
+import com.netcracker.cloud.quarkus.consul.client.http.ConsulRawClient;
+import com.netcracker.cloud.quarkus.consul.client.http.HttpTransport;
+import com.netcracker.cloud.quarkus.consul.client.http.OperationException;
 import com.netcracker.cloud.quarkus.consul.client.http.QueryParams;
 import com.netcracker.cloud.quarkus.consul.client.http.Response;
 import com.netcracker.cloud.quarkus.consul.client.model.GetValue;
@@ -312,6 +315,47 @@ class ConsulLoggingConfigWatchFactoryTest {
 
         watchFuture.get(1, TimeUnit.SECONDS);
         Assertions.assertFalse(watchFuture.isCompletedExceptionally());
+    }
+
+    @Test
+    void aRefusalOnTheLoggingWatchIsReported() throws Exception {
+        HttpTransport httpTransport = mock(HttpTransport.class);
+        when(httpTransport.makeGetRequestAsync(any(), any(String.class), any(String.class)))
+                .thenAnswer(i -> CompletableFuture.<Response<List<GetValue>>>completedFuture(null)
+                        .thenApply(ignored -> {
+                            throw new OperationException(403, "An error occurred while executing the request", "");
+                        }));
+        CountDownLatch reported = new CountDownLatch(1);
+        TokenStorage tokenStorage = new TokenStorage() {
+            @Override
+            public String get() {
+                return "dead-token";
+            }
+
+            @Override
+            public void update(String token) {
+                // nothing
+            }
+        };
+        ConsulClient consulClient =
+                new ConsulClient(new TransportRawClient(httpTransport, "http://test:8500", reported::countDown));
+        ConsulLoggingConfigWatchFactory factory =
+                new ConsulLoggingConfigWatchFactory(consulClient, tokenStorage, "test-ns", "test-ms");
+
+        factory.watchConsulLoggingRoot("logging/test-ns/test-ms/", 5, 200, 100, 0);
+
+        Assertions.assertTrue(reported.await(5, SECONDS), "the refusal was reported");
+    }
+
+    /**
+     * Opens the transport-taking constructor of {@link ConsulRawClient}, which is protected, so that the watch runs
+     * against a Consul that refuses the token.
+     */
+    private static class TransportRawClient extends ConsulRawClient {
+
+        TransportRawClient(HttpTransport httpTransport, String consulUrl, Runnable onRefusal) {
+            super(httpTransport, consulUrl, onRefusal);
+        }
     }
 
     private Map<String, String> awaitLogLevel(BlockingQueue<Map<String, String>> queue,

@@ -1,13 +1,16 @@
 package com.netcracker.cloud.consul.provider.spring.webclient.config;
 
+import com.netcracker.cloud.consul.provider.common.ConsulTokenSource;
 import com.netcracker.cloud.consul.provider.common.TokenStorage;
 import com.netcracker.cloud.consul.provider.common.TokenStorageFactory;
 import com.netcracker.cloud.consul.provider.spring.common.SpringTokenStorageFactory;
+import com.netcracker.cloud.consul.provider.spring.common.TokenRefusals;
 import com.netcracker.cloud.consul.provider.spring.common.config.ConsulLoginProperties;
 import com.netcracker.cloud.consul.provider.spring.common.Utils;
 import com.netcracker.cloud.restclient.webclient.MicroserviceWebClient;
 import com.netcracker.cloud.security.common.reactive.DummyM2MManager;
 import com.netcracker.cloud.security.common.reactive.M2MManager;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.consul.ConditionalOnConsulEnabled;
@@ -25,13 +28,29 @@ import org.springframework.context.annotation.Configuration;
 public class ConsulM2MWebClientAutoConfiguration {
 
     @Bean
-    public TokenStorage consulTokenStorageViaM2MWebClient(ConsulConfigProperties consulConfigProperties,
+    public TokenStorageFactory.Tokens consulTokensViaM2MWebClient(ConsulConfigProperties consulConfigProperties,
                                                           ConsulProperties consulProperties,
                                                           M2MManager m2MManager,
-                                                          ConsulLoginProperties loginProperties) {
+                                                          ConsulLoginProperties loginProperties,
+                                                          ObjectProvider<TokenRefusals> refusals) {
         TokenStorageFactory factory = new SpringTokenStorageFactory(consulConfigProperties, new MicroserviceWebClient());
 
-        return factory.create(createOptions(loginProperties, consulProperties, m2MManager, System.getenv("NAMESPACE")));
+        TokenStorageFactory.Tokens tokens = factory.createTokens(
+                createOptions(loginProperties, consulProperties, m2MManager, System.getenv("NAMESPACE")));
+        // The ConfigData phase promotes the refusals of its own Consul client only when it ran; without it the pod
+        // still recovers through the scheduled check of the token.
+        refusals.ifAvailable(available -> available.reportTo(tokens.source()));
+        return tokens;
+    }
+
+    @Bean
+    public TokenStorage consulTokenStorageViaM2MWebClient(TokenStorageFactory.Tokens tokens) {
+        return tokens.storage();
+    }
+
+    @Bean
+    public ConsulTokenSource consulTokenSourceViaM2MWebClient(TokenStorageFactory.Tokens tokens) {
+        return tokens.source();
     }
 
     static TokenStorageFactory.CreateOptions createOptions(ConsulLoginProperties loginProperties,

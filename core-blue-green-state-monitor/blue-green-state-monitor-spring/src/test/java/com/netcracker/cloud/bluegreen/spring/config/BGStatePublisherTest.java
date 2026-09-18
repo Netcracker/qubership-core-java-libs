@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(classes = {AbstractConsulTest.TestTokenStorageConfig.class, BlueGreenStatePublisherConfiguration.class},
+@SpringBootTest(classes = {AbstractConsulTest.TestTokenSourceConfig.class, BlueGreenStatePublisherConfiguration.class},
         properties = {"cloud.microservice.namespace=test-namespace-1"})
 class BGStatePublisherTest extends AbstractConsulTest {
 
