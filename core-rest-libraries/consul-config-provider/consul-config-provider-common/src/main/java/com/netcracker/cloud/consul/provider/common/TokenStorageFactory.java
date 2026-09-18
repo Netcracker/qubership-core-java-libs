@@ -21,13 +21,29 @@ public abstract class TokenStorageFactory {
     }
 
     public TokenStorage create(CreateOptions config) {
+        return createTokens(config).storage();
+    }
+
+    /**
+     * Obtains the first token and returns both views of it: the storage that holds the value, and the source a
+     * consumer reports a refusal on. One call starts one updater, so a caller that needs both takes them from here
+     * rather than calling {@link #create(CreateOptions)} a second time.
+     */
+    public Tokens createTokens(CreateOptions config) {
         ConsulClient consulClient = createTokenExchanger(config);
         TokenUpdater tokenUpdater = new TokenUpdater(from(consulClient, config), config);
         TokenStorage tokenStorage = createTokenStorage(config);
         tokenUpdater.watch(tokenStorage::update, tokenStorage.get());
-        log.info("Consul ACL token is owned by a token updater; a refused token is replaced at once and the token is "
-                + "read back every {}", config.getValidationInterval());
-        return new SelfRefreshingTokenStorage(tokenStorage, tokenUpdater);
+        log.info("Consul ACL token is read back every {}, and whenever a consumer reports that consul refused it",
+                config.getValidationInterval());
+        return new Tokens(tokenStorage, tokenUpdater);
+    }
+
+    /**
+     * The storage a consumer reads the token from, and the source it reports a refusal on. One token updater backs
+     * both.
+     */
+    public record Tokens(TokenStorage storage, ConsulTokenSource source) {
     }
 
     /**

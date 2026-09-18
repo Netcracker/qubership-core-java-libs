@@ -265,51 +265,76 @@ class TokenUpdaterTest {
 
         verify(scheduledExecutorService).schedule(any(Runnable.class), eq(300L), eq(TimeUnit.SECONDS));
     }
-
     @Test
-    void aSignalAboutAnAlreadyReplacedTokenChangesNothing() throws IOException {
+    void aRefusalOfATokenConsulStillResolvesReplacesNothing() throws IOException {
         when(tokenProvider.getToken()).thenReturn(endless("test-token"));
+        when(tokenProvider.getSelfToken("test-token")).thenReturn(endless("test-token"));
+        TokenUpdater updater = validating(NO_VALIDATION, NO_JITTER);
 
-        tokenUpdater.watch(unused -> {
-        }, "");
-        tokenUpdater.invalidate("test-replaced-token");
+        runScheduledTasks(1, null);
+        AtomicReference<String> published = new AtomicReference<>("");
+        updater.watch(published::set, "");
+        updater.reportRefusal();
 
+        assertEquals("test-token", published.get());
         verify(tokenProvider, times(1)).getToken();
-        verifyNoInteractions(scheduledExecutorService);
     }
 
     @Test
-    void aSecondSignalDuringTheFirstReloginIsDropped() throws IOException {
+    void aRefusalOfATokenConsulNoLongerResolvesReplacesIt() throws IOException {
+        when(tokenProvider.getToken())
+                .thenReturn(endless("test-token"))
+                .thenReturn(endless("test-rotated-token"));
+        when(tokenProvider.getSelfToken("test-token"))
+                .thenThrow(new ConsulResponseException(403, "ACL not found"));
+        TokenUpdater updater = validating(NO_VALIDATION, NO_JITTER);
+
+        runScheduledTasks(1, null);
+        AtomicReference<String> published = new AtomicReference<>("");
+        updater.watch(published::set, "");
+        updater.reportRefusal();
+
+        assertEquals("test-rotated-token", published.get());
+    }
+
+    @Test
+    void aSecondRefusalDuringTheFirstCheckIsDropped() throws IOException {
         when(tokenProvider.getToken()).thenReturn(endless("test-token"));
         TokenUpdater updater = validating(NO_VALIDATION, () -> 17L);
 
         updater.watch(unused -> {
         }, "");
-        updater.invalidate("test-token");
-        updater.invalidate("test-token");
+        updater.reportRefusal();
+        updater.reportRefusal();
 
         verify(scheduledExecutorService, times(1)).schedule(any(Runnable.class), eq(17L), eq(TimeUnit.SECONDS));
     }
 
     @Test
-    void aSecondForcedReloginWithinTheMinimumIntervalIsDropped() throws IOException {
+    void aSecondRefusalWithinTheMinimumIntervalIsDropped() throws IOException {
         when(tokenProvider.getToken())
                 .thenReturn(endless("test-token"))
                 .thenReturn(endless("test-rotated-token"));
+        when(tokenProvider.getSelfToken("test-token"))
+                .thenThrow(new ConsulResponseException(403, "ACL not found"));
         TokenUpdater updater = validating(NO_VALIDATION, NO_JITTER);
 
         runScheduledTasks(1, null);
         updater.watch(unused -> {
         }, "");
-        updater.invalidate("test-token");
-        updater.invalidate("test-rotated-token");
+        updater.reportRefusal();
+        updater.reportRefusal();
 
         verify(tokenProvider, times(2)).getToken();
     }
 
     @Test
-    void oneRecordNamesTheRefusalPerForcedRelogin() throws IOException {
-        when(tokenProvider.getToken()).thenReturn(endless("test-token"));
+    void oneRecordNamesTheReplacementPerCheck() throws IOException {
+        when(tokenProvider.getToken())
+                .thenReturn(endless("test-token"))
+                .thenReturn(endless("test-rotated-token"));
+        when(tokenProvider.getSelfToken("test-token"))
+                .thenThrow(new ConsulResponseException(403, "ACL not found"));
         ch.qos.logback.classic.Logger logger =
                 ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger(TokenUpdater.class);
         ListAppender<ILoggingEvent> appender = new ListAppender<>();
@@ -319,10 +344,11 @@ class TokenUpdaterTest {
         TokenUpdater updater = validating(NO_VALIDATION, NO_JITTER);
 
         try {
+            runScheduledTasks(1, null);
             updater.watch(unused -> {
             }, "");
-            updater.invalidate("test-token");
-            updater.invalidate("test-token");
+            updater.reportRefusal();
+            updater.reportRefusal();
         } finally {
             logger.detachAppender(appender);
             logger.setLevel(null);
@@ -333,9 +359,8 @@ class TokenUpdaterTest {
                 .map(ILoggingEvent::getFormattedMessage)
                 .collect(Collectors.toList());
         assertEquals(1, records.size(), records.toString());
-        Assertions.assertTrue(records.get(0).contains("ACL not found"), records.get(0));
+        Assertions.assertTrue(records.get(0).contains("ACL token"), records.get(0));
     }
-
     private static final class TestClock extends Clock {
 
         private Instant now;

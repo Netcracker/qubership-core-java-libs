@@ -1,6 +1,6 @@
 package com.netcracker.cloud.consul.provider.spring.common.config;
 
-import com.netcracker.cloud.consul.provider.common.TokenStorage;
+import com.netcracker.cloud.consul.provider.common.ConsulTokenSource;
 import com.netcracker.cloud.consul.provider.spring.common.TokenRefusals;
 import org.junit.jupiter.api.Test;
 import org.springframework.cloud.consul.ConsulClient;
@@ -14,21 +14,19 @@ import org.springframework.web.service.invoker.HttpExchangeAdapter;
 import org.springframework.web.service.invoker.HttpRequestValues;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RefusedTokenReportingAdapterTest {
 
     private static final ParameterizedTypeReference<String> STRING = new ParameterizedTypeReference<>() {
     };
 
-    private final List<String> reported = new ArrayList<>();
+    private final AtomicInteger reported = new AtomicInteger();
 
-    private final TokenRefusals refusals = refusalsRecordingInto(reported);
+    private final TokenRefusals refusals = refusalsCountedBy(reported);
 
     /**
      * The shape a real Consul produces. It answers a refusal with {@code text/plain}, no converter maps that to the
@@ -42,7 +40,7 @@ class RefusedTokenReportingAdapterTest {
         assertThrows(UnknownContentTypeException.class,
                 () -> adapter.exchangeForEntity(requestWithToken("dead-token"), STRING));
 
-        assertEquals(List.of("dead-token"), reported);
+        assertEquals(1, reported.get(), "reported refusals");
     }
 
     @Test
@@ -52,7 +50,7 @@ class RefusedTokenReportingAdapterTest {
         assertThrows(UnknownContentTypeException.class,
                 () -> adapter.exchangeForEntity(requestWithToken("live-token"), STRING));
 
-        assertTrue(reported.isEmpty(), "reported tokens");
+        assertEquals(0, reported.get(), "reported refusals");
     }
 
     @Test
@@ -61,7 +59,7 @@ class RefusedTokenReportingAdapterTest {
 
         adapter.exchangeForEntity(requestWithToken("dead-token"), STRING);
 
-        assertEquals(List.of("dead-token"), reported);
+        assertEquals(1, reported.get(), "reported refusals");
     }
 
     @Test
@@ -70,16 +68,7 @@ class RefusedTokenReportingAdapterTest {
 
         adapter.exchangeForEntity(requestWithToken("live-token"), STRING);
 
-        assertTrue(reported.isEmpty(), "reported tokens");
-    }
-
-    @Test
-    void aRefusalOfARequestThatCarriedNoTokenIsNotReported() {
-        HttpExchangeAdapter adapter = new RefusedTokenReportingAdapter(answering(403), refusals);
-
-        adapter.exchangeForEntity(HttpRequestValues.builder().build(), STRING);
-
-        assertTrue(reported.isEmpty(), "reported tokens");
+        assertEquals(0, reported.get(), "reported refusals");
     }
 
     @Test
@@ -88,7 +77,7 @@ class RefusedTokenReportingAdapterTest {
 
         adapter.exchangeForBodilessEntity(requestWithToken("dead-token"));
 
-        assertEquals(List.of("dead-token"), reported);
+        assertEquals(1, reported.get(), "reported refusals");
     }
 
     @Test
@@ -96,29 +85,24 @@ class RefusedTokenReportingAdapterTest {
         HttpExchangeAdapter adapter = new RefusedTokenReportingAdapter(answering(403), refusals);
 
         assertEquals("body", adapter.exchangeForBody(requestWithToken("dead-token"), STRING));
-        assertTrue(reported.isEmpty(), "reported tokens");
+        assertEquals(0, reported.get(), "reported refusals");
     }
 
     private static HttpRequestValues requestWithToken(String token) {
         return HttpRequestValues.builder().addHeader(ConsulClient.ACL_TOKEN_HEADER, token).build();
     }
 
-    private static TokenRefusals refusalsRecordingInto(List<String> reported) {
+    private static TokenRefusals refusalsCountedBy(AtomicInteger reported) {
         TokenRefusals refusals = new TokenRefusals();
-        refusals.reportTo(new TokenStorage() {
+        refusals.reportTo(new ConsulTokenSource() {
             @Override
             public String get() {
                 return "";
             }
 
             @Override
-            public void update(String token) {
-                // nothing
-            }
-
-            @Override
-            public void invalidate(String rejectedToken) {
-                reported.add(rejectedToken);
+            public void reportRefusal() {
+                reported.incrementAndGet();
             }
         });
         return refusals;

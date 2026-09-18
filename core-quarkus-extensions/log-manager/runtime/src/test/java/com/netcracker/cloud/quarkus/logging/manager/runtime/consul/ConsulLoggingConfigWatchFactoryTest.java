@@ -318,14 +318,14 @@ class ConsulLoggingConfigWatchFactoryTest {
     }
 
     @Test
-    void aTokenRefusedOnTheLoggingWatchIsReported() throws Exception {
+    void aRefusalOnTheLoggingWatchIsReported() throws Exception {
         HttpTransport httpTransport = mock(HttpTransport.class);
         when(httpTransport.makeGetRequestAsync(any(), any(String.class), any(String.class)))
                 .thenAnswer(i -> CompletableFuture.<Response<List<GetValue>>>completedFuture(null)
                         .thenApply(ignored -> {
                             throw new OperationException(403, "An error occurred while executing the request", "");
                         }));
-        BlockingQueue<String> reported = new ArrayBlockingQueue<>(10);
+        CountDownLatch reported = new CountDownLatch(1);
         TokenStorage tokenStorage = new TokenStorage() {
             @Override
             public String get() {
@@ -336,20 +336,15 @@ class ConsulLoggingConfigWatchFactoryTest {
             public void update(String token) {
                 // nothing
             }
-
-            @Override
-            public void invalidate(String rejectedToken) {
-                reported.add(rejectedToken);
-            }
         };
         ConsulClient consulClient =
-                new ConsulClient(new TransportRawClient(httpTransport, "http://test:8500", tokenStorage));
+                new ConsulClient(new TransportRawClient(httpTransport, "http://test:8500", reported::countDown));
         ConsulLoggingConfigWatchFactory factory =
                 new ConsulLoggingConfigWatchFactory(consulClient, tokenStorage, "test-ns", "test-ms");
 
         factory.watchConsulLoggingRoot("logging/test-ns/test-ms/", 5, 200, 100, 0);
 
-        Assertions.assertEquals("dead-token", reported.poll(5, SECONDS));
+        Assertions.assertTrue(reported.await(5, SECONDS), "the refusal was reported");
     }
 
     /**
@@ -358,8 +353,8 @@ class ConsulLoggingConfigWatchFactoryTest {
      */
     private static class TransportRawClient extends ConsulRawClient {
 
-        TransportRawClient(HttpTransport httpTransport, String consulUrl, TokenStorage tokenStorage) {
-            super(httpTransport, consulUrl, tokenStorage);
+        TransportRawClient(HttpTransport httpTransport, String consulUrl, Runnable onRefusal) {
+            super(httpTransport, consulUrl, onRefusal);
         }
     }
 

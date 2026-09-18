@@ -27,7 +27,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -58,10 +57,13 @@ public class ConsulMicroserviceMutexService implements MicroserviceMutexService 
     }
 
     /**
-     * @param onTokenRejected receives the token this service sent whenever Consul answers {@code 403 ACL not found}
+     * @param onRefusal runs whenever Consul answers {@code 403} to this service, so that the owner of the token can
+     *                  check whether Consul still resolves it
      */
-    public ConsulMicroserviceMutexService(Supplier<String> consulTokenSupplier, String consulUrl, String namespace, String microserviceName, String podName, Consumer<String> onTokenRejected) {
-        this(new HttpClientAdapter(consulTokenSupplier, onTokenRejected), consulUrl, namespace, microserviceName, podName, DEFAULT_TTL);
+    public ConsulMicroserviceMutexService(Supplier<String> consulTokenSupplier, String consulUrl, String namespace,
+                                          String microserviceName, String podName, Runnable onRefusal) {
+        this(new HttpClientAdapter(consulTokenSupplier, onRefusal), consulUrl, namespace, microserviceName, podName,
+                DEFAULT_TTL);
     }
 
     public ConsulMicroserviceMutexService(Supplier<String> consulTokenSupplier, String consulUrl, String namespace, String microserviceName, String podName, Duration sessionTTL) {

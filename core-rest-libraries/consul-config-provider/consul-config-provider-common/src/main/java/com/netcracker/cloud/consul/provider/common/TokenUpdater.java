@@ -21,14 +21,18 @@ import java.util.function.Consumer;
 import java.util.function.LongSupplier;
 
 /**
- * Keeps the ACL token of the pod fresh: obtains the first one, then relogins on a schedule while the pod lives. Knows
- * nothing about how the token is obtained.
+ * Keeps the ACL token of the pod fresh: obtains the first one, then replaces it while the pod lives. Knows nothing
+ * about how the token is obtained.
  *
- * <p>Two things can end a token before its expiration, and both are handled here. A consumer that sent the token and
- * got {@code 403 ACL not found} reports it through {@link #invalidate(String)}; a pod that sends nothing is covered by
- * a scheduled read of the token itself, which runs whether or not the token expires at all.
+ * <p>Three things start a replacement. The expiration schedules one in advance. A consumer that met {@code 403}
+ * reports it through {@link #reportRefusal()}. A scheduled read of the token covers a pod that sends nothing while
+ * Consul stops resolving its token, and runs whether or not the token expires at all.
+ *
+ * <p>The last two reach Consul the same way: read the token back, and log in again only on {@code 403}. Verifying
+ * before logging in keeps a {@code Permission denied} answer, which carries the same code as a token Consul cannot
+ * find, from driving a login that would return a token with the same policy.
  */
-public class TokenUpdater {
+public class TokenUpdater implements ConsulTokenSource {
     private static final Logger log = LoggerFactory.getLogger(TokenUpdater.class);
 
     private static final int DEFAULT_TRIES = 10;
@@ -36,9 +40,9 @@ public class TokenUpdater {
     private static final double DELAY_MULTIPLIER = 0.8;
     static final long MIN_DELAY_SECONDS = 10;
     static final long MAX_RETRY_DELAY_SECONDS = 300;
-    static final int REJECTED = 403;
-    static final Duration MIN_FORCED_RELOGIN_INTERVAL = Duration.ofSeconds(60);
-    static final long FORCED_RELOGIN_JITTER_SECONDS = 30;
+    static final int REFUSED = 403;
+    static final Duration MIN_CHECK_INTERVAL = Duration.ofSeconds(60);
+    static final long CHECK_JITTER_SECONDS = 30;
 
     private final ConsulTokenProvider tokenProvider;
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
@@ -46,13 +50,13 @@ public class TokenUpdater {
     private final Integer tries;
     private final Duration retryPause;
     private final Duration validationInterval;
-    private final LongSupplier forcedReloginDelaySeconds;
+    private final LongSupplier checkDelaySeconds;
     private long retryDelaySeconds = MIN_DELAY_SECONDS;
 
     private volatile Consumer<String> updater;
     private volatile String currentSecretId;
-    private volatile Instant lastForcedReloginAt;
-    private final AtomicBoolean forcedReloginInFlight = new AtomicBoolean();
+    private volatile Instant lastCheckAt;
+    private final AtomicBoolean checkInFlight = new AtomicBoolean();
 
     public TokenUpdater(ConsulTokenProvider tokenProvider) {
         this(tokenProvider, TokenStorageFactory.CreateOptions.DEFAULT_VALIDATION_INTERVAL);
@@ -67,22 +71,22 @@ public class TokenUpdater {
         this.tries = DEFAULT_TRIES;
         this.retryPause = DEFAULT_RETRY_PAUSE;
         this.validationInterval = validationInterval;
-        this.forcedReloginDelaySeconds = randomJitter();
+        this.checkDelaySeconds = randomJitter();
     }
 
     TokenUpdater(ConsulTokenProvider tokenProvider, ScheduledExecutorService executor, Clock clock, int tries,
-                 Duration retryPause, Duration validationInterval, LongSupplier forcedReloginDelaySeconds) {
+                 Duration retryPause, Duration validationInterval, LongSupplier checkDelaySeconds) {
         this.tokenProvider = tokenProvider;
         this.executor = executor;
         this.clock = clock;
         this.tries = tries;
         this.retryPause = retryPause;
         this.validationInterval = validationInterval;
-        this.forcedReloginDelaySeconds = forcedReloginDelaySeconds;
+        this.checkDelaySeconds = checkDelaySeconds;
     }
 
     private static LongSupplier randomJitter() {
-        return () -> ThreadLocalRandom.current().nextLong(FORCED_RELOGIN_JITTER_SECONDS + 1);
+        return () -> ThreadLocalRandom.current().nextLong(CHECK_JITTER_SECONDS + 1);
     }
 
     /**
@@ -91,10 +95,11 @@ public class TokenUpdater {
      * scheduled for: Consul omits the field for auth methods without {@code MaxTokenTTL}, and such a token never
      * expires.
      *
-     * <p>The validation schedule starts here too, and unlike the relogin it does not depend on the expiration: a token
-     * that never expires is exactly the one nothing else would ever replace.
+     * <p>The scheduled check starts here too, and unlike the relogin it does not depend on the expiration: a token
+     * that never expires is the one nothing else would ever replace.
      *
-     * @param updater receives every new {@code SecretID}, including the ones from scheduled and forced relogins
+     * @param updater receives every new {@code SecretID}, including the ones from scheduled relogins and from a
+     *                refusal
      * @throws RuntimeException when the attempts run out
      */
     synchronized public void watch(Consumer<String> updater, String currentSecretId) {
@@ -112,94 +117,95 @@ public class TokenUpdater {
         if (token.getExpirationTime() != null) {
             scheduleRelogin(updater, token.getExpirationTime());
         }
-        scheduleValidation();
+        scheduleCheck();
+    }
+
+    @Override
+    public String get() {
+        String secretId = currentSecretId;
+        return secretId == null ? "" : secretId;
     }
 
     /**
-     * Reports that Consul refused {@code rejectedToken}, so that the pod stops sending it. A value other than the one
-     * the pod holds now is ignored: the token has already been replaced and the sender simply has not read the new one
-     * yet.
-     *
-     * <p>Safe to call from any thread and as often as the consumer meets the refusal: at most one relogin is forced,
-     * and no sooner than {@link #MIN_FORCED_RELOGIN_INTERVAL} after the previous one.
+     * Schedules a check unless one is already under way or the previous one was too recent. The delay is random within
+     * {@link #CHECK_JITTER_SECONDS} so that a fleet meeting the same refusal does not reach Consul together.
      */
-    public void invalidate(String rejectedToken) {
-        if (rejectedToken == null || rejectedToken.isEmpty()) {
-            log.debug("Ignoring a refusal that names no token");
-            return;
-        }
-        if (!rejectedToken.equals(currentSecretId)) {
-            log.debug("Ignoring a refusal of a token this pod has already replaced");
-            return;
-        }
-        forceRelogin();
-    }
-
-    /**
-     * Schedules a relogin unless one is already under way or the previous one was too recent. The delay is random
-     * within {@link #FORCED_RELOGIN_JITTER_SECONDS} so that a fleet meeting the same refusal does not log in at once.
-     */
-    private void forceRelogin() {
+    @Override
+    public void reportRefusal() {
         if (updater == null) {
             log.debug("Ignoring a refusal that arrived before the first login");
             return;
         }
-        if (!forcedReloginInFlight.compareAndSet(false, true)) {
-            log.debug("Ignoring a refusal while a relogin is already under way");
+        if (!checkInFlight.compareAndSet(false, true)) {
+            log.debug("Ignoring a refusal while a check is already under way");
             return;
         }
-        Instant previous = lastForcedReloginAt;
-        if (previous != null && clock.instant().isBefore(previous.plus(MIN_FORCED_RELOGIN_INTERVAL))) {
-            log.debug("Ignoring a refusal less than {} after the previous relogin", MIN_FORCED_RELOGIN_INTERVAL);
-            forcedReloginInFlight.set(false);
+        Instant previous = lastCheckAt;
+        if (previous != null && clock.instant().isBefore(previous.plus(MIN_CHECK_INTERVAL))) {
+            log.debug("Ignoring a refusal less than {} after the previous check", MIN_CHECK_INTERVAL);
+            checkInFlight.set(false);
             return;
         }
-        lastForcedReloginAt = clock.instant();
-        long delaySeconds = forcedReloginDelaySeconds.getAsLong();
-        log.warn("Consul refused the ACL token of this pod with ACL not found; getting a new one in {} seconds",
+        long delaySeconds = checkDelaySeconds.getAsLong();
+        log.info("Consul refused a request carrying the ACL token of this pod; checking the token in {} seconds",
                 delaySeconds);
-        executor.schedule(this::runForcedRelogin, delaySeconds, TimeUnit.SECONDS);
+        executor.schedule(this::checkAndReplace, delaySeconds, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Reads the token the pod holds and reschedules itself. A zero or negative interval turns the check off, leaving
+     * the pod with the relogin schedule and with what its consumers report.
+     */
+    private void scheduleCheck() {
+        if (validationInterval == null || validationInterval.isZero() || validationInterval.isNegative()) {
+            return;
+        }
+        executor.schedule(this::runScheduledCheck, validationInterval.getSeconds(), TimeUnit.SECONDS);
+    }
+
+    private void runScheduledCheck() {
+        try {
+            if (checkInFlight.compareAndSet(false, true)) {
+                checkAndReplace();
+            }
+        } finally {
+            scheduleCheck();
+        }
+    }
+
+    /**
+     * Reads the token back from Consul and replaces it when Consul no longer resolves it. Any other answer means
+     * Consul is unreachable rather than the token being dead, so the pod keeps the token it holds.
+     *
+     * <p>The caller owns {@link #checkInFlight} and this method releases it.
+     */
+    private void checkAndReplace() {
+        lastCheckAt = clock.instant();
+        try {
+            currentSecretId = tokenProvider.getSelfToken(currentSecretId).getSecretId();
+        } catch (ConsulResponseException e) {
+            if (e.getCode() == REFUSED) {
+                replaceRefusedToken();
+            } else {
+                log.debug("Could not read the consul token back; keeping it until the next check", e);
+            }
+        } catch (Throwable e) {
+            log.debug("Could not read the consul token back; keeping it until the next check", e);
+        } finally {
+            checkInFlight.set(false);
+        }
     }
 
     /**
      * Logs in and hands the token over, leaving the relogin schedule alone: the task the expiration of the replaced
      * token scheduled is still pending, and starting a second schedule beside it would double every later relogin.
      */
-    private void runForcedRelogin() {
+    private void replaceRefusedToken() {
+        log.warn("Consul no longer resolves the ACL token of this pod; getting a new one");
         try {
             publish(withRetry(tokenProvider::getToken, tries));
         } catch (Throwable e) {
-            log.error("Error occurred during getting a new consul token after a refusal", e);
-        } finally {
-            forcedReloginInFlight.set(false);
-        }
-    }
-
-    /**
-     * Reads the token the pod holds and reschedules itself. A refusal forces a relogin; anything else is Consul being
-     * unreachable rather than the token being dead, so the check waits for the next tick. A zero or negative interval
-     * turns the check off, leaving the pod with the relogin schedule and the signal alone.
-     */
-    private void scheduleValidation() {
-        if (validationInterval == null || validationInterval.isZero() || validationInterval.isNegative()) {
-            return;
-        }
-        executor.schedule(this::validate, validationInterval.getSeconds(), TimeUnit.SECONDS);
-    }
-
-    private void validate() {
-        try {
-            currentSecretId = tokenProvider.getSelfToken(currentSecretId).getSecretId();
-        } catch (ConsulResponseException e) {
-            if (e.getCode() == REJECTED) {
-                forceRelogin();
-            } else {
-                log.debug("Could not validate the consul token, will try again in {}", validationInterval, e);
-            }
-        } catch (Throwable e) {
-            log.debug("Could not validate the consul token, will try again in {}", validationInterval, e);
-        } finally {
-            scheduleValidation();
+            log.error("Error occurred during getting a new consul token after consul refused the current one", e);
         }
     }
 

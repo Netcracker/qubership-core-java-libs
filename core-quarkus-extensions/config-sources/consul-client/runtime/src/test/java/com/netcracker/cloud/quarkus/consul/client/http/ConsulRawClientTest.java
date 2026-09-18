@@ -1,15 +1,14 @@
 package com.netcracker.cloud.quarkus.consul.client.http;
 
-import com.netcracker.cloud.consul.provider.common.TokenStorage;
 import com.netcracker.cloud.quarkus.consul.client.model.GetValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -44,29 +43,29 @@ class ConsulRawClientTest {
     }
 
     @Test
-    void aRefusedTokenIsReportedWithTheValueThatWasSent() {
-        List<String> reported = new ArrayList<>();
-        ConsulRawClient client = new ConsulRawClient(httpTransport, consulUrl, recordingInto(reported));
+    void aRefusalIsReported() {
+        AtomicInteger reported = new AtomicInteger();
+        ConsulRawClient client = new ConsulRawClient(httpTransport, consulUrl, reported::incrementAndGet);
         when(httpTransport.makeGetRequestAsync(Mockito.anyString(), Mockito.eq(new String[]{"Authorization", "Bearer dead-token"})))
                 .thenReturn(answerWith(403));
 
         assertThrows(CompletionException.class,
                 () -> client.makeGetRequest("/v1/kv/test", new QueryParams(-1, -1), "dead-token"));
 
-        assertEquals(List.of("dead-token"), reported);
+        assertEquals(1, reported.get(), "reported refusals");
     }
 
     @Test
     void anErrorOtherThanARefusalIsNotReported() {
-        List<String> reported = new ArrayList<>();
-        ConsulRawClient client = new ConsulRawClient(httpTransport, consulUrl, recordingInto(reported));
+        AtomicInteger reported = new AtomicInteger();
+        ConsulRawClient client = new ConsulRawClient(httpTransport, consulUrl, reported::incrementAndGet);
         when(httpTransport.makeGetRequestAsync(Mockito.anyString(), Mockito.eq(new String[]{"Authorization", "Bearer live-token"})))
                 .thenReturn(answerWith(500));
 
         assertThrows(CompletionException.class,
                 () -> client.makeGetRequest("/v1/kv/test", new QueryParams(-1, -1), "live-token"));
 
-        assertTrue(reported.isEmpty(), "reported tokens");
+        assertEquals(0, reported.get(), "reported refusals");
     }
 
     @Test
@@ -78,25 +77,6 @@ class ConsulRawClientTest {
 
         assertTrue(generatedUrl.contains("wait=10s"));
         assertTrue(generatedUrl.contains("index=100"));
-    }
-
-    private static TokenStorage recordingInto(List<String> reported) {
-        return new TokenStorage() {
-            @Override
-            public String get() {
-                return "";
-            }
-
-            @Override
-            public void update(String token) {
-                // nothing
-            }
-
-            @Override
-            public void invalidate(String rejectedToken) {
-                reported.add(rejectedToken);
-            }
-        };
     }
 
     /**

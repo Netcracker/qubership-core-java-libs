@@ -1,6 +1,5 @@
 package com.netcracker.cloud.quarkus.consul.client.http;
 
-import com.netcracker.cloud.consul.provider.common.TokenStorage;
 import com.netcracker.cloud.quarkus.consul.client.model.GetValue;
 import org.jboss.logging.Logger;
 
@@ -12,33 +11,35 @@ import java.util.concurrent.ExecutionException;
 
 public class ConsulRawClient {
 
-    private static final int REJECTED = 403;
+    private static final int REFUSED = 403;
 
     private static final Logger log = Logger.getLogger(ConsulRawClient.class);
 
     private final HttpTransport httpTransport;
     private final String agentAddress;
-    private final TokenStorage tokenStorage;
+    private final Runnable onRefusal;
 
     public ConsulRawClient(String consulUrl) {
-        this(consulUrl, null);
+        this(consulUrl, () -> {
+        });
     }
 
     /**
-     * @param tokenStorage owner of the token, told through {@link TokenStorage#invalidate(String)} whenever Consul
-     *                     answers {@code 403 ACL not found}. A client built without one leaves a refusal unreported
+     * @param onRefusal runs whenever Consul answers {@code 403}, so that the owner of the token can check whether
+     *                  Consul still resolves it
      */
-    public ConsulRawClient(String consulUrl, TokenStorage tokenStorage) {
-        this(new HttpTransport(), consulUrl, tokenStorage);
+    public ConsulRawClient(String consulUrl, Runnable onRefusal) {
+        this(new HttpTransport(), consulUrl, onRefusal);
     }
 
     protected ConsulRawClient(HttpTransport httpTransport, String consulUrl) {
-        this(httpTransport, consulUrl, null);
+        this(httpTransport, consulUrl, () -> {
+        });
     }
 
-    protected ConsulRawClient(HttpTransport httpTransport, String consulUrl, TokenStorage tokenStorage) {
+    protected ConsulRawClient(HttpTransport httpTransport, String consulUrl, Runnable onRefusal) {
         this.httpTransport = httpTransport;
-        this.tokenStorage = tokenStorage;
+        this.onRefusal = onRefusal;
         String consulUrlLowercase = consulUrl.toLowerCase();
         if (!consulUrlLowercase.startsWith("https://") && !consulUrlLowercase.startsWith("http://")) {
             consulUrlLowercase = "http://" + consulUrlLowercase;
@@ -57,20 +58,17 @@ public class ConsulRawClient {
     public CompletableFuture<Response<List<GetValue>>> makeGetRequestAsync(String endpoint, QueryParams queryParams, String token) {
         String url = generateUrl(agentAddress + endpoint, queryParams);
         return httpTransport.makeGetRequestAsync(url, "Authorization", String.format("Bearer %s", token))
-                .whenComplete((response, failure) -> reportRejectedToken(failure, token));
+                .whenComplete((response, failure) -> reportRefusal(failure));
     }
 
-    private void reportRejectedToken(Throwable failure, String token) {
-        if (tokenStorage == null) {
-            return;
-        }
+    private void reportRefusal(Throwable failure) {
         Throwable cause = failure;
         while ((cause instanceof CompletionException || cause instanceof ExecutionException) && cause.getCause() != null) {
             cause = cause.getCause();
         }
-        if (cause instanceof OperationException && ((OperationException) cause).getStatusCode() == REJECTED) {
-            log.debug("Consul refused the ACL token this pod sent; reporting it to the token owner");
-            tokenStorage.invalidate(token);
+        if (cause instanceof OperationException && ((OperationException) cause).getStatusCode() == REFUSED) {
+            log.debug("Consul refused the request; reporting it to the owner of the ACL token");
+            onRefusal.run();
         }
     }
 

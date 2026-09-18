@@ -2,7 +2,7 @@ package com.netcracker.cloud.bluegreen.quarkus.config;
 
 import com.netcracker.cloud.bluegreen.api.service.GlobalMutexService;
 import com.netcracker.cloud.bluegreen.impl.service.ConsulGlobalMutexService;
-import com.netcracker.cloud.consul.provider.common.TokenStorage;
+import com.netcracker.cloud.consul.provider.common.ConsulTokenSource;
 import io.quarkus.arc.DefaultBean;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
@@ -17,7 +17,7 @@ public class ConsulBlueGreenGlobalMutexConfiguration {
     @Produces
     @DefaultBean
     @ApplicationScoped
-    public GlobalMutexService globalMutexService(TokenStorage tokenStorage) {
-        return new ConsulGlobalMutexService(tokenStorage::get, consulUrl, tokenStorage::invalidate);
+    public GlobalMutexService globalMutexService(ConsulTokenSource tokenSource) {
+        return new ConsulGlobalMutexService(tokenSource::get, consulUrl, tokenSource::reportRefusal);
     }
 }

@@ -56,10 +56,12 @@ public class ConsulBlueGreenStatePublisher implements BlueGreenStatePublisher, A
     }
 
     /**
-     * @param onTokenRejected receives the token this publisher sent whenever Consul answers {@code 403 ACL not found}
+     * @param onRefusal runs whenever Consul answers {@code 403} to this publisher, so that the owner of the token
+     *                  can check whether Consul still resolves it
      */
-    public ConsulBlueGreenStatePublisher(Supplier<String> consulTokenSupplier, String consulUrl, String namespace, Consumer<String> onTokenRejected) {
-        this(new HttpClientAdapter(consulTokenSupplier, onTokenRejected), consulUrl, namespace, DEFAULT_POLLING_WAIT_TIME);
+    public ConsulBlueGreenStatePublisher(Supplier<String> consulTokenSupplier, String consulUrl, String namespace,
+                                         Runnable onRefusal) {
+        this(new HttpClientAdapter(consulTokenSupplier, onRefusal), consulUrl, namespace, DEFAULT_POLLING_WAIT_TIME);
     }
 
     public ConsulBlueGreenStatePublisher(Supplier<String> consulTokenSupplier, String consulUrl, String namespace, Duration pollingInterval) {

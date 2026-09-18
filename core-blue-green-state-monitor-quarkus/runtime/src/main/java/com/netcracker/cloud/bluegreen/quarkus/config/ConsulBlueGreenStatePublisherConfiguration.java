@@ -2,7 +2,7 @@ package com.netcracker.cloud.bluegreen.quarkus.config;
 
 import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
 import com.netcracker.cloud.bluegreen.impl.service.ConsulBlueGreenStatePublisher;
-import com.netcracker.cloud.consul.provider.common.TokenStorage;
+import com.netcracker.cloud.consul.provider.common.ConsulTokenSource;
 import io.quarkus.arc.DefaultBean;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Disposes;
@@ -22,8 +22,8 @@ public class ConsulBlueGreenStatePublisherConfiguration {
     @DefaultBean
     @ApplicationScoped
     @Named("blueGreenStatePublisher")
-    public BlueGreenStatePublisher blueGreenStatePublisher(TokenStorage tokenStorage) {
-        return new ConsulBlueGreenStatePublisher(tokenStorage::get, consulUrl, namespace, tokenStorage::invalidate);
+    public BlueGreenStatePublisher blueGreenStatePublisher(ConsulTokenSource tokenSource) {
+        return new ConsulBlueGreenStatePublisher(tokenSource::get, consulUrl, namespace, tokenSource::reportRefusal);
     }
 
     public void close(@Disposes @Named("blueGreenStatePublisher") BlueGreenStatePublisher publisher) throws Exception {

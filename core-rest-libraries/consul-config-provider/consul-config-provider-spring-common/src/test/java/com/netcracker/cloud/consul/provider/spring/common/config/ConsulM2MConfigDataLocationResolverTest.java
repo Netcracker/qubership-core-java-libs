@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 import com.netcracker.cloud.consul.provider.common.ConsulLoginCredentials;
-import com.netcracker.cloud.consul.provider.common.TokenStorage;
+import com.netcracker.cloud.consul.provider.common.ConsulTokenSource;
+import java.util.concurrent.atomic.AtomicInteger;
 import com.netcracker.cloud.consul.provider.common.client.ConsulClientResponse;
 import com.netcracker.cloud.consul.provider.common.client.ConsulRestClient;
 import com.netcracker.cloud.consul.provider.spring.common.TokenRefusals;
@@ -175,12 +176,12 @@ class ConsulM2MConfigDataLocationResolverTest {
             TestResolver resolver =
                     new TestResolver(Mockito.mock(DeferredLogFactory.class, Mockito.RETURNS_DEEP_STUBS), consulRestClient);
             resolver.loadConfigProperties(resolverContext);
-            List<String> reported = new ArrayList<>();
-            bootstrapContext.get(TokenRefusals.class).reportTo(recordingInto(reported));
+            AtomicInteger reported = new AtomicInteger();
+            bootstrapContext.get(TokenRefusals.class).reportTo(countedBy(reported));
 
             resolver.createConsulClient(bootstrapContext).getKVValues("config/test-namespace/application", SECRET_ID);
 
-            Assertions.assertEquals(List.of(SECRET_ID), reported);
+            Assertions.assertEquals(1, reported.get(), "reported refusals");
         } finally {
             consul.stop(0);
         }
@@ -193,21 +194,16 @@ class ConsulM2MConfigDataLocationResolverTest {
         return properties;
     }
 
-    private static TokenStorage recordingInto(List<String> reported) {
-        return new TokenStorage() {
+    private static ConsulTokenSource countedBy(AtomicInteger reported) {
+        return new ConsulTokenSource() {
             @Override
             public String get() {
                 return SECRET_ID;
             }
 
             @Override
-            public void update(String token) {
-                // nothing
-            }
-
-            @Override
-            public void invalidate(String rejectedToken) {
-                reported.add(rejectedToken);
+            public void reportRefusal() {
+                reported.incrementAndGet();
             }
         };
     }

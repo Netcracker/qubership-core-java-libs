@@ -1,5 +1,6 @@
 package com.netcracker.cloud.consul.provider.spring.resttemplate.config;
 
+import com.netcracker.cloud.consul.provider.common.ConsulTokenSource;
 import com.netcracker.cloud.consul.provider.common.TokenStorage;
 import com.netcracker.cloud.consul.provider.common.TokenStorageFactory;
 import com.netcracker.cloud.consul.provider.spring.common.SpringTokenStorageFactory;
@@ -31,19 +32,29 @@ public class ConsulM2MRestTemplateAutoConfiguration {
     private final static Logger LOGGER = LoggerFactory.getLogger(ConsulM2MRestTemplateAutoConfiguration.class);
 
     @Bean
-    public TokenStorage consulTokenStorageViaM2MRestTemplate(ConsulConfigProperties consulConfigProperties,
+    public TokenStorageFactory.Tokens consulTokensViaM2MRestTemplate(ConsulConfigProperties consulConfigProperties,
                                                              ConsulProperties consulProperties,
                                                              M2MManager m2MManager,
                                                              ConsulLoginProperties loginProperties,
                                                              ObjectProvider<TokenRefusals> refusals) {
         TokenStorageFactory factory = new SpringTokenStorageFactory(consulConfigProperties, new MicroserviceRestTemplate());
 
-        TokenStorage tokenStorage = factory.create(
+        TokenStorageFactory.Tokens tokens = factory.createTokens(
                 createOptions(loginProperties, consulProperties, m2MManager, System.getenv("NAMESPACE")));
         // The ConfigData phase promotes the refusals of its own Consul client only when it ran; without it the pod
-        // still recovers through the scheduled validation of the token updater.
-        refusals.ifAvailable(available -> available.reportTo(tokenStorage));
-        return tokenStorage;
+        // still recovers through the scheduled check of the token.
+        refusals.ifAvailable(available -> available.reportTo(tokens.source()));
+        return tokens;
+    }
+
+    @Bean
+    public TokenStorage consulTokenStorageViaM2MRestTemplate(TokenStorageFactory.Tokens tokens) {
+        return tokens.storage();
+    }
+
+    @Bean
+    public ConsulTokenSource consulTokenSourceViaM2MRestTemplate(TokenStorageFactory.Tokens tokens) {
+        return tokens.source();
     }
 
     static TokenStorageFactory.CreateOptions createOptions(ConsulLoginProperties loginProperties,

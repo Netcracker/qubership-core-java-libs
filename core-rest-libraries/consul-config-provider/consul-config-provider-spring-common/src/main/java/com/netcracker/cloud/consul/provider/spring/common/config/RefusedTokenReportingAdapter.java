@@ -16,9 +16,8 @@ import org.springframework.web.service.invoker.HttpRequestValues;
 import java.util.function.Supplier;
 
 /**
- * Reports the ACL token of a request Consul answered with {@code 403 ACL not found}. The token comes from the
- * {@code X-Consul-Token} header of that request, so what is reported is what went on the wire, whatever the storage
- * holds by the time the answer arrives.
+ * Reports a request Consul answered with {@code 403} to the owner of the ACL token, which then checks whether Consul
+ * still resolves the token.
  *
  * <p>A refusal arrives in one of two shapes, and both are read here. The client treats a 4xx as an ordinary response,
  * so the status can come back on a {@link ResponseEntity}; but Consul answers a refusal with {@code text/plain}, which
@@ -31,7 +30,7 @@ import java.util.function.Supplier;
  */
 class RefusedTokenReportingAdapter implements HttpExchangeAdapter {
 
-    private static final int REJECTED = 403;
+    private static final int REFUSED = 403;
 
     private static final Logger log = LoggerFactory.getLogger(RefusedTokenReportingAdapter.class);
 
@@ -94,16 +93,11 @@ class RefusedTokenReportingAdapter implements HttpExchangeAdapter {
     }
 
     private void report(HttpRequestValues requestValues, HttpStatusCode status) {
-        if (status.value() != REJECTED) {
+        if (status.value() != REFUSED) {
             return;
         }
-        String sentToken = requestValues.getHeaders().getFirst(ConsulClient.ACL_TOKEN_HEADER);
-        if (sentToken == null || sentToken.isEmpty()) {
-            log.debug("Consul refused a request to {} that carried no ACL token", requestValues.getUriTemplate());
-            return;
-        }
-        log.debug("Consul refused the ACL token this pod sent to {}; reporting it to the token owner",
+        log.debug("Consul refused the request to {}; reporting it to the owner of the ACL token",
                 requestValues.getUriTemplate());
-        refusals.report(sentToken);
+        refusals.report();
     }
 }

@@ -1,6 +1,7 @@
 package com.netcracker.cloud.quarkus.consul.client;
 
 import com.netcracker.cloud.consul.provider.common.ConsulLoginMode;
+import com.netcracker.cloud.consul.provider.common.ConsulTokenSource;
 import com.netcracker.cloud.consul.provider.common.OkHttpTokenStorageFactory;
 import com.netcracker.cloud.consul.provider.common.TokenStorage;
 import com.netcracker.cloud.consul.provider.common.TokenStorageFactory;
@@ -52,13 +53,13 @@ public class ConsulClientConfiguration {
     @Singleton
     public ConsulClient innerConsulClient(
             @ConfigProperty(name = "quarkus.consul-source-config.agent.url") Optional<String> agentUrl,
-            TokenStorage tokenStorage) {
+            ConsulTokenSource tokenSource) {
         Optional<URL> consulUrl = getURL(agentUrl);
         if (consulUrl.isEmpty()) {
             log.error("Cannot find consul agent url");
             return null;
         }
-        return new ConsulClient(String.valueOf(consulUrl.get()), tokenStorage);
+        return new ConsulClient(String.valueOf(consulUrl.get()), tokenSource::reportRefusal);
     }
 
 
@@ -75,7 +76,7 @@ public class ConsulClientConfiguration {
     @Produces
     @ApplicationScoped
     @UnlessBuildProperty(name = "quarkus.consul-source-config.m2m.enabled", stringValue = "false", enableIfMissing = true)
-    public TokenStorage tokenStorage(TokenStorageFactory tokenStorageFactory,
+    public TokenStorageFactory.Tokens consulTokens(TokenStorageFactory tokenStorageFactory,
                                      @ConfigProperty(name = "cloud.microservice.namespace") String namespace,
                                      @ConfigProperty(name = "quarkus.consul-source-config.agent.url") String agentUrl,
                                      @ConfigProperty(name = PROP_AUTH_MODE) Optional<ConsulLoginMode> mode,
@@ -85,7 +86,7 @@ public class ConsulClientConfiguration {
                                      Optional<Duration> fallbackRecheckInterval,
                                      @ConfigProperty(name = PROP_AUTH_VALIDATION_INTERVAL)
                                      Optional<Duration> validationInterval) {
-        return tokenStorageFactory.create(new TokenStorageFactory.CreateOptions.Builder()
+        return tokenStorageFactory.createTokens(new TokenStorageFactory.CreateOptions.Builder()
                 .consulUrl(agentUrl)
                 .namespace(namespace)
                 .m2mSupplier(() -> M2MManager.getInstance().getToken().getTokenValue())
@@ -95,6 +96,36 @@ public class ConsulClientConfiguration {
                 .fallbackRecheckInterval(fallbackRecheckInterval.orElse(null))
                 .validationInterval(validationInterval.orElse(null))
                 .build());
+    }
+
+    @Produces
+    @ApplicationScoped
+    @UnlessBuildProperty(name = "quarkus.consul-source-config.m2m.enabled", stringValue = "false", enableIfMissing = true)
+    public TokenStorage tokenStorage(TokenStorageFactory.Tokens tokens) {
+        return tokens.storage();
+    }
+
+    @Produces
+    @ApplicationScoped
+    @UnlessBuildProperty(name = "quarkus.consul-source-config.m2m.enabled", stringValue = "false", enableIfMissing = true)
+    public ConsulTokenSource tokenSource(TokenStorageFactory.Tokens tokens) {
+        return tokens.source();
+    }
+
+    @Produces
+    @DefaultBean
+    public ConsulTokenSource noopTokenSource() {
+        return new ConsulTokenSource() {
+            @Override
+            public String get() {
+                return "";
+            }
+
+            @Override
+            public void reportRefusal() {
+                // nothing
+            }
+        };
     }
 
     @Produces
