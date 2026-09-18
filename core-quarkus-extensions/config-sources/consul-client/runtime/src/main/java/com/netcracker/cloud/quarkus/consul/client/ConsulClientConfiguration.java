@@ -73,8 +73,12 @@ public class ConsulClientConfiguration {
                         .build());
     }
 
+    /**
+     * Kept in a pseudo-scope: a normal scoped producer needs a proxyable type, and {@link TokenStorageFactory.Tokens}
+     * is a record.
+     */
     @Produces
-    @ApplicationScoped
+    @Singleton
     @UnlessBuildProperty(name = "quarkus.consul-source-config.m2m.enabled", stringValue = "false", enableIfMissing = true)
     public TokenStorageFactory.Tokens consulTokens(TokenStorageFactory tokenStorageFactory,
                                      @ConfigProperty(name = "cloud.microservice.namespace") String namespace,

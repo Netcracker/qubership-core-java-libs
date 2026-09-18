@@ -49,13 +49,13 @@ class ConsulClientConfigurationKubernetesModeTest {
 
     @Test
     void loginPropertiesReachCreateOptionsAtRuntime() {
-        when(tokenStorageFactory.create(any())).thenReturn(new ConsulClientConfigurationTest.NoopTokenStorage());
+        when(tokenStorageFactory.createTokens(any())).thenReturn(ConsulClientConfigurationTest.noopTokens());
 
         tokenStorage.get();
 
         ArgumentCaptor<TokenStorageFactory.CreateOptions> options =
                 ArgumentCaptor.forClass(TokenStorageFactory.CreateOptions.class);
-        verify(tokenStorageFactory).create(options.capture());
+        verify(tokenStorageFactory).createTokens(options.capture());
         Assertions.assertEquals(ConsulLoginMode.KUBERNETES, options.getValue().getMode());
         Assertions.assertEquals("core-k8s", options.getValue().getAuthMethod());
         Assertions.assertEquals("dbaas", options.getValue().getAudience());
