@@ -49,7 +49,7 @@ class RefusedTokenReportingAdapter implements HttpExchangeAdapter {
 
     @Override
     public void exchange(HttpRequestValues requestValues) {
-        reporting(requestValues, () -> {
+        reporting(() -> {
             delegate.exchange(requestValues);
             return null;
         });
@@ -57,47 +57,46 @@ class RefusedTokenReportingAdapter implements HttpExchangeAdapter {
 
     @Override
     public HttpHeaders exchangeForHeaders(HttpRequestValues requestValues) {
-        return reporting(requestValues, () -> delegate.exchangeForHeaders(requestValues));
+        return reporting(() -> delegate.exchangeForHeaders(requestValues));
     }
 
     @Override
     public <T> T exchangeForBody(HttpRequestValues requestValues, ParameterizedTypeReference<T> bodyType) {
-        return reporting(requestValues, () -> delegate.exchangeForBody(requestValues, bodyType));
+        return reporting(() -> delegate.exchangeForBody(requestValues, bodyType));
     }
 
     @Override
     public ResponseEntity<Void> exchangeForBodilessEntity(HttpRequestValues requestValues) {
-        return reporting(requestValues, () -> delegate.exchangeForBodilessEntity(requestValues));
+        return reporting(() -> delegate.exchangeForBodilessEntity(requestValues));
     }
 
     @Override
     public <T> ResponseEntity<T> exchangeForEntity(HttpRequestValues requestValues, ParameterizedTypeReference<T> bodyType) {
-        return reporting(requestValues, () -> delegate.exchangeForEntity(requestValues, bodyType));
+        return reporting(() -> delegate.exchangeForEntity(requestValues, bodyType));
     }
 
-    private <T> T reporting(HttpRequestValues requestValues, Supplier<T> exchange) {
+    private <T> T reporting(Supplier<T> exchange) {
         T result;
         try {
             result = exchange.get();
         } catch (UnknownContentTypeException e) {
-            report(requestValues, e.getStatusCode());
+            report(e.getStatusCode());
             throw e;
         } catch (RestClientResponseException e) {
-            report(requestValues, e.getStatusCode());
+            report(e.getStatusCode());
             throw e;
         }
         if (result instanceof ResponseEntity<?> response) {
-            report(requestValues, response.getStatusCode());
+            report(response.getStatusCode());
         }
         return result;
     }
 
-    private void report(HttpRequestValues requestValues, HttpStatusCode status) {
+    private void report(HttpStatusCode status) {
         if (status.value() != REFUSED) {
             return;
         }
-        log.debug("Consul refused the request to {}; reporting it to the owner of the ACL token",
-                requestValues.getUriTemplate());
+        log.debug("Consul refused a request of this pod; reporting it to the owner of the ACL token");
         refusals.report();
     }
 }

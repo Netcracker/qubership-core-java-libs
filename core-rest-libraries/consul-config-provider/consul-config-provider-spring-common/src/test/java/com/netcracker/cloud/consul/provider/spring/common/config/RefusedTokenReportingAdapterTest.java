@@ -38,7 +38,7 @@ class RefusedTokenReportingAdapterTest {
         HttpExchangeAdapter adapter = new RefusedTokenReportingAdapter(refusingWithPlainText(403), refusals);
 
         assertThrows(UnknownContentTypeException.class,
-                () -> adapter.exchangeForEntity(requestWithToken("dead-token"), STRING));
+                () -> adapter.exchangeForEntity(request(), STRING));
 
         assertEquals(1, reported.get(), "reported refusals");
     }
@@ -48,7 +48,7 @@ class RefusedTokenReportingAdapterTest {
         HttpExchangeAdapter adapter = new RefusedTokenReportingAdapter(refusingWithPlainText(500), refusals);
 
         assertThrows(UnknownContentTypeException.class,
-                () -> adapter.exchangeForEntity(requestWithToken("live-token"), STRING));
+                () -> adapter.exchangeForEntity(request(), STRING));
 
         assertEquals(0, reported.get(), "reported refusals");
     }
@@ -57,7 +57,7 @@ class RefusedTokenReportingAdapterTest {
     void aRefusalThatArrivesOnAResponseIsReported() {
         HttpExchangeAdapter adapter = new RefusedTokenReportingAdapter(answering(403), refusals);
 
-        adapter.exchangeForEntity(requestWithToken("dead-token"), STRING);
+        adapter.exchangeForEntity(request(), STRING);
 
         assertEquals(1, reported.get(), "reported refusals");
     }
@@ -66,7 +66,7 @@ class RefusedTokenReportingAdapterTest {
     void anAnswerOtherThanARefusalIsNotReported() {
         HttpExchangeAdapter adapter = new RefusedTokenReportingAdapter(answering(500), refusals);
 
-        adapter.exchangeForEntity(requestWithToken("live-token"), STRING);
+        adapter.exchangeForEntity(request(), STRING);
 
         assertEquals(0, reported.get(), "reported refusals");
     }
@@ -75,7 +75,7 @@ class RefusedTokenReportingAdapterTest {
     void aBodilessRefusalIsReportedToo() {
         HttpExchangeAdapter adapter = new RefusedTokenReportingAdapter(answering(403), refusals);
 
-        adapter.exchangeForBodilessEntity(requestWithToken("dead-token"));
+        adapter.exchangeForBodilessEntity(request());
 
         assertEquals(1, reported.get(), "reported refusals");
     }
@@ -84,12 +84,16 @@ class RefusedTokenReportingAdapterTest {
     void anExchangeThatCarriesNoStatusIsDelegatedUntouched() {
         HttpExchangeAdapter adapter = new RefusedTokenReportingAdapter(answering(403), refusals);
 
-        assertEquals("body", adapter.exchangeForBody(requestWithToken("dead-token"), STRING));
+        assertEquals("body", adapter.exchangeForBody(request(), STRING));
         assertEquals(0, reported.get(), "reported refusals");
     }
 
-    private static HttpRequestValues requestWithToken(String token) {
-        return HttpRequestValues.builder().addHeader(ConsulClient.ACL_TOKEN_HEADER, token).build();
+    /**
+     * A request the way the Consul client sends one, token header included. The adapter reads only the status, so the
+     * value carries nothing.
+     */
+    private static HttpRequestValues request() {
+        return HttpRequestValues.builder().addHeader(ConsulClient.ACL_TOKEN_HEADER, "test-token").build();
     }
 
     private static TokenRefusals refusalsCountedBy(AtomicInteger reported) {
