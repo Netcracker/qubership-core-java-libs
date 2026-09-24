@@ -285,7 +285,7 @@ public class DatabasePoolTest {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-                databasePool.removeCachedDatabase(TestDBType.INSTANCE, classifier);
+                assertDoesNotThrow(() -> databasePool.removeCachedDatabase(TestDBType.INSTANCE, classifier));
             });
             Future<?> f2 = executor.submit(() -> {
                 ready.countDown();
@@ -294,7 +294,7 @@ public class DatabasePoolTest {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-                databasePool.removeCachedDatabase(TestDBType.INSTANCE, classifier);
+                assertDoesNotThrow(() -> databasePool.removeCachedDatabase(TestDBType.INSTANCE, classifier));
             });
             ready.await(5, TimeUnit.SECONDS);
             start.countDown();
