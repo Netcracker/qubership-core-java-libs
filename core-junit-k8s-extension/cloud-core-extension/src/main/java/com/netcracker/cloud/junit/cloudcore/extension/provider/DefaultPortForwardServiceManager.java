@@ -27,13 +27,12 @@ public class DefaultPortForwardServiceManager implements PortForwardServiceManag
     @Override
     public PortForwardService getPortForwardService(PortForwardConfig config) {
         return portForwardServiceMap.computeIfAbsent(config, c -> {
-            if (IN_CLOUD_EXECUTION_MODE) {
-                return new DirectHostService();
-            }
             KubernetesClientFactory kubernetesClientFactory = OrderedServiceLoader.load(KubernetesClientFactory.class)
                     .orElseThrow(() -> new IllegalStateException("No KubernetesClientFactory implementation found"));
-            KubernetesClient kubernetesClient;
-            kubernetesClient = kubernetesClientFactory.getKubernetesClient(c.getCloud(), c.getNamespace());
+            KubernetesClient kubernetesClient = kubernetesClientFactory.getKubernetesClient(c.getCloud(), c.getNamespace());
+            if (IN_CLOUD_EXECUTION_MODE) {
+                return new DirectHostService(kubernetesClient);
+            }
             boolean fqdnFromProp = Boolean.parseBoolean(System.getProperty(PORTFORWARD_FQDN_ENABLED_PROP, "false"));
             boolean useFreeLocalPorts = Boolean.parseBoolean(System.getProperty(USE_FREE_LOCAL_PORTS_PROP, "false"));
             Pattern cloudPropPattern = Pattern.compile("^clouds\\.(?<name>[^.]+)\\.name$");

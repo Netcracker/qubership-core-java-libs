@@ -1,17 +1,27 @@
 package com.netcracker.cloud.junit.cloudcore.extension.service;
 
+import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Optional;
+
 @Slf4j
 public class DirectHostService  extends PortForwardService {
-    public DirectHostService() {
-        super(null, false, false);
+
+    protected final KubernetesClient kubernetesClient;
+
+    public DirectHostService(KubernetesClient kubernetesClient) {
+        super(kubernetesClient, false, false);
+        this.kubernetesClient = kubernetesClient;
     }
 
     @Override
     public synchronized <T> T portForward(BasePortForwardParams<T> params) {
-        return params.supply(new NetSocketAddress(params.getName(), params.getPort()));
+        int targetPort = params.getPort();
+        String namespace = Optional.ofNullable(params.getNamespace()).orElseGet(kubernetesClient::getNamespace);
+        String host = params.host(namespace);
+        return params.supply(new NetSocketAddress(host, targetPort));
     }
 
     @Override
