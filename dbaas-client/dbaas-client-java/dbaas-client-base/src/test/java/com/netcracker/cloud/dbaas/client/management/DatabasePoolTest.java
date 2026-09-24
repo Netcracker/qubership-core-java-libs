@@ -14,6 +14,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.*;
 
 import static com.netcracker.cloud.dbaas.client.DbaasConst.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -61,8 +62,8 @@ public class DatabasePoolTest {
     void testEnrichClassifierCustomMicroserviceNameAndNamespace() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         DatabasePool databasePool = getDatabasePool();
 
-        var customMicroserviceName= "customMicroserviceName";
-        var customNamespace= "customNamespace";
+        var customMicroserviceName = "customMicroserviceName";
+        var customNamespace = "customNamespace";
         var customClassifier = new DbaasDbClassifier.Builder()
                 .withProperty(SCOPE, DbaasConst.SERVICE)
                 .withProperty(NAMESPACE, customNamespace)
@@ -245,6 +246,7 @@ public class DatabasePoolTest {
                 any(DatabaseConfig.class));
         Mockito.verify(postConnectProcessor, times(2)).process(testDatabase);
     }
+
     @Test
     public void testRemoveCachedDatabase() {
         DatabasePool databasePool = getDatabasePool();
@@ -265,6 +267,42 @@ public class DatabasePoolTest {
                 anyMap(),
                 any(DatabaseConfig.class));
         Mockito.verify(postConnectProcessor, times(2)).process(testDatabase);
+    }
+
+    @Test
+    public void testRemoveCachedDatabase_concurrentCalls_noNpe() throws Exception {
+        DatabasePool databasePool = getDatabasePool();
+        databasePool.getOrCreateDatabase(TestDBType.INSTANCE, classifier);
+
+        CountDownLatch ready = new CountDownLatch(2);
+        CountDownLatch start = new CountDownLatch(1);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        try {
+            Future<?> f1 = executor.submit(() -> {
+                ready.countDown();
+                try {
+                    start.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                databasePool.removeCachedDatabase(TestDBType.INSTANCE, classifier);
+            });
+            Future<?> f2 = executor.submit(() -> {
+                ready.countDown();
+                try {
+                    start.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                databasePool.removeCachedDatabase(TestDBType.INSTANCE, classifier);
+            });
+            ready.await(5, TimeUnit.SECONDS);
+            start.countDown();
+            f1.get(5, TimeUnit.SECONDS);
+            f2.get(5, TimeUnit.SECONDS);
+        } finally {
+            executor.shutdown();
+        }
     }
 
     @Test
