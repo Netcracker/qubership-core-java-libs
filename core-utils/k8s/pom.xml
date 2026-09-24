@@ -5,7 +5,7 @@
     <parent>
         <artifactId>core-utils-aggregator</artifactId>
         <groupId>com.netcracker.cloud.security.core.utils</groupId>
-        <version>3.2.3-SNAPSHOT</version>
+        <version>3.2.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -38,7 +38,6 @@
         <dependency>
             <groupId>net.jodah</groupId>
             <artifactId>failsafe</artifactId>
-            <version>2.4.4</version>
         </dependency>
         <dependency>
             <groupId>org.bitbucket.b_c</groupId>

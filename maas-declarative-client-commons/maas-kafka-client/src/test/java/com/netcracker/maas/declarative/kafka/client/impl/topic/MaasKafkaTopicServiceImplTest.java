@@ -15,8 +15,11 @@ import org.mockito.ArgumentCaptor;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class MaasKafkaTopicServiceImplTest {
 
@@ -31,7 +34,31 @@ class MaasKafkaTopicServiceImplTest {
     @BeforeEach
     void setUp() {
         client = mock(KafkaMaaSClient.class);
+        // the service works through the single-attempt view; a mock answers null for it unstubbed
+        when(client.singleAttempt()).thenReturn(client);
         service = new MaasKafkaTopicServiceImpl(client);
+    }
+
+    /** This client owns its own retry loop, so every call of its own must be a single attempt. */
+    @Test
+    void takesTheSingleAttemptViewOfTheClient() {
+        KafkaMaaSClient retrying = mock(KafkaMaaSClient.class);
+        KafkaMaaSClient singleAttempt = mock(KafkaMaaSClient.class);
+        when(retrying.singleAttempt()).thenReturn(singleAttempt);
+
+        MaasKafkaCommonClientDefinition clientDefinition = MaasKafkaConsumerDefinition.builder()
+                .setTopic(MaasTopicDefinition.builder()
+                        .setName(TEST_TOPIC_NAME)
+                        .setNamespace(TEST_NAMESPACE_NAME)
+                        .setManagedBy(ManagedBy.SELF)
+                        .build())
+                .setGroupId(TEST_GROUP_ID_NAME)
+                .build();
+
+        new MaasKafkaTopicServiceImpl(retrying).getTopicAddressByDefinition(clientDefinition);
+
+        verify(singleAttempt).getTopic(any());
+        verify(retrying, never()).getTopic(any());
     }
 
     @Test

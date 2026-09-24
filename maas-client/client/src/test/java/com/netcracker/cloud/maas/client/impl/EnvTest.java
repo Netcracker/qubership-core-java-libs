@@ -156,4 +156,29 @@ class EnvTest {
                 .execute(Env::microserviceName);
         assertEquals("abc", value);
     }
+
+    @Test
+    void testHttpRetryMaxTotalDurationDefault() {
+        withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, null, () ->
+                assertEquals(Env.DEFAULT_HTTP_RETRY_MAX_TOTAL_DURATION_MS,
+                        Env.httpRetryMaxTotalDuration().toMillis()));
+    }
+
+    @Test
+    void testHttpRetryMaxTotalDurationIsRead() {
+        withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, " 1500 ", () ->
+                assertEquals(1500, Env.httpRetryMaxTotalDuration().toMillis(), "surrounding spaces are tolerated"));
+        withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, "0", () ->
+                assertEquals(0, Env.httpRetryMaxTotalDuration().toMillis(), "zero disables retries"));
+    }
+
+    /** An unusable value must not fail the call that happens to be first; it falls back and warns. */
+    @Test
+    void testHttpRetryMaxTotalDurationFallsBackOnUnusableValue() {
+        for (String raw : new String[]{"soon", "", "-1"}) {
+            withProp(Env.PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, raw, () ->
+                    assertEquals(Env.DEFAULT_HTTP_RETRY_MAX_TOTAL_DURATION_MS,
+                            Env.httpRetryMaxTotalDuration().toMillis(), "unusable value: '" + raw + "'"));
+        }
+    }
 }

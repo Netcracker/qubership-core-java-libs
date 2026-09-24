@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.netcracker.cloud.maas.client</groupId>
         <artifactId>maas-client-parent</artifactId>
-        <version>12.3.3-SNAPSHOT</version>
+        <version>12.4.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -58,7 +58,6 @@
         <dependency>
             <groupId>net.jodah</groupId>
             <artifactId>failsafe</artifactId>
-            <version>2.4.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>

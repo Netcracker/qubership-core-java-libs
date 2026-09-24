@@ -372,14 +372,17 @@ public class PortForwardServiceTest {
 
     @Test
     void testDirectCommunication() throws Exception {
-        String host = "test-service";
+        String host = "test-service.test-namespace";
         try (MockedStatic<LocalHostAddressGenerator> localHostAddressGeneratorMockedStatic =
                      Mockito.mockStatic(LocalHostAddressGenerator.class)) {
+
+            KubernetesClient kubernetesClient = mock(KubernetesClient.class);
+            when(kubernetesClient.getNamespace()).thenReturn(NAMESPACE);
 
             LocalPortForward localPortForward8080 = mock(LocalPortForward.class);
             LocalPortForward localPortForward8181 = mock(LocalPortForward.class);
 
-            PortForwardService directCommunicationService = new DirectHostService();
+            PortForwardService directCommunicationService = new DirectHostService(kubernetesClient);
 
             NetSocketAddress netSocketAddressAttempt1 = directCommunicationService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8080).build());
             assertNotNull(netSocketAddressAttempt1);
@@ -391,6 +394,8 @@ public class PortForwardServiceTest {
             NetSocketAddress netSocketAddress2 = directCommunicationService.portForward(ServicePortForwardParams.builder(SERVICE_NAME, 8181).build());
             assertNotNull(netSocketAddress2);
             assertNotEquals(netSocketAddressAttempt1, netSocketAddress2);
+
+            assertEquals(host+":8181", netSocketAddress2.getEndpoint());
 
             directCommunicationService.closePortForward(new Endpoint(host, 8080));
             verify(localPortForward8080, times(0)).close();

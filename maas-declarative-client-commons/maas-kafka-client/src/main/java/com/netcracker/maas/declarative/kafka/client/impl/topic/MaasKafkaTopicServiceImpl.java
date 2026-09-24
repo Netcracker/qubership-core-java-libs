@@ -19,7 +19,7 @@ public class MaasKafkaTopicServiceImpl implements MaasKafkaTopicService {
     private final KafkaMaaSClient maasKafkaClient;
 
     public MaasKafkaTopicServiceImpl(KafkaMaaSClient maasKafkaClient) {
-        this.maasKafkaClient = maasKafkaClient;
+        this.maasKafkaClient = maasKafkaClient == null ? null : maasKafkaClient.singleAttempt();
     }
 
     @Override

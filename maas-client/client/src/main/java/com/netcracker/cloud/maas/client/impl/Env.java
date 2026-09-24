@@ -35,6 +35,7 @@ public class Env {
     public static final String PROP_TENANT_MANAGER_URL = "maas.client.tenant-manager.url";
     public static final String PROP_TENANT_MANAGER_RECONNECT_TIMEOUT = "maas.client.tenant-manager.reconnect-timeout";
     public static final String PROP_HTTP_TIMEOUT = "maas.http.timeout";
+    public static final String PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS = "maas.http.retry.max-total-duration-ms";
 
     public static String apiUrl() {
         return apiUrl(M2MClient.isK8sM2mEnabled());
@@ -107,6 +108,37 @@ public class Env {
                         .map(Integer::parseInt)
                         .orElse(30)
         );
+    }
+
+    static final long DEFAULT_HTTP_RETRY_MAX_TOTAL_DURATION_MS = 60_000L;
+
+    /**
+     * How long one call may take in total, retries included. Zero leaves a single
+     * attempt; an unreadable or negative value falls back to the default with a warning.
+     */
+    public static Duration httpRetryMaxTotalDuration() {
+        return Duration.ofMillis(
+                stringProperty(PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS)
+                        .map(Env::parseRetryDurationMillis)
+                        .orElse(DEFAULT_HTTP_RETRY_MAX_TOTAL_DURATION_MS)
+        );
+    }
+
+    private static long parseRetryDurationMillis(String raw) {
+        long millis;
+        try {
+            millis = Long.parseLong(raw.trim());
+        } catch (NumberFormatException e) {
+            log.warn("Ignoring '{}={}': not a number of milliseconds, using {}ms",
+                    PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, raw, DEFAULT_HTTP_RETRY_MAX_TOTAL_DURATION_MS);
+            return DEFAULT_HTTP_RETRY_MAX_TOTAL_DURATION_MS;
+        }
+        if (millis < 0) {
+            log.warn("Ignoring '{}={}': negative, using {}ms",
+                    PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS, raw, DEFAULT_HTTP_RETRY_MAX_TOTAL_DURATION_MS);
+            return DEFAULT_HTTP_RETRY_MAX_TOTAL_DURATION_MS;
+        }
+        return millis;
     }
 
     public static String url2ws(String url) {
@@ -202,8 +234,11 @@ public class Env {
             Method getOptionalValue = config.getClass().getMethod("getOptionalValue", String.class, Class.class);
             return (Optional<String>) getOptionalValue.invoke(config, key, String.class);
         } catch (ClassNotFoundException e) {
+            // MicroProfile Config is an optional dependency
             return Optional.empty();
         } catch (Throwable e) {
+            // Throwable, not Exception: a broken config provider fails class initialisation with
+            // an Error, and the caller must still fall back to system properties and environment
             log.trace("MicroProfile Config not available or lookup failed for '{}'", key, e);
             return Optional.empty();
         }

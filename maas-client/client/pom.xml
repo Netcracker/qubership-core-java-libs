@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.netcracker.cloud.maas.client</groupId>
         <artifactId>maas-client-parent</artifactId>
-        <version>12.3.3-SNAPSHOT</version>
+        <version>12.4.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -25,6 +25,10 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>dev.failsafe</groupId>
+            <artifactId>failsafe</artifactId>
         </dependency>
         <!-- needed because of control-plane websock client implemented using okhttp client -->
         <dependency>
