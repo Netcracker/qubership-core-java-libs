@@ -15,11 +15,11 @@
 
     <properties>
         <powermock.version>2.0.9</powermock.version>
-        <arangodb.driver.version>7.26.0</arangodb.driver.version>
+        <arangodb.driver.version>7.28.0</arangodb.driver.version>
         <arangodb.spring.data.version>5.0.0</arangodb.spring.data.version>
         <java.driver.core.version>4.19.3</java.driver.core.version>
         <jedis.client.version>7.4.1</jedis.client.version>
-        <shedlock.version>7.9.0</shedlock.version>
+        <shedlock.version>7.10.1</shedlock.version>
 
         <!--Qubership's libs-->
         <cloud-core.core-internal-boms.version>1.1.4-SNAPSHOT</cloud-core.core-internal-boms.version>
