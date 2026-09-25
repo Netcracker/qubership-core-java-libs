@@ -42,7 +42,7 @@
         <jandex.version>3.5.3</jandex.version>
 
         <!-- Jackson -->
-        <jackson-bom.version>2.21.5</jackson-bom.version>
+        <jackson-bom.version>2.21.6</jackson-bom.version>
 
         <!-- Metrics -->
         <micrometer-bom.version>1.16.6</micrometer-bom.version>
