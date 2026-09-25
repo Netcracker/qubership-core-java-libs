@@ -76,6 +76,19 @@ class ConsulLoginPropertiesTest {
         Assertions.assertEquals(Duration.ofMinutes(30), options().getFallbackRecheckInterval());
     }
 
+    @Test
+    void validationIntervalDefaultComesFromTheBuilder() {
+        Assertions.assertEquals(TokenStorageFactory.CreateOptions.DEFAULT_VALIDATION_INTERVAL,
+                options().getValidationInterval());
+    }
+
+    @Test
+    void validationIntervalIsReadFromTheConfiguration() {
+        loginProperties.setValidationInterval(Duration.ofSeconds(30));
+
+        Assertions.assertEquals(Duration.ofSeconds(30), options().getValidationInterval());
+    }
+
     private static void assertBoundValues(ConsulLoginProperties bound) {
         TokenStorageFactory.CreateOptions opts = bound.toOptionsBuilder()
                 .consulUrl(CONSUL_URL)
@@ -87,6 +100,7 @@ class ConsulLoginPropertiesTest {
         Assertions.assertEquals("core-k8s", opts.getAuthMethod(), "auth method");
         Assertions.assertEquals(AudienceName.DBAAS, opts.getAudience(), "audience");
         Assertions.assertEquals(Duration.ofMinutes(30), opts.getFallbackRecheckInterval(), "recheck interval");
+        Assertions.assertEquals(Duration.ofSeconds(30), opts.getValidationInterval(), "validation interval");
     }
 
     @Test
@@ -95,7 +109,8 @@ class ConsulLoginPropertiesTest {
                 "consul.auth.mode", "m2m",
                 "consul.auth.method", "core-k8s",
                 "consul.auth.audience", AudienceName.DBAAS,
-                "consul.auth.fallback-recheck-interval", "30m"));
+                "consul.auth.fallback-recheck-interval", "30m",
+                "consul.auth.validation-interval", "30s"));
 
         assertBoundValues(new Binder(source).bind(ConsulLoginProperties.PREFIX, ConsulLoginProperties.class)
                 .get());
@@ -103,8 +118,8 @@ class ConsulLoginPropertiesTest {
 
     /**
      * The environment variable names are the ones the go and the Quarkus stacks read as well, so a deployment sets
-     * the same four whatever the stack. The interval carries the hyphenated property name here and the dotted one in
-     * go, and this pins that both are reachable from one variable.
+     * the same variables whatever the stack. An interval carries the hyphenated property name here and the dotted one
+     * in go, and this pins that both are reachable from one variable.
      */
     @Test
     void everyEnvironmentVariableNameTheDocumentationGivesBinds() {
@@ -113,7 +128,8 @@ class ConsulLoginPropertiesTest {
                 "CONSUL_AUTH_MODE", "m2m",
                 "CONSUL_AUTH_METHOD", "core-k8s",
                 "CONSUL_AUTH_AUDIENCE", AudienceName.DBAAS,
-                "CONSUL_AUTH_FALLBACK_RECHECK_INTERVAL", "30m")));
+                "CONSUL_AUTH_FALLBACK_RECHECK_INTERVAL", "30m",
+                "CONSUL_AUTH_VALIDATION_INTERVAL", "30s")));
 
         assertBoundValues(Binder.get(environment).bind(ConsulLoginProperties.PREFIX, ConsulLoginProperties.class)
                 .get());

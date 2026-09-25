@@ -54,6 +54,14 @@ public class ConsulGlobalMutexService implements GlobalMutexService {
         this(new HttpClientAdapter(consulTokenSupplier), consulUrl);
     }
 
+    /**
+     * @param onRefusal runs whenever Consul answers {@code 403} to this service, so that the owner of the token can
+     *                  check whether Consul still resolves it
+     */
+    public ConsulGlobalMutexService(Supplier<String> consulTokenSupplier, String consulUrl, Runnable onRefusal) {
+        this(new HttpClientAdapter(consulTokenSupplier, onRefusal), consulUrl);
+    }
+
     public ConsulGlobalMutexService(HttpClientAdapter client, String consulUrl) {
         LockUtils.checkNotEmpty(Map.of(
                 "client", client,

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.bluegreen.api.service.GlobalMutexService;
 import com.netcracker.cloud.bluegreen.impl.service.ConsulGlobalMutexService;
-import com.netcracker.cloud.consul.provider.common.TokenStorage;
+import com.netcracker.cloud.consul.provider.common.ConsulTokenSource;
 
 import java.time.Duration;
 import java.util.List;
@@ -31,21 +31,21 @@ class ConsulBlueGreenGlobalMutexConfigurationTest {
 
     @Test
     void testGlobalMutexServiceCreation() {
-        TokenStorage tokenStorage = mock(TokenStorage.class);
-        when(tokenStorage.get()).thenReturn(TEST_TOKEN);
+        ConsulTokenSource tokenSource = mock(ConsulTokenSource.class);
+        when(tokenSource.get()).thenReturn(TEST_TOKEN);
 
-        GlobalMutexService service = configuration.globalMutexService(tokenStorage);
+        GlobalMutexService service = configuration.globalMutexService(tokenSource);
 
         assertNotNull(service);
         assertInstanceOf(ConsulGlobalMutexService.class, service);
     }
 
     @Test
-    void testGlobalMutexServiceUsesTokenStorage() {
-        TokenStorage tokenStorage = mock(TokenStorage.class);
-        when(tokenStorage.get()).thenReturn(TEST_TOKEN);
+    void testGlobalMutexServiceUsesTokenSource() {
+        ConsulTokenSource tokenSource = mock(ConsulTokenSource.class);
+        when(tokenSource.get()).thenReturn(TEST_TOKEN);
 
-        GlobalMutexService service = configuration.globalMutexService(tokenStorage);
+        GlobalMutexService service = configuration.globalMutexService(tokenSource);
         assertNotNull(service);
 
         try {
@@ -54,6 +54,6 @@ class ConsulBlueGreenGlobalMutexConfigurationTest {
             // Expected exception since we're not actually connecting to Consul
         }
 
-        verify(tokenStorage, atLeastOnce()).get();
+        verify(tokenSource, atLeastOnce()).get();
     }
 }
