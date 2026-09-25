@@ -125,11 +125,17 @@ public class DatabasePool {
 
     @Deprecated(forRemoval = true) // do not use this method because the key's classifier may be not enriched
     public <T, D extends AbstractDatabase<T>> void removeCachedDatabase(DatabaseKey<T, D> key) {
-        if (databasesCacheL2.containsKey(key)) {
-            databasesCacheL2.remove(key);
-            AbstractDatabase<?> oldDatabase = databasesCacheL1.remove(key);
-            oldDatabase.setDoClose(true);
-            closeConnection(oldDatabase);
+        removeByKey(key);
+    }
+
+    private void removeByKey(DatabaseKey<?, ?> key) {
+        AbstractDatabase<?> l2DB = databasesCacheL2.remove(key);
+        if (l2DB != null) {
+            AbstractDatabase<?> l1DB = databasesCacheL1.remove(key);
+            if (l1DB != null) {
+                l1DB.setDoClose(true);
+                closeConnection(l1DB);
+            }
             log.debug("Removed cached database for key {}", key);
         } else {
             log.debug("Couldn't find key for classifier {} and dbType {} in L2 cache while trying to remove cached database.", key.getClassifier(), key.getDbType());
