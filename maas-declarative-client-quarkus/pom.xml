@@ -37,8 +37,8 @@
 
         <maas-declarative-kafka-client.version>6.0.10</maas-declarative-kafka-client.version>
         <kafka-clients.version>4.2.0</kafka-clients.version>
-        <maas-client-quarkus-kafka.version>10.0.12</maas-client-quarkus-kafka.version>
-        <blue-green-state-monitor-quarkus.version>3.0.12</blue-green-state-monitor-quarkus.version>
+        <maas-client-quarkus-kafka.version>10.0.13</maas-client-quarkus-kafka.version>
+        <blue-green-state-monitor-quarkus.version>3.0.13</blue-green-state-monitor-quarkus.version>
         <core-utils.version>3.0.8</core-utils.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>
