@@ -36,7 +36,7 @@
         <!-- core-mongo-evolution (pure-java module) -->
         <cloud-core.mongo-evolution.version>8.1.9</cloud-core.mongo-evolution.version>
         <!-- core-junit-k8s-extension -->
-        <cloud-core.junit-k8s-extension.version>8.9.9</cloud-core.junit-k8s-extension.version>
+        <cloud-core.junit-k8s-extension.version>8.9.10</cloud-core.junit-k8s-extension.version>
         <!-- core-restclient (pure-java modules) -->
         <cloud-core.restclient.version>7.1.11</cloud-core.restclient.version>
         <!-- core-rest-libraries (pure-java modules) -->
