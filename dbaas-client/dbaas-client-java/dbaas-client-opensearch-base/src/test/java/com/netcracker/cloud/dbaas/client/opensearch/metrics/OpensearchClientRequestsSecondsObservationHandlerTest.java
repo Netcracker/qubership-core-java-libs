@@ -3,9 +3,7 @@ package com.netcracker.cloud.dbaas.client.opensearch.metrics;
 import com.netcracker.cloud.dbaas.client.metrics.DatabaseMetricProperties;
 import io.micrometer.common.KeyValue;
 import io.micrometer.core.instrument.Timer;
-import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.httpcomponents.hc5.ApacheHttpClientContext;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.apache.hc.core5.http.HttpRequest;
@@ -18,13 +16,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
-import java.time.Duration;
-import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 import java.util.random.RandomGenerator;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.concurrent.TimeUnit;
 
 class OpensearchClientRequestsSecondsObservationHandlerTest {
 
@@ -88,7 +82,8 @@ class OpensearchClientRequestsSecondsObservationHandlerTest {
 
     @Test
     void testOnStopWhenStartTimeInMillisIsPresentInContext() {
-        var randomStartTimeInMillis = System.currentTimeMillis() - (100 + RandomGenerator.getDefault().nextInt(1400));
+        var requestDurationLowerBoundInMillis = 100 + RandomGenerator.getDefault().nextInt(1400);
+        var randomStartTimeInMillis = System.currentTimeMillis() - requestDurationLowerBoundInMillis;
 
         Mockito.doReturn(randomStartTimeInMillis)
             .when(mockApacheHttpClientContext).get(
@@ -112,46 +107,31 @@ class OpensearchClientRequestsSecondsObservationHandlerTest {
         Mockito.doReturn(mockHttpRequest)
             .when(mockApacheHttpClientContext).getCarrier();
 
-        var capturedSpyTimer = new Timer[1];
-
-        Mockito.doAnswer(invocation -> {
-                var spyTimer = Mockito.spy((Timer) invocation.callRealMethod());
-                capturedSpyTimer[0] = spyTimer;
-                return spyTimer;
-            })
-            .when(spyRequestSecondsBaseMetricBuilder).register(spyMeterRegistry);
-
         opensearchClientRequestsSecondsObservationHandler.onStop(mockApacheHttpClientContext);
 
         Mockito.verify(spyRequestSecondsBaseMetricBuilder).tags(ArgumentMatchers.any(Iterable.class));
         Mockito.verify(spyRequestSecondsBaseMetricBuilder).register(spyMeterRegistry);
-        Mockito.verify(capturedSpyTimer[0]).record(ArgumentMatchers.any(Duration.class));
 
-        var expectedMetricTagsEntrySet = Stream.of(
-                baseMetricTags,
-                Map.of(
-                    OpensearchClientRequestsSecondsObservationHandler.METHOD_TAG_NAME, "GET",
-                    OpensearchClientRequestsSecondsObservationHandler.OUTCOME_TAG_NAME, "SUCCESS",
-                    OpensearchClientRequestsSecondsObservationHandler.STATUS_TAG_NAME, "200",
-                    OpensearchClientRequestsSecondsObservationHandler.OPERATION_TAG_NAME, "index"
-                )
+        var timer = spyMeterRegistry.find(OpensearchMetricsProvider.REQUESTS_SECONDS_METRIC_NAME)
+            .tags(
+                OpensearchClientRequestsSecondsObservationHandler.RESOURCE_PREFIX_TAG_NAME, "test",
+                DatabaseMetricProperties.ROLE_TAG, "admin",
+                OpensearchClientRequestsSecondsObservationHandler.METHOD_TAG_NAME, "GET",
+                OpensearchClientRequestsSecondsObservationHandler.OUTCOME_TAG_NAME, "SUCCESS",
+                OpensearchClientRequestsSecondsObservationHandler.STATUS_TAG_NAME, "200",
+                OpensearchClientRequestsSecondsObservationHandler.OPERATION_TAG_NAME, "index"
             )
-            .map(Map::entrySet)
-            .flatMap(Collection::stream)
-            .collect(Collectors.toSet());
+            .timer();
 
+        Assertions.assertNotNull(timer, "Timer with expected name and tags must be registered");
+        Assertions.assertEquals(
+            OpensearchMetricsProvider.REQUESTS_SECONDS_METRIC_DESCRIPTION,
+            timer.getId().getDescription()
+        );
+        Assertions.assertEquals(1, timer.count());
         Assertions.assertTrue(
-            spyMeterRegistry.getMeters().stream()
-                .map(Meter::getId)
-                .anyMatch(meterId -> Optional.of(meterId)
-                    .filter(id -> OpensearchMetricsProvider.REQUESTS_SECONDS_METRIC_NAME.equals(id.getName()))
-                    .filter(id -> OpensearchMetricsProvider.REQUESTS_SECONDS_METRIC_DESCRIPTION.equals(id.getDescription()))
-                    .filter(id -> id.getTags().stream()
-                        .collect(Collectors.toMap(Tag::getKey, Tag::getValue))
-                        .entrySet()
-                        .containsAll(expectedMetricTagsEntrySet))
-                    .isPresent()
-                )
+            timer.totalTime(TimeUnit.MILLISECONDS) >= requestDurationLowerBoundInMillis,
+            "Recorded duration must be >= " + requestDurationLowerBoundInMillis + " ms"
         );
     }
 }
