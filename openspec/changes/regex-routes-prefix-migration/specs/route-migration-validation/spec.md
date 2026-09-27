@@ -116,11 +116,15 @@ The plugin SHALL report an error when a `@ForbiddenRoute` declaration forbids, o
 - **THEN** the build fails with an error that names the method, the path and the public gateway
 
 ### Requirement: Legacy-invalid duplicate routes are errors
-The plugin SHALL report a `LEGACY_INVALID` error when two routes are both allowed on the same gateway with the same gateway path and different service paths, because the legacy runtime rejects this configuration too. The plugin SHALL report one error per gateway and gateway path, naming both routes and their sources, and SHALL NOT also report Conflict errors caused by that gateway path. Routes with the same gateway path and service path that differ only in timeout SHALL NOT be reported as legacy-invalid.
+The plugin SHALL report a `LEGACY_INVALID` error when two routes are both allowed on the same gateway with the same gateway path and different service paths, because the legacy runtime rejects this configuration too. The plugin SHALL report one error per gateway and gateway path, naming both routes and their sources. The plugin SHALL NOT report Conflict or `LEGACY_PRECEDENCE_UNDEFINED` errors that involve that gateway path, on any gateway, so the problem isn't reported twice; after it is fixed, the next build reports what remains. Routes with the same gateway path and service path that differ only in timeout SHALL NOT be reported as legacy-invalid.
 
 #### Scenario: Same gateway path, different service paths
 - **WHEN** INTERNAL routes `/api/x` → `/a` and `/api/x` → `/b` are declared
 - **THEN** the build fails with one `LEGACY_INVALID` error for `/api/x` on the internal gateway, and no Conflict error for `/api/x`
+
+#### Scenario: Undefined precedence involving a legacy-invalid gateway path
+- **WHEN** INTERNAL routes `/s/{a}/b` → `/one/{a}/b`, `/s/{a}/b` → `/other/{a}/b`, `/s/b/{a}` → `/two/{a}` and `/s/b` → `/two` are declared
+- **THEN** the build fails with a `LEGACY_INVALID` error for `/s/{a}/b` and no other error
 
 #### Scenario: Only one of them allowed on a gateway
 - **WHEN** PUBLIC route `/api/x` → `/a` and INTERNAL route `/api/x` → `/b` are declared
@@ -147,11 +151,15 @@ When validation finds errors, the plugin SHALL log all findings at once, grouped
 - the winning Istio rule or DENY rule: match type and value, rewrite, and source routes;
 - a suggested remediation.
 
-For an Exposure, the remediation SHALL name the class or method to annotate and the exact `@ForbiddenRoute(...)` gateways to add. While `autoGenerateAuthorizationPolicies` is `false`, it SHALL also offer enabling that parameter. For a Conflict, the remediation SHALL name the colliding routes. It SHALL suggest aligning their gateway paths or rewrites, or migrating the affected waypoint manually to `VirtualService` outside this plugin. Findings SHALL be deduplicated so that the same (kind, gateway, legacy entry, Istio rule) combination appears only once.
+For an Exposure, the remediation SHALL name the class or method to annotate and the exact `@ForbiddenRoute(...)` gateways to add. While `autoGenerateAuthorizationPolicies` is `false`, it SHALL also offer enabling that parameter. When the exposed legacy forbidden route has a gateway path that neither `@ForbiddenRoute` nor an automatic DENY rule can forbid (a partial-segment variable), the remediation SHALL instead ask to change that gateway path, name the route and its source, and say why no DENY rule can be used. For a Lost route caused by an automatic DENY rule, the remediation SHALL say the rule was generated automatically and ask to change the gateway paths involved; it SHALL NOT ask to narrow a `@ForbiddenRoute` declaration. For a Conflict, the remediation SHALL name the colliding routes. It SHALL suggest aligning their gateway paths or rewrites, or migrating the affected waypoint manually to `VirtualService` outside this plugin. Findings SHALL be deduplicated so that the same (kind, gateway, legacy entry, Istio rule) combination appears only once.
 
 #### Scenario: Exposure report content
 - **WHEN** the implicit 404 scenario above fails validation
 - **THEN** the log names the INTERNAL method, the public and private gateways, request path `/api/v1/svc/resource/<sample>/internal-api`, the Istio rule `PathPrefix /api/v1/svc/resource` that exposes it, the suggestion `@ForbiddenRoute({RouteType.PUBLIC, RouteType.PRIVATE})` on that method, and the alternative `<autoGenerateAuthorizationPolicies>true</autoGenerateAuthorizationPolicies>`
+
+#### Scenario: Exposure that no DENY rule can fix
+- **WHEN** PUBLIC route `/api/files` and PRIVATE route `/api/files/{name}.txt` are declared, with or without `autoGenerateAuthorizationPolicies`
+- **THEN** the Exposure error on the public gateway has one remediation: change the gateway path `/api/files/{name}.txt` of the PRIVATE route, because forbidden paths need whole-segment variables
 
 #### Scenario: Multiple problems
 - **WHEN** a project has one Conflict and two Exposure findings

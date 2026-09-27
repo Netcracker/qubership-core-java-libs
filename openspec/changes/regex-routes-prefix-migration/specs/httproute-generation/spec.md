@@ -32,7 +32,7 @@ Every generated HTTPRoute rule match SHALL have path type `PathPrefix` or `Exact
 - **THEN** the generated rule uses a `PathPrefix` match, and the output has no `RegularExpression` match and no `MANUAL REVIEW REQUIRED` comment
 
 ### Requirement: Cut gateway path at the first path variable
-When a route's gateway path contains a path variable (`{...}`), the plugin SHALL cut it just before the path segment that contains the first variable. The part before the cut, without a trailing `/`, becomes the `PathPrefix` value. If nothing remains before the cut, the match value SHALL be `/`. Gateway paths without variables SHALL be used unchanged as `PathPrefix` values.
+When a route's gateway path contains a path variable (`{...}`), the plugin SHALL cut it just before the path segment that contains the first variable. The part before the cut, without a trailing `/`, becomes the `PathPrefix` value. If nothing remains before the cut, the match value SHALL be `/`. Gateway paths without variables SHALL be used as `PathPrefix` values without their trailing `/`, because legacy and Gateway API both treat `/x/` and `/x` as the same match.
 
 #### Scenario: Variable in the middle
 - **WHEN** a route has gateway path `/api/v1/my-service/resource/{var1}/internal-api/status`
@@ -50,6 +50,10 @@ When a route's gateway path contains a path variable (`{...}`), the plugin SHALL
 - **WHEN** a route has gateway path `/api/v1/my-service/resource`
 - **THEN** the rule matches `PathPrefix` `/api/v1/my-service/resource`
 
+#### Scenario: Path without variables with a trailing slash
+- **WHEN** a class mapped to `/api/v1/svc/items` has methods mapped to `/` and `/{id}`, both PUBLIC with the same rewrite and timeout
+- **THEN** the PUBLIC HTTPRoute contains exactly one rule matching `PathPrefix` `/api/v1/svc/items`
+
 ### Requirement: Cut the prefix rewrite the same way
 When the gateway path and service path of a route differ, the plugin SHALL generate a `URLRewrite` filter of type `ReplacePrefixMatch`. Its value SHALL be the service path cut at its first path variable, with the same rule as the gateway path. The plugin SHALL NOT check that the parts after the cut are the same in both paths. When the gateway path and service path are equal, no rewrite filter SHALL be generated.
 
@@ -66,7 +70,7 @@ When the gateway path and service path of a route differ, the plugin SHALL gener
 - **THEN** the rule matches `PathPrefix` `/items` and has no `URLRewrite` filter
 
 ### Requirement: One rule per match on a gateway
-Every gateway SHALL see at most one generated rule per (path type, path value) match, counting all generated HTTPRoute resources attached to that gateway. When several routes produce the same match on the same gateway with the same rewrite, the plugin SHALL merge them into one rule. The merged rule SHALL go into the HTTPRoute resource of the widest route type among them (PUBLIC > PRIVATE > INTERNAL). If the merged routes have different timeouts and the Exact split does not apply, the merged rule SHALL use the largest timeout, and the plugin SHALL log a warning. The warning names the match, the gateways, the routes merged with their sources, and the timeout that was chosen.
+Every gateway SHALL see at most one generated rule per (path type, path value) match, counting all generated HTTPRoute resources attached to that gateway. The plugin SHALL group border routes by match across all route types. When several routes produce the same match with the same rewrite, the plugin SHALL merge them into one rule. The merged rule SHALL go into the HTTPRoute resource of the widest route type among them (PUBLIC > PRIVATE > INTERNAL). If the merged routes have different timeouts and the Exact split does not apply, the merged rule SHALL use the largest timeout, and the plugin SHALL log a warning. The warning names the match, the gateways, the routes merged with their sources, and the timeout that was chosen.
 
 #### Scenario: Collapsed routes with the same rewrite
 - **WHEN** PUBLIC route `/api/v1/my-service/resource` → `/resource` and PUBLIC route `/api/v1/my-service/resource/{var1}/sub` → `/resource/{var1}/sub` are declared
@@ -83,7 +87,7 @@ Every gateway SHALL see at most one generated rule per (path type, path value) m
 ### Requirement: Exact split for bare-root routes
 The plugin SHALL use `Exact` matches when all of the following hold:
 
-- a route S has gateway path P with no path variables;
+- a route S has gateway path P or P + `/` with no path variables;
 - another route R cuts to the same prefix P because its gateway path is exactly `P/{var}`;
 - S and R differ in rewrite or timeout. Both are routes of this service; the split does not depend on backends or header matchers.
 
@@ -92,6 +96,10 @@ In this case S SHALL be emitted as two rules on all of S's gateways: `Exact` P a
 #### Scenario: Controller root with a different rewrite than the single-resource route
 - **WHEN** route S `/api/v1/svc/items` → `/v1/items` and route R `/api/v1/svc/items/{id}` → `/v2/items/{id}` share a gateway
 - **THEN** that gateway gets these rules: `Exact` `/api/v1/svc/items` with `ReplaceFullPath` `/v1/items`; `Exact` `/api/v1/svc/items/` with `ReplaceFullPath` `/v1/items/`; `PathPrefix` `/api/v1/svc/items` with `ReplacePrefixMatch` `/v2/items`
+
+#### Scenario: Controller root with a trailing slash
+- **WHEN** route S `/api/v1/svc/items/` → `/v1/items/` and route R `/api/v1/svc/items/{id}` → `/v2/items/{id}` share a gateway
+- **THEN** that gateway gets the same three rules as for S `/api/v1/svc/items` → `/v1/items`, and validation reports no error
 
 #### Scenario: Split does not apply because R continues after the variable
 - **WHEN** route S `/api/v1/svc/items` → `/v1/items` and route R `/api/v1/svc/items/{id}/details` → `/v2/items/{id}/details` share a gateway

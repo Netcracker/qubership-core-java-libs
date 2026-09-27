@@ -2,13 +2,18 @@ package com.netcracker.routes.gateway.plugin;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,11 +47,80 @@ public class GenerateRoutesMojo extends AbstractMojo {
     @Parameter
     private List<Label> labels = Collections.emptyList();
 
+    /**
+     * Ports of the DENY rules per border gateway name, as comma-separated lists; {@code 8080} for a gateway that isn't listed.
+     */
+    @Parameter
+    private Map<String, String> authorizationPolicyPorts;
+
+    /**
+     * Whether to generate DENY rules for legacy implicit forbidden routes and for exposure caused by the cut.
+     */
+    @Parameter(defaultValue = "false")
+    private boolean autoGenerateAuthorizationPolicies;
+
     @Override
-    public void execute() throws MojoExecutionException {
-        RouteScanner scanner = new RouteScanner(packages, getLog());
-        Set<HttpRoute> allRoutes = scanner.collectRoutes(reactorProjects);
-        writeRoutesFile(allRoutes);
+    public void execute() throws MojoExecutionException, MojoFailureException {
+        execute(project.getBasedir().toPath(), scanner -> scanner.collectDeclarations(reactorProjects));
+    }
+
+    /**
+     * Validates the configuration, scans, plans and validates the routes, and writes the output file only if
+     * there is no error finding.
+     */
+    void execute(Path baseDir, Scan scan) throws MojoExecutionException, MojoFailureException {
+        Map<Gateway, List<String>> ports = parsePorts(authorizationPolicyPorts);
+        RouteDeclarations declarations = scan.declarations(new RouteScanner(packages, getLog()));
+        RouteMigration migration = RouteMigration.run(declarations, autoGenerateAuthorizationPolicies);
+        FindingReport.log(getLog(), migration.findings());
+        if (migration.hasErrors()) {
+            throw new MojoFailureException(FindingReport.summary(migration.findings()));
+        }
+        writeRoutesFile(baseDir, migration.plan(), ports);
+    }
+
+    @FunctionalInterface
+    interface Scan {
+        RouteDeclarations declarations(RouteScanner scanner) throws MojoExecutionException;
+    }
+
+    /**
+     * @return the configured ports per border gateway; gateways that aren't configured are left out
+     */
+    static Map<Gateway, List<String>> parsePorts(Map<String, String> configured) throws MojoFailureException {
+        Map<Gateway, List<String>> ports = new EnumMap<>(Gateway.class);
+        if (configured == null) {
+            return ports;
+        }
+        for (Map.Entry<String, String> entry : configured.entrySet()) {
+            Gateway gateway = Gateway.fromLegacyName(entry.getKey()).orElseThrow(() -> new MojoFailureException(
+                    "Unknown gateway name '" + entry.getKey() + "' in <authorizationPolicyPorts>, allowed names are "
+                            + Arrays.stream(Gateway.values()).map(Gateway::legacyName).collect(Collectors.joining(", "))));
+            String value = entry.getValue() == null ? "" : entry.getValue().trim();
+            if (value.isEmpty()) {
+                throw new MojoFailureException("Empty port list for '" + entry.getKey() + "' in <authorizationPolicyPorts>");
+            }
+            Set<String> gatewayPorts = new LinkedHashSet<>();
+            for (String port : value.split(",", -1)) {
+                gatewayPorts.add(parsePort(entry.getKey(), port.trim()));
+            }
+            ports.put(gateway, List.copyOf(gatewayPorts));
+        }
+        return ports;
+    }
+
+    private static String parsePort(String gatewayName, String port) throws MojoFailureException {
+        int number;
+        try {
+            number = Integer.parseInt(port);
+        } catch (NumberFormatException e) {
+            number = 0;
+        }
+        if (number < 1 || number > 65535) {
+            throw new MojoFailureException("Invalid port '" + port + "' for '" + gatewayName
+                    + "' in <authorizationPolicyPorts>, ports must be numbers from 1 to 65535");
+        }
+        return Integer.toString(number);
     }
 
     private Map<String, String> labelsAsMap() {
@@ -58,14 +132,12 @@ public class GenerateRoutesMojo extends AbstractMojo {
                 .collect(Collectors.toMap(Label::getKey, l -> l.getValue() != null ? l.getValue() : ""));
     }
 
-    private void writeRoutesFile(Set<HttpRoute> routes) throws MojoExecutionException {
+    private void writeRoutesFile(Path baseDir, IstioPlan plan, Map<Gateway, List<String>> ports) throws MojoExecutionException {
         try {
-            java.nio.file.Path file = project.getBasedir()
-                    .toPath()
-                    .resolve(outputFile);
+            Path file = baseDir.resolve(outputFile);
 
-
-            String yaml = new HttpRouteRenderer(backendRefVal, labelsAsMap()).generateHttpRoutesYaml(servicePort, routes);
+            String yaml = new HttpRouteRenderer(backendRefVal, labelsAsMap()).generateHttpRoutesYaml(servicePort, plan.rules())
+                    + new AuthorizationPolicyRenderer(labelsAsMap(), ports).generateAuthorizationPoliciesYaml(plan.denyRules());
             Files.createDirectories(file.getParent());
             Files.writeString(file, prependYamlHeader(wrapWithEnabler(yaml)));
             getLog().info(String.format("Generated gateway routes CRs at %s", outputFile));

@@ -1,41 +1,27 @@
 package com.netcracker.routes.gateway.plugin;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Renders the planned rules (design D6, D7, D15) as one HTTPRoute per resource type, in the order public, private,
+ * internal, facade.
+ */
 public class HttpRouteRenderer {
 
-    private static final ObjectMapper YAML_MAPPER = yamlMapper();
-    private static final String MATCH_TYPE_PATH_PREFIX = "PathPrefix";
-    private static final String MATCH_TYPE_REGULAR_EXPRESSION = "RegularExpression";
+    private static final List<HttpRoute.Type> RESOURCE_ORDER =
+            List.of(HttpRoute.Type.PUBLIC, HttpRoute.Type.PRIVATE, HttpRoute.Type.INTERNAL, HttpRoute.Type.FACADE);
     private static final String FILTER_TYPE_URL_REWRITE = "URLRewrite";
-    private static final String FILTER_PATH_TYPE_REPLACE_PREFIX_MATCH = "ReplacePrefixMatch";
-    private static final String REGEX_MANUAL_REVIEW_WARNING = """
-            # MANUAL REVIEW REQUIRED
-            # RegularExpression path matches may conflict with sibling rules with Prefix matches.
-            # Also, replacePrefixMatch only works with PathPrefix matches and cannot be
-            # used with RegularExpression matches. Test regex matching routes carefully.
-            """;
 
     private static final long SECOND = 1_000;
     private static final long MINUTE = 60_000;
     private static final long HOUR = 3_600_000;
-    public static final String PARENT_REF_KIND_SERVICE = "Service";
-    public static final String PARENT_REF_KIND_GATEWAY = "Gateway";
-    public static final String PARENT_REF_GROUP_GATEWAY = "gateway.networking.k8s.io";
-    public static final String PARENT_REF_GROUP_SERVICE = "";
-    private static final Map<String, String> DEFAULT_ROUTE_LABELS = Map.of(
-            "app.kubernetes.io/name", "{{ .Values.SERVICE_NAME }}",
-            "app.kubernetes.io/part-of", "{{ .Values.APPLICATION_NAME }}",
-            "app.kubernetes.io/managed-by", "{{ .Values.MANAGED_BY }}",
-            "deployment.netcracker.com/sessionId", "{{ .Values.DEPLOYMENT_SESSION_ID }}",
-            "deployer.cleanup/allow", "true",
-            "app.kubernetes.io/processed-by-operator", "istiod"
-    );
+    public static final String PARENT_REF_KIND_SERVICE = Gateway.PARENT_REF_KIND_SERVICE;
+    public static final String PARENT_REF_KIND_GATEWAY = Gateway.PARENT_REF_KIND_GATEWAY;
+    public static final String PARENT_REF_GROUP_GATEWAY = Gateway.PARENT_REF_GROUP_GATEWAY;
+    public static final String PARENT_REF_GROUP_SERVICE = Gateway.PARENT_REF_GROUP_SERVICE;
 
     private final String backendRefVal;
     private final Map<String, String> routeLabels;
@@ -81,7 +67,7 @@ public class HttpRouteRenderer {
 
             public record Filter(String type, UrlRewrite urlRewrite) {
                 public record UrlRewrite(Path path) {
-                    public record Path(String type, String replacePrefixMatch) {
+                    public record Path(String type, String replacePrefixMatch, String replaceFullPath) {
                     }
                 }
             }
@@ -91,34 +77,10 @@ public class HttpRouteRenderer {
         }
     }
 
-    public String generateHttpRoutesYaml(int servicePort, Set<HttpRoute> httpRoutes) {
-        List<HTTPRouteResource> routes = createHttpRoutes(servicePort, httpRoutes);
-
-        return routes.stream()
-                .map(HttpRouteRenderer::renderValidatedYaml)
+    public String generateHttpRoutesYaml(int servicePort, List<PlannedRule> rules) {
+        return createHttpRoutes(servicePort, rules).stream()
+                .map(ResourceLabels::writeYaml)
                 .collect(Collectors.joining());
-    }
-
-    private static HTTPRouteResource.Spec.Match.Path convertSpringPathToHttpRoutePath(String springPath) {
-        if (springPath == null || springPath.isEmpty()) {
-            return new HTTPRouteResource.Spec.Match.Path(MATCH_TYPE_PATH_PREFIX, "/");
-        }
-
-        if (springPath.contains("{")) {
-            return new HTTPRouteResource.Spec.Match.Path(MATCH_TYPE_REGULAR_EXPRESSION, normalizePath(springPath.replaceAll("\\{([^/]+?)}", "([^/]+)")));
-        } else {
-            return new HTTPRouteResource.Spec.Match.Path(MATCH_TYPE_PATH_PREFIX, normalizePath(springPath));
-        }
-    }
-
-    private static String normalizePath(String path) {
-        if (path == null || path.isEmpty()) {
-            return "/";
-        }
-        if (!path.startsWith("/")) {
-            return "/" + path;
-        }
-        return path;
     }
 
     public static String formatDuration(long ms) {
@@ -134,52 +96,34 @@ public class HttpRouteRenderer {
         return ms + "ms";
     }
 
-    private List<HTTPRouteResource> createHttpRoutes(int servicePort, Set<HttpRoute> httpRoutes) {
-        Map<HttpRoute.Type, List<HttpRoute>> routesByType = httpRoutes
-                .stream()
-                .collect(Collectors.groupingBy(HttpRoute::type));
-
-        return routesByType.entrySet().stream()
-                .map(entry -> toResource(entry.getKey(), entry.getValue(), servicePort))
-                .filter(Objects::nonNull)
-                .toList();
+    private List<HTTPRouteResource> createHttpRoutes(int servicePort, List<PlannedRule> rules) {
+        List<HTTPRouteResource> resources = new ArrayList<>();
+        for (HttpRoute.Type type : RESOURCE_ORDER) {
+            List<PlannedRule> typeRules = rules.stream().filter(r -> r.resourceType() == type).toList();
+            if (!typeRules.isEmpty()) {
+                resources.add(toResource(type, typeRules, servicePort));
+            }
+        }
+        return resources;
     }
 
-    private HTTPRouteResource toResource(HttpRoute.Type type, List<HttpRoute> routes, int servicePort) {
+    private HTTPRouteResource toResource(HttpRoute.Type type, List<PlannedRule> rules, int servicePort) {
         HTTPRouteResource.Metadata metadata =
                 new HTTPRouteResource.Metadata(
                         "{{ .Values.SERVICE_NAME }}-java-annotations-" + type.name().toLowerCase(),
-                        buildRouteLabels(routeLabels)
+                        ResourceLabels.of(routeLabels)
                 );
 
         List<HTTPRouteResource.Spec.BackendRef> backendRefs =
                 List.of(serviceBackendRef(this.backendRefVal, servicePort));
 
-        List<HttpRoute> sortedRoutes = routes.stream()
-                .sorted(pathSpecificityComparator())
+        List<HTTPRouteResource.Spec.Rule> ruleList = rules.stream()
+                .sorted(ruleOrder())
+                .map(rule -> toRule(rule, backendRefs))
                 .toList();
-
-        List<HTTPRouteResource.Spec.Rule> ruleList = new ArrayList<>(sortedRoutes.size());
-        for (HttpRoute route : sortedRoutes) {
-            if (route.type() == HttpRoute.Type.FACADE && route.path().equals(route.gatewayPath())) {
-                continue;
-            }
-            ruleList.add(toRule(route, backendRefs));
-        }
-
-        if (ruleList.isEmpty()) {
-            return null;
-        }
 
         HTTPRouteResource.Spec spec = new HTTPRouteResource.Spec(getParentRefs(type), ruleList);
         return new HTTPRouteResource(metadata, spec);
-    }
-
-    private static Map<String, String> buildRouteLabels(Map<String, String> customRouteLabels) {
-        if (customRouteLabels == null || customRouteLabels.isEmpty()) {
-            return new TreeMap<>(DEFAULT_ROUTE_LABELS);
-        }
-        return new TreeMap<>(customRouteLabels);
     }
 
     private static Set<HTTPRouteResource.Spec.ParentRef> getParentRefs(HttpRoute.Type type) {
@@ -221,22 +165,33 @@ public class HttpRouteRenderer {
         );
     }
 
-    static Comparator<HttpRoute> pathSpecificityComparator() {
+    /**
+     * More segments first, then longer path, then lexical order.
+     */
+    static Comparator<String> pathSpecificity() {
         return (left, right) -> {
-            int leftSegments = pathSegmentCount(left.gatewayPath());
-            int rightSegments = pathSegmentCount(right.gatewayPath());
+            int leftSegments = pathSegmentCount(left);
+            int rightSegments = pathSegmentCount(right);
             if (leftSegments != rightSegments) {
                 return Integer.compare(rightSegments, leftSegments);
             }
-
-            int leftLength = left.gatewayPath().length();
-            int rightLength = right.gatewayPath().length();
-            if (leftLength != rightLength) {
-                return Integer.compare(rightLength, leftLength);
+            if (left.length() != right.length()) {
+                return Integer.compare(right.length(), left.length());
             }
-
-            return left.gatewayPath().compareTo(right.gatewayPath());
+            return left.compareTo(right);
         };
+    }
+
+    static Comparator<HttpRoute> pathSpecificityComparator() {
+        return Comparator.comparing(HttpRoute::gatewayPath, pathSpecificity());
+    }
+
+    /**
+     * Path specificity of the match value, and {@code Exact} before {@code PathPrefix} for the same value.
+     */
+    static Comparator<PlannedRule> ruleOrder() {
+        return Comparator.comparing(PlannedRule::value, pathSpecificity())
+                .thenComparing(PlannedRule::matchType);
     }
 
     static int pathSegmentCount(String path) {
@@ -252,30 +207,27 @@ public class HttpRouteRenderer {
         return count;
     }
 
-    private static HTTPRouteResource.Spec.Rule toRule(HttpRoute route, List<HTTPRouteResource.Spec.BackendRef> backendRefs) {
+    private static HTTPRouteResource.Spec.Rule toRule(PlannedRule rule, List<HTTPRouteResource.Spec.BackendRef> backendRefs) {
         HTTPRouteResource.Spec.Match match = new HTTPRouteResource.Spec.Match(
-                convertSpringPathToHttpRoutePath(route.gatewayPath()));
-
-        List<HTTPRouteResource.Spec.Filter> filters = buildRewriteFilter(route);
-        HTTPRouteResource.Spec.Rule.Timeouts timeouts = buildTimeout(route);
+                new HTTPRouteResource.Spec.Match.Path(rule.matchType().apiName(), rule.value()));
 
         return new HTTPRouteResource.Spec.Rule(
                 List.of(match),
-                filters,
+                buildRewriteFilter(rule),
                 backendRefs,
-                timeouts
+                buildTimeout(rule)
         );
     }
 
-    private static List<HTTPRouteResource.Spec.Filter> buildRewriteFilter(HttpRoute route) {
-        String normalizedGateway = normalizePath(route.gatewayPath());
-        String normalizedService = normalizePath(route.path());
-        if (normalizedGateway.equals(normalizedService)) {
+    private static List<HTTPRouteResource.Spec.Filter> buildRewriteFilter(PlannedRule rule) {
+        if (!rule.hasRewrite()) {
             return List.of();
         }
-
-        HTTPRouteResource.Spec.Filter.UrlRewrite.Path rewritePath =
-                new HTTPRouteResource.Spec.Filter.UrlRewrite.Path(FILTER_PATH_TYPE_REPLACE_PREFIX_MATCH, normalizedService);
+        boolean fullPath = rule.rewriteType() == PlannedRule.RewriteType.REPLACE_FULL_PATH;
+        HTTPRouteResource.Spec.Filter.UrlRewrite.Path rewritePath = new HTTPRouteResource.Spec.Filter.UrlRewrite.Path(
+                rule.rewriteType().apiName(),
+                fullPath ? null : rule.rewriteValue(),
+                fullPath ? rule.rewriteValue() : null);
         HTTPRouteResource.Spec.Filter.UrlRewrite urlRewrite =
                 new HTTPRouteResource.Spec.Filter.UrlRewrite(rewritePath);
         HTTPRouteResource.Spec.Filter filter =
@@ -283,44 +235,10 @@ public class HttpRouteRenderer {
         return List.of(filter);
     }
 
-    private static HTTPRouteResource.Spec.Rule.Timeouts buildTimeout(HttpRoute route) {
-        if (route.timeout() <= 0) {
+    private static HTTPRouteResource.Spec.Rule.Timeouts buildTimeout(PlannedRule rule) {
+        if (rule.timeout() <= 0) {
             return null;
         }
-        return new HTTPRouteResource.Spec.Rule.Timeouts(formatDuration(route.timeout()));
-    }
-
-    private static String renderValidatedYaml(HTTPRouteResource route) {
-        String renderedYaml = writeYaml(route);
-        return hasRegularExpressionMatch(route) ? REGEX_MANUAL_REVIEW_WARNING + renderedYaml : renderedYaml;
-    }
-
-    private static boolean hasRegularExpressionMatch(HTTPRouteResource route) {
-        if (route == null || route.spec() == null || route.spec().rules() == null) {
-            return false;
-        }
-        return route.spec().rules().stream()
-                .filter(Objects::nonNull)
-                .map(HTTPRouteResource.Spec.Rule::matches)
-                .filter(Objects::nonNull)
-                .flatMap(List::stream)
-                .filter(Objects::nonNull)
-                .map(HTTPRouteResource.Spec.Match::path)
-                .filter(Objects::nonNull)
-                .anyMatch(path -> MATCH_TYPE_REGULAR_EXPRESSION.equals(path.type()));
-    }
-
-    private static String writeYaml(HTTPRouteResource route) {
-        try {
-            return YAML_MAPPER.writeValueAsString(route);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to serialize HTTPRoute Resource to YAML", e);
-        }
-    }
-
-    private static ObjectMapper yamlMapper() {
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        return mapper;
+        return new HTTPRouteResource.Spec.Rule.Timeouts(formatDuration(rule.timeout()));
     }
 }

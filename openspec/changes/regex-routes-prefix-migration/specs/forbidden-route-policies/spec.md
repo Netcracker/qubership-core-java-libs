@@ -70,7 +70,8 @@ When `autoGenerateAuthorizationPolicies` is `false` (the default), the plugin SH
 Each forbidden path F on a gateway SHALL produce one rule in that gateway's policy:
 
 - `to[].operation.paths` contains F and F + `/{**}`, with every path variable replaced by `{*}`.
-- `to[].operation.notPaths` contains Q and Q + `/{**}` (same variable replacement) for every route Q that is allowed on the same gateway in the legacy model, lies below F, and has a longer gateway path than F. These are the routes that won over F in legacy.
+- `to[].operation.notPaths` contains Q and Q + `/{**}` (same variable replacement) for every route Q that is allowed on the same gateway in the legacy model, overlaps F, and has a longer gateway path than F. These are the routes that won over F in legacy. Q overlaps F when their segments agree up to the shorter of the two: a variable overlaps any segment it can match, including a literal of the other path, and two literals must be equal.
+- A trailing `/` of F or Q SHALL be dropped.
 - `notPaths` SHALL be omitted when there are none.
 - `to[].operation.ports` is set from the ports that the plugin parameter `authorizationPolicyPorts` configures for that gateway.
 
@@ -84,6 +85,14 @@ Paths within a rule SHALL be deduplicated and sorted deterministically. A forbid
 - **WHEN** a class mapped to `/api/v1/svc/order` has `@ForbiddenRoute({RouteType.PUBLIC, RouteType.PRIVATE, RouteType.INTERNAL})`, and PUBLIC method route `/api/v1/svc/order/{id}/items` is declared
 - **THEN** each of the three policies has a rule with `paths` `/api/v1/svc/order` and `/api/v1/svc/order/{**}`, and `notPaths` `/api/v1/svc/order/{*}/items` and `/api/v1/svc/order/{*}/items/{**}`, and validation reports no Exposure for `/api/v1/svc/order/<sample>`
 
+#### Scenario: Longer allowed route with a variable where the forbidden path has a literal
+- **WHEN** `@ForbiddenRoute(RouteType.PUBLIC)` forbids `/a/lit/x`, and PUBLIC route `/a/{id}/x/y` is declared
+- **THEN** the public gateway policy has a rule with `paths` `/a/lit/x` and `/a/lit/x/{**}`, and `notPaths` `/a/{*}/x/y` and `/a/{*}/x/y/{**}`, and validation reports no Lost route for `/a/lit/x/y`
+
+#### Scenario: Forbidden path with a trailing slash
+- **WHEN** `@ForbiddenRoute(RouteType.PUBLIC)` forbids `/a/b/`
+- **THEN** the rule has `paths` `/a/b` and `/a/b/{**}`
+
 #### Scenario: Nested forbidden paths
 - **WHEN** forbidden path `/a` and forbidden path `/a/b/{id}/c` exist on the same gateway, and allowed route `/a/b` is longer than `/a` and lies below it
 - **THEN** the policy has two separate rules: the `/a` rule lists `/a/b` and `/a/b/{**}` in `notPaths`, and the `/a/b/{*}/c` rule has its own `paths`
@@ -91,10 +100,10 @@ Paths within a rule SHALL be deduplicated and sorted deterministically. A forbid
 ### Requirement: Automatic DENY rules
 The plugin SHALL accept the boolean parameter `autoGenerateAuthorizationPolicies`, set in the plugin `<configuration>` in `pom.xml` and defaulting to `false`. When it is `true`, the plugin SHALL add DENY rules to the border gateway policies, besides those from `@ForbiddenRoute`:
 
-- For every legacy forbidden entry F that comes from a route type (a narrower-type route on a wider gateway), where the generated HTTPRoutes attached to that gateway would route F: a rule for F, built as in "DENY rule content".
-- For every generated `PathPrefix` value P that comes from cutting a gateway path with variables, where the legacy model does not route P or the paths below P on that gateway: a rule with `paths` P and P + `/{**}`, and `notPaths` Q and Q + `/{**}` for every allowed route Q on that gateway that lies below P and is longer than P.
+- For every legacy forbidden entry F that comes from a route type (a narrower-type route on a wider gateway), where the generated HTTPRoutes attached to that gateway would route F: a rule for F, built as in "DENY rule content". F SHALL be skipped when `@ForbiddenRoute` would reject its gateway path (for example a partial-segment variable), because `{*}` would deny the whole segment; the validation step reports the exposure instead.
+- For every generated `PathPrefix` value P that comes from cutting a gateway path with variables, where the legacy model does not route P itself on that gateway: a rule with `paths` P and P + `/{**}`, and `notPaths` Q and Q + `/{**}` for every allowed route Q on that gateway that lies below P and is longer than P.
 
-Whether Istio routes a path SHALL be decided from the generated HTTPRoute rules alone, ignoring all DENY rules. Automatic rules SHALL NOT be generated for the service-bound HTTPRoute of facade and composite routes. A rule that is identical to a rule from `@ForbiddenRoute` (same gateway, `paths` and `notPaths`) SHALL be rendered once. Route migration validation SHALL run on all generated rules, automatic ones included.
+Whether Istio routes a path SHALL be decided from the generated HTTPRoute rules alone, ignoring all DENY rules. Automatic rules SHALL NOT be generated for the service-bound HTTPRoute of facade and composite routes. A rule that is identical to a rule from `@ForbiddenRoute` (same gateway, `paths` and `notPaths`) SHALL be rendered once. Route migration validation SHALL run on all generated rules, automatic ones included. Whether a cut exposure rule is needed SHALL be decided on P alone, so an allowed route below P that is not longer than P (for example a catch-all from another class) is not in `notPaths`; validation reports the requests it loses as Lost route.
 
 #### Scenario: Parameter not set
 - **WHEN** `autoGenerateAuthorizationPolicies` is not configured, and PUBLIC route `/api/v1/svc/resource` and INTERNAL route `/api/v1/svc/resource/{id}/internal-api` are declared without `@ForbiddenRoute`
@@ -111,6 +120,14 @@ Whether Istio routes a path SHALL be decided from the generated HTTPRoute rules 
 #### Scenario: No rule when legacy already exposed the subtree
 - **WHEN** `autoGenerateAuthorizationPolicies` is `true`, and PUBLIC routes `/api/v1/svc/order` and `/api/v1/svc/order/{id}/items` are declared with the same rewrite
 - **THEN** no DENY rule is generated for `/api/v1/svc/order`
+
+#### Scenario: No rule for a partial-segment variable
+- **WHEN** `autoGenerateAuthorizationPolicies` is `true`, and PUBLIC route `/api/files` and PRIVATE route `/api/files/{name}.txt` are declared
+- **THEN** no DENY rule is generated, and the build fails with an Exposure error on the public gateway
+
+#### Scenario: Automatic rule over a shorter catch-all route
+- **WHEN** `autoGenerateAuthorizationPolicies` is `true`, and PUBLIC routes `/api/v1/my-service/order/{id}/items` and `/{a}/{b}/{c}/{d}/{e}` are declared
+- **THEN** the cut exposure rule for `/api/v1/my-service/order` is generated, and the build fails with a Lost route error for `/api/v1/my-service/order/<sample>`, which legacy routes by the catch-all route
 
 #### Scenario: No rule when Istio doesn't route the forbidden path
 - **WHEN** `autoGenerateAuthorizationPolicies` is `true`, and only INTERNAL route `/api/v1/svc/admin` is declared
