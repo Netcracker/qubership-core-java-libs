@@ -3,14 +3,14 @@
     <parent>
         <artifactId>spring-context-aggregator</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>8.3.4-SNAPSHOT</version>
+        <version>8.3.5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>context-propagation-spring-rabbit</artifactId>
     <properties>
-        <qpid.version>10.1.0</qpid.version>
+        <qpid.version>10.1.1</qpid.version>
     </properties>
     <dependencies>
         <dependency>
