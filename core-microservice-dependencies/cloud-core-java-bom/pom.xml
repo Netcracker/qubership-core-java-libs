@@ -26,7 +26,7 @@
         <dbaas.client.version>9.0.14</dbaas.client.version>
         <framework.extension.version>7.0.10</framework.extension.version>
         <context.propagation.version>8.0.12</context.propagation.version>
-        <maas-client.version>12.0.10</maas-client.version>
+        <maas-client.version>12.0.11</maas-client.version>
         <core-error-handling.version>4.0.8</core-error-handling.version>
     </properties>
 
