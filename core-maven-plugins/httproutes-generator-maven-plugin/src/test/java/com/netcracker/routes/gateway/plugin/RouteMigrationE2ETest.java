@@ -141,8 +141,7 @@ class RouteMigrationE2ETest {
     void migrationDocumentExampleWithoutForbiddenRoutesFails() throws Exception {
         MojoFailureException e = assertThrows(MojoFailureException.class, () -> generate("unforbidden", false));
 
-        assertEquals("Route migration validation failed with 5 errors (5 EXPOSURE), "
-                + "see the [ROUTE-MIGRATION] errors in the build log", e.getMessage());
+        assertEquals("2 route migration errors, see log", e.getMessage());
         assertFalse(Files.exists(baseDir.resolve(OUTPUT_FILE)));
     }
 

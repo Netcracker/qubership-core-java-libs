@@ -3,6 +3,7 @@ package com.netcracker.routes.gateway.plugin;
 import com.netcracker.cloud.routesregistration.common.annotation.FacadeGateway;
 import com.netcracker.cloud.routesregistration.common.annotation.FacadeRoute;
 import com.netcracker.cloud.routesregistration.common.annotation.ForbiddenRoute;
+import com.netcracker.cloud.routesregistration.common.annotation.Gateway;
 import com.netcracker.cloud.routesregistration.common.annotation.Route;
 import com.netcracker.cloud.routesregistration.common.annotation.Routes;
 import com.netcracker.cloud.routesregistration.common.spring.gateway.route.annotation.FacadeGatewayRequestMapping;
@@ -35,12 +36,17 @@ public class RouteScanner {
     private static final String ROUTES_ANNOTATION = Routes.class.getName();
     private static final String FACADE_ROUTE_ANNOTATION = FacadeRoute.class.getName();
     private static final String FORBIDDEN_ROUTE_ANNOTATION = ForbiddenRoute.class.getName();
-    private static final String GATEWAY_ANNOTATION = com.netcracker.cloud.routesregistration.common.annotation.Gateway.class.getName();
+    private static final String GATEWAY_ANNOTATION = Gateway.class.getName();
     private static final String GATEWAY_REQUEST_MAPPING = GatewayRequestMapping.class.getName();
     private static final String FACADE_GATEWAY_ANNOTATION = FacadeGateway.class.getName();
     private static final String FACADE_GATEWAY_REQUEST_MAPPING = FacadeGatewayRequestMapping.class.getName();
     private static final List<String> ROUTE_SELECTING_ANNOTATIONS = List.of(
             ROUTE_ANNOTATION, ROUTES_ANNOTATION, FACADE_ROUTE_ANNOTATION, FORBIDDEN_ROUTE_ANNOTATION
+    );
+    private static final Map<String, HttpRoute.Type> BORDER_GATEWAY_NAMES = Map.of(
+            "public-gateway-service", HttpRoute.Type.PUBLIC,
+            "private-gateway-service", HttpRoute.Type.PRIVATE,
+            "internal-gateway-service", HttpRoute.Type.INTERNAL
     );
 
     private final String[] packages;
@@ -52,45 +58,39 @@ public class RouteScanner {
     }
 
     public Set<HttpRoute> collectRoutes(List<MavenProject> reactorProjects) throws MojoExecutionException {
-        return collectDeclarations(reactorProjects).routes().stream()
-                .map(DeclaredRoute::route)
-                .collect(Collectors.toSet());
+        return collect(reactorProjects).routes();
     }
 
-    public RouteDeclarations collectDeclarations(List<MavenProject> reactorProjects) throws MojoExecutionException {
+    /**
+     * @return the routes and forbidden paths of the modules, and the errors of their route annotations
+     */
+    public Declarations collect(List<MavenProject> reactorProjects) throws MojoExecutionException {
         Declarations declarations = new Declarations();
         for (MavenProject module : reactorProjects) {
             log.info("Scanning module: " + module.getArtifactId());
             scanModule(module, declarations);
         }
-        return declarations.toRouteDeclarations();
+        return declarations;
     }
 
-    /**
-     * Collects declarations of one classes directory, as {@link #collectDeclarations(List)} does for a module.
-     */
-    RouteDeclarations collectDeclarations(File classesDir) throws MojoExecutionException {
+    Declarations collect(File classesDir) throws MojoExecutionException {
         Declarations declarations = new Declarations();
         scanClassesDir(classesDir, declarations);
-        return declarations.toRouteDeclarations();
+        return declarations;
+    }
+
+    Declarations collect(Collection<ClassInfo> classes) {
+        Declarations declarations = new Declarations();
+        classes.stream()
+                .filter(this::hasRoute)
+                .forEach(classInfo -> collectClass(classInfo, declarations));
+        return declarations;
     }
 
     public Set<HttpRoute> getRoutes(MavenProject module) throws MojoExecutionException {
         Declarations declarations = new Declarations();
         scanModule(module, declarations);
-        return declarations.routeSet();
-    }
-
-    /**
-     * Collects declarations of the given classes, as {@link #collectDeclarations} does for scanned modules.
-     */
-    RouteDeclarations declarationsOf(Collection<ClassInfo> classes) {
-        Declarations declarations = new Declarations();
-        classes.stream()
-                .filter(this::hasRoute)
-                .sorted(Comparator.comparing(ClassInfo::getName))
-                .forEach(classInfo -> collectClass(classInfo, declarations));
-        return declarations.toRouteDeclarations();
+        return declarations.routes();
     }
 
     private void scanModule(MavenProject module, Declarations declarations) throws MojoExecutionException {
@@ -139,7 +139,6 @@ public class RouteScanner {
         getAnnotatedClasses(scan, framework)
                 .distinct()
                 .filter(this::hasRoute)
-                .sorted(Comparator.comparing(ClassInfo::getName))
                 .forEach(classInfo -> collectClass(classInfo, declarations));
     }
 
@@ -169,13 +168,13 @@ public class RouteScanner {
     public Set<HttpRoute> getRequestMappingPaths(ClassInfo classInfo) {
         Declarations declarations = new Declarations();
         collectClass(classInfo, declarations);
-        return declarations.routeSet();
+        return declarations.routes();
     }
 
     private void collectClass(ClassInfo classInfo, Declarations declarations) {
         log.info("Get Request Mappings for Class: " + classInfo.getName());
 
-        int before = declarations.routes.size();
+        int before = declarations.routes().size();
         ClassContext classContext = extractClassContext(classInfo);
         for (MethodInfo methodInfo : classInfo.getMethodInfo()) {
             getHttpMappingAnnotations(methodInfo)
@@ -187,7 +186,7 @@ public class RouteScanner {
             collectClass(classInfo.getSuperclass(), declarations);
         }
 
-        log.info("Found " + (declarations.routes.size() - before) + " routes");
+        log.info("Found " + (declarations.routes().size() - before) + " routes");
     }
 
     private ClassContext extractClassContext(ClassInfo classInfo) {
@@ -205,44 +204,36 @@ public class RouteScanner {
     }
 
     private void collectClassLevel(ClassContext classContext, Declarations declarations) {
-        String origin = classContext.name();
-        List<PathPair> borderPairs = classPairs(classContext, PathKind.BORDER);
-        declarations.addElementPaths(borderPairs, origin);
-
         for (RouteEntry entry : classContext.routes()) {
             HttpRoute.Type type = entry.type().orElse(HttpRoute.Type.INTERNAL);
             long timeout = entry.timeout().orElse(0L);
-            checkHosts(entry, origin, declarations);
             for (Target target : resolveTargets(entry, type)) {
-                classPairs(classContext, target.pathKind()).forEach(pair -> declarations.addRoute(
-                        new HttpRoute(pair.servicePath(), pair.gatewayPath(), target.type(), timeout), origin));
+                classPairs(classContext, target.pathKind()).forEach(pair -> declarations.routes().add(
+                        new HttpRoute(pair.servicePath(), pair.gatewayPath(), target.type(), timeout)));
             }
         }
 
-        readForbiddenGateways(classContext.forbiddenRoute(), origin, declarations)
-                .ifPresent(gateways -> borderPairs.forEach(pair ->
-                        declarations.addForbidden(pair.gatewayPath(), gateways, origin)));
+        readForbiddenGateways(classContext.forbiddenRoute(), classContext.name(), declarations)
+                .ifPresent(gateways -> classPairs(classContext, PathKind.BORDER).forEach(pair ->
+                        declarations.forbidden().add(new ForbiddenPath(pair.gatewayPath(), gateways))));
     }
 
     private void collectMethod(ClassContext classContext, MethodInfo methodInfo, AnnotationInfo mappingAnn, Declarations declarations) {
-        String origin = classContext.name() + "#" + methodInfo.getName();
         List<String> mappingPaths = resolveMappingPaths(methodInfo, mappingAnn);
-        List<PathPair> borderPairs = methodPairs(classContext, methodInfo, PathKind.BORDER, mappingPaths);
-        declarations.addElementPaths(borderPairs, origin);
 
         for (RouteEntry entry : readRouteEntries(methodInfo.getAnnotationInfo())) {
             HttpRoute.Type type = entry.type().orElse(classContext.fallbackType().orElse(HttpRoute.Type.INTERNAL));
             long timeout = entry.timeout().orElse(classContext.fallbackTimeout().orElse(0L));
-            checkHosts(entry, origin, declarations);
             for (Target target : resolveTargets(entry, type)) {
-                methodPairs(classContext, methodInfo, target.pathKind(), mappingPaths).forEach(pair -> declarations.addRoute(
-                        new HttpRoute(pair.servicePath(), pair.gatewayPath(), target.type(), timeout), origin));
+                methodPairs(classContext, methodInfo, target.pathKind(), mappingPaths).forEach(pair -> declarations.routes().add(
+                        new HttpRoute(pair.servicePath(), pair.gatewayPath(), target.type(), timeout)));
             }
         }
 
-        readForbiddenGateways(methodInfo.getAnnotationInfo(FORBIDDEN_ROUTE_ANNOTATION), origin, declarations)
-                .ifPresent(gateways -> borderPairs.forEach(pair ->
-                        declarations.addForbidden(pair.gatewayPath(), gateways, origin)));
+        readForbiddenGateways(methodInfo.getAnnotationInfo(FORBIDDEN_ROUTE_ANNOTATION),
+                classContext.name() + "#" + methodInfo.getName(), declarations)
+                .ifPresent(gateways -> methodPairs(classContext, methodInfo, PathKind.BORDER, mappingPaths).forEach(pair ->
+                        declarations.forbidden().add(new ForbiddenPath(pair.gatewayPath(), gateways))));
     }
 
     /**
@@ -287,51 +278,24 @@ public class RouteScanner {
                     : new Target(type, PathKind.BORDER));
         }
         return entry.gateways().stream()
-                .map(name -> Gateway.fromLegacyName(name)
-                        .map(gateway -> new Target(gateway.routeType(), PathKind.BORDER))
+                .map(name -> Optional.ofNullable(BORDER_GATEWAY_NAMES.get(name))
+                        .map(borderType -> new Target(borderType, PathKind.BORDER))
                         .orElse(new Target(HttpRoute.Type.FACADE, PathKind.BORDER)))
                 .distinct()
                 .toList();
     }
 
-    private void checkHosts(RouteEntry entry, String origin, Declarations declarations) {
-        if (entry.hosts().isEmpty()) {
-            return;
-        }
-        entry.gateways().stream()
-                .filter(name -> Gateway.fromLegacyName(name).isPresent())
-                .forEach(name -> declarations.findings.add(Finding.of(Finding.Kind.LEGACY_INVALID, null,
-                        "element", origin,
-                        "problem", "hosts " + entry.hosts() + " are set together with border gateway " + name
-                                + " in gateways; the legacy runtime rejects this too (\"Only composite gateway can have hosts\")",
-                        "fix", "remove hosts, or list only composite gateway names in gateways")));
-    }
-
-    private Optional<Set<Gateway>> readForbiddenGateways(AnnotationInfo forbiddenRoute, String origin, Declarations declarations) {
+    private Optional<Set<HttpRoute.Type>> readForbiddenGateways(AnnotationInfo forbiddenRoute, String element, Declarations declarations) {
         if (forbiddenRoute == null) {
             return Optional.empty();
         }
         List<String> names = enumValueNames(forbiddenRoute.getParameterValues(false).getValue("value"));
-        if (names.isEmpty()) {
-            declarations.findings.add(Finding.of(Finding.Kind.INVALID_FORBIDDEN_ROUTE, null,
-                    "element", origin,
-                    "problem", "@ForbiddenRoute has an empty value",
-                    "fix", "list the gateways to forbid: PUBLIC, PRIVATE and/or INTERNAL"));
+        if (names.isEmpty() || names.contains(HttpRoute.Type.FACADE.name())) {
+            declarations.errors().add("@ForbiddenRoute of " + element + " must list PUBLIC, PRIVATE and/or INTERNAL, found "
+                    + names);
             return Optional.empty();
         }
-        Set<Gateway> gateways = EnumSet.noneOf(Gateway.class);
-        for (String name : names) {
-            Optional<Gateway> gateway = Gateway.fromRouteTypeName(name);
-            if (gateway.isEmpty()) {
-                declarations.findings.add(Finding.of(Finding.Kind.INVALID_FORBIDDEN_ROUTE, null,
-                        "element", origin,
-                        "problem", "@ForbiddenRoute supports only PUBLIC, PRIVATE and INTERNAL, found " + name,
-                        "fix", "remove " + name + " from @ForbiddenRoute"));
-                return Optional.empty();
-            }
-            gateways.add(gateway.get());
-        }
-        return Optional.of(gateways);
+        return Optional.of(names.stream().map(HttpRoute.Type::valueOf).collect(Collectors.toCollection(() -> EnumSet.noneOf(HttpRoute.Type.class))));
     }
 
     /**
@@ -355,8 +319,7 @@ public class RouteScanner {
                 entries.add(new RouteEntry(
                         Optional.of(HttpRoute.Type.FACADE),
                         getRouteTimeout(annotation),
-                        stringValues(annotation.getParameterValues(false).getValue("gateways")),
-                        List.of()
+                        stringValues(annotation.getParameterValues(false).getValue("gateways"))
                 ));
             }
         }
@@ -368,8 +331,7 @@ public class RouteScanner {
         return new RouteEntry(
                 getRouteType(route),
                 getRouteTimeout(route),
-                stringValues(parameters.getValue("gateways")),
-                stringValues(parameters.getValue("hosts"))
+                stringValues(parameters.getValue("gateways"))
         );
     }
 
@@ -626,8 +588,7 @@ public class RouteScanner {
     private record RouteEntry(
             Optional<HttpRoute.Type> type,
             Optional<Long> timeout,
-            List<String> gateways,
-            List<String> hosts
+            List<String> gateways
     ) {}
 
     private record ClassContext(
@@ -645,53 +606,13 @@ public class RouteScanner {
         }
     }
 
-    private static final class Declarations {
-        private final Map<HttpRoute, SortedSet<String>> routes = new HashMap<>();
-        private final Set<ForbiddenDeclaration> forbidden = new LinkedHashSet<>();
-        private final Set<Finding> findings = new LinkedHashSet<>();
-        private final Map<String, SortedSet<String>> elementGatewayPaths = new TreeMap<>();
+    /**
+     * @param errors errors of the route annotations
+     */
+    public record Declarations(Set<HttpRoute> routes, Set<ForbiddenPath> forbidden, List<String> errors) {
 
-        void addRoute(HttpRoute route, String origin) {
-            routes.computeIfAbsent(route, r -> new TreeSet<>()).add(origin);
-        }
-
-        void addElementPaths(List<PathPair> pairs, String origin) {
-            pairs.forEach(pair -> elementGatewayPaths
-                    .computeIfAbsent(PathPattern.normalize(pair.gatewayPath()), p -> new TreeSet<>())
-                    .add(origin));
-        }
-
-        void addForbidden(String gatewayPath, Set<Gateway> gateways, String origin) {
-            Optional<String> problem = PathPattern.forbiddenPathProblem(gatewayPath);
-            if (problem.isPresent()) {
-                findings.add(Finding.of(Finding.Kind.INVALID_FORBIDDEN_ROUTE, null,
-                        "element", origin,
-                        "path", PathPattern.normalize(gatewayPath),
-                        "problem", problem.get(),
-                        "fix", "change the gateway path, or remove @ForbiddenRoute from " + origin));
-                return;
-            }
-            forbidden.add(new ForbiddenDeclaration(gatewayPath, gateways, origin));
-        }
-
-        Set<HttpRoute> routeSet() {
-            return new HashSet<>(routes.keySet());
-        }
-
-        RouteDeclarations toRouteDeclarations() {
-            Comparator<HttpRoute> order = HttpRouteRenderer.pathSpecificityComparator()
-                    .thenComparing(HttpRoute::path)
-                    .thenComparing(HttpRoute::type)
-                    .thenComparingLong(HttpRoute::timeout);
-            List<DeclaredRoute> declared = routes.entrySet().stream()
-                    .map(e -> new DeclaredRoute(e.getKey(), e.getValue()))
-                    .sorted(Comparator.comparing(DeclaredRoute::route, order))
-                    .toList();
-            List<ForbiddenDeclaration> forbiddenList = forbidden.stream()
-                    .sorted(Comparator.comparing(ForbiddenDeclaration::gatewayPath)
-                            .thenComparing(ForbiddenDeclaration::origin))
-                    .toList();
-            return new RouteDeclarations(declared, forbiddenList, List.copyOf(findings), elementGatewayPaths);
+        Declarations() {
+            this(new HashSet<>(), new HashSet<>(), new ArrayList<>());
         }
     }
 }

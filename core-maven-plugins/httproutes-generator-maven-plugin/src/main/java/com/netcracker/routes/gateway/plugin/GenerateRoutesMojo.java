@@ -10,13 +10,9 @@ import org.apache.maven.project.MavenProject;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mojo(
@@ -48,79 +44,38 @@ public class GenerateRoutesMojo extends AbstractMojo {
     private List<Label> labels = Collections.emptyList();
 
     /**
-     * Ports of the DENY rules per border gateway name, as comma-separated lists; {@code 8080} for a gateway that isn't listed.
-     */
-    @Parameter
-    private Map<String, String> authorizationPolicyPorts;
-
-    /**
-     * Whether to generate DENY rules for legacy implicit forbidden routes and for exposure caused by the cut.
+     * Whether to generate the DENY rules that the migration needs and {@code @ForbiddenRoute} doesn't declare.
      */
     @Parameter(defaultValue = "false")
     private boolean autoGenerateAuthorizationPolicies;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        execute(project.getBasedir().toPath(), scanner -> scanner.collectDeclarations(reactorProjects));
+        execute(project.getBasedir().toPath(), scanner -> scanner.collect(reactorProjects));
     }
 
     /**
-     * Validates the configuration, scans, plans and validates the routes, and writes the output file only if
-     * there is no error finding.
+     * Scans and renders the routes, and writes the output file only if there are no errors.
      */
     void execute(Path baseDir, Scan scan) throws MojoExecutionException, MojoFailureException {
-        Map<Gateway, List<String>> ports = parsePorts(authorizationPolicyPorts);
-        RouteDeclarations declarations = scan.declarations(new RouteScanner(packages, getLog()));
-        RouteMigration migration = RouteMigration.run(declarations, autoGenerateAuthorizationPolicies);
-        FindingReport.log(getLog(), migration.findings());
-        if (migration.hasErrors()) {
-            throw new MojoFailureException(FindingReport.summary(migration.findings()));
+        RouteScanner.Declarations declarations = scan.declarations(new RouteScanner(packages, getLog()));
+        Problems problems = new Problems();
+        problems.errors().addAll(declarations.errors());
+        String yaml = new HttpRouteRenderer(backendRefVal, labelsAsMap())
+                .generateHttpRoutesYaml(servicePort, declarations.routes(), problems)
+                + new AuthorizationPolicyRenderer(labelsAsMap(), autoGenerateAuthorizationPolicies)
+                .generateAuthorizationPoliciesYaml(declarations.routes(), declarations.forbidden(), problems);
+        problems.warnings().forEach(getLog()::warn);
+        problems.errors().forEach(getLog()::error);
+        if (!problems.errors().isEmpty()) {
+            throw new MojoFailureException(problems.errors().size() + " route migration errors, see log");
         }
-        writeRoutesFile(baseDir, migration.plan(), ports);
+        writeRoutesFile(baseDir, yaml);
     }
 
     @FunctionalInterface
     interface Scan {
-        RouteDeclarations declarations(RouteScanner scanner) throws MojoExecutionException;
-    }
-
-    /**
-     * @return the configured ports per border gateway; gateways that aren't configured are left out
-     */
-    static Map<Gateway, List<String>> parsePorts(Map<String, String> configured) throws MojoFailureException {
-        Map<Gateway, List<String>> ports = new EnumMap<>(Gateway.class);
-        if (configured == null) {
-            return ports;
-        }
-        for (Map.Entry<String, String> entry : configured.entrySet()) {
-            Gateway gateway = Gateway.fromLegacyName(entry.getKey()).orElseThrow(() -> new MojoFailureException(
-                    "Unknown gateway name '" + entry.getKey() + "' in <authorizationPolicyPorts>, allowed names are "
-                            + Arrays.stream(Gateway.values()).map(Gateway::legacyName).collect(Collectors.joining(", "))));
-            String value = entry.getValue() == null ? "" : entry.getValue().trim();
-            if (value.isEmpty()) {
-                throw new MojoFailureException("Empty port list for '" + entry.getKey() + "' in <authorizationPolicyPorts>");
-            }
-            Set<String> gatewayPorts = new LinkedHashSet<>();
-            for (String port : value.split(",", -1)) {
-                gatewayPorts.add(parsePort(entry.getKey(), port.trim()));
-            }
-            ports.put(gateway, List.copyOf(gatewayPorts));
-        }
-        return ports;
-    }
-
-    private static String parsePort(String gatewayName, String port) throws MojoFailureException {
-        int number;
-        try {
-            number = Integer.parseInt(port);
-        } catch (NumberFormatException e) {
-            number = 0;
-        }
-        if (number < 1 || number > 65535) {
-            throw new MojoFailureException("Invalid port '" + port + "' for '" + gatewayName
-                    + "' in <authorizationPolicyPorts>, ports must be numbers from 1 to 65535");
-        }
-        return Integer.toString(number);
+        RouteScanner.Declarations declarations(RouteScanner scanner) throws MojoExecutionException;
     }
 
     private Map<String, String> labelsAsMap() {
@@ -132,12 +87,10 @@ public class GenerateRoutesMojo extends AbstractMojo {
                 .collect(Collectors.toMap(Label::getKey, l -> l.getValue() != null ? l.getValue() : ""));
     }
 
-    private void writeRoutesFile(Path baseDir, IstioPlan plan, Map<Gateway, List<String>> ports) throws MojoExecutionException {
+    private void writeRoutesFile(Path baseDir, String yaml) throws MojoExecutionException {
         try {
             Path file = baseDir.resolve(outputFile);
 
-            String yaml = new HttpRouteRenderer(backendRefVal, labelsAsMap()).generateHttpRoutesYaml(servicePort, plan.rules())
-                    + new AuthorizationPolicyRenderer(labelsAsMap(), ports).generateAuthorizationPoliciesYaml(plan.denyRules());
             Files.createDirectories(file.getParent());
             Files.writeString(file, prependYamlHeader(wrapWithEnabler(yaml)));
             getLog().info(String.format("Generated gateway routes CRs at %s", outputFile));

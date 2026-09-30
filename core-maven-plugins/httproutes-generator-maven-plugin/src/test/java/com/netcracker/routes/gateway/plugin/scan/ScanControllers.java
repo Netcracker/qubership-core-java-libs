@@ -39,18 +39,6 @@ public final class ScanControllers {
     }
 
     @RestController
-    @RequestMapping("/shared")
-    @Route(RouteType.PUBLIC)
-    public static class SharedBase {
-    }
-
-    @RestController
-    @RequestMapping("/shared")
-    @Route(RouteType.PUBLIC)
-    public static class SharedChild extends SharedBase {
-    }
-
-    @RestController
     public static class ForbiddenEmpty {
         @GetMapping("/empty")
         @ForbiddenRoute({})
@@ -63,30 +51,6 @@ public final class ScanControllers {
         @GetMapping("/facade")
         @ForbiddenRoute(RouteType.FACADE)
         public void facade() {
-        }
-    }
-
-    @RestController
-    public static class ForbiddenPartialSegment {
-        @GetMapping("/files/{name}.txt")
-        @ForbiddenRoute(RouteType.PUBLIC)
-        public void file() {
-        }
-    }
-
-    @RestController
-    public static class ForbiddenWildcard {
-        @GetMapping("/files/*")
-        @ForbiddenRoute(RouteType.PUBLIC)
-        public void files() {
-        }
-    }
-
-    @RestController
-    public static class ForbiddenRegexVariable {
-        @GetMapping("/items/{id:\\d+}")
-        @ForbiddenRoute(RouteType.PUBLIC)
-        public void item() {
         }
     }
 
@@ -148,14 +112,6 @@ public final class ScanControllers {
     public static class EmptyGatewaysString {
         @GetMapping("/items")
         @Route(value = RouteType.PUBLIC, gateways = {""})
-        public void items() {
-        }
-    }
-
-    @RestController
-    public static class HostsOnBorderGateway {
-        @GetMapping("/items")
-        @Route(gateways = "public-gateway-service", hosts = "example.com")
         public void items() {
         }
     }

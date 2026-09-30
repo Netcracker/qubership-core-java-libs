@@ -3,15 +3,12 @@ package com.netcracker.routes.gateway.plugin;
 import org.apache.maven.plugin.MojoFailureException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,7 +46,7 @@ class GenerateRoutesMojoExecuteTest {
      */
     static void execute(GenerateRoutesMojo mojo, Path baseDir) throws Exception {
         File classesDir = testClassesDir();
-        mojo.execute(baseDir, scanner -> scanner.collectDeclarations(classesDir));
+        mojo.execute(baseDir, scanner -> scanner.collect(classesDir));
     }
 
     static void set(GenerateRoutesMojo mojo, String field, Object value) throws Exception {
@@ -91,62 +88,7 @@ class GenerateRoutesMojoExecuteTest {
         // autoGenerateAuthorizationPolicies is false when it isn't configured, so the exposures are errors
         MojoFailureException e = assertThrows(MojoFailureException.class, () -> execute(mojo("unforbidden"), baseDir));
 
-        assertTrue(e.getMessage().startsWith("Route migration validation failed with "), e.getMessage());
-        assertTrue(e.getMessage().contains("EXPOSURE"), e.getMessage());
+        assertEquals("2 route migration errors, see log", e.getMessage());
         assertEquals("previous output\n", Files.readString(file));
-    }
-
-    /**
-     * Configuration errors fail the build before scanning.
-     */
-    private void executeWithoutScan(GenerateRoutesMojo mojo) throws Exception {
-        mojo.execute(baseDir, scanner -> {
-            throw new AssertionError("scanned despite a configuration error");
-        });
-    }
-
-    @Test
-    void unknownGatewayNameFailsTheBuild() throws Exception {
-        GenerateRoutesMojo mojo = mojo("forbidden");
-        set(mojo, "authorizationPolicyPorts", Map.of("facade-gateway", "8080"));
-
-        MojoFailureException e = assertThrows(MojoFailureException.class, () -> executeWithoutScan(mojo));
-
-        assertEquals("Unknown gateway name 'facade-gateway' in <authorizationPolicyPorts>, allowed names are "
-                + "public-gateway-service, private-gateway-service, internal-gateway-service", e.getMessage());
-        assertFalse(Files.exists(baseDir.resolve(OUTPUT_FILE)));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"", " ", "0", "65536", "abc", "8080,", "8080,abc"})
-    void invalidPortsFailTheBuild(String ports) throws Exception {
-        GenerateRoutesMojo mojo = mojo("forbidden");
-        set(mojo, "authorizationPolicyPorts", Map.of("internal-gateway-service", ports));
-
-        MojoFailureException e = assertThrows(MojoFailureException.class, () -> executeWithoutScan(mojo));
-
-        assertTrue(e.getMessage().contains("'internal-gateway-service' in <authorizationPolicyPorts>"), e.getMessage());
-        assertFalse(Files.exists(baseDir.resolve(OUTPUT_FILE)));
-    }
-
-    @Test
-    void portsForOneGateway() throws Exception {
-        GenerateRoutesMojo mojo = mojo("forbidden");
-        set(mojo, "authorizationPolicyPorts", Map.of("internal-gateway-service", " 8080, 8443 "));
-
-        execute(mojo, baseDir);
-
-        String yaml = Files.readString(baseDir.resolve(OUTPUT_FILE));
-        String internal = yaml.substring(yaml.indexOf("-java-annotations-deny-internal\""));
-        assertTrue(internal.contains("ports:\n        - \"8080\"\n        - \"8443\"\n        paths:"), internal);
-        String publicAndPrivate = yaml.substring(0, yaml.indexOf("-java-annotations-deny-internal\""));
-        assertFalse(publicAndPrivate.contains("8443"), publicAndPrivate);
-    }
-
-    @Test
-    void parsesPortsPerGateway() throws Exception {
-        assertEquals(Map.of(), GenerateRoutesMojo.parsePorts(null));
-        assertEquals(Map.of(Gateway.PUBLIC, List.of("8080", "9090")),
-                GenerateRoutesMojo.parsePorts(Map.of("public-gateway-service", "8080, 9090,8080")));
     }
 }

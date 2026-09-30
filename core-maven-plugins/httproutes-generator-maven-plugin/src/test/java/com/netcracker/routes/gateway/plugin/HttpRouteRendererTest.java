@@ -5,28 +5,63 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import static com.netcracker.routes.gateway.plugin.LegacyRouteTableTest.route;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HttpRouteRendererTest {
 
-    static List<PlannedRule> plan(DeclaredRoute... routes) {
-        return RouteMigration.run(new RouteDeclarations(List.of(routes), List.of()), false).plan().rules();
+    static HttpRoute route(String gatewayPath, String servicePath, HttpRoute.Type type, long timeout) {
+        return new HttpRoute(servicePath, gatewayPath, type, timeout);
     }
 
-    private static String render(DeclaredRoute... routes) {
-        return new HttpRouteRenderer("{{ CustomBackendRef }}").generateHttpRoutesYaml(8081, plan(routes));
+    static HttpRoute route(String gatewayPath, String servicePath, HttpRoute.Type type) {
+        return route(gatewayPath, servicePath, type, 0);
+    }
+
+    private static String render(Problems problems, HttpRoute... routes) {
+        return new HttpRouteRenderer("{{ CustomBackendRef }}").generateHttpRoutesYaml(8081, Set.of(routes), problems);
+    }
+
+    private static String render(HttpRoute... routes) {
+        Problems problems = new Problems();
+        String yaml = render(problems, routes);
+        assertEquals(List.of(), problems.errors());
+        return yaml;
+    }
+
+    /**
+     * @return the rules of the rendered HTTPRoutes, for example {@code public: PathPrefix /a -> /b 5s}
+     */
+    private static List<String> rules(String yaml) {
+        List<String> rules = new ArrayList<>();
+        String resource = null;
+        String rule = null;
+        for (String line : yaml.lines().map(String::trim).toList()) {
+            if (line.startsWith("name: \"{{ .Values.SERVICE_NAME }}-java-annotations-")) {
+                resource = line.substring(line.lastIndexOf('-') + 1, line.length() - 1);
+            } else if (line.startsWith("type: \"PathPrefix\"") || line.startsWith("type: \"Exact\"")) {
+                rule = resource + ": " + line.substring(7, line.length() - 1);
+            } else if (line.startsWith("value: ")) {
+                rule += " " + line.substring(8, line.length() - 1);
+                rules.add(rule);
+            } else if (line.startsWith("replacePrefixMatch: ") || line.startsWith("replaceFullPath: ")) {
+                rules.set(rules.size() - 1, rule + " -> " + line.substring(line.indexOf('"') + 1, line.length() - 1));
+            } else if (line.startsWith("request: ")) {
+                rules.set(rules.size() - 1, rules.get(rules.size() - 1) + " " + line.substring(10, line.length() - 1));
+            }
+        }
+        return rules;
     }
 
     @Test
     void generatesYamlWithMatchesRewritesAndTimeouts() {
         String yaml = render(
-                route("/api", "/api", HttpRoute.Type.INTERNAL, "a"),
-                route("/gateway", "/svc", HttpRoute.Type.PUBLIC, 5_000, "b"),
-                route("/items/{id}", "/items/{id}", HttpRoute.Type.PRIVATE, "c"));
+                route("/api", "/api", HttpRoute.Type.INTERNAL),
+                route("/gateway", "/svc", HttpRoute.Type.PUBLIC, 5_000),
+                route("/items/{id}", "/items/{id}", HttpRoute.Type.PRIVATE));
 
         assertTrue(yaml.contains("HTTPRoute"));
         assertTrue(yaml.contains("ReplacePrefixMatch"));
@@ -45,7 +80,7 @@ class HttpRouteRendererTest {
                         "team", "platform",
                         "app.kubernetes.io/managed-by", "custom-manager"
                 )
-        ).generateHttpRoutesYaml(8081, plan(route("/api", "/api", HttpRoute.Type.INTERNAL, "a")));
+        ).generateHttpRoutesYaml(8081, Set.of(route("/api", "/api", HttpRoute.Type.INTERNAL)), new Problems());
 
         assertTrue(yaml.contains("team:"));
         assertTrue(yaml.contains("platform"));
@@ -58,8 +93,8 @@ class HttpRouteRendererTest {
     @Test
     void rendersExactSplitWithReplaceFullPath() {
         String yaml = render(
-                route("/api/v1/svc/items", "/v1/items", HttpRoute.Type.INTERNAL, "list"),
-                route("/api/v1/svc/items/{id}", "/v2/items/{id}", HttpRoute.Type.INTERNAL, "get"));
+                route("/api/v1/svc/items", "/v1/items", HttpRoute.Type.INTERNAL),
+                route("/api/v1/svc/items/{id}", "/v2/items/{id}", HttpRoute.Type.INTERNAL));
 
         assertEquals("""
                 apiVersion: "gateway.networking.k8s.io/v1"
@@ -133,10 +168,10 @@ class HttpRouteRendererTest {
     @Test
     void rendersResourcesInOrderPublicPrivateInternalFacade() {
         String yaml = render(
-                route("/facade/items", "/items", HttpRoute.Type.FACADE, "f"),
-                route("/api/internal", "/api/internal", HttpRoute.Type.INTERNAL, "i"),
-                route("/api/private", "/api/private", HttpRoute.Type.PRIVATE, "p"),
-                route("/api/public", "/api/public", HttpRoute.Type.PUBLIC, "u"));
+                route("/facade/items", "/items", HttpRoute.Type.FACADE),
+                route("/api/internal", "/api/internal", HttpRoute.Type.INTERNAL),
+                route("/api/private", "/api/private", HttpRoute.Type.PRIVATE),
+                route("/api/public", "/api/public", HttpRoute.Type.PUBLIC));
 
         int publicAt = yaml.indexOf("-java-annotations-public\"");
         int privateAt = yaml.indexOf("-java-annotations-private\"");
@@ -148,8 +183,8 @@ class HttpRouteRendererTest {
     @Test
     void serviceBoundRouteHasAllFacadeRulesAndOnlyTheServiceParentRef() {
         String yaml = render(
-                route("/facade/items", "/items", HttpRoute.Type.FACADE, "f"),
-                route("/orders", "/orders", HttpRoute.Type.FACADE, "o"));
+                route("/facade/items", "/items", HttpRoute.Type.FACADE),
+                route("/orders", "/orders", HttpRoute.Type.FACADE));
 
         assertTrue(yaml.startsWith("---\napiVersion: \"gateway.networking.k8s.io/v1\"\nkind: \"HTTPRoute\"\nmetadata:\n"
                 + "  name: \"{{ .Values.SERVICE_NAME }}-java-annotations-facade\"\n"), yaml);
@@ -168,8 +203,8 @@ class HttpRouteRendererTest {
     @Test
     void noServiceBoundRouteWithoutRewrite() {
         String yaml = render(
-                route("/items", "/items", HttpRoute.Type.FACADE, "f"),
-                route("/api/public", "/api/public", HttpRoute.Type.PUBLIC, "u"));
+                route("/items", "/items", HttpRoute.Type.FACADE),
+                route("/api/public", "/api/public", HttpRoute.Type.PUBLIC));
 
         assertFalse(yaml.contains("-facade"), yaml);
         assertTrue(yaml.contains("-java-annotations-public"), yaml);
@@ -177,12 +212,12 @@ class HttpRouteRendererTest {
 
     @Test
     void renderingTwiceGivesIdenticalOutput() {
-        DeclaredRoute[] routes = {
-                route("/facade/items", "/items", HttpRoute.Type.FACADE, "f"),
-                route("/api/v1/svc/items", "/v1/items", HttpRoute.Type.PUBLIC, "list"),
-                route("/api/v1/svc/items/{id}", "/v2/items/{id}", HttpRoute.Type.PUBLIC, "get"),
-                route("/api/v1/svc/orders/{id}", "/orders/{id}", HttpRoute.Type.INTERNAL, 5_000, "o"),
-                route("/api/v1/svc/admin", "/admin", HttpRoute.Type.PRIVATE, "a")};
+        HttpRoute[] routes = {
+                route("/facade/items", "/items", HttpRoute.Type.FACADE),
+                route("/api/v1/svc/items", "/v1/items", HttpRoute.Type.PUBLIC),
+                route("/api/v1/svc/items/{id}", "/v2/items/{id}", HttpRoute.Type.PUBLIC),
+                route("/api/v1/svc/orders/{id}", "/orders/{id}", HttpRoute.Type.INTERNAL, 5_000),
+                route("/api/v1/svc/admin", "/admin", HttpRoute.Type.PRIVATE)};
 
         assertEquals(render(routes), render(routes));
     }
@@ -206,15 +241,94 @@ class HttpRouteRendererTest {
     }
 
     @Test
-    void sortsExactBeforePathPrefixWithTheSameValue() {
-        List<PlannedRule> rules = new ArrayList<>(List.of(
-                new PlannedRule(HttpRoute.Type.PUBLIC, PlannedRule.MatchType.PATH_PREFIX, "/a", null, null, 0, List.of()),
-                new PlannedRule(HttpRoute.Type.PUBLIC, PlannedRule.MatchType.EXACT, "/a", null, null, 0, List.of()),
-                new PlannedRule(HttpRoute.Type.PUBLIC, PlannedRule.MatchType.EXACT, "/a/", null, null, 0, List.of())));
-
-        rules.sort(HttpRouteRenderer.ruleOrder());
-
-        assertEquals(List.of("Exact /a/", "Exact /a", "PathPrefix /a"),
-                rules.stream().map(r -> r.matchType().apiName() + " " + r.value()).toList());
+    void cutsGatewayAndServicePathsAtTheFirstVariable() {
+        assertEquals(List.of(
+                        "private: PathPrefix /api/v1/svc/items -> /items",
+                        "private: PathPrefix /api/v1/svc -> /svc",
+                        "internal: PathPrefix /files",
+                        "internal: PathPrefix /"),
+                rules(render(
+                        route("/api/v1/svc/items/{id}/details", "/items/{id}/details", HttpRoute.Type.PRIVATE),
+                        route("/api/v1/svc/{tenant}/x", "/svc/{tenant}/x", HttpRoute.Type.PRIVATE),
+                        route("/files/{name}.txt", "/files/{name}.txt", HttpRoute.Type.INTERNAL),
+                        route("/{id}", "/{id}", HttpRoute.Type.INTERNAL))));
     }
-}
+
+    @Test
+    void mergesRoutesCutToOnePrefixIntoTheWidestResource() {
+        Problems problems = new Problems();
+
+        String yaml = render(problems,
+                route("/api/v1/svc/resource", "/resource", HttpRoute.Type.PUBLIC),
+                route("/api/v1/svc/resource/{id}", "/resource/{id}", HttpRoute.Type.PRIVATE, 5_000),
+                route("/api/v1/svc/resource/{id}/internal-api/", "/resource/{id}/internal-api/", HttpRoute.Type.INTERNAL, 10_000),
+                route("/api/v1/svc/order/", "/order", HttpRoute.Type.INTERNAL),
+                route("/api/v1/svc/order/{id}", "/order/{id}", HttpRoute.Type.INTERNAL));
+
+        assertEquals(List.of(
+                        "public: PathPrefix /api/v1/svc/resource -> /resource 10s",
+                        "internal: PathPrefix /api/v1/svc/order -> /order"),
+                rules(yaml));
+        assertEquals(List.of(), problems.errors());
+        assertEquals(List.of("Routes /api/v1/svc/resource (PUBLIC, ReplacePrefixMatch /resource), "
+                + "/api/v1/svc/resource/{id} (PRIVATE, ReplacePrefixMatch /resource, timeout 5s), "
+                + "/api/v1/svc/resource/{id}/internal-api/ (INTERNAL, ReplacePrefixMatch /resource, timeout 10s) "
+                + "are merged into one rule PathPrefix /api/v1/svc/resource with the largest timeout 10s"), problems.warnings());
+    }
+
+    @Test
+    void differentRewritesForOnePrefixAreAnError() {
+        Problems problems = new Problems();
+
+        String yaml = render(problems,
+                route("/api/v1/svc/items/{id}", "/v1/items/{id}", HttpRoute.Type.PUBLIC),
+                route("/api/v1/svc/items/{id}/details", "/v2/items/{id}/details", HttpRoute.Type.INTERNAL),
+                route("/api/v1/svc/admin", "/admin", HttpRoute.Type.PRIVATE));
+
+        assertEquals(List.of("private: PathPrefix /api/v1/svc/admin -> /admin"), rules(yaml));
+        assertEquals(List.of("Routes /api/v1/svc/items/{id} (PUBLIC, ReplacePrefixMatch /v1/items), "
+                + "/api/v1/svc/items/{id}/details (INTERNAL, ReplacePrefixMatch /v2/items) are cut to PathPrefix "
+                + "/api/v1/svc/items and need different rewrites, which one Istio rule can't express. Align their "
+                + "gateway paths or service paths so that they share one rewrite"), problems.errors());
+    }
+
+    @Test
+    void exactSplitNeedsAVariableChild() {
+        Problems problems = new Problems();
+
+        render(problems,
+                route("/api/v1/svc/items", "/v1/items", HttpRoute.Type.PUBLIC),
+                route("/api/v1/svc/items/{id}/details", "/v2/items/{id}/details", HttpRoute.Type.PUBLIC));
+
+        assertEquals(1, problems.errors().size(), problems.errors().toString());
+    }
+
+    @Test
+    void exactSplitOfARouteWithoutRewrite() {
+        assertEquals(List.of(
+                        "public: Exact /items/",
+                        "public: Exact /items",
+                        "internal: PathPrefix /items -> /v2/items 5s"),
+                rules(render(
+                        route("/items", "/items", HttpRoute.Type.PUBLIC),
+                        route("/items/{id}", "/v2/items/{id}", HttpRoute.Type.INTERNAL, 5_000))));
+    }
+
+    @Test
+    void facadeTimeoutsWithoutRewriteAreAWarning() {
+        Problems problems = new Problems();
+
+        String yaml = render(problems, route("/items", "/items", HttpRoute.Type.FACADE, 5_000));
+
+        assertEquals("", yaml);
+        assertEquals(List.of("No facade or composite route has a rewrite, so no service-bound HTTPRoute is generated, "
+                + "and the timeouts of the facade and composite routes are not applied"), problems.warnings());
+    }
+
+    @Test
+    void sortsExactBeforePathPrefixWithTheSameValue() {
+        assertEquals(List.of("internal: Exact /a/ -> /b/", "internal: Exact /a -> /b", "internal: PathPrefix /a -> /c"),
+                rules(render(
+                        route("/a/{id}", "/c/{id}", HttpRoute.Type.INTERNAL),
+                        route("/a", "/b", HttpRoute.Type.INTERNAL))));
+    }}

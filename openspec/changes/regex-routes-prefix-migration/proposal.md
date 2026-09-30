@@ -16,31 +16,31 @@ The plugin is supposed to reproduce legacy Cloud-Core Service Mesh routing in Is
   - this HTTPRoute is generated only when at least one facade or composite route has a rewrite. Without a rewrite, Istio already routes the request to the service unchanged;
   - when it is generated, it contains **all** facade and composite routes of the service, including those without a rewrite. Once any HTTPRoute is bound to a Service, Istio returns 404 for every request its rules don't match. There is no catch-all rule, so other paths called through the Service also return 404 while this HTTPRoute exists;
   - facade gateway paths come from `@FacadeGateway` / `@FacadeGatewayRequestMapping`, as in legacy. Today the plugin uses `@Gateway` / `@GatewayRequestMapping` for them. Composite gateway paths come from `@Gateway` / `@GatewayRequestMapping`, as in legacy. Composite `hosts` are ignored.
-- New validation step, run before any file is written. The plugin compares legacy mesh routing with the generated Istio routing on every border gateway and **fails the build** with a detailed report when:
+- New checks, run before any file is written. The plugin derives the legacy behavior directly from the legacy registration rules (every route is registered on all border gateways, forbidden on those wider than its type, and the longest pattern wins) and **fails the build** with an actionable error when:
   - routes with different rewrites collide after the cut (conflict). This also applies to facade and composite routes that end up in the same service-bound rule;
-  - Istio would route a path that legacy returned 404 for or did not route at all (new exposure). This covers exposure caused by the cut and the legacy implicit forbidden routes (a narrower-type route below a wider-type prefix);
-  - two legacy routes with gateway paths of the same length match the same request on a gateway and differ in more than the timeout (allowed vs forbidden, or a different upstream path). Legacy picks one of them in an undefined order, so the plugin can't know what to reproduce. When they differ only in timeout, the largest timeout is used and the build doesn't fail;
-  - two routes have the same gateway path on the same gateway but different service paths. The legacy runtime also rejects this (`RouteTransformer`: "several target paths for forwarding from the same source path"), so it is reported as invalid configuration, not as a migration conflict. The same applies to `hosts` combined with a border gateway name in `gateways` (legacy: "Only composite gateway can have hosts").
+  - Istio would route a path that legacy returned 404 for or did not route at all, and no DENY rule covers it. This covers the legacy implicit forbidden routes (a narrower-type route below a wider-type prefix) and the exposure caused by the cut;
+  - a DENY rule can't be expressed as an Istio path template (a partial-segment variable or a `*` wildcard);
+  - `@ForbiddenRoute` is invalid or forbids the path of a route exposed on the same gateway.
 - New annotation `@ForbiddenRoute` in `route-registration-common` marks a class or method gateway path as forbidden on the listed border gateways.
-- New output: an Istio `AuthorizationPolicy` (`action: DENY`) per target gateway. It uses `{*}`/`{**}` path templates, `notPaths` for longer allowed routes below the forbidden path, and a scope to the listener ports of that gateway. By default it is built from `@ForbiddenRoute` only, and no policy is generated when no `@ForbiddenRoute` is present.
+- New output: an Istio `AuthorizationPolicy` (`action: DENY`) per target gateway. It uses `{*}`/`{**}` path templates, `notPaths` for longer allowed routes below the forbidden path, and port `8080`, the listener port of every border gateway. By default it is built from `@ForbiddenRoute` only, and no policy is generated when no `@ForbiddenRoute` is present.
 - New plugin parameter `autoGenerateAuthorizationPolicies` (boolean, default `false`), set in the plugin `<configuration>` in `pom.xml`. When `true`, the plugin also generates DENY rules without explicit annotations, as Option 1 in the migration document describes:
   - for every legacy implicit forbidden route (a narrower-type route on a wider gateway) that the generated HTTPRoutes would otherwise route on that gateway;
   - for every controller subtree that the cut exposes and that no shorter allowed route covered in legacy.
 
-  Validation runs on the result either way, so whatever the generated rules don't fix still fails the build. When `false`, these cases fail the build, and the report suggests either `@ForbiddenRoute` or enabling the parameter.
+  When `false`, these cases fail the build, and the error suggests either `@ForbiddenRoute` or enabling the parameter.
 - The plugin never generates `VirtualService` or `EnvoyFilter`.
-- Overlaps with routes of **another service** are out of scope. The plugin sends every rule to the single backend (`backendRefVal`:`servicePort`), and the annotations have no header matchers. So a plugin-generated route can't overlap a route with a different cluster or a header-matched route, like the `migrated-api` → `another-service` and `:method: GET` → `another-service` routes in the migration document. Route behavior is only compared on forbidden/allowed, upstream path (rewrite) and timeout. The models, planner and validator have no backend or header-matcher dimension.
+- Overlaps with routes of **another service** are out of scope. The plugin sends every rule to the single backend (`backendRefVal`:`servicePort`), and the annotations have no header matchers. So a plugin-generated route can't overlap a route with a different cluster or a header-matched route, like the `migrated-api` → `another-service` and `:method: GET` → `another-service` routes in the migration document. Route behavior is only forbidden/allowed, the rewrite and the timeout.
 - **BREAKING** Existing services can now fail the build:
   - with `autoGenerateAuthorizationPolicies` disabled, those with a narrower-type method under a wider-type class prefix, or with variable routes that the cut widens;
-  - regardless of the parameter, those with rewrite conflicts or legacy-invalid routes.
+  - regardless of the parameter, those with rewrite conflicts or forbidden paths an AuthorizationPolicy can't express.
 
-  The build report says which `@ForbiddenRoute` to add or which parameter to set. Facade routes that relied on `@Gateway` paths get the legacy gateway path instead. The plugin is released as a new major version.
+  The errors say which `@ForbiddenRoute` to add or which parameter to set. Facade routes that relied on `@Gateway` paths get the legacy gateway path instead. The plugin is released as a new major version.
 
 ## Capabilities
 
 ### New Capabilities
 - `httproute-generation`: How scanned routes become HTTPRoute rules: reading the legacy annotation forms, prefix-only matching, cutting at the first path variable, deriving the rewrite, merging, the `Exact` split, the service-bound HTTPRoute for facade and composite routes, and which resource kinds the plugin may output.
-- `route-migration-validation`: Comparing legacy mesh routing with Istio routing per border gateway, detecting conflicts and new exposure, and failing the build with actionable diagnostics.
+- `route-migration-validation`: Finding the paths that Istio would route and legacy didn't on each border gateway, and failing the build with actionable errors.
 - `forbidden-route-policies`: The `@ForbiddenRoute` annotation, the opt-in `autoGenerateAuthorizationPolicies` parameter, and how both become Istio `AuthorizationPolicy` DENY rules.
 
 ### Modified Capabilities
@@ -50,10 +50,10 @@ The plugin is supposed to reproduce legacy Cloud-Core Service Mesh routing in Is
 
 - **Plugin code**:
   - `HttpRouteRenderer`: match and rewrite generation, regex removal. The service-bound (facade) HTTPRoute keeps rules without a rewrite and is generated only when at least one rule has a rewrite.
-  - `RouteScanner`: scans `@ForbiddenRoute`, `@Routes`, `@Route(gateways, hosts)`, `@FacadeRoute`, `@FacadeGateway` and `@FacadeGatewayRequestMapping`, and includes classes that carry only `@ForbiddenRoute` or `@FacadeRoute`. Records where each route came from, in a wrapper, so the `HttpRoute` record and its equality stay unchanged.
-  - `GenerateRoutesMojo`: new optional parameters `authorizationPolicyPorts` (ports per border gateway name, default `8080` for every gateway) and `autoGenerateAuthorizationPolicies` (default `false`). Runs validation, fails the build with `MojoFailureException`, and writes AuthorizationPolicies.
-  - New model, simulation and policy-rendering classes.
+  - `RouteScanner`: scans `@ForbiddenRoute`, `@Routes`, `@Route(gateways, hosts)`, `@FacadeRoute`, `@FacadeGateway` and `@FacadeGatewayRequestMapping`, and includes classes that carry only `@ForbiddenRoute` or `@FacadeRoute`. The `HttpRoute` record stays unchanged.
+  - `GenerateRoutesMojo`: new optional parameter `autoGenerateAuthorizationPolicies` (default `false`). Fails the build with `MojoFailureException` on errors, and writes AuthorizationPolicies.
+  - New `AuthorizationPolicyRenderer`, and the small `RoutePaths`, `ForbiddenPath` and `Problems` helpers.
 - **Plugin module**: all plugin changes are in `core-maven-plugins/httproutes-generator-maven-plugin` (package `com.netcracker.routes.gateway.plugin`).
 - **Annotation module**: `core-rest-libraries/route-registration/route-registration-common` gets the new `@ForbiddenRoute` annotation (RUNTIME retention). The legacy runtime library ignores it. The plugin already depends on `route-registration-common` `7.5.2-SNAPSHOT` from the same monorepo.
 - **Generated output**: the YAML file can now also contain `security.istio.io/v1` `AuthorizationPolicy` resources inside the same Helm `SERVICE_MESH_TYPE == Istio` guard. Rules that were regex become prefix or exact rules. The facade HTTPRoute now also lists facade and composite routes without a rewrite.
-- **Docs/tests**: the plugin `README.md` (new annotation, validation errors, AuthorizationPolicy output, new parameters, legacy annotation forms, facade and composite routes, migration section). Unit tests for truncation, merging, the `Exact` split, simulation, the service-bound HTTPRoute and policy rendering. Tests reuse the migration document's example only for the routes the plugin can produce (it can't produce the `another-service` routes). The existing renderer tests that expect regex output are updated. In `GenerateRoutesMojoTest`, only the facade assertion for `SpringTestController8` changes, to the legacy gateway path.
+- **Docs/tests**: the plugin `README.md` (new annotation, errors, AuthorizationPolicy output, the new parameter, legacy annotation forms, facade and composite routes, migration section). Unit tests for the cut, merging, the `Exact` split, the DENY rule computation, the service-bound HTTPRoute and policy rendering. Tests reuse the migration document's example only for the routes the plugin can produce (it can't produce the `another-service` routes). The existing renderer tests that expect regex output are updated. In `GenerateRoutesMojoTest`, only the facade assertion for `SpringTestController8` changes, to the legacy gateway path.

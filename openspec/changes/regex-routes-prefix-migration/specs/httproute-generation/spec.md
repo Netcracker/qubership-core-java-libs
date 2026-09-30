@@ -14,7 +14,7 @@ The plugin SHALL emit only `gateway.networking.k8s.io/v1` `HTTPRoute` resources 
 - **THEN** the output file contains only `HTTPRoute` resources
 
 #### Scenario: Routes that cannot be migrated
-- **WHEN** validation finds a conflict that only a `VirtualService` could express
+- **WHEN** routes cut to the same match need different rewrites, which only a `VirtualService` could express
 - **THEN** the build fails, and the output contains neither a `VirtualService` nor an `EnvoyFilter`
 
 ### Requirement: Single backend for all rules
@@ -70,7 +70,7 @@ When the gateway path and service path of a route differ, the plugin SHALL gener
 - **THEN** the rule matches `PathPrefix` `/items` and has no `URLRewrite` filter
 
 ### Requirement: One rule per match on a gateway
-Every gateway SHALL see at most one generated rule per (path type, path value) match, counting all generated HTTPRoute resources attached to that gateway. The plugin SHALL group border routes by match across all route types. When several routes produce the same match with the same rewrite, the plugin SHALL merge them into one rule. The merged rule SHALL go into the HTTPRoute resource of the widest route type among them (PUBLIC > PRIVATE > INTERNAL). If the merged routes have different timeouts and the Exact split does not apply, the merged rule SHALL use the largest timeout, and the plugin SHALL log a warning. The warning names the match, the gateways, the routes merged with their sources, and the timeout that was chosen.
+Every gateway SHALL see at most one generated rule per (path type, path value) match, counting all generated HTTPRoute resources attached to that gateway. The plugin SHALL group border routes by match across all route types. When several routes produce the same match with the same rewrite, the plugin SHALL merge them into one rule. The merged rule SHALL go into the HTTPRoute resource of the widest route type among them (PUBLIC > PRIVATE > INTERNAL). If the merged routes have different timeouts and the Exact split does not apply, the merged rule SHALL use the largest timeout, and the plugin SHALL log a warning. The warning names the match, every merged route with its type, rewrite and timeout, and the timeout that was chosen.
 
 #### Scenario: Collapsed routes with the same rewrite
 - **WHEN** PUBLIC route `/api/v1/my-service/resource` → `/resource` and PUBLIC route `/api/v1/my-service/resource/{var1}/sub` → `/resource/{var1}/sub` are declared
@@ -89,7 +89,7 @@ The plugin SHALL use `Exact` matches when all of the following hold:
 
 - a route S has gateway path P or P + `/` with no path variables;
 - another route R cuts to the same prefix P because its gateway path is exactly `P/{var}`;
-- S and R differ in rewrite or timeout. Both are routes of this service; the split does not depend on backends or header matchers.
+- S and R differ in rewrite. Both are routes of this service; the split does not depend on backends or header matchers. Routes that differ only in timeout are merged instead.
 
 In this case S SHALL be emitted as two rules on all of S's gateways: `Exact` P and `Exact` P + `/`. If S has a rewrite, each rule SHALL use a `ReplaceFullPath` filter, with value S's service path and S's service path + `/` respectively. Both rules keep S's timeout. R and every other route cut to P SHALL be emitted as the `PathPrefix` P rule. If the routes left in the `PathPrefix` P rule still differ in rewrite, the plugin SHALL report a conflict.
 
@@ -99,7 +99,7 @@ In this case S SHALL be emitted as two rules on all of S's gateways: `Exact` P a
 
 #### Scenario: Controller root with a trailing slash
 - **WHEN** route S `/api/v1/svc/items/` → `/v1/items/` and route R `/api/v1/svc/items/{id}` → `/v2/items/{id}` share a gateway
-- **THEN** that gateway gets the same three rules as for S `/api/v1/svc/items` → `/v1/items`, and validation reports no error
+- **THEN** that gateway gets the same three rules as for S `/api/v1/svc/items` → `/v1/items`, and no error is reported
 
 #### Scenario: Split does not apply because R continues after the variable
 - **WHEN** route S `/api/v1/svc/items` → `/v1/items` and route R `/api/v1/svc/items/{id}/details` → `/v2/items/{id}/details` share a gateway
@@ -168,9 +168,9 @@ Generated resources and rules SHALL be rendered in a deterministic order, so tha
 - **WHEN** the plugin runs twice on the same compiled classes
 - **THEN** both output files are byte-identical
 
-### Requirement: Output written only after successful validation
-The plugin SHALL write the output file only when route migration validation reports no errors. When validation reports errors, the plugin SHALL fail the build and SHALL NOT create or overwrite the output file.
+### Requirement: Output written only without errors
+The plugin SHALL write the output file only when the scan, HTTPRoute generation and AuthorizationPolicy generation report no errors. Otherwise the plugin SHALL fail the build and SHALL NOT create or overwrite the output file.
 
-#### Scenario: Validation error
-- **WHEN** validation reports at least one error
+#### Scenario: Route migration error
+- **WHEN** at least one error is reported
 - **THEN** the Maven build fails, and the previous output file, if one exists, is left unchanged
