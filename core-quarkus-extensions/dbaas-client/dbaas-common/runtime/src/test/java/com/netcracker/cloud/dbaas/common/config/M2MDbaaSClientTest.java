@@ -1,6 +1,7 @@
 package com.netcracker.cloud.dbaas.common.config;
 
 import okhttp3.OkHttpClient;
+import com.netcracker.cloud.security.core.utils.k8s.M2MAuthMode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,7 +34,7 @@ class M2MDbaaSClientTest {
 
     @BeforeEach
     void setUp() {
-        environmentVariables.set("KUBERNETES_M2M_ENABLED", "true");
+        environmentVariables.set(M2MAuthMode.ENV, "hybrid");
 
         dbaasClientConfig = mock(DbaasClientConfig.class);
         when(dbaasClientConfig.dbaasAgentUrl()).thenReturn(DB_AGENT_URL);
@@ -42,7 +45,7 @@ class M2MDbaaSClientTest {
 
     @AfterEach
     void tearDown() {
-        environmentVariables.remove("KUBERNETES_M2M_ENABLED");
+        environmentVariables.remove(M2MAuthMode.ENV);
     }
 
     @Test
@@ -56,13 +59,13 @@ class M2MDbaaSClientTest {
     }
 
     @Test
-    void testAggregatorAddressIsUsedWhenK8sM2mIsEnabled() throws Exception {
+    void testAggregatorAddressIsUsedInHybridMode() throws Exception {
         assertEquals(DB_AGGREGATOR_URL, address(m2MDbaaSClient.build()));
     }
 
     @Test
-    void testAgentAddressIsUsedWhenK8sM2mIsDisabled() throws Exception {
-        environmentVariables.set("KUBERNETES_M2M_ENABLED", "false");
+    void testAgentAddressIsUsedInLegacyMode() throws Exception {
+        environmentVariables.set(M2MAuthMode.ENV, "legacy");
 
         assertEquals(DB_AGENT_URL, address(m2MDbaaSClient.build()));
     }
@@ -73,6 +76,23 @@ class M2MDbaaSClientTest {
                 new M2MDbaaSClient(Optional.empty(), dbaasOkHttpClient, dbaasClientConfig);
 
         assertEquals(DB_AGENT_URL, address(withoutAggregatorAddress.build()));
+    }
+
+    @Test
+    void testAggregatorAddressIsUsedInK8sMode() throws Exception {
+        environmentVariables.set(M2MAuthMode.ENV, "k8s");
+
+        assertEquals(DB_AGGREGATOR_URL, address(m2MDbaaSClient.build()));
+    }
+
+    @Test
+    void testMissingAggregatorAddressIsRejectedInK8sMode() {
+        environmentVariables.set(M2MAuthMode.ENV, "k8s");
+        M2MDbaaSClient withoutAggregatorAddress =
+                new M2MDbaaSClient(Optional.empty(), dbaasOkHttpClient, dbaasClientConfig);
+
+        IllegalStateException e = assertThrows(IllegalStateException.class, withoutAggregatorAddress::build);
+        assertTrue(e.getMessage().startsWith("api.dbaas.address is not set"), e.getMessage());
     }
 
     private String address(DbaasClient client) throws Exception {

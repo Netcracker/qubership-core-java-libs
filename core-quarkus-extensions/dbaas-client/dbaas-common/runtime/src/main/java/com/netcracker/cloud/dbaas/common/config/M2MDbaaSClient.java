@@ -4,7 +4,7 @@ import com.netcracker.cloud.context.propagation.core.ContextManager;
 import com.netcracker.cloud.dbaas.client.DbaaSClientOkHttpImpl;
 import com.netcracker.cloud.dbaas.client.DbaasClient;
 import com.netcracker.cloud.framework.contexts.tenant.TenantContextObject;
-import com.netcracker.cloud.security.core.utils.k8s.M2MClient;
+import com.netcracker.cloud.security.core.utils.k8s.M2MAuthMode;
 import com.netcracker.cloud.security.core.utils.tls.TlsUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -38,14 +38,15 @@ public class M2MDbaaSClient {
     }
 
     public DbaasClient build() {
-        String dbaasUrl = dbaasClientConfig.dbaasAgentUrl();
-        if(M2MClient.isK8sM2mEnabled()) {
-            if(apiDbaasAddress.isEmpty()) {
+        String dbaasUrl = switch (M2MAuthMode.read()) {
+            case LEGACY -> dbaasClientConfig.dbaasAgentUrl();
+            case HYBRID -> apiDbaasAddress.orElseGet(() -> {
                 log.warn("DBaaS address is not available, falling back to dbaas-agent. Specify 'api.dbaas.address' property to DBaaS url");
-            } else {
-                dbaasUrl = apiDbaasAddress.get();
-            }
-        }
+                return dbaasClientConfig.dbaasAgentUrl();
+            });
+            case K8S -> apiDbaasAddress.orElseThrow(() -> new IllegalStateException(
+                    "api.dbaas.address is not set: with M2M_AUTH_MODE=k8s the client sends requests directly to DBaaS, set api.dbaas.address to the DBaaS URL"));
+        };
 
         OkHttpClient httpClient = dbaasOkHttpClient.newBuilder()
                 .addInterceptor(chain -> {

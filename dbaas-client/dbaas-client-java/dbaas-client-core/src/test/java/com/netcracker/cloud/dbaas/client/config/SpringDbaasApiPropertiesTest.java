@@ -1,7 +1,6 @@
 package com.netcracker.cloud.dbaas.client.config;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import com.netcracker.cloud.security.core.utils.k8s.M2MAuthMode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -12,6 +11,8 @@ import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SystemStubsExtension.class)
 class SpringDbaasApiPropertiesTest {
@@ -19,34 +20,54 @@ class SpringDbaasApiPropertiesTest {
     @SystemStub
     private EnvironmentVariables environmentVariables;
 
-    @BeforeEach
-    void setUp() {
-        environmentVariables.set("KUBERNETES_M2M_ENABLED", "true");
-    }
-
-    @AfterEach
-    void tearDown() {
-        environmentVariables.remove("KUBERNETES_M2M_ENABLED");
+    private SpringDbaasApiProperties properties(Optional<String> agentAddress, Optional<String> dbaasAddress) {
+        SpringDbaasApiProperties properties = new SpringDbaasApiProperties();
+        ReflectionTestUtils.setField(properties, "dbaasAgentAddress", agentAddress);
+        ReflectionTestUtils.setField(properties, "dbaasAddress", dbaasAddress);
+        return properties;
     }
 
     @Test
-    void testGetAddress() {
-        SpringDbaasApiProperties properties = new SpringDbaasApiProperties();
+    void legacyModeUsesTheConfiguredAgent() {
+        environmentVariables.set(M2MAuthMode.ENV, "legacy");
 
-        // Test non-k8s path
-        environmentVariables.set("KUBERNETES_M2M_ENABLED", "false");
-        ReflectionTestUtils.setField(properties, "dbaasAgentAddress", Optional.of("http://custom"));
-        assertEquals("http://custom", properties.getAddress());
+        assertEquals("http://custom", properties(Optional.of("http://custom"), Optional.of("http://k8s-url")).getAddress());
+    }
 
-        ReflectionTestUtils.setField(properties, "dbaasAgentAddress", Optional.empty());
-        assertEquals("http://dbaas-agent:8080", properties.getAddress());
+    @Test
+    void legacyModeUsesTheDefaultAgent() {
+        environmentVariables.remove(M2MAuthMode.ENV);
 
-        // Test k8s path
-        environmentVariables.set("KUBERNETES_M2M_ENABLED", "true");
-        ReflectionTestUtils.setField(properties, "dbaasAddress", Optional.of("http://k8s-url"));
-        assertEquals("http://k8s-url", properties.getAddress());
+        assertEquals("http://dbaas-agent:8080", properties(Optional.empty(), Optional.of("http://k8s-url")).getAddress());
+    }
 
-        ReflectionTestUtils.setField(properties, "dbaasAddress", Optional.empty());
-        assertEquals("http://dbaas-agent:8080", properties.getAddress());
+    @Test
+    void hybridModeUsesTheDbaasAddress() {
+        environmentVariables.set(M2MAuthMode.ENV, "hybrid");
+
+        assertEquals("http://k8s-url", properties(Optional.empty(), Optional.of("http://k8s-url")).getAddress());
+    }
+
+    @Test
+    void hybridModeFallsBackToTheAgentWithoutDbaasAddress() {
+        environmentVariables.set(M2MAuthMode.ENV, "hybrid");
+
+        assertEquals("http://dbaas-agent:8080", properties(Optional.empty(), Optional.empty()).getAddress());
+    }
+
+    @Test
+    void k8sModeUsesTheDbaasAddress() {
+        environmentVariables.set(M2MAuthMode.ENV, "k8s");
+
+        assertEquals("http://k8s-url", properties(Optional.of("http://custom"), Optional.of("http://k8s-url")).getAddress());
+    }
+
+    @Test
+    void k8sModeRejectsMissingDbaasAddress() {
+        environmentVariables.set(M2MAuthMode.ENV, "k8s");
+        SpringDbaasApiProperties properties = properties(Optional.of("http://custom"), Optional.empty());
+
+        IllegalStateException e = assertThrows(IllegalStateException.class, properties::getAddress);
+        assertTrue(e.getMessage().startsWith("api.dbaas.address is not set"), e.getMessage());
     }
 }

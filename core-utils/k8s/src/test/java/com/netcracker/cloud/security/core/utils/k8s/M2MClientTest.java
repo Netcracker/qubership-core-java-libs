@@ -40,20 +40,24 @@ class M2MClientTest {
     private final List<WireMockServer> servers = new ArrayList<>();
 
     @Test
-    void testK8sM2mEnabledIsReadFromEnvironment() {
-        environmentVariables.set("KUBERNETES_M2M_ENABLED", "true");
-        assertTrue(M2MClient.isK8sM2mEnabled());
-        assertEquals(true, getFieldValue(buildInterceptor(M2MClient.builder()), "k8sM2mEnabled"));
+    void testModeIsReadFromEnvironment() {
+        environmentVariables.set(M2MAuthMode.ENV, "k8s");
 
-        environmentVariables.set("KUBERNETES_M2M_ENABLED", "false");
-        assertFalse(M2MClient.isK8sM2mEnabled());
-        assertEquals(false, getFieldValue(buildInterceptor(M2MClient.builder()), "k8sM2mEnabled"));
+        assertEquals(M2MAuthMode.K8S, getFieldValue(buildInterceptor(M2MClient.builder()), "mode"));
+    }
 
-        environmentVariables.remove("KUBERNETES_M2M_ENABLED");
-        assertFalse(M2MClient.isK8sM2mEnabled());
+    @Test
+    void testExplicitModeWinsOverTheEnvironment() {
+        environmentVariables.set(M2MAuthMode.ENV, "k8s");
 
-        // explicitly configured flag wins over the environment
-        assertEquals(true, getFieldValue(buildInterceptor(M2MClient.builder().k8sM2mEnabled(true)), "k8sM2mEnabled"));
+        assertEquals(M2MAuthMode.HYBRID, getFieldValue(buildInterceptor(M2MClient.builder().mode(M2MAuthMode.HYBRID)), "mode"));
+    }
+
+    @Test
+    void testUnsupportedModeInEnvironmentFailsTheBuilder() {
+        environmentVariables.set(M2MAuthMode.ENV, "true");
+
+        assertThrows(IllegalArgumentException.class, M2MClient::builder);
     }
 
     @Test
@@ -97,9 +101,28 @@ class M2MClientTest {
     }
 
     @Test
-    void testTokenSupplierIsRequired() {
-        M2MClient.M2MClientBuilder builder = M2MClient.builder().audience(AudienceName.DBAAS);
+    void testTokenSupplierIsRequiredInHybridMode() {
+        M2MClient.M2MClientBuilder builder = M2MClient.builder().audience(AudienceName.DBAAS).mode(M2MAuthMode.HYBRID);
         assertThrows(NullPointerException.class, builder::build);
+    }
+
+    @Test
+    @SneakyThrows
+    void builtClient_K8sModeWithoutTokenSupplier_SendsKubernetesTokenToTarget() {
+        WireMockServer agent = startServer();
+        WireMockServer target = startServer();
+
+        try (var tokenSource = mockStatic(KubernetesAudienceToken.class)) {
+            tokenSource.when(() -> KubernetesAudienceToken.getToken(anyString())).thenReturn("k8s-token");
+            OkHttpClient client = M2MClient.builder()
+                    .mode(M2MAuthMode.K8S)
+                    .agentUrl(agent.baseUrl())
+                    .build();
+            client.newCall(new Request.Builder().url(target.baseUrl() + "/api/v1/resource").build()).execute().close();
+        }
+
+        target.verify(1, getRequestedFor(urlEqualTo("/api/v1/resource")).withHeader("Authorization", equalTo("Bearer k8s-token")));
+        agent.verify(0, getRequestedFor(urlEqualTo("/api/v1/resource")));
     }
 
     @Test
@@ -187,13 +210,13 @@ class M2MClientTest {
         assertSame(builder, builder.audience(AudienceName.DBAAS));
         assertSame(builder, builder.agentUrl("http://dbaas-agent:8080"));
         assertSame(builder, builder.keycloakTokenSupplier(TOKEN_SUPPLIER));
-        assertSame(builder, builder.k8sM2mEnabled(true));
+        assertSame(builder, builder.mode(M2MAuthMode.HYBRID));
     }
 
     @Test
     @SneakyThrows
-    void builtClient_EnabledInEnvironment_SendsKubernetesTokenToTarget() {
-        environmentVariables.set("KUBERNETES_M2M_ENABLED", "true");
+    void builtClient_HybridMode_SendsKubernetesTokenToTarget() {
+        environmentVariables.set(M2MAuthMode.ENV, "hybrid");
         WireMockServer agent = startServer();
         WireMockServer target = startServer();
 
@@ -212,8 +235,8 @@ class M2MClientTest {
 
     @Test
     @SneakyThrows
-    void builtClient_NotSetInEnvironment_SendsKeycloakTokenThroughAgent() {
-        environmentVariables.remove("KUBERNETES_M2M_ENABLED");
+    void builtClient_ModeNotSet_SendsKeycloakTokenThroughAgent() {
+        environmentVariables.remove(M2MAuthMode.ENV);
         WireMockServer agent = startServer();
         WireMockServer target = startServer();
 

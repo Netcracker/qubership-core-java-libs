@@ -1,5 +1,12 @@
 # This page contains notably changes of maas-client project.
 
+## Unreleased
+* `Behaviour changes`
+  - **`M2M_AUTH_MODE` (`legacy`, `hybrid`, `k8s`) replaces `KUBERNETES_M2M_ENABLED`, which is no longer read.**
+    `hybrid` works as `KUBERNETES_M2M_ENABLED=true` did. `k8s` sends requests only to `maas.internal.address` and
+    fails client creation with `IllegalStateException` when it is not set. An unsupported value, `true` and
+    `false` included, throws `IllegalArgumentException`. `Env.apiUrl(boolean)` is now `Env.apiUrl(M2MAuthMode)`.
+
 ## 12.4.0
 * `Features`
   - Calls to maas-agent survive a database leader switchover. Retryable: `IOException`, 5xx, 429,

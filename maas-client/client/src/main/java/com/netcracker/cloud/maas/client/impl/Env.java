@@ -1,6 +1,6 @@
 package com.netcracker.cloud.maas.client.impl;
 
-import com.netcracker.cloud.security.core.utils.k8s.M2MClient;
+import com.netcracker.cloud.security.core.utils.k8s.M2MAuthMode;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class Env {
     public static final String PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS = "maas.http.retry.max-total-duration-ms";
 
     public static String apiUrl() {
-        return apiUrl(M2MClient.isK8sM2mEnabled());
+        return apiUrl(M2MAuthMode.read());
     }
 
     public static String maasAgentUrl() {
@@ -47,17 +47,20 @@ public class Env {
                 .orElse(DEFAULT_MAAS_AGENT_URL);
     }
 
-    public static String apiUrl(boolean k8sM2mEnabled) {
-        String maasAgentUrl = maasAgentUrl();
-        if(!k8sM2mEnabled) {
-            return maasAgentUrl;
-        }
-        return stringProperty(PROP_MAAS_URL)
-                .map(Env::normalizeUrl)
-                .orElseGet(() -> {
-                    log.warn("MaaS address is not available, falling back to maas-agent. Specify '{}'property to MaaS url", PROP_MAAS_URL);
-                    return maasAgentUrl;
-                });
+    /**
+     * @throws IllegalStateException if {@code mode} is k8s and {@value #PROP_MAAS_URL} is not set
+     */
+    public static String apiUrl(M2MAuthMode mode) {
+        Optional<String> maasUrl = stringProperty(PROP_MAAS_URL).map(Env::normalizeUrl);
+        return switch (mode) {
+            case LEGACY -> maasAgentUrl();
+            case HYBRID -> maasUrl.orElseGet(() -> {
+                log.warn("MaaS address is not available, falling back to maas-agent. Specify '{}'property to MaaS url", PROP_MAAS_URL);
+                return maasAgentUrl();
+            });
+            case K8S -> maasUrl.orElseThrow(() -> new IllegalStateException(PROP_MAAS_URL
+                    + " is not set: with M2M_AUTH_MODE=k8s the client sends requests directly to MaaS, set " + PROP_MAAS_URL + " to the MaaS URL"));
+        };
     }
 
     public static String apiAuth() {

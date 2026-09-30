@@ -40,6 +40,7 @@ Also, if your work with a tenant database then `TenantContext` must contain `ten
 | Property                    | Description                                                                                  | Default value                | Status                                          |
 | --------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------- | ----------------------------------------------- |
 | quarkus.dbaas.api.agent.url | Sets the URL ("[schema]\://[host]\:[port]") of the dbaas-agent                               |   http://dbaas-agent:8080    | since 3.0.0. Property name was changed in 3.0.0 |
+| api.dbaas.address           | URL of DBaaS for requests with the Kubernetes token. With `M2M_AUTH_MODE=hybrid` a missing value falls back to dbaas-agent; with `M2M_AUTH_MODE=k8s` it is required, and creating the client throws `IllegalStateException` with `api.dbaas.address is not set` | `no default value` |                                                 |
 | cloud.microservice.name      | Sets an microsevice name and it's a part of database classifier. This parameter is required. | `no default value. Required` | since 0.9.0                                     |
 | cloud.microservice.namespace | Sets and namespace where microservice is running. Part of classifier and required property.  | `no default value. Required` | since 0.9.0                                     |
 
