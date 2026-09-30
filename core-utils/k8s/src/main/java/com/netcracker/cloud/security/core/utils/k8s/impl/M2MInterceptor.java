@@ -56,8 +56,14 @@ public final class M2MInterceptor implements Interceptor {
         return switch (mode) {
             case LEGACY -> proceedWithKeycloakToken(request, chain);
             case HYBRID -> proceedHybrid(request, chain);
-            case K8S -> chain.proceed(alterRequest(request, k8sAuthHeaderSupplier.get(), false));
+            case K8S -> proceedWithKubernetesToken(request, chain);
         };
+    }
+
+    private Response proceedWithKubernetesToken(final Request request, final Interceptor.Chain chain) throws IOException {
+        final Request altered = alterRequest(request, k8sAuthHeaderSupplier.get(), false);
+        log.debug("Sending http request to {} using kubernetes token", altered.url());
+        return chain.proceed(altered);
     }
 
     private Response proceedHybrid(final Request request, final Interceptor.Chain chain) throws IOException {

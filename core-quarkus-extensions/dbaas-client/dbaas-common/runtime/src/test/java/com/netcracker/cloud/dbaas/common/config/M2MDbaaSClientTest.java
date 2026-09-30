@@ -34,7 +34,7 @@ class M2MDbaaSClientTest {
 
     @BeforeEach
     void setUp() {
-        environmentVariables.set(M2MAuthMode.ENV, "hybrid");
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "hybrid");
 
         dbaasClientConfig = mock(DbaasClientConfig.class);
         when(dbaasClientConfig.dbaasAgentUrl()).thenReturn(DB_AGENT_URL);
@@ -45,7 +45,7 @@ class M2MDbaaSClientTest {
 
     @AfterEach
     void tearDown() {
-        environmentVariables.remove(M2MAuthMode.ENV);
+        environmentVariables.remove(M2MAuthMode.M2M_AUTH_MODE_ENV);
     }
 
     @Test
@@ -65,7 +65,7 @@ class M2MDbaaSClientTest {
 
     @Test
     void testAgentAddressIsUsedInLegacyMode() throws Exception {
-        environmentVariables.set(M2MAuthMode.ENV, "legacy");
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "legacy");
 
         assertEquals(DB_AGENT_URL, address(m2MDbaaSClient.build()));
     }
@@ -80,14 +80,14 @@ class M2MDbaaSClientTest {
 
     @Test
     void testAggregatorAddressIsUsedInK8sMode() throws Exception {
-        environmentVariables.set(M2MAuthMode.ENV, "k8s");
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "k8s");
 
         assertEquals(DB_AGGREGATOR_URL, address(m2MDbaaSClient.build()));
     }
 
     @Test
     void testMissingAggregatorAddressIsRejectedInK8sMode() {
-        environmentVariables.set(M2MAuthMode.ENV, "k8s");
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "k8s");
         M2MDbaaSClient withoutAggregatorAddress =
                 new M2MDbaaSClient(Optional.empty(), dbaasOkHttpClient, dbaasClientConfig);
 

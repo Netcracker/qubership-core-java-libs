@@ -50,7 +50,7 @@ class M2MInterceptorTest {
     @BeforeEach
     @SuppressWarnings("unchecked")
     void beforeEach() throws JoseException {
-        environmentVariables.set(M2MAuthMode.ENV, "hybrid");
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "hybrid");
 
         wireMockServer = new WireMockServer(0);
         wireMockServer.start();
@@ -73,7 +73,7 @@ class M2MInterceptorTest {
         when(k8sSupplier.get()).thenReturn(K8S_TOKEN_HEADER);
         when(fallbackSupplier.get()).thenReturn(FALLBACK_TOKEN_HEADER);
 
-        final M2MInterceptor interceptor = new M2MInterceptor(M2MAuthMode.read(), urlCache, fallbackSupplier, k8sSupplier);
+        final M2MInterceptor interceptor = new M2MInterceptor(M2MAuthMode.readFromEnv(), urlCache, fallbackSupplier, k8sSupplier);
 
         client = new OkHttpClient.Builder()
                 .addInterceptor(interceptor)
@@ -83,7 +83,7 @@ class M2MInterceptorTest {
     @AfterEach
     void afterEach() {
         wireMockServer.stop();
-        environmentVariables.remove(M2MAuthMode.ENV);
+        environmentVariables.remove(M2MAuthMode.M2M_AUTH_MODE_ENV);
     }
 
     @Test
@@ -195,7 +195,7 @@ class M2MInterceptorTest {
         UrlCache urlCache = new UrlCache(TEST_CACHE_SIZE, TEST_CACHE_DURATION_SEC);
         String fallbackBaseUrl = "http://localhost:" + fallbackServer.port();
 
-        M2MInterceptor interceptor = new M2MInterceptor(M2MAuthMode.read(), urlCache, fallbackSupplier, k8sSupplier, fallbackBaseUrl);
+        M2MInterceptor interceptor = new M2MInterceptor(M2MAuthMode.readFromEnv(), urlCache, fallbackSupplier, k8sSupplier, fallbackBaseUrl);
         OkHttpClient clientWithFallbackUrl = new OkHttpClient.Builder()
                 .addInterceptor(interceptor)
                 .build();
@@ -220,7 +220,7 @@ class M2MInterceptorTest {
     @Test
     @SneakyThrows
     void fallbackUrl_RebasesHostInLegacyMode() {
-        environmentVariables.set(M2MAuthMode.ENV, "legacy");
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "legacy");
 
         assertRebasesToFallbackHostWithoutContactingService();
     }
@@ -228,7 +228,7 @@ class M2MInterceptorTest {
     @Test
     @SneakyThrows
     void fallbackUrl_RebasesHostWhenModeNotSet() {
-        environmentVariables.remove(M2MAuthMode.ENV);
+        environmentVariables.remove(M2MAuthMode.M2M_AUTH_MODE_ENV);
 
         assertRebasesToFallbackHostWithoutContactingService();
     }
@@ -277,7 +277,7 @@ class M2MInterceptorTest {
         UrlCache urlCache = new UrlCache(TEST_CACHE_SIZE, TEST_CACHE_DURATION_SEC);
         String fallbackBaseUrl = "http://localhost:" + fallbackServer.port();
 
-        M2MInterceptor interceptor = new M2MInterceptor(M2MAuthMode.read(), urlCache, fallbackSupplier, k8sSupplier, fallbackBaseUrl);
+        M2MInterceptor interceptor = new M2MInterceptor(M2MAuthMode.readFromEnv(), urlCache, fallbackSupplier, k8sSupplier, fallbackBaseUrl);
         OkHttpClient clientWithFallbackUrl = new OkHttpClient.Builder()
                 .addInterceptor(interceptor)
                 .build();
@@ -305,7 +305,7 @@ class M2MInterceptorTest {
         agentServer.start();
         agentServer.stubFor(get(urlEqualTo(TEST_ENDPOINT)).willReturn(aResponse().withStatus(200)));
         wireMockServer.stubFor(get(urlEqualTo(TEST_ENDPOINT)).willReturn(aResponse().withStatus(200)));
-        M2MInterceptor interceptor = new M2MInterceptor(M2MAuthMode.read(), new UrlCache(TEST_CACHE_SIZE, TEST_CACHE_DURATION_SEC),
+        M2MInterceptor interceptor = new M2MInterceptor(M2MAuthMode.readFromEnv(), new UrlCache(TEST_CACHE_SIZE, TEST_CACHE_DURATION_SEC),
                 fallbackSupplier, k8sSupplier, agentServer.baseUrl());
         OkHttpClient clientWithAgent = new OkHttpClient.Builder().addInterceptor(interceptor).build();
 

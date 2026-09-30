@@ -189,9 +189,6 @@ OkHttpClient client = M2MClient.builder()
 | `hybrid`           | The Kubernetes token with the builder's audience, or the `keycloakTokenSupplier` token when the Kubernetes token cannot be read or the target returns 401 | The requested address; a request that falls back goes to the `agentUrl` host          |
 | `k8s`              | The Kubernetes token only; `keycloakTokenSupplier` is optional                                                                                        | The requested address; a 401 response is returned to the caller                       |
 
-In `hybrid` mode a target that accepted the fallback token gets it directly for the next 5 hours, for up to 400
-targets per client.
-
 Any other value, `true` and `false` included, makes `M2MClient.builder()` throw `IllegalArgumentException` with
 `M2M_AUTH_MODE has unsupported value "<value>": set it to legacy, hybrid, or k8s`. `M2MClientBuilder.mode` overrides
 the environment variable.

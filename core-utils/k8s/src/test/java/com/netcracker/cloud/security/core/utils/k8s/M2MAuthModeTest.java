@@ -48,16 +48,16 @@ class M2MAuthModeTest {
     }
 
     @Test
-    void read_UsesTheEnvironmentVariable() {
-        environmentVariables.set(M2MAuthMode.ENV, "k8s");
+    void readFromEnv_UsesTheEnvironmentVariable() {
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "k8s");
 
-        assertEquals(M2MAuthMode.K8S, M2MAuthMode.read());
+        assertEquals(M2MAuthMode.K8S, M2MAuthMode.readFromEnv());
     }
 
     @Test
-    void read_UnsetVariableIsLegacy() {
-        environmentVariables.remove(M2MAuthMode.ENV);
+    void readFromEnv_UnsetVariableIsLegacy() {
+        environmentVariables.remove(M2MAuthMode.M2M_AUTH_MODE_ENV);
 
-        assertEquals(M2MAuthMode.LEGACY, M2MAuthMode.read());
+        assertEquals(M2MAuthMode.LEGACY, M2MAuthMode.readFromEnv());
     }
 }

@@ -30,7 +30,7 @@ public final class M2MClient {
         private String audience = AudienceName.NETCRACKER;
         private String agentUrl;
         private Supplier<String> keycloakTokenSupplier;
-        private M2MAuthMode mode = M2MAuthMode.read();
+        private M2MAuthMode mode = M2MAuthMode.readFromEnv();
 
         public M2MClientBuilder audience(String audience) {
             this.audience = Objects.requireNonNull(audience, "audience must not be null");
@@ -52,12 +52,9 @@ public final class M2MClient {
             return this;
         }
 
-        /**
-         * @throws NullPointerException if no keycloak token supplier is set and the mode is not {@link M2MAuthMode#K8S}
-         */
         public OkHttpClient build() {
-            if (mode != M2MAuthMode.K8S) {
-                Objects.requireNonNull(keycloakTokenSupplier, "keycloakTokenSupplier must be set unless the M2M auth mode is k8s");
+            if (mode != M2MAuthMode.K8S && keycloakTokenSupplier == null) {
+                throw new IllegalStateException("keycloakTokenSupplier must be set unless the M2M auth mode is k8s");
             }
             M2MInterceptor interceptor = new M2MInterceptor(
                     mode,

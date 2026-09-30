@@ -41,21 +41,21 @@ class M2MClientTest {
 
     @Test
     void testModeIsReadFromEnvironment() {
-        environmentVariables.set(M2MAuthMode.ENV, "k8s");
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "k8s");
 
         assertEquals(M2MAuthMode.K8S, getFieldValue(buildInterceptor(M2MClient.builder()), "mode"));
     }
 
     @Test
     void testExplicitModeWinsOverTheEnvironment() {
-        environmentVariables.set(M2MAuthMode.ENV, "k8s");
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "k8s");
 
         assertEquals(M2MAuthMode.HYBRID, getFieldValue(buildInterceptor(M2MClient.builder().mode(M2MAuthMode.HYBRID)), "mode"));
     }
 
     @Test
     void testUnsupportedModeInEnvironmentFailsTheBuilder() {
-        environmentVariables.set(M2MAuthMode.ENV, "true");
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "true");
 
         assertThrows(IllegalArgumentException.class, M2MClient::builder);
     }
@@ -103,7 +103,7 @@ class M2MClientTest {
     @Test
     void testTokenSupplierIsRequiredInHybridMode() {
         M2MClient.M2MClientBuilder builder = M2MClient.builder().audience(AudienceName.DBAAS).mode(M2MAuthMode.HYBRID);
-        assertThrows(NullPointerException.class, builder::build);
+        assertThrows(IllegalStateException.class, builder::build);
     }
 
     @Test
@@ -216,7 +216,7 @@ class M2MClientTest {
     @Test
     @SneakyThrows
     void builtClient_HybridMode_SendsKubernetesTokenToTarget() {
-        environmentVariables.set(M2MAuthMode.ENV, "hybrid");
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "hybrid");
         WireMockServer agent = startServer();
         WireMockServer target = startServer();
 
@@ -236,7 +236,7 @@ class M2MClientTest {
     @Test
     @SneakyThrows
     void builtClient_ModeNotSet_SendsKeycloakTokenThroughAgent() {
-        environmentVariables.remove(M2MAuthMode.ENV);
+        environmentVariables.remove(M2MAuthMode.M2M_AUTH_MODE_ENV);
         WireMockServer agent = startServer();
         WireMockServer target = startServer();
 

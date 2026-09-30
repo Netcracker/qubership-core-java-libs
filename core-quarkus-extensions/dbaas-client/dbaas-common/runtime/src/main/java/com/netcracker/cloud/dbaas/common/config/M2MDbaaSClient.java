@@ -38,7 +38,7 @@ public class M2MDbaaSClient {
     }
 
     public DbaasClient build() {
-        String dbaasUrl = switch (M2MAuthMode.read()) {
+        String dbaasUrl = switch (M2MAuthMode.readFromEnv()) {
             case LEGACY -> dbaasClientConfig.dbaasAgentUrl();
             case HYBRID -> apiDbaasAddress.orElseGet(() -> {
                 log.warn("DBaaS address is not available, falling back to dbaas-agent. Specify 'api.dbaas.address' property to DBaaS url");

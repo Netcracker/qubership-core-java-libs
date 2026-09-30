@@ -29,42 +29,42 @@ class SpringDbaasApiPropertiesTest {
 
     @Test
     void legacyModeUsesTheConfiguredAgent() {
-        environmentVariables.set(M2MAuthMode.ENV, "legacy");
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "legacy");
 
         assertEquals("http://custom", properties(Optional.of("http://custom"), Optional.of("http://k8s-url")).getAddress());
     }
 
     @Test
     void legacyModeUsesTheDefaultAgent() {
-        environmentVariables.remove(M2MAuthMode.ENV);
+        environmentVariables.remove(M2MAuthMode.M2M_AUTH_MODE_ENV);
 
         assertEquals("http://dbaas-agent:8080", properties(Optional.empty(), Optional.of("http://k8s-url")).getAddress());
     }
 
     @Test
     void hybridModeUsesTheDbaasAddress() {
-        environmentVariables.set(M2MAuthMode.ENV, "hybrid");
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "hybrid");
 
         assertEquals("http://k8s-url", properties(Optional.empty(), Optional.of("http://k8s-url")).getAddress());
     }
 
     @Test
     void hybridModeFallsBackToTheAgentWithoutDbaasAddress() {
-        environmentVariables.set(M2MAuthMode.ENV, "hybrid");
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "hybrid");
 
         assertEquals("http://dbaas-agent:8080", properties(Optional.empty(), Optional.empty()).getAddress());
     }
 
     @Test
     void k8sModeUsesTheDbaasAddress() {
-        environmentVariables.set(M2MAuthMode.ENV, "k8s");
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "k8s");
 
         assertEquals("http://k8s-url", properties(Optional.of("http://custom"), Optional.of("http://k8s-url")).getAddress());
     }
 
     @Test
     void k8sModeRejectsMissingDbaasAddress() {
-        environmentVariables.set(M2MAuthMode.ENV, "k8s");
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "k8s");
         SpringDbaasApiProperties properties = properties(Optional.of("http://custom"), Optional.empty());
 
         IllegalStateException e = assertThrows(IllegalStateException.class, properties::getAddress);

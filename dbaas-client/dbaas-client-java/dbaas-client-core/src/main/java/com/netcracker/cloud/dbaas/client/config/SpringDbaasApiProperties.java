@@ -34,7 +34,7 @@ public class SpringDbaasApiProperties {
      * @throws IllegalStateException if the M2M auth mode is k8s and {@code api.dbaas.address} is not set
      */
     public String getAddress() {
-        return switch (M2MAuthMode.read()) {
+        return switch (M2MAuthMode.readFromEnv()) {
             case LEGACY -> agentAddress();
             case HYBRID -> dbaasAddress.orElseGet(() -> {
                 log.warn("DBaaS address is not available, falling back to dbaas-agent. Specify 'api.dbaas.address' property to DBaaS url");

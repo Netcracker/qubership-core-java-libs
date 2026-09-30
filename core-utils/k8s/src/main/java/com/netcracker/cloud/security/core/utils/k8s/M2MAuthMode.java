@@ -3,18 +3,24 @@ package com.netcracker.cloud.security.core.utils.k8s;
 import java.util.Locale;
 
 public enum M2MAuthMode {
+    /**
+     * Sends the legacy M2M token; DBaaS and MaaS requests go through their agents.
+     */
     LEGACY,
     /**
      * Sends the Kubernetes token and falls back to the legacy M2M token when the Kubernetes token cannot be read or
      * the receiver rejects it.
      */
     HYBRID,
+    /**
+     * Sends only the Kubernetes token, without a fallback.
+     */
     K8S;
 
-    public static final String ENV = "M2M_AUTH_MODE";
+    public static final String M2M_AUTH_MODE_ENV = "M2M_AUTH_MODE";
 
-    public static M2MAuthMode read() {
-        return parse(System.getenv(ENV));
+    public static M2MAuthMode readFromEnv() {
+        return parse(System.getenv(M2M_AUTH_MODE_ENV));
     }
 
     /**
@@ -23,7 +29,7 @@ public enum M2MAuthMode {
      *
      * @throws IllegalArgumentException if {@code value} is not legacy, hybrid, or k8s
      */
-    public static M2MAuthMode parse(String value) {
+    static M2MAuthMode parse(String value) {
         if (value == null || value.isBlank()) {
             return LEGACY;
         }
@@ -32,7 +38,7 @@ public enum M2MAuthMode {
             case "hybrid" -> HYBRID;
             case "k8s" -> K8S;
             default -> throw new IllegalArgumentException(
-                    ENV + " has unsupported value \"" + value + "\": set it to legacy, hybrid, or k8s");
+                    M2M_AUTH_MODE_ENV + " has unsupported value \"" + value + "\": set it to legacy, hybrid, or k8s");
         };
     }
 }

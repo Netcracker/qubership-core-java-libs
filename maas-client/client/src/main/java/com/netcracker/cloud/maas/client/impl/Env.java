@@ -38,7 +38,7 @@ public class Env {
     public static final String PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS = "maas.http.retry.max-total-duration-ms";
 
     public static String apiUrl() {
-        return apiUrl(M2MAuthMode.read());
+        return apiUrl(M2MAuthMode.readFromEnv());
     }
 
     public static String maasAgentUrl() {
