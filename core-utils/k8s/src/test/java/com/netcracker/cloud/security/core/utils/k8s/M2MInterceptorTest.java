@@ -299,4 +299,39 @@ class M2MInterceptorTest {
 
         fallbackServer.stop();
     }
+
+    @Test
+    @SneakyThrows
+    void k8sTokenAccepted_TargetIsNotRebasedToAgent() {
+        WireMockServer agentServer = new WireMockServer(0);
+        agentServer.start();
+        agentServer.stubFor(get(urlEqualTo(TEST_ENDPOINT)).willReturn(aResponse().withStatus(200)));
+        wireMockServer.stubFor(get(urlEqualTo(TEST_ENDPOINT)).willReturn(aResponse().withStatus(200)));
+        M2MInterceptor interceptor = new M2MInterceptor(M2MClient.isK8sM2mEnabled(), new UrlCache(TEST_CACHE_SIZE, TEST_CACHE_DURATION_SEC),
+                fallbackSupplier, k8sSupplier, agentServer.baseUrl());
+        OkHttpClient clientWithAgent = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
+        try (Response response = clientWithAgent.newCall(alterRequest()).execute()) {
+            assertEquals(200, response.code());
+        }
+
+        wireMockServer.verify(1, getRequestedFor(urlEqualTo(TEST_ENDPOINT)).withHeader("Authorization", equalTo(K8S_TOKEN_HEADER)));
+        agentServer.verify(0, getRequestedFor(urlEqualTo(TEST_ENDPOINT)));
+        agentServer.stop();
+    }
+
+    @Test
+    @SneakyThrows
+    void failedFallback_TargetIsNotCached() {
+        wireMockServer.stubFor(get(urlEqualTo(TEST_ENDPOINT)).willReturn(aResponse().withStatus(401)));
+
+        for (int i = 0; i < 2; i++) {
+            try (Response response = client.newCall(alterRequest()).execute()) {
+                assertEquals(401, response.code());
+            }
+        }
+
+        wireMockServer.verify(2, getRequestedFor(urlEqualTo(TEST_ENDPOINT)).withHeader("Authorization", equalTo(K8S_TOKEN_HEADER)));
+        wireMockServer.verify(2, getRequestedFor(urlEqualTo(TEST_ENDPOINT)).withHeader("Authorization", equalTo(FALLBACK_TOKEN_HEADER)));
+    }
 }

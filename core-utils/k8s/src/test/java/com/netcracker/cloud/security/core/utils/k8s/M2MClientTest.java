@@ -2,8 +2,12 @@ package com.netcracker.cloud.security.core.utils.k8s;
 
 import com.netcracker.cloud.security.core.utils.k8s.impl.M2MInterceptor;
 import com.netcracker.cloud.security.core.utils.k8s.impl.UrlCache;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import lombok.SneakyThrows;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
@@ -11,9 +15,16 @@ import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mockStatic;
@@ -25,6 +36,8 @@ class M2MClientTest {
 
     @SystemStub
     private EnvironmentVariables environmentVariables;
+
+    private final List<WireMockServer> servers = new ArrayList<>();
 
     @Test
     void testK8sM2mEnabledIsReadFromEnvironment() {
@@ -175,6 +188,56 @@ class M2MClientTest {
         assertSame(builder, builder.agentUrl("http://dbaas-agent:8080"));
         assertSame(builder, builder.keycloakTokenSupplier(TOKEN_SUPPLIER));
         assertSame(builder, builder.k8sM2mEnabled(true));
+    }
+
+    @Test
+    @SneakyThrows
+    void builtClient_EnabledInEnvironment_SendsKubernetesTokenToTarget() {
+        environmentVariables.set("KUBERNETES_M2M_ENABLED", "true");
+        WireMockServer agent = startServer();
+        WireMockServer target = startServer();
+
+        try (var tokenSource = mockStatic(KubernetesAudienceToken.class)) {
+            tokenSource.when(() -> KubernetesAudienceToken.getToken(anyString())).thenReturn("k8s-token");
+            OkHttpClient client = M2MClient.builder()
+                    .agentUrl(agent.baseUrl())
+                    .keycloakTokenSupplier(TOKEN_SUPPLIER)
+                    .build();
+            client.newCall(new Request.Builder().url(target.baseUrl() + "/api/v1/resource").build()).execute().close();
+        }
+
+        target.verify(1, getRequestedFor(urlEqualTo("/api/v1/resource")).withHeader("Authorization", equalTo("Bearer k8s-token")));
+        agent.verify(0, getRequestedFor(urlEqualTo("/api/v1/resource")));
+    }
+
+    @Test
+    @SneakyThrows
+    void builtClient_NotSetInEnvironment_SendsKeycloakTokenThroughAgent() {
+        environmentVariables.remove("KUBERNETES_M2M_ENABLED");
+        WireMockServer agent = startServer();
+        WireMockServer target = startServer();
+
+        OkHttpClient client = M2MClient.builder()
+                .agentUrl(agent.baseUrl())
+                .keycloakTokenSupplier(TOKEN_SUPPLIER)
+                .build();
+        client.newCall(new Request.Builder().url(target.baseUrl() + "/api/v1/resource").build()).execute().close();
+
+        agent.verify(1, getRequestedFor(urlEqualTo("/api/v1/resource")).withHeader("Authorization", equalTo("Bearer test-token")));
+        target.verify(0, getRequestedFor(urlEqualTo("/api/v1/resource")));
+    }
+
+    private WireMockServer startServer() {
+        WireMockServer server = new WireMockServer(0);
+        server.start();
+        server.stubFor(get(urlEqualTo("/api/v1/resource")).willReturn(aResponse().withStatus(200)));
+        servers.add(server);
+        return server;
+    }
+
+    @AfterEach
+    void stopServers() {
+        servers.forEach(WireMockServer::stop);
     }
 
     @SuppressWarnings("unchecked")
