@@ -31,16 +31,17 @@ public class SpringDbaasApiProperties {
     private int dbaasAsyncRetryTimeoutInS;
 
     /**
-     * @throws IllegalStateException if the M2M auth mode is k8s and {@code api.dbaas.address} is not set
+     * @throws IllegalStateException if the M2M auth mode is k8s and {@code api.dbaas.address} is not set or empty
      */
     public String getAddress() {
+        Optional<String> address = dbaasAddress.filter(value -> !value.isEmpty());
         return switch (M2MAuthMode.readFromEnv()) {
             case LEGACY -> agentAddress();
-            case HYBRID -> dbaasAddress.orElseGet(() -> {
+            case HYBRID -> address.orElseGet(() -> {
                 log.warn("DBaaS address is not available, falling back to dbaas-agent. Specify 'api.dbaas.address' property to DBaaS url");
                 return agentAddress();
             });
-            case K8S -> dbaasAddress.orElseThrow(() -> new IllegalStateException(
+            case K8S -> address.orElseThrow(() -> new IllegalStateException(
                     "api.dbaas.address is not set: with M2M_AUTH_MODE=k8s the client sends requests directly to DBaaS, set api.dbaas.address to the DBaaS URL"));
         };
     }

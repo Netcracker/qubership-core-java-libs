@@ -48,10 +48,10 @@ public class Env {
     }
 
     /**
-     * @throws IllegalStateException if {@code mode} is k8s and {@value #PROP_MAAS_URL} is not set
+     * @throws IllegalStateException if {@code mode} is k8s and {@value #PROP_MAAS_URL} is not set or empty
      */
     public static String apiUrl(M2MAuthMode mode) {
-        Optional<String> maasUrl = stringProperty(PROP_MAAS_URL).map(Env::normalizeUrl);
+        Optional<String> maasUrl = stringProperty(PROP_MAAS_URL).filter(value -> !value.isEmpty()).map(Env::normalizeUrl);
         return switch (mode) {
             case LEGACY -> maasAgentUrl();
             case HYBRID -> maasUrl.orElseGet(() -> {

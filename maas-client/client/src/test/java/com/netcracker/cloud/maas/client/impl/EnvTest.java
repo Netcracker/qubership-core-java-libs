@@ -3,6 +3,8 @@ package com.netcracker.cloud.maas.client.impl;
 import com.netcracker.cloud.security.core.utils.k8s.M2MAuthMode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import static com.netcracker.cloud.maas.client.Utils.withProp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -64,6 +66,16 @@ class EnvTest {
     }
 
     @Test
+    void testApiUrlFallsBackToTheAgentWhenMaasUrlIsEmpty() {
+        withProp(Env.PROP_MAAS_AGENT_URL, "http://maas-agent-custom:8080", () ->
+                withProp(Env.PROP_MAAS_URL, "", () -> {
+                    assertEquals("http://maas-agent-custom:8080", Env.apiUrl(M2MAuthMode.HYBRID));
+                    assertEquals("http://maas-agent-custom:8080", Env.apiUrl(M2MAuthMode.LEGACY));
+                })
+        );
+    }
+
+    @Test
     void testApiUrlHybridModeUsesTheMaasUrl() {
         withProp(Env.PROP_MAAS_URL, "http://localhost:8080/", () ->
                 assertEquals("http://localhost:8080", Env.apiUrl(M2MAuthMode.HYBRID))
@@ -88,10 +100,11 @@ class EnvTest {
         );
     }
 
-    @Test
-    void testApiUrlK8sModeRejectsMissingMaasUrl() {
+    @ParameterizedTest
+    @NullAndEmptySource
+    void testApiUrlK8sModeRejectsMissingMaasUrl(String maasUrl) {
         withProp(Env.PROP_MAAS_AGENT_URL, "http://maas-agent-custom:8080", () ->
-                withProp(Env.PROP_MAAS_URL, null, () -> {
+                withProp(Env.PROP_MAAS_URL, maasUrl, () -> {
                     IllegalStateException e = assertThrows(IllegalStateException.class, () -> Env.apiUrl(M2MAuthMode.K8S));
                     assertTrue(e.getMessage().startsWith(Env.PROP_MAAS_URL + " is not set"), e.getMessage());
                 })
