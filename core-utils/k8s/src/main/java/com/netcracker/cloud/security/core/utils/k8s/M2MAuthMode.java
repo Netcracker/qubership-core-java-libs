@@ -9,7 +9,7 @@ public enum M2MAuthMode {
     LEGACY,
     /**
      * Sends the Kubernetes token and falls back to the legacy M2M token when the Kubernetes token cannot be read or
-     * the receiver rejects it.
+     * the receiver answers 401.
      */
     HYBRID,
     /**
