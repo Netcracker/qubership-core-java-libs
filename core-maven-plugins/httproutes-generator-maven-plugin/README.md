@@ -10,7 +10,7 @@ and Istio `AuthorizationPolicy` manifests for Istio deployments.
 - Includes only classes/methods annotated with `@Route`, `@Routes`, `@FacadeRoute` or `@ForbiddenRoute`.
 - Supports gateway path remapping via `@Gateway` and `@GatewayRequestMapping`, and facade gateway paths via
   `@FacadeGateway` and `@FacadeGatewayRequestMapping`.
-- Generates only `PathPrefix` and `Exact` path matches (see [How Paths Are Matched](#how-paths-are-matched)).
+- Generates only `PathPrefix` path matches (see [How Paths Are Matched](#how-paths-are-matched)).
 - Groups generated routes by route type (`PUBLIC`, `PRIVATE`, `INTERNAL`, `FACADE`).
 - Generates `AuthorizationPolicy` resources with `DENY` rules for paths that must not be reachable
   through a gateway (see [Forbidden Routes and AuthorizationPolicies](#forbidden-routes-and-authorizationpolicies)).
@@ -114,13 +114,14 @@ Example that enables automatic DENY rules:
 All in `com.netcracker.cloud.routesregistration.common.annotation`:
 
 - `@Route`: the route type (`PUBLIC`, `PRIVATE`, `INTERNAL`, `FACADE`), `timeout` and `gateways`.
-  Several `@Route` annotations on one element (the `@Routes` container) are all read.
+  Several `@Route` annotations on one element (the `@Routes` container) are all read. As in legacy, `value` wins over
+  `type` unless it is `INTERNAL`, and a `@Route` without a type is `INTERNAL`.
 - `@FacadeRoute`: the same as `@Route(RouteType.FACADE)`, with its own `gateways`.
 - `@ForbiddenRoute`: gateways on which the gateway path of the element must not be reachable
   (see [Forbidden Routes and AuthorizationPolicies](#forbidden-routes-and-authorizationpolicies)).
 
-A method-level route list replaces the class-level list, as in the legacy route registration.
-Each `@Route`/`@FacadeRoute` entry becomes these routes:
+A method-level route list replaces the class-level list, as in the legacy route registration, so a method `@Route`
+without a type is `INTERNAL` whatever the class `@Route` says. Each `@Route`/`@FacadeRoute` entry becomes these routes:
 
 - no `gateways`, type `PUBLIC`/`PRIVATE`/`INTERNAL`: a route of that type, with the gateway path from
   `@Gateway`/`@GatewayRequestMapping`;
@@ -196,8 +197,8 @@ This produces a `PUBLIC` HTTPRoute rule with:
 ## How Paths Are Matched
 
 The legacy mesh matched every gateway path as a pattern: a variable such as `{id}` matched one path segment, and
-the longest matching gateway path won. The generated HTTPRoutes use only `PathPrefix` and `Exact` matches, which
-Istio evaluates natively.
+the longest matching gateway path won. The generated HTTPRoutes use only `PathPrefix` matches, which Istio evaluates
+natively.
 
 ### The cut
 
@@ -227,32 +228,19 @@ becomes the `ReplacePrefixMatch` rewrite. For example, `/api/v1/{id}/items` → 
 after the cut is the same in both paths (variables are compared by position). This holds for the routes services
 declare in practice, and **the plugin doesn't check it**.
 
-### Merging and the Exact split
+### Merging
 
 Routes cut to the same match are grouped together, whatever their route types, because Istio can't tell apart two
-`PathPrefix` rules with the same value, even in different HTTPRoutes:
+`PathPrefix` rules with the same value, even in different HTTPRoutes. They become one rule:
 
-1. If they all have the same rewrite and timeout, they become one rule.
-2. If exactly one route has the gateway path `P` itself (or `P/`, such as a Spring `@GetMapping("/")` in a controller
-   mapped to `P`), at least one other route has `P/{var}`, and all the other routes share one rewrite, the route with `P` is split into two `Exact` rules with `ReplaceFullPath`, one for `P`
-   and one for `P/`. The other routes are merged into the `PathPrefix P` rule. In legacy, the longer `P/{var}` route
-   takes every request below `P/`, so the route with `P` only ever received `P` and `P/`.
-3. If they all have the same rewrite but different timeouts, they are merged with the largest timeout, and a
-   warning is logged.
-4. Otherwise, one rule can't express them, and the build fails.
+- with the rewrite of the first route (by gateway path, then service path). The plugin doesn't compare the rewrites:
+  routes cut to one match share one rewrite in practice;
+- with the largest timeout, where a route without a timeout counts as the 2-minute gateway default (see
+  [Timeout Generation](#timeout-generation)). A warning is logged when the timeouts differ.
 
 A merged rule goes into the HTTPRoute of the widest route type, because `PUBLIC` routes are exposed on every gateway
 that `PRIVATE` and `INTERNAL` routes are exposed on. On the wider gateways, the narrower routes of the group must be
 forbidden by DENY rules.
-
-Example of the Exact split: the `PUBLIC` routes `/api/v1/svc/items` → `/v1/items` and
-`/api/v1/svc/items/{id}` → `/v2/items/{id}` give these rules, in this order:
-
-| Match                              | Rewrite                         |
-|------------------------------------|---------------------------------|
-| `Exact /api/v1/svc/items/`         | `ReplaceFullPath /v1/items/`    |
-| `Exact /api/v1/svc/items`          | `ReplaceFullPath /v1/items`     |
-| `PathPrefix /api/v1/svc/items`     | `ReplacePrefixMatch /v2/items`  |
 
 ## Route Errors
 
@@ -261,30 +249,23 @@ with `<n> route migration errors, see log`, and the output file is left unchange
 
 Errors:
 
-- Routes cut to the same match need different rewrites, and the [Exact split](#merging-and-the-exact-split) doesn't
-  apply:
-
-  ```
-  [ERROR] Routes /api/v1/svc/items/{id} (PUBLIC, ReplacePrefixMatch /items), /api/v1/svc/items/{id}/details (PUBLIC, ReplacePrefixMatch /details) are cut to PathPrefix /api/v1/svc/items and need different rewrites, which one Istio rule can't express. Align their gateway paths or service paths so that they share one rewrite
-  ```
-
 - A path that legacy didn't route on a gateway, and Istio would, has no DENY rule
   (see [Forbidden Routes and AuthorizationPolicies](#forbidden-routes-and-authorizationpolicies)):
 
   ```
   [ERROR] /api/v1/my-service/resource/{var1}/internal-api is forbidden by legacy, as its route type is narrower, but Istio routes it by PathPrefix /api/v1/my-service/resource on public-gateway, private-gateway: add @ForbiddenRoute({PUBLIC, PRIVATE}) to the element mapped to /api/v1/my-service/resource/{var1}/internal-api, or set autoGenerateAuthorizationPolicies to generate the DENY rules
-  [ERROR] /api/v1/my-service/order is not routed by legacy, but Istio routes it by PathPrefix /api/v1/my-service/order cut from /api/v1/my-service/order/{var1}/items on public-gateway, private-gateway, internal-gateway-service: add @ForbiddenRoute({PUBLIC, PRIVATE, INTERNAL}) to the element mapped to /api/v1/my-service/order, or set autoGenerateAuthorizationPolicies to generate the DENY rules
+  [ERROR] /api/v1/my-service/order is not routed by legacy, but Istio routes it by PathPrefix /api/v1/my-service/order cut from /api/v1/my-service/order/{var1}/items on public-gateway, private-gateway: add @ForbiddenRoute({PUBLIC, PRIVATE}) to the element mapped to /api/v1/my-service/order, or set autoGenerateAuthorizationPolicies to generate the DENY rules
   ```
 
 - A DENY rule can't be expressed, because a forbidden path or a route that overlaps it has a variable that takes up
-  only part of a segment, or a `*` wildcard:
+  only part of a segment:
 
   ```
-  [ERROR] /api/v1/my-service/files/{name}.txt is a forbidden path or overlaps one, and an AuthorizationPolicy can't express it: variables must take up whole path segments, and * wildcards aren't supported
+  [ERROR] /api/v1/my-service/files/{name}.txt is a forbidden path or overlaps one, and an AuthorizationPolicy can't express it: variables must take up whole path segments
   ```
 
 - `@ForbiddenRoute` forbids the gateway path of a route on a gateway where the route is exposed.
-- `@ForbiddenRoute` lists no gateway, or lists `FACADE`.
+- `@ForbiddenRoute` lists no gateway, or lists `INTERNAL` or `FACADE`.
 
 Warnings:
 
@@ -298,13 +279,15 @@ Not checked:
   (`backendRefVal`:`servicePort`) and doesn't know the routes of other services on the same gateways.
 - Whether the part after the cut is the same in the gateway path and the service path
   (see [Rewrite derivation](#rewrite-derivation)).
+- Whether the routes cut to one match have the same rewrite (see [Merging](#merging)).
 
 ## Forbidden Routes and AuthorizationPolicies
 
 ### `@ForbiddenRoute`
 
 `@ForbiddenRoute` (in `com.netcracker.cloud.routesregistration.common.annotation`, route-registration-common) marks
-the gateway path of a class or method as forbidden on the listed gateways: `PUBLIC`, `PRIVATE` and/or `INTERNAL`.
+the gateway path of a class or method as forbidden on the listed gateways: `PUBLIC` and/or `PRIVATE`. The internal
+gateway needs no DENY rules.
 The legacy route registration ignores it. The gateway path is resolved like the gateway path of a route on the same
 element, so `@ForbiddenRoute` can be used on a class or method without `@Route`.
 
@@ -338,7 +321,7 @@ public class ResourceController {
 @RestController
 @RequestMapping("/order")
 @GatewayRequestMapping("/api/v1/my-service/order")
-@ForbiddenRoute({RouteType.PUBLIC, RouteType.PRIVATE, RouteType.INTERNAL})
+@ForbiddenRoute({RouteType.PUBLIC, RouteType.PRIVATE})
 public class OrderController {
 
     @GetMapping("/{var1}/items")
@@ -354,8 +337,8 @@ public class OrderController {
 ### AuthorizationPolicy output
 
 For each gateway with at least one DENY rule, the plugin generates one `AuthorizationPolicy` named
-`{{ .Values.SERVICE_NAME }}-java-annotations-deny-<public|private|internal>`, with `action: DENY`, bound to
-Gateway `public-gateway`, Gateway `private-gateway` or Service `internal-gateway-service`. No policy is generated
+`{{ .Values.SERVICE_NAME }}-java-annotations-deny-<public|private>`, with `action: DENY`, bound to Gateway
+`public-gateway` or `private-gateway`. No policy is generated
 when there are no DENY rules. Each forbidden path `F` gives one rule:
 
 - `paths`: `F` and everything below it, with each variable replaced by `{*}`;
@@ -363,14 +346,16 @@ when there are no DENY rules. Each forbidden path `F` gives one rule:
   everything below it, so these routes stay reachable. The paths are compared segment by segment, and a variable
   segment in one of them matches a literal segment in the other: for `F` = `/a/lit/x`, the `PUBLIC` route
   `/a/{id}/x/y` gives the `notPaths` `/a/{*}/x/y` and `/a/{*}/x/y/{**}`. Every route allowed on that gateway that
-  legacy routes some of these requests by is excluded too, even if it is shorter: for `F` = `/api/v1/svc/admin`, the
-  `PUBLIC` route `/api/v1/svc` gives the `notPaths` `/api/v1/svc` and `/api/v1/svc/{**}`, because legacy routed
-  `/api/v1/svc/admin` on the public gateway;
-- `ports`: `8080`, the listener port of every border gateway.
+  legacy routes some of these requests by is excluded too, even if it is shorter: for `F` = `/api/{version}`, the
+  `PUBLIC` route `/api/v1/x/y` gives the `notPaths` `/api/v1/x/y` and `/api/v1/x/y/{**}`. An explicit `@ForbiddenRoute`
+  path is denied even where legacy routed it by a shorter exposed route: for `F` = `/api/v1/svc/admin`, the `PUBLIC`
+  route `/api/v1/svc` gives no `notPaths`, so `/api/v1/svc/admin` returns 403, and the rest of `/api/v1/svc` stays
+  routed;
+- `ports`: `8080`, the listener port of the public and private gateways.
 
 For the controllers above, the generated file has the `PUBLIC` HTTPRoute with the rules
 `PathPrefix /api/v1/my-service/resource` → `/resource` and `PathPrefix /api/v1/my-service/order` → `/order`, followed
-by three policies. The public one is:
+by two policies. The public one is:
 
 ```yaml
 ---
@@ -414,16 +399,17 @@ spec:
         - "/api/v1/my-service/resource/{*}/internal-api/status/{**}"
 ```
 
-`deny-private` has the same rules, bound to `private-gateway`. `deny-internal` has only the order rule, bound to
-Service `internal-gateway-service`.
+`deny-private` has the same rules, bound to `private-gateway`.
 
 ### Which paths need DENY rules
 
-Legacy registered every route on all border gateways, and forbade it on the gateways wider than its type. On each
-gateway, a path needs a DENY rule when Istio routes it and legacy didn't:
+Legacy registered every route on all border gateways, and forbade it on the gateways wider than its type. On the
+public and private gateways, a path needs a DENY rule when Istio routes it and legacy didn't:
 
 - the gateway path of a route of a narrower type that lies below the cut match of a route exposed on the gateway, such
-  as `internalApi` above, below `PathPrefix /api/v1/my-service/resource`;
+  as `internalApi` above, below `PathPrefix /api/v1/my-service/resource`. A narrower route that legacy routed by a
+  longer exposed route needs no rule: `/api/v1/svc/orders` of type `INTERNAL` next to the `PUBLIC` route
+  `/api/v1/svc/{tenantIdentifier}`;
 - the cut match `P` of an exposed route with a variable, when no route exposed on the gateway matches `P` itself in
   legacy, such as `/api/v1/my-service/order` above.
 
@@ -436,20 +422,21 @@ With `autoGenerateAuthorizationPolicies` set to `true`, the plugin generates the
 For the example above without any `@ForbiddenRoute`, it generates the same policies. `@ForbiddenRoute` still adds rules
 for any other paths it lists.
 
-The default is `false`, because DENY rules on shared border gateways are a security-relevant change that service
-owners should opt into explicitly.
+The default is `false`, because DENY rules on the shared public and private gateways are a security-relevant change
+that service owners should opt into explicitly.
 
 ### DENY rules on shared gateways
 
-The border gateways are shared by all services. A DENY rule on a gateway also applies to paths of other services under
-the same prefix. This is safe as long as gateway paths are namespaced per service (`/api/<version>/<service>/...`).
+The public and private gateways are shared by all services. A DENY rule on a gateway also applies to paths of other
+services under the same prefix. This is safe as long as gateway paths are namespaced per service
+(`/api/<version>/<service>/...`).
 
 ## Facade and Composite Routes
 
 Istio has no facade or composite gateways. Clients call the Service `{{ .Values.SERVICE_NAME }}` directly, and
 Istio sends every request for it to the service unchanged, unless an HTTPRoute is bound to the Service. So the
 facade and composite routes (see [Route metadata](#route-metadata-both-frameworks)) are planned together, with the
-same cut, merging and conflict rules as a gateway, but no AuthorizationPolicies are generated for them.
+same cut and merging as a gateway, but no AuthorizationPolicies are generated for them.
 
 - If **no** facade or composite rule has a rewrite, no service-bound HTTPRoute is generated. If any of these routes has
   a timeout, the timeout is not applied, and a warning says so:
@@ -464,7 +451,8 @@ same cut, merging and conflict rules as a gateway, but no AuthorizationPolicies 
   declare those endpoints as facade routes, or call them through a border gateway.
 
 Legacy facade and composite gateways were separate gateways, so two such routes with the same gateway path and
-different service paths were valid there. In the service-bound HTTPRoute they collide, and the build fails.
+different service paths were valid there. In the service-bound HTTPRoute they are merged into one rule with the
+rewrite of the first one, and this isn't checked.
 
 Example: a method with `@FacadeRoute` and `@FacadeGatewayRequestMapping("/facade/items")` on `/items`, a method with
 `@Route(RouteType.FACADE)` on `/orders`, and a method on `/shared` with `@GatewayRequestMapping("/api/v1/svc/shared")`,
@@ -487,7 +475,7 @@ The plugin writes:
 2. Istio conditional guard:
    `{{- if eq .Values.SERVICE_MESH_TYPE "Istio" }}`,
 3. `HTTPRoute` resources grouped by route type, in the order public, private, internal, facade,
-4. `AuthorizationPolicy` resources, in the order public, private, internal.
+4. `AuthorizationPolicy` resources, in the order public, private.
 
 Snippet:
 
@@ -558,8 +546,16 @@ The plugin can generate per-rule HTTPRoute timeouts from `@Route(timeout = ...)`
   - divisible by `60000` -> `<N>m`
   - divisible by `1000` -> `<N>s`
   - otherwise -> `<N>ms`
-- When routes with different timeouts are merged into one rule, the largest timeout is used
-  (see [Merging and the Exact split](#merging-and-the-exact-split)).
+- When routes with different timeouts are merged into one rule (see [Merging](#merging)), the largest timeout is
+  used, where a route without a timeout counts as the 2-minute gateway default. When the default wins, the
+  `timeouts` block is omitted:
+
+  | Merged timeouts | Rule timeout          |
+  |-----------------|-----------------------|
+  | unset + `5s`    | none (the 2m default) |
+  | unset + `2m`    | `2m`                  |
+  | unset + `5m`    | `5m`                  |
+  | `5s` + `10s`    | `10s`                 |
 
 Example (`@Route(timeout = 5000)`):
 
@@ -642,11 +638,9 @@ Within each HTTPRoute, rules are sorted by their match value before rendering:
 1. More path segments first (for example `/api/v1/users/profile` before `/api/users`).
 2. If segment count is equal, longer path first.
 3. If still equal, lexical path order.
-4. For the same value, `Exact` before `PathPrefix`.
 
-Istio picks `Exact` matches first and then the longest `PathPrefix`, so the order doesn't change routing; it makes
-the generated YAML stable between builds. Each match value appears in only one HTTPRoute (see
-[Merging and the Exact split](#merging-and-the-exact-split)).
+Istio picks the longest `PathPrefix`, so the order doesn't change routing; it makes the generated YAML stable between
+builds. Each match value appears in only one HTTPRoute (see [Merging](#merging)).
 
 ## Differences from Legacy Routing
 
@@ -655,13 +649,15 @@ the generated YAML stable between builds. Each match value appears in only one H
 - **Path normalization.** DENY rules match request paths, so `%2F`, `..` and duplicate slashes can bypass them unless
   `meshConfig.pathNormalization.normalization` is at least `MERGE_SLASHES`
   (see [Istio path normalization](https://istio.io/latest/docs/ops/best-practices/security/#understand-path-normalization)).
-- **Port 8080.** DENY rules apply only to port `8080` of the border gateways.
+- **Port 8080.** DENY rules apply only to port `8080` of the public and private gateways.
 - **Shared gateways.** DENY rules also apply to other services' paths under the same prefix
   (see [DENY rules on shared gateways](#deny-rules-on-shared-gateways)).
 - **Facade gateway paths.** Facade routes take their gateway path from `@FacadeGateway`/`@FacadeGatewayRequestMapping`,
   or use the service path, as in legacy. Earlier plugin versions used `@Gateway`/`@GatewayRequestMapping` paths for them.
 - **Service-bound HTTPRoute.** While it exists, other paths through the Service return 404
   (see [Facade and Composite Routes](#facade-and-composite-routes)).
+- **Internal gateway.** No DENY rules. Paths that legacy forbade there (404), and subtrees widened by the cut, are
+  routed to the service.
 
 ## Migrating Existing Services
 
@@ -672,8 +668,8 @@ when a cut prefix routes a path that legacy didn't. Fix the errors in this order
    the route-registration-common version that contains `@ForbiddenRoute`.
 2. **Or set `<autoGenerateAuthorizationPolicies>true</autoGenerateAuthorizationPolicies>`** to generate these DENY
    rules instead.
-3. **Align the paths** for the errors that DENY rules can't fix: routes cut to the same prefix with different rewrites,
-   and forbidden paths with partial-segment variables such as `/{name}.txt`.
+3. **Align the paths** for the errors that DENY rules can't fix: forbidden paths with partial-segment variables such
+   as `/{name}.txt`.
 
 Then check facade routes that relied on `@Gateway` paths, paths called through the Service while a service-bound
 HTTPRoute exists, and clients that expect `404` for forbidden paths. Overlaps with routes of other services are not

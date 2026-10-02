@@ -85,9 +85,7 @@ class RouteMigrationE2ETest {
                 return match;
             }
             Map<String, Object> rewrite = at(filters.get(0), "urlRewrite", "path");
-            String type = (String) rewrite.get("type");
-            String value = (String) (type.equals("ReplaceFullPath") ? rewrite.get("replaceFullPath") : rewrite.get("replacePrefixMatch"));
-            return match + " -> " + type + " " + value;
+            return match + " -> " + rewrite.get("type") + " " + rewrite.get("replacePrefixMatch");
         }).toList();
     }
 
@@ -121,7 +119,7 @@ class RouteMigrationE2ETest {
         String yaml = generate("forbidden", false);
         List<Map<String, Object>> documents = documents(yaml);
 
-        assertEquals(List.of("HTTPRoute", "AuthorizationPolicy", "AuthorizationPolicy", "AuthorizationPolicy"),
+        assertEquals(List.of("HTTPRoute", "AuthorizationPolicy", "AuthorizationPolicy"),
                 documents.stream().map(d -> d.get("kind")).toList());
         assertFalse(yaml.contains("RegularExpression") || yaml.contains("VirtualService") || yaml.contains("EnvoyFilter"), yaml);
 
@@ -134,7 +132,7 @@ class RouteMigrationE2ETest {
         publicRules.add(expectedInternalApiRule());
         assertEquals(publicRules, policyRules(byName.get(NAME + "deny-public")));
         assertEquals(publicRules, policyRules(byName.get(NAME + "deny-private")));
-        assertEquals(expectedOrderRule(), policyRules(byName.get(NAME + "deny-internal")));
+        assertFalse(byName.containsKey(NAME + "deny-internal"), yaml);
     }
 
     @Test
@@ -153,7 +151,7 @@ class RouteMigrationE2ETest {
         Map<String, Map<String, Object>> automatic = byName(documents(generate("unforbidden", true)));
 
         assertEquals(explicit.keySet(), automatic.keySet());
-        for (String gateway : List.of("public", "private", "internal")) {
+        for (String gateway : List.of("public", "private")) {
             assertEquals(policyRules(explicit.get(NAME + "deny-" + gateway)), policyRules(automatic.get(NAME + "deny-" + gateway)), gateway);
         }
         assertEquals(httpRouteRules(explicit.get(NAME + "public")), httpRouteRules(automatic.get(NAME + "public")));

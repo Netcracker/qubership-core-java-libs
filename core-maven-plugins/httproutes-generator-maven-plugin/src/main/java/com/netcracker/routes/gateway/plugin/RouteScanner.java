@@ -36,6 +36,8 @@ public class RouteScanner {
     private static final String ROUTES_ANNOTATION = Routes.class.getName();
     private static final String FACADE_ROUTE_ANNOTATION = FacadeRoute.class.getName();
     private static final String FORBIDDEN_ROUTE_ANNOTATION = ForbiddenRoute.class.getName();
+    private static final Set<String> FORBIDDEN_GATEWAY_NAMES =
+            Set.of(HttpRoute.Type.PUBLIC.name(), HttpRoute.Type.PRIVATE.name());
     private static final String GATEWAY_ANNOTATION = Gateway.class.getName();
     private static final String GATEWAY_REQUEST_MAPPING = GatewayRequestMapping.class.getName();
     private static final String FACADE_GATEWAY_ANNOTATION = FacadeGateway.class.getName();
@@ -190,16 +192,13 @@ public class RouteScanner {
     }
 
     private ClassContext extractClassContext(ClassInfo classInfo) {
-        AnnotationInfo classRoute = classInfo.getAnnotationInfo(ROUTE_ANNOTATION);
         return new ClassContext(
                 classInfo.getName(),
                 resolveRequestMappings(classInfo),
                 resolveGatewayMappings(classInfo::getAnnotationInfo, PathKind.BORDER),
                 resolveGatewayMappings(classInfo::getAnnotationInfo, PathKind.FACADE),
                 readRouteEntries(classInfo.getAnnotationInfo()),
-                classInfo.getAnnotationInfo(FORBIDDEN_ROUTE_ANNOTATION),
-                getRouteType(classRoute),
-                getRouteTimeout(classRoute)
+                classInfo.getAnnotationInfo(FORBIDDEN_ROUTE_ANNOTATION)
         );
     }
 
@@ -222,8 +221,8 @@ public class RouteScanner {
         List<String> mappingPaths = resolveMappingPaths(methodInfo, mappingAnn);
 
         for (RouteEntry entry : readRouteEntries(methodInfo.getAnnotationInfo())) {
-            HttpRoute.Type type = entry.type().orElse(classContext.fallbackType().orElse(HttpRoute.Type.INTERNAL));
-            long timeout = entry.timeout().orElse(classContext.fallbackTimeout().orElse(0L));
+            HttpRoute.Type type = entry.type().orElse(HttpRoute.Type.INTERNAL);
+            long timeout = entry.timeout().orElse(0L);
             for (Target target : resolveTargets(entry, type)) {
                 methodPairs(classContext, methodInfo, target.pathKind(), mappingPaths).forEach(pair -> declarations.routes().add(
                         new HttpRoute(pair.servicePath(), pair.gatewayPath(), target.type(), timeout)));
@@ -290,9 +289,8 @@ public class RouteScanner {
             return Optional.empty();
         }
         List<String> names = enumValueNames(forbiddenRoute.getParameterValues(false).getValue("value"));
-        if (names.isEmpty() || names.contains(HttpRoute.Type.FACADE.name())) {
-            declarations.errors().add("@ForbiddenRoute of " + element + " must list PUBLIC, PRIVATE and/or INTERNAL, found "
-                    + names);
+        if (names.isEmpty() || !FORBIDDEN_GATEWAY_NAMES.containsAll(names)) {
+            declarations.errors().add("@ForbiddenRoute of " + element + " must list PUBLIC and/or PRIVATE, found " + names);
             return Optional.empty();
         }
         return Optional.of(names.stream().map(HttpRoute.Type::valueOf).collect(Collectors.toCollection(() -> EnumSet.noneOf(HttpRoute.Type.class))));
@@ -547,10 +545,10 @@ public class RouteScanner {
     private Optional<HttpRoute.Type> getRouteType(AnnotationInfo annotationInfo) {
         return Optional.ofNullable(annotationInfo)
                 .map(annInfo -> annInfo.getParameterValues(false))
-                .flatMap(params ->
-                        Optional.ofNullable(params.getValue("type"))
-                                .or(() -> Optional.ofNullable(params.getValue("value")))
-                )
+                .flatMap(params -> Optional.ofNullable(params.getValue("value"))
+                        .filter(value -> !(value instanceof AnnotationEnumValue e
+                                && e.getValueName().equals(HttpRoute.Type.INTERNAL.name())))
+                        .or(() -> Optional.ofNullable(params.getValue("type"))))
                 .filter(AnnotationEnumValue.class::isInstance)
                 .map(AnnotationEnumValue.class::cast)
                 .map(enumVal -> HttpRoute.Type.valueOf(enumVal.getValueName()));
@@ -597,9 +595,7 @@ public class RouteScanner {
             List<String> borderGatewayMappings,
             List<String> facadeGatewayMappings,
             List<RouteEntry> routes,
-            AnnotationInfo forbiddenRoute,
-            Optional<HttpRoute.Type> fallbackType,
-            Optional<Long> fallbackTimeout
+            AnnotationInfo forbiddenRoute
     ) {
         List<String> gatewayMappings(PathKind kind) {
             return kind == PathKind.BORDER ? borderGatewayMappings : facadeGatewayMappings;

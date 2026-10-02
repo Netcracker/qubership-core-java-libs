@@ -37,7 +37,7 @@ class RouteScannerDeclarationsTest {
     void classLevelForbiddenWithoutRoute() {
         RouteScanner.Declarations declarations = scan(ScanControllers.ForbiddenClassWithoutRoute.class);
 
-        assertEquals(Set.of(new ForbiddenPath("/api/v1/svc/order", Set.of(PUBLIC, PRIVATE, INTERNAL))),
+        assertEquals(Set.of(new ForbiddenPath("/api/v1/svc/order", Set.of(PUBLIC, PRIVATE))),
                 declarations.forbidden());
         assertEquals(Set.of(new HttpRoute("/api/v1/svc/order/{id}/items", PUBLIC, 0)), declarations.routes());
         assertEquals(List.of(), declarations.errors());
@@ -57,7 +57,7 @@ class RouteScannerDeclarationsTest {
 
         assertEquals(Set.of(), declarations.forbidden());
         assertEquals(List.of("@ForbiddenRoute of " + ScanControllers.ForbiddenEmpty.class.getName()
-                + "#empty must list PUBLIC, PRIVATE and/or INTERNAL, found []"), declarations.errors());
+                + "#empty must list PUBLIC and/or PRIVATE, found []"), declarations.errors());
     }
 
     @Test
@@ -66,7 +66,36 @@ class RouteScannerDeclarationsTest {
 
         assertEquals(Set.of(), declarations.forbidden());
         assertEquals(List.of("@ForbiddenRoute of " + ScanControllers.ForbiddenFacade.class.getName()
-                + "#facade must list PUBLIC, PRIVATE and/or INTERNAL, found [FACADE]"), declarations.errors());
+                + "#facade must list PUBLIC and/or PRIVATE, found [FACADE]"), declarations.errors());
+    }
+
+    @Test
+    void forbiddenWithInternal() {
+        RouteScanner.Declarations declarations = scan(ScanControllers.ForbiddenInternal.class);
+
+        assertEquals(Set.of(), declarations.forbidden());
+        assertEquals(List.of("@ForbiddenRoute of " + ScanControllers.ForbiddenInternal.class.getName()
+                + "#internal must list PUBLIC and/or PRIVATE, found [PUBLIC, INTERNAL]"), declarations.errors());
+    }
+
+    @Test
+    void forbiddenWithSeveralMappings() {
+        assertEquals(Set.of(new ForbiddenPath("/a", Set.of(PUBLIC)), new ForbiddenPath("/b", Set.of(PUBLIC))),
+                scan(ScanControllers.ForbiddenWithSeveralMappings.class).forbidden());
+    }
+
+    @Test
+    void methodRouteWithoutTypeIsInternalWhateverTheClassRoute() {
+        Set<HttpRoute> expected = Set.of(new HttpRoute("/items", PUBLIC, 5000), new HttpRoute("/items/{id}", INTERNAL, 0));
+
+        assertEquals(expected, routes(ScanControllers.BareMethodRouteInRouteClass.class));
+        assertEquals(expected, routes(ScanControllers.BareMethodRouteInRoutesClass.class));
+    }
+
+    @Test
+    void valueWinsOverTypeUnlessItIsInternal() {
+        assertEquals(Set.of(new HttpRoute("/value", PUBLIC, 0), new HttpRoute("/type", PRIVATE, 0)),
+                routes(ScanControllers.ValueAndType.class));
     }
 
     @Test

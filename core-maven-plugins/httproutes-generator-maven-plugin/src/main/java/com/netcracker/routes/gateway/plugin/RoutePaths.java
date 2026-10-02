@@ -119,11 +119,9 @@ final class RoutePaths {
     }
 
     /**
-     * @return whether {@link #template} can express the path: every variable takes up a whole segment, and there
-     * are no {@code *} wildcards
+     * @return whether {@link #template} can express the path: every variable takes up a whole segment
      */
     static boolean expressible(String path) {
-        return !path.contains("*") && segments(path).stream()
-                .allMatch(s -> !hasVariable(s) || VARIABLE.matcher(s).matches());
+        return segments(path).stream().allMatch(s -> !hasVariable(s) || VARIABLE.matcher(s).matches());
     }
 }

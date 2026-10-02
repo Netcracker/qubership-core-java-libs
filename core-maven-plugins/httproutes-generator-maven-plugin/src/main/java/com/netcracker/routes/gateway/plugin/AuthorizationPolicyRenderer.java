@@ -7,7 +7,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Renders one DENY {@code AuthorizationPolicy} per border gateway, in the order public, private, internal.
+ * Renders one DENY {@code AuthorizationPolicy} per external gateway, public then private. Exposure on the internal
+ * gateway needs no rule, like that of facade routes.
  * <p>
  * Legacy gateways forbid a route on the gateways wider than its type, and don't route a path no route matches.
  * Istio routes by the {@code PathPrefix} cut from each gateway path, so it routes some of these paths:
@@ -23,7 +24,7 @@ public class AuthorizationPolicyRenderer {
     private static final List<String> PORTS = List.of("8080");
     private static final String ACTION_DENY = "DENY";
     private static final List<HttpRoute.Type> GATEWAYS =
-            List.of(HttpRoute.Type.PUBLIC, HttpRoute.Type.PRIVATE, HttpRoute.Type.INTERNAL);
+            List.of(HttpRoute.Type.PUBLIC, HttpRoute.Type.PRIVATE);
 
     private final Map<String, String> labels;
     private final boolean autoGenerateAuthorizationPolicies;
@@ -83,8 +84,7 @@ public class AuthorizationPolicyRenderer {
                 .collect(Collectors.joining(", ")) + "}) to the element mapped to " + path
                 + ", or set autoGenerateAuthorizationPolicies to generate the DENY rules"));
         inexpressible.forEach(path -> problems.error(path + " is a forbidden path or overlaps one, and an "
-                + "AuthorizationPolicy can't express it: variables must take up whole path segments, and * wildcards "
-                + "aren't supported"));
+                + "AuthorizationPolicy can't express it: variables must take up whole path segments"));
         return yaml.toString();
     }
 
@@ -106,6 +106,9 @@ public class AuthorizationPolicyRenderer {
         Map<String, String> needed = new TreeMap<>();
         Set<String> prefixes = allowed.stream().map(RoutePaths::cut).collect(Collectors.toCollection(TreeSet::new));
         for (String path : implicit) {
+            if (legacyRoute(RoutePaths.sample(path, path), allowed, implicit).filter(allowed::contains).isPresent()) {
+                continue;
+            }
             prefixes.stream().filter(prefix -> RoutePaths.covers(prefix, path)).findFirst().ifPresent(prefix -> needed.put(path,
                     "is forbidden by legacy, as its route type is narrower, but Istio routes it by PathPrefix " + prefix));
         }
@@ -142,6 +145,10 @@ public class AuthorizationPolicyRenderer {
                     .filter(request -> overlapping.stream().noneMatch(route -> RoutePaths.covers(route, request)))
                     .forEach(request -> legacyRoute(request, allowed, implicit).filter(allowed::contains)
                             .ifPresent(excluded::add));
+            if (explicit.contains(path)) {
+                // An explicit rule denies its path even where legacy routed it by a wider route
+                excluded.removeIf(route -> RoutePaths.covers(route, RoutePaths.sample(path, path)));
+            }
             List<String> invalid = Stream.concat(Stream.of(path), excluded.stream())
                     .filter(p -> !RoutePaths.expressible(p)).toList();
             if (!invalid.isEmpty()) {
@@ -178,9 +185,7 @@ public class AuthorizationPolicyRenderer {
         AuthorizationPolicyResource.Metadata metadata = new AuthorizationPolicyResource.Metadata(
                 "{{ .Values.SERVICE_NAME }}-java-annotations-deny-" + gateway.name().toLowerCase(),
                 HttpRouteRenderer.buildRouteLabels(labels));
-        HttpRouteRenderer.HTTPRouteResource.Spec.ParentRef ref = gateway == HttpRoute.Type.INTERNAL
-                ? HttpRouteRenderer.serviceParentRef(gateway.gatewayName())
-                : HttpRouteRenderer.gatewayParentRef(gateway.gatewayName());
+        HttpRouteRenderer.HTTPRouteResource.Spec.ParentRef ref = HttpRouteRenderer.gatewayParentRef(gateway.gatewayName());
         AuthorizationPolicyResource.Spec.TargetRef targetRef =
                 new AuthorizationPolicyResource.Spec.TargetRef(ref.group(), ref.kind(), ref.name());
         return new AuthorizationPolicyResource(metadata,

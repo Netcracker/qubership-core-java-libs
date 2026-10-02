@@ -37,7 +37,6 @@ class RoutePathsTest {
         assertEquals("/", RoutePaths.template("/"));
         assertTrue(RoutePaths.expressible("/a/{id}/items"));
         assertFalse(RoutePaths.expressible("/files/{name}.txt"));
-        assertFalse(RoutePaths.expressible("/a/*/items"));
     }
 
     @Test

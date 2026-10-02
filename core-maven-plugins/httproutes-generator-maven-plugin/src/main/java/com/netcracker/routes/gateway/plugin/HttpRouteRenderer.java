@@ -12,16 +12,18 @@ public class HttpRouteRenderer {
 
     private static final ObjectMapper YAML_MAPPER = yamlMapper();
     private static final String MATCH_TYPE_PATH_PREFIX = "PathPrefix";
-    private static final String MATCH_TYPE_EXACT = "Exact";
     private static final String FILTER_TYPE_URL_REWRITE = "URLRewrite";
     private static final String FILTER_PATH_TYPE_REPLACE_PREFIX_MATCH = "ReplacePrefixMatch";
-    private static final String FILTER_PATH_TYPE_REPLACE_FULL_PATH = "ReplaceFullPath";
     private static final List<HttpRoute.Type> RESOURCE_ORDER =
             List.of(HttpRoute.Type.PUBLIC, HttpRoute.Type.PRIVATE, HttpRoute.Type.INTERNAL, HttpRoute.Type.FACADE);
 
     private static final long SECOND = 1_000;
     private static final long MINUTE = 60_000;
     private static final long HOUR = 3_600_000;
+    /**
+     * The gateway request timeout of a route without a timeout.
+     */
+    private static final long DEFAULT_TIMEOUT = 2 * MINUTE;
     public static final String PARENT_REF_KIND_SERVICE = "Service";
     public static final String PARENT_REF_KIND_GATEWAY = "Gateway";
     public static final String PARENT_REF_GROUP_GATEWAY = "gateway.networking.k8s.io";
@@ -79,7 +81,7 @@ public class HttpRouteRenderer {
 
             public record Filter(String type, UrlRewrite urlRewrite) {
                 public record UrlRewrite(Path path) {
-                    public record Path(String type, String replacePrefixMatch, String replaceFullPath) {
+                    public record Path(String type, String replacePrefixMatch) {
                     }
                 }
             }
@@ -93,15 +95,15 @@ public class HttpRouteRenderer {
      * One rule of the generated HTTPRoutes.
      *
      * @param resource  resource the rule goes into; {@code FACADE} is the service-bound HTTPRoute
-     * @param rewrite   {@code ReplacePrefixMatch} value for {@code PathPrefix}, {@code ReplaceFullPath} value for
-     *                  {@code Exact}, or {@code null} for no rewrite
+     * @param value     {@code PathPrefix} value
+     * @param rewrite   {@code ReplacePrefixMatch} value, or {@code null} for no rewrite
      */
-    private record PlannedRule(HttpRoute.Type resource, String matchType, String value, String rewrite, long timeout) {
+    private record PlannedRule(HttpRoute.Type resource, String value, String rewrite, long timeout) {
     }
 
     /**
      * Cuts every gateway path at its first variable into a {@code PathPrefix} and merges the routes cut to one
-     * prefix into one rule. Conflicts are reported to {@code problems}.
+     * prefix into one rule. Merged timeouts are reported to {@code problems}.
      */
     public String generateHttpRoutesYaml(int servicePort, Set<HttpRoute> httpRoutes, Problems problems) {
         List<PlannedRule> rules = planRules(httpRoutes.stream().filter(r -> r.type() != HttpRoute.Type.FACADE), problems);
@@ -136,21 +138,7 @@ public class HttpRouteRenderer {
                         .thenComparing(HttpRoute::type).thenComparingLong(HttpRoute::timeout))
                 .collect(Collectors.groupingBy(r -> RoutePaths.cut(r.gatewayPath()), TreeMap::new, Collectors.toList()));
         List<PlannedRule> rules = new ArrayList<>();
-        groups.forEach((match, group) -> {
-            if (rewrites(match, group).size() == 1) {
-                rules.add(prefixRule(match, group, problems));
-                return;
-            }
-            Optional<HttpRoute> root = exactSplitRoot(match, group);
-            if (root.isPresent()) {
-                rules.addAll(exactRules(match, root.get()));
-                rules.add(prefixRule(match, group.stream().filter(r -> r != root.get()).toList(), problems));
-                return;
-            }
-            problems.error("Routes " + describe(match, group) + " are cut to PathPrefix " + match
-                    + " and need different rewrites, which one Istio rule can't express. Align their gateway paths or "
-                    + "service paths so that they share one rewrite");
-        });
+        groups.forEach((match, group) -> rules.add(prefixRule(match, group, problems)));
         return rules;
     }
 
@@ -162,51 +150,21 @@ public class HttpRouteRenderer {
         return rewrite.equals(match) ? Optional.empty() : Optional.of(rewrite);
     }
 
-    private static Set<Optional<String>> rewrites(String match, List<HttpRoute> routes) {
-        return routes.stream().map(r -> rewriteOf(match, r)).collect(Collectors.toSet());
-    }
-
     /**
-     * The routes of a group can be split when exactly one route S has gateway path {@code match} (or {@code match/}),
-     * another has {@code match/{var}}, and all but S share one rewrite: S then gets {@code Exact} rules.
-     *
-     * @return S, or empty if the routes can't be split
-     */
-    private static Optional<HttpRoute> exactSplitRoot(String match, List<HttpRoute> routes) {
-        List<HttpRoute> roots = routes.stream().filter(r -> !RoutePaths.hasVariable(r.gatewayPath())).toList();
-        if (roots.size() != 1) {
-            return Optional.empty();
-        }
-        List<HttpRoute> rest = routes.stream().filter(r -> r != roots.get(0)).toList();
-        int depth = RoutePaths.segments(match).size();
-        boolean variableChild = rest.stream().map(r -> RoutePaths.segments(r.gatewayPath()))
-                .anyMatch(segments -> segments.size() == depth + 1 && RoutePaths.template(segments.get(depth)).equals("/{*}"));
-        return variableChild && rewrites(match, rest).size() == 1 ? Optional.of(roots.get(0)) : Optional.empty();
-    }
-
-    private static List<PlannedRule> exactRules(String match, HttpRoute root) {
-        boolean rewrite = rewriteOf(match, root).isPresent();
-        String path = RoutePaths.cut(root.path());
-        List<PlannedRule> rules = new ArrayList<>();
-        rules.add(new PlannedRule(root.type(), MATCH_TYPE_EXACT, match, rewrite ? path : null, root.timeout()));
-        if (!match.equals("/")) {
-            rules.add(new PlannedRule(root.type(), MATCH_TYPE_EXACT, match + "/",
-                    rewrite ? (path.equals("/") ? path : path + "/") : null, root.timeout()));
-        }
-        return rules;
-    }
-
-    /**
-     * Merges routes with one rewrite into one rule with the largest timeout, and warns if their timeouts differ.
+     * Merges routes into one rule with the rewrite of the first route and the largest timeout, where a route without
+     * a timeout counts as {@link #DEFAULT_TIMEOUT}, and warns if their timeouts differ.
      */
     private static PlannedRule prefixRule(String match, List<HttpRoute> routes, Problems problems) {
         HttpRoute.Type widest = routes.stream().map(HttpRoute::type).max(Comparator.naturalOrder()).orElseThrow();
-        long timeout = routes.stream().mapToLong(HttpRoute::timeout).max().orElse(0);
+        long largest = routes.stream().mapToLong(HttpRoute::timeout).max().orElse(0);
+        boolean defaultWins = largest < DEFAULT_TIMEOUT && routes.stream().anyMatch(r -> r.timeout() == 0);
+        long timeout = defaultWins ? 0 : largest;
         if (routes.stream().mapToLong(HttpRoute::timeout).distinct().count() > 1) {
             problems.warn("Routes " + describe(match, routes) + " are merged into one rule PathPrefix " + match
-                    + " with the largest timeout " + formatDuration(timeout));
+                    + " with the largest timeout" + (defaultWins ? ", the " + formatDuration(DEFAULT_TIMEOUT) + " default"
+                    : " " + formatDuration(timeout)));
         }
-        return new PlannedRule(widest, MATCH_TYPE_PATH_PREFIX, match, rewriteOf(match, routes.get(0)).orElse(null), timeout);
+        return new PlannedRule(widest, match, rewriteOf(match, routes.get(0)).orElse(null), timeout);
     }
 
     private static String describe(String match, List<HttpRoute> routes) {
@@ -241,8 +199,7 @@ public class HttpRouteRenderer {
                 List.of(serviceBackendRef(this.backendRefVal, servicePort));
 
         List<HTTPRouteResource.Spec.Rule> ruleList = rules.stream()
-                .sorted(Comparator.comparing(PlannedRule::value, pathSpecificity())
-                        .thenComparing(r -> r.matchType().equals(MATCH_TYPE_EXACT) ? 0 : 1))
+                .sorted(Comparator.comparing(PlannedRule::value, pathSpecificity()))
                 .map(rule -> toRule(rule, backendRefs))
                 .toList();
 
@@ -282,7 +239,7 @@ public class HttpRouteRenderer {
         return new HTTPRouteResource.Spec.ParentRef(PARENT_REF_GROUP_GATEWAY, PARENT_REF_KIND_GATEWAY, name);
     }
 
-    static HTTPRouteResource.Spec.ParentRef serviceParentRef(String name) {
+    private static HTTPRouteResource.Spec.ParentRef serviceParentRef(String name) {
         return new HTTPRouteResource.Spec.ParentRef(PARENT_REF_GROUP_SERVICE, PARENT_REF_KIND_SERVICE, name);
     }
 
@@ -315,10 +272,6 @@ public class HttpRouteRenderer {
         };
     }
 
-    static Comparator<HttpRoute> pathSpecificityComparator() {
-        return Comparator.comparing(HttpRoute::gatewayPath, pathSpecificity());
-    }
-
     static int pathSegmentCount(String path) {
         if (path == null || path.isEmpty()) {
             return 0;
@@ -334,7 +287,7 @@ public class HttpRouteRenderer {
 
     private static HTTPRouteResource.Spec.Rule toRule(PlannedRule rule, List<HTTPRouteResource.Spec.BackendRef> backendRefs) {
         HTTPRouteResource.Spec.Match match = new HTTPRouteResource.Spec.Match(
-                new HTTPRouteResource.Spec.Match.Path(rule.matchType(), rule.value()));
+                new HTTPRouteResource.Spec.Match.Path(MATCH_TYPE_PATH_PREFIX, rule.value()));
 
         List<HTTPRouteResource.Spec.Filter> filters = buildRewriteFilter(rule);
         HTTPRouteResource.Spec.Rule.Timeouts timeouts = buildTimeout(rule);
@@ -352,10 +305,8 @@ public class HttpRouteRenderer {
             return List.of();
         }
 
-        boolean exact = rule.matchType().equals(MATCH_TYPE_EXACT);
-        HTTPRouteResource.Spec.Filter.UrlRewrite.Path rewritePath = exact
-                ? new HTTPRouteResource.Spec.Filter.UrlRewrite.Path(FILTER_PATH_TYPE_REPLACE_FULL_PATH, null, rule.rewrite())
-                : new HTTPRouteResource.Spec.Filter.UrlRewrite.Path(FILTER_PATH_TYPE_REPLACE_PREFIX_MATCH, rule.rewrite(), null);
+        HTTPRouteResource.Spec.Filter.UrlRewrite.Path rewritePath =
+                new HTTPRouteResource.Spec.Filter.UrlRewrite.Path(FILTER_PATH_TYPE_REPLACE_PREFIX_MATCH, rule.rewrite());
         HTTPRouteResource.Spec.Filter.UrlRewrite urlRewrite =
                 new HTTPRouteResource.Spec.Filter.UrlRewrite(rewritePath);
         HTTPRouteResource.Spec.Filter filter =

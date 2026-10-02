@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/order")
 @GatewayRequestMapping("/api/v1/my-service/order")
-@ForbiddenRoute({RouteType.PUBLIC, RouteType.PRIVATE, RouteType.INTERNAL})
+@ForbiddenRoute({RouteType.PUBLIC, RouteType.PRIVATE})
 public class OrderController {
 
     @GetMapping("/{var1}/items")

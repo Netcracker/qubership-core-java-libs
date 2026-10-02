@@ -73,9 +73,9 @@ class GenerateRoutesMojoExecuteTest {
         int guard = yaml.indexOf("{{- if eq .Values.SERVICE_MESH_TYPE \"Istio\" }}\n---\n");
         assertTrue(guard > yaml.indexOf("DO NOT EDIT"), yaml);
         assertTrue(yaml.endsWith("{{- end }}\n"), yaml);
-        assertEquals(List.of("HTTPRoute", "AuthorizationPolicy", "AuthorizationPolicy", "AuthorizationPolicy"), kinds(yaml));
+        assertEquals(List.of("HTTPRoute", "AuthorizationPolicy", "AuthorizationPolicy"), kinds(yaml));
         assertTrue(yaml.indexOf("kind: \"HTTPRoute\"") < yaml.indexOf("kind: \"AuthorizationPolicy\""), yaml);
-        assertEquals(5, yaml.split("ports:\n        - \"8080\"\n        paths:", -1).length - 1, yaml);
+        assertEquals(4, yaml.split("ports:\n        - \"8080\"\n        paths:", -1).length - 1, yaml);
         assertFalse(yaml.contains("RegularExpression") || yaml.contains("MANUAL REVIEW"), yaml);
     }
 

@@ -143,17 +143,11 @@ class AuthorizationPolicyRendererTest {
 
     @Test
     void prefixCutFromARouteWithVariables() throws Exception {
-        String yaml = render(false, Set.of(route(ORDER + "/{id}/items", PUBLIC)),
-                Set.of(forbidden(ORDER, PUBLIC, PRIVATE, INTERNAL)));
+        String yaml = render(false, Set.of(route(ORDER + "/{id}/items", PUBLIC)), Set.of(forbidden(ORDER, PUBLIC, PRIVATE)));
 
         List<String> rule = List.of(ORDER + " !" + ORDER + "/{*}/items");
-        assertEquals(Map.of("public", rule, "private", rule, "internal", rule), rules(yaml));
-        assertTrue(yaml.contains("""
-                  targetRefs:
-                  - group: ""
-                    kind: "Service"
-                    name: "internal-gateway-service"
-                """), yaml);
+        assertEquals(Map.of("public", rule, "private", rule), rules(yaml));
+        assertFalse(yaml.contains("internal-gateway-service"), yaml);
     }
 
     @Test
@@ -164,9 +158,59 @@ class AuthorizationPolicyRendererTest {
 
         assertTrue(yaml.contains("deny-public") && !yaml.contains("deny-private"), yaml);
         assertEquals(List.of(ORDER + " is not routed by legacy, but Istio routes it by PathPrefix " + ORDER + " cut from "
-                + ORDER + "/{id}/items on private-gateway, internal-gateway-service: add @ForbiddenRoute({PRIVATE, INTERNAL}) "
+                + ORDER + "/{id}/items on private-gateway: add @ForbiddenRoute({PRIVATE}) "
                 + "to the element mapped to " + ORDER + ", or set autoGenerateAuthorizationPolicies to generate the DENY rules"),
                 problems.errors());
+    }
+
+    @Test
+    void missingRuleForANarrowerRouteNamesThePrefixThatRoutesIt() {
+        Problems problems = new Problems();
+
+        render(false, problems, Set.of(route(RESOURCE, PUBLIC), route(RESOURCE + "/{id}/internal-api", INTERNAL)), Set.of());
+
+        assertEquals(List.of(RESOURCE + "/{id}/internal-api is forbidden by legacy, as its route type is narrower, but Istio "
+                + "routes it by PathPrefix " + RESOURCE + " on public-gateway, private-gateway: add @ForbiddenRoute({PUBLIC, "
+                + "PRIVATE}) to the element mapped to " + RESOURCE + "/{id}/internal-api, or set "
+                + "autoGenerateAuthorizationPolicies to generate the DENY rules"), problems.errors());
+    }
+
+    @Test
+    void internalOnlyRoutesNeedNoRule() {
+        Set<HttpRoute> routes = Set.of(route("/api/v1/svc/{id}", INTERNAL), route("/api/v1/svc/{id}/admin", INTERNAL));
+
+        assertEquals("", render(false, routes, Set.of()));
+        assertEquals("", render(true, routes, Set.of()));
+    }
+
+    @Test
+    void internalRoutesBelowAPrivateRouteNeedRulesOnlyOnThePrivateGateway() throws Exception {
+        String x = "/api/v1/svc/x";
+        Set<HttpRoute> routes = Set.of(route(x, PRIVATE), route(x + "/admin", INTERNAL), route(x + "/{id}/sub", INTERNAL));
+        Problems problems = new Problems();
+
+        assertEquals("", render(false, problems, routes, Set.of()));
+        assertEquals(List.of(
+                x + "/admin is forbidden by legacy, as its route type is narrower, but Istio routes it by PathPrefix " + x
+                        + " on private-gateway: add @ForbiddenRoute({PRIVATE}) to the element mapped to " + x + "/admin, or "
+                        + "set autoGenerateAuthorizationPolicies to generate the DENY rules",
+                x + "/{id}/sub is forbidden by legacy, as its route type is narrower, but Istio routes it by PathPrefix " + x
+                        + " on private-gateway: add @ForbiddenRoute({PRIVATE}) to the element mapped to " + x + "/{id}/sub, or "
+                        + "set autoGenerateAuthorizationPolicies to generate the DENY rules"), problems.errors());
+
+        String explicit = render(false, routes, Set.of(forbidden(x + "/admin", PRIVATE), forbidden(x + "/{id}/sub", PRIVATE)));
+        assertEquals(Map.of("private", List.of(x + "/admin", x + "/{*}/sub")), rules(explicit));
+        assertEquals(explicit, render(true, routes, Set.of()));
+    }
+
+    @Test
+    void narrowerRouteThatLegacyRoutesByALongerExposedRouteNeedsNoRule() throws Exception {
+        Set<HttpRoute> routes = Set.of(route("/api/v1/svc/{tenantIdentifier}", PUBLIC), route("/api/v1/svc/orders", INTERNAL));
+
+        String explicit = render(false, routes, Set.of(forbidden("/api/v1/svc", PUBLIC, PRIVATE)));
+
+        assertEquals(List.of("/api/v1/svc !/api/v1/svc/{*}"), rules(explicit).get("public"));
+        assertEquals(explicit, render(true, routes, Set.of()));
     }
 
     @Test
@@ -179,7 +223,7 @@ class AuthorizationPolicyRendererTest {
 
         assertEquals(render(false, routes, Set.of(
                         forbidden(RESOURCE + "/{id}/internal-api", PUBLIC, PRIVATE),
-                        forbidden(ORDER, PUBLIC, PRIVATE, INTERNAL))),
+                        forbidden(ORDER, PUBLIC, PRIVATE))),
                 render(true, routes, Set.of()));
         assertEquals(List.of(ORDER + " !" + ORDER + "/{*}/items",
                         RESOURCE + "/{*}/internal-api !" + RESOURCE + "/{*}/internal-api/status"),
@@ -232,11 +276,47 @@ class AuthorizationPolicyRendererTest {
     }
 
     @Test
-    void routesLegacyMatchesAForbiddenPathByAreExcluded() throws Exception {
-        assertEquals(List.of("/api/v1/svc/admin !/api/v1/svc"), rules(render(false,
+    void explicitRuleDeniesItsPathBelowAWiderExposedRoute() throws Exception {
+        assertEquals(List.of("/api/v1/svc/admin"), rules(render(false,
                 Set.of(route("/api/v1/svc", PUBLIC)), Set.of(forbidden("/api/v1/svc/admin", PUBLIC)))).get("public"));
+        assertEquals(List.of("/api/v1/svc !/api/v1/svc/{*}", "/api/v1/svc/orders"), rules(render(false,
+                Set.of(route("/api/v1/svc/{tenantIdentifier}", PUBLIC)),
+                Set.of(forbidden("/api/v1/svc", PUBLIC, PRIVATE), forbidden("/api/v1/svc/orders", PUBLIC)))).get("public"));
+    }
+
+    @Test
+    void routesLegacyMatchesAForbiddenPathByAreExcluded() throws Exception {
         assertEquals(List.of("/api/{*} !/api/v1/x/y"), rules(render(false,
                 Set.of(route("/api/v1/x/y", PUBLIC)), Set.of(forbidden("/api/{version}", PUBLIC)))).get("public"));
+        assertEquals(List.of("/api/{*} !/api/v1"), rules(render(false,
+                Set.of(route("/api/v1", PUBLIC)), Set.of(forbidden("/api/{version}", PUBLIC)))).get("public"));
+    }
+
+    @Test
+    void literalSiblingOfANarrowerVariableRouteIsExcludedIfLegacyRoutesItByItself() throws Exception {
+        String r = "/api/v1/svc/r";
+
+        assertEquals(List.of(r + "/{*} !" + r + "/list"), rules(render(true,
+                Set.of(route(r, PUBLIC), route(r + "/{i}", INTERNAL), route(r + "/list", PUBLIC)), Set.of())).get("public"));
+        assertEquals(Map.of("public", List.of(r + "/{*}"), "private", List.of(r + "/{*}")), rules(render(true,
+                Set.of(route(r, PUBLIC), route(r + "/{id}", INTERNAL), route(r + "/list", PUBLIC)), Set.of())));
+        assertEquals(List.of(r + "/{*}"), rules(render(true,
+                Set.of(route(r, PUBLIC), route(r + "/{itemId}", INTERNAL), route(r + "/list", PUBLIC)), Set.of())).get("public"));
+    }
+
+    @Test
+    void shortPrefixCutBeforeTheServiceSegmentIsNotChecked() throws Exception {
+        Set<HttpRoute> routes = Set.of(route("/api/{version}/svc/items", PUBLIC));
+        Problems problems = new Problems();
+
+        render(false, problems, routes, Set.of());
+
+        assertEquals(List.of("/api is not routed by legacy, but Istio routes it by PathPrefix /api cut from "
+                + "/api/{version}/svc/items on public-gateway, private-gateway: add @ForbiddenRoute({PUBLIC, PRIVATE}) "
+                + "to the element mapped to /api, or set autoGenerateAuthorizationPolicies to generate the DENY rules"),
+                problems.errors());
+        List<String> rule = List.of("/api !/api/{*}/svc/items");
+        assertEquals(Map.of("public", rule, "private", rule), rules(render(true, routes, Set.of())));
     }
 
     @Test
@@ -260,10 +340,40 @@ class AuthorizationPolicyRendererTest {
     void partialSegmentVariableIsAnError() {
         Problems problems = new Problems();
 
-        render(false, problems, Set.of(route("/files/{name}.txt", PUBLIC)), Set.of(forbidden("/files", PUBLIC, PRIVATE, INTERNAL)));
+        render(false, problems, Set.of(route("/files/{name}.txt", PUBLIC)), Set.of(forbidden("/files", PUBLIC, PRIVATE)));
 
         assertEquals(List.of("/files/{name}.txt is a forbidden path or overlaps one, and an AuthorizationPolicy can't "
-                + "express it: variables must take up whole path segments, and * wildcards aren't supported"), problems.errors());
+                + "express it: variables must take up whole path segments"), problems.errors());
+    }
+
+    @Test
+    void partialSegmentVariableIsAnErrorInAutomaticMode() {
+        Problems problems = new Problems();
+
+        String yaml = render(true, problems, Set.of(route("/files/{name}.txt", PUBLIC)), Set.of());
+
+        assertEquals("", yaml);
+        assertEquals(List.of("/files/{name}.txt is a forbidden path or overlaps one, and an AuthorizationPolicy can't "
+                + "express it: variables must take up whole path segments"), problems.errors());
+    }
+
+    @Test
+    void allProblemsAreReported() {
+        Problems problems = new Problems();
+
+        render(false, problems, Set.of(
+                        route(RESOURCE, PUBLIC),
+                        route(RESOURCE + "/{id}/internal-api", INTERNAL),
+                        route(ORDER + "/{id}/items", PUBLIC),
+                        route("/files/{name}.txt", PUBLIC)),
+                Set.of(forbidden(RESOURCE, PRIVATE), forbidden("/files", PUBLIC, PRIVATE)));
+
+        List<String> errors = problems.errors();
+        assertEquals(4, errors.size(), errors.toString());
+        assertTrue(errors.get(0).startsWith("@ForbiddenRoute forbids " + RESOURCE + " on private-gateway"), errors.toString());
+        assertTrue(errors.get(1).startsWith(ORDER + " is not routed by legacy"), errors.toString());
+        assertTrue(errors.get(2).startsWith(RESOURCE + "/{id}/internal-api is forbidden by legacy"), errors.toString());
+        assertTrue(errors.get(3).startsWith("/files/{name}.txt is a forbidden path"), errors.toString());
     }
 
     @Test

@@ -318,9 +318,9 @@ There are several restrictions on using custom hosts:
 Istio `AuthorizationPolicy` DENY rules. The legacy runtime route registration ignores this annotation: the routes it registers
 are the same with or without it.
 
-The annotation marks the gateway path of a class or method as forbidden on the listed border gateways. Each value names one
-gateway and does not imply the wider ones: `PUBLIC` is the public gateway, `PRIVATE` is the private gateway and `INTERNAL` is
-the internal gateway. `FACADE` is not supported. The gateway path is resolved the same way as for `@Route` (request mappings,
+The annotation marks the gateway path of a class or method as forbidden on the listed external gateways. Each value names one
+gateway and does not imply the wider ones: `PUBLIC` is the public gateway and `PRIVATE` the private gateway. `INTERNAL` and
+`FACADE` are not supported. The gateway path is resolved the same way as for `@Route` (request mappings,
 `@Gateway` and `@GatewayRequestMapping`). A class-level `@ForbiddenRoute` forbids only the class-level gateway path, and it
 does not need a `@Route` on the same element.
 
