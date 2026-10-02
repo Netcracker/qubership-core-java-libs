@@ -100,6 +100,16 @@ class EnvTest {
         );
     }
 
+    @Test
+    void testApiUrlK8sModeReadsTheMaasUrlFromTheEnvironment() {
+        withProp(Env.PROP_MAAS_URL, null, () -> {
+            var value = withEnvironmentVariable(Env.ENV_MAAS_URL, "http://maas-env:8080/")
+                    .execute(() -> Env.apiUrl(M2MAuthMode.K8S));
+
+            assertEquals("http://maas-env:8080", value);
+        });
+    }
+
     @ParameterizedTest
     @NullAndEmptySource
     void testApiUrlK8sModeRejectsMissingMaasUrl(String maasUrl) {

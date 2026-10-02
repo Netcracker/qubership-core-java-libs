@@ -24,6 +24,7 @@ public class Env {
     static final String ENV_CLOUD_NAMESPACE = "CLOUD_NAMESPACE";
     static final String ENV_ORIGIN_NAMESPACE = "ORIGIN_NAMESPACE";
     static final String ENV_MICROSERVICE_NAME = "MICROSERVICE_NAME";
+    static final String ENV_MAAS_URL = "MAAS_INTERNAL_ADDRESS";
 
     public static final String PROP_CLOUD_NAMESPACE = "cloud.microservice.namespace";
     public static final String PROP_NAMESPACE = "maas.client.classifier.namespace"; //todo deprecated - delete in the next major release
@@ -48,7 +49,8 @@ public class Env {
     }
 
     /**
-     * @throws IllegalStateException if {@code mode} is k8s and {@value #PROP_MAAS_URL} is not set or empty
+     * @throws IllegalStateException if {@code mode} is k8s and neither {@value #PROP_MAAS_URL} nor {@value #ENV_MAAS_URL}
+     *                               is set to a non-empty value
      */
     public static String apiUrl(M2MAuthMode mode) {
         return switch (mode) {
@@ -58,12 +60,13 @@ public class Env {
                 return maasAgentUrl();
             });
             case K8S -> maasUrl().orElseThrow(() -> new IllegalStateException(PROP_MAAS_URL
-                    + " is not set: with M2M_AUTH_MODE=k8s the client sends requests directly to MaaS, set " + PROP_MAAS_URL + " to the MaaS URL"));
+                    + " is not set: with M2M_AUTH_MODE=k8s the client sends requests directly to MaaS, set " + PROP_MAAS_URL
+                    + " or " + ENV_MAAS_URL + " to the MaaS URL"));
         };
     }
 
     private static Optional<String> maasUrl() {
-        return stringProperty(PROP_MAAS_URL).filter(value -> !value.isEmpty()).map(Env::normalizeUrl);
+        return getPropsOrEnvs(args(PROP_MAAS_URL), args(ENV_MAAS_URL)).filter(value -> !value.isEmpty()).map(Env::normalizeUrl);
     }
 
     public static String apiAuth() {
