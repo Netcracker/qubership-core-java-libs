@@ -76,7 +76,7 @@ public final class M2MInterceptor implements Interceptor {
         try {
             altered = alterRequest(request, k8sAuthHeaderSupplier.get(), false);
             log.debug("Sending http request to {} using kubernetes token", altered.url());
-        } catch (IllegalStateException|IllegalArgumentException ex) {
+        } catch (RuntimeException ex) {
             final Request fallbackRequest = alterRequest(request, fallbackAuthHeaderSupplier.get(), true);
             return doRequestFallback(fallbackRequest, KUBERNETES_TOKEN_ACQUISITION_ERROR, cacheKey, chain);
         }

@@ -20,6 +20,7 @@ import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
+import java.io.IOException;
 import java.util.function.Supplier;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -157,6 +158,22 @@ class M2MInterceptorTest {
 
         // Verify it never tried K8s at the network level and went straight to fallback
         wireMockServer.verify(0, getRequestedFor(urlEqualTo(TEST_ENDPOINT)).withHeader("Authorization", equalTo(K8S_TOKEN_HEADER)));
+        wireMockServer.verify(1, getRequestedFor(urlEqualTo(TEST_ENDPOINT)).withHeader("Authorization", equalTo(FALLBACK_TOKEN_HEADER)));
+    }
+
+    @Test
+    @SneakyThrows
+    void kubernetesTokenReadError_Fallback() {
+        when(k8sSupplier.get()).thenThrow(new RuntimeException(new IOException("token file is not readable")));
+
+        wireMockServer.stubFor(get(urlEqualTo(TEST_ENDPOINT))
+                .withHeader("Authorization", equalTo(FALLBACK_TOKEN_HEADER))
+                .willReturn(aResponse().withStatus(200)));
+
+        try (Response response = client.newCall(alterRequest()).execute()) {
+            assertEquals(200, response.code());
+        }
+
         wireMockServer.verify(1, getRequestedFor(urlEqualTo(TEST_ENDPOINT)).withHeader("Authorization", equalTo(FALLBACK_TOKEN_HEADER)));
     }
 
