@@ -20,6 +20,14 @@ public class ConsulClient {
         this(new ConsulRawClient(consulUrl));
     }
 
+    /**
+     * @param onRefusal runs whenever Consul answers {@code 403}, so that the owner of the token can check whether
+     *                  Consul still resolves it
+     */
+    public ConsulClient(String consulUrl, Runnable onRefusal) {
+        this(new ConsulRawClient(consulUrl, onRefusal));
+    }
+
     public Response<List<GetValue>> getKVValues(String keyPrefix, String token) {
         return getKVValues(keyPrefix, token, new QueryParams(-1, -1));
     }

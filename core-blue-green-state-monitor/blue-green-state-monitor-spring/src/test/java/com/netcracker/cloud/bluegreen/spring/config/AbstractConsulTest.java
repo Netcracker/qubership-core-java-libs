@@ -2,7 +2,7 @@ package com.netcracker.cloud.bluegreen.spring.config;
 
 
 import com.netcracker.cloud.bluegreen.impl.http.HttpClientAdapter;
-import com.netcracker.cloud.consul.provider.common.TokenStorage;
+import com.netcracker.cloud.consul.provider.common.ConsulTokenSource;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -64,23 +64,23 @@ abstract class AbstractConsulTest {
         Assertions.assertEquals(expectedValue, injectedFieldValue);
     }
 
-    static class TestTokenStorageConfig {
+    static class TestTokenSourceConfig {
         @Bean
         @Primary
-        public TokenStorage testTokenStorage() {
-            return new TestTokenStorage();
+        public ConsulTokenSource testTokenSource() {
+            return new TestTokenSource();
         }
     }
 
-    static class TestTokenStorage implements TokenStorage {
+    static class TestTokenSource implements ConsulTokenSource {
         @Override
         public String get() {
             return bootstrapToken;
         }
 
         @Override
-        public void update(String s) {
-
+        public void reportRefusal() {
+            // nothing
         }
     }
 }

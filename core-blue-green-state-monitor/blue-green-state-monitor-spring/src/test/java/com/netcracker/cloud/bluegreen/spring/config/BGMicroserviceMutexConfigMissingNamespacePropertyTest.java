@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 
-@SpringBootTest(classes = {AbstractConsulTest.TestTokenStorageConfig.class, BlueGreenMicroserviceMutexConfiguration.class},
+@SpringBootTest(classes = {AbstractConsulTest.TestTokenSourceConfig.class, BlueGreenMicroserviceMutexConfiguration.class},
         properties = {
                 "consul.url=http://test.consul:8500",
                 "cloud.microservice.name=test-name",

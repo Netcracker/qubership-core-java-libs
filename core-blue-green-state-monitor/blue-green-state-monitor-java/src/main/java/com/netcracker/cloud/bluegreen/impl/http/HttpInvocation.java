@@ -22,26 +22,48 @@ import java.util.stream.IntStream;
 public class HttpInvocation<R> {
 
     private static int ALL_ERRORS_CODE = 999;
+    private static final int REFUSED = 403;
 
     private Class<R> type;
     private TypeReference<R> typeRef;
     private final HttpClient client;
     private final HttpRequest request;
 
+    private final Runnable onRefusal;
+
     private final Set<Integer> successCodes;
     private final Map<Integer, ResponseHandler<?>> errorHandlersMap = new HashMap<>();
 
     public HttpInvocation(Class<R> type, HttpClient client, HttpRequest request, int... codes) {
-        this(type, null, client, request, codes);
-        Objects.requireNonNull(type, "type cannot be null");
+        this(type, client, request, () -> {
+        }, codes);
     }
 
     public HttpInvocation(TypeReference<R> typeReference, HttpClient client, HttpRequest request, int... codes) {
-        this(null, typeReference, client, request, codes);
+        this(typeReference, client, request, () -> {
+        }, codes);
+    }
+
+    /**
+     * Built by {@link HttpClientAdapter}, which owns the token the request carries.
+     *
+     * @param onRefusal runs when Consul answers {@code 403}, unless the caller listed 403 among the success codes
+     */
+    HttpInvocation(Class<R> type, HttpClient client, HttpRequest request, Runnable onRefusal, int... codes) {
+        this(type, null, client, request, onRefusal, codes);
+        Objects.requireNonNull(type, "type cannot be null");
+    }
+
+    /**
+     * @param onRefusal runs when Consul answers {@code 403}, unless the caller listed 403 among the success codes
+     */
+    HttpInvocation(TypeReference<R> typeReference, HttpClient client, HttpRequest request, Runnable onRefusal, int... codes) {
+        this(null, typeReference, client, request, onRefusal, codes);
         Objects.requireNonNull(typeReference, "typeReference cannot be null");
     }
 
-    private HttpInvocation(Class<R> type, TypeReference<R> typeReference, HttpClient client, HttpRequest request, int... codes) {
+    private HttpInvocation(Class<R> type, TypeReference<R> typeReference, HttpClient client, HttpRequest request, Runnable onRefusal, int... codes) {
+        this.onRefusal = onRefusal;
         this.type = type;
         this.typeRef = typeReference;
         this.client = client;
@@ -85,6 +107,9 @@ public class HttpInvocation<R> {
                         new ResponseHandler<>(this.type).apply(body, headers) :
                         new ResponseHandler<>(this.typeRef).apply(body, headers);
             } else {
+                if (statusCode == REFUSED) {
+                    onRefusal.run();
+                }
                 ResponseHandler<String> defaultErrorConsumer = new ResponseHandler<>(String.class).apply(body, headers);
                 ResponseHandler<?> errorHandler = this.errorHandlersMap.getOrDefault(statusCode, this.errorHandlersMap.get(ALL_ERRORS_CODE));
                 if (errorHandler != null) {
