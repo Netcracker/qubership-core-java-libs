@@ -10,6 +10,8 @@ import okhttp3.Request;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
@@ -100,9 +102,10 @@ class M2MClientTest {
         assertEquals(HttpUrl.get("http://maas-agent:8080"), getFieldValue(interceptor, "fallbackBaseUrl"));
     }
 
-    @Test
-    void testTokenSupplierIsRequiredInHybridMode() {
-        M2MClient.M2MClientBuilder builder = M2MClient.builder().audience(AudienceName.DBAAS).mode(M2MAuthMode.HYBRID);
+    @ParameterizedTest
+    @EnumSource(value = M2MAuthMode.class, names = {"LEGACY", "HYBRID"})
+    void testTokenSupplierIsRequiredUnlessK8sMode(M2MAuthMode mode) {
+        M2MClient.M2MClientBuilder builder = M2MClient.builder().audience(AudienceName.DBAAS).mode(mode);
         assertThrows(IllegalStateException.class, builder::build);
     }
 
