@@ -51,16 +51,19 @@ public class Env {
      * @throws IllegalStateException if {@code mode} is k8s and {@value #PROP_MAAS_URL} is not set or empty
      */
     public static String apiUrl(M2MAuthMode mode) {
-        Optional<String> maasUrl = stringProperty(PROP_MAAS_URL).filter(value -> !value.isEmpty()).map(Env::normalizeUrl);
         return switch (mode) {
             case LEGACY -> maasAgentUrl();
-            case HYBRID -> maasUrl.orElseGet(() -> {
+            case HYBRID -> maasUrl().orElseGet(() -> {
                 log.warn("MaaS address is not available, falling back to maas-agent. Specify '{}'property to MaaS url", PROP_MAAS_URL);
                 return maasAgentUrl();
             });
-            case K8S -> maasUrl.orElseThrow(() -> new IllegalStateException(PROP_MAAS_URL
+            case K8S -> maasUrl().orElseThrow(() -> new IllegalStateException(PROP_MAAS_URL
                     + " is not set: with M2M_AUTH_MODE=k8s the client sends requests directly to MaaS, set " + PROP_MAAS_URL + " to the MaaS URL"));
         };
+    }
+
+    private static Optional<String> maasUrl() {
+        return stringProperty(PROP_MAAS_URL).filter(value -> !value.isEmpty()).map(Env::normalizeUrl);
     }
 
     public static String apiAuth() {

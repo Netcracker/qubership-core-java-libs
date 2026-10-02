@@ -85,7 +85,7 @@ class EnvTest {
     @Test
     void testApiUrlLegacyModeIgnoresTheMaasUrl() {
         withProp(Env.PROP_MAAS_AGENT_URL, null, () ->
-                withProp(Env.PROP_MAAS_URL, "http://localhost:8080/", () ->
+                withProp(Env.PROP_MAAS_URL, "localhost:8080", () ->
                         assertEquals("http://maas-agent:8080", Env.apiUrl(M2MAuthMode.LEGACY))
                 )
         );
