@@ -74,12 +74,12 @@ The plugin SHALL report an error when a `@ForbiddenRoute` declaration forbids, o
 ### Requirement: Actionable failure report
 Before it writes any file, the plugin SHALL log every warning and every error of the scan, HTTPRoute generation and AuthorizationPolicy generation, and then fail the build with `MojoFailureException` when there is at least one error. The exception message SHALL give the number of errors and point to the log.
 
-- An error for a path that needs a DENY rule SHALL name the path, why it needs one, all the gateways it needs one on, the `@ForbiddenRoute(...)` gateways to add to the element mapped to it, and the alternative of setting `autoGenerateAuthorizationPolicies`.
+- An error for a path that needs a DENY rule SHALL name the path, why it needs one, all the gateways it needs one on, and the `@ForbiddenRoute(...)` gateways to add to the element mapped to it. It SHALL NOT mention `autoGenerateAuthorizationPolicies`.
 - An error for a path that an AuthorizationPolicy can't express SHALL name the path and say why.
 
 #### Scenario: Missing DENY rule report content
 - **WHEN** the implicit 404 scenario above fails
-- **THEN** the log has one error naming `/api/v1/svc/resource/{id}/internal-api`, `PathPrefix /api/v1/svc/resource`, the public and private gateways, the suggestion `@ForbiddenRoute({PUBLIC, PRIVATE})`, and `autoGenerateAuthorizationPolicies`
+- **THEN** the log has one error naming `/api/v1/svc/resource/{id}/internal-api`, `PathPrefix /api/v1/svc/resource`, the public and private gateways and the suggestion `@ForbiddenRoute({PUBLIC, PRIVATE})`, with no mention of `autoGenerateAuthorizationPolicies`
 
 #### Scenario: Exposure that no DENY rule can fix
 - **WHEN** PUBLIC route `/api/files/{name}.txt` is declared, and `@ForbiddenRoute` forbids `/api/files` on the public and private gateways, or `autoGenerateAuthorizationPolicies` is set

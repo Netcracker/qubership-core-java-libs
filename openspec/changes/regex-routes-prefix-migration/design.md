@@ -85,7 +85,7 @@ This computation replaces a differential validation. It doesn't detect timeout p
 The rules of `G` are built for `explicit`, plus:
 
 - with `autoGenerateAuthorizationPolicies` = `true`: every needed path;
-- with `false` (default): nothing more. Every needed path whose template has no explicit rule on `G` is an error. The errors are grouped per path and list all its gateways, the reason, and both fixes: `add @ForbiddenRoute({PUBLIC, PRIVATE}) to the element mapped to <path>, or set autoGenerateAuthorizationPolicies to generate the DENY rules`.
+- with `false` (default): nothing more. Every needed path whose template has no explicit rule on `G` is an error. The errors are grouped per path and list all its gateways, the reason, and the fix: `add @ForbiddenRoute({PUBLIC, PRIVATE}) to the element mapped to <path>`. They don't mention `autoGenerateAuthorizationPolicies`.
 
 *Default `false`*: generated DENY rules on the shared public and private gateways are a security-relevant change that service owners should opt into explicitly.
 
@@ -122,7 +122,7 @@ Two legacy facade or composite routes with the same gateway path and different s
 
 ## Risks / Trade-offs
 
-- [Many existing services start failing the build (implicit 404s, cut exposure)] → This is intentional (they are insecure or silently wrong today). Every error names the `@ForbiddenRoute` to add or offers `autoGenerateAuthorizationPolicies`. The plugin is released as a new major version with a README migration section.
+- [Many existing services start failing the build (implicit 404s, cut exposure)] → This is intentional (they are insecure or silently wrong today). Every error names the `@ForbiddenRoute` to add. The plugin is released as a new major version with a README migration section.
 - [A DENY rule on the shared public or private gateway also blocks another service's routes under the same path] → Gateway paths are service-namespaced (`/api/<version>/<service>/...`), and the plugin doesn't model other services. The README states it. A variable before the service segment cuts the match to a shared prefix (`/api`, `/`), and its DENY rule then blocks the other services' paths under it. This is expected and not checked (user decision, D2).
 - [An allowed route is denied where a forbidden route of the same length covers it and a DENY rule for that forbidden route is generated] → Expected (user decision, D4). The legacy order of patterns of the same length isn't modeled, and the plugin takes the forbidden one. Without such a rule, the allowed route stays routed (D3).
 - [The direct computation misses a case that a simulation would catch] → The gaps are listed in D4. Every case of D4 has a unit test, and an end-to-end test covers a typical controller set.

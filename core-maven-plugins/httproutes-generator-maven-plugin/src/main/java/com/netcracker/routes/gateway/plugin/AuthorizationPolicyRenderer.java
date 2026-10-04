@@ -81,8 +81,7 @@ public class AuthorizationPolicyRenderer {
         }
         missing.forEach((path, m) -> problems.error(path + " " + m.reason() + " on " + gatewayNames(m.gateways())
                 + ": add @ForbiddenRoute({" + m.gateways().stream().sorted(Comparator.reverseOrder()).map(Enum::name)
-                .collect(Collectors.joining(", ")) + "}) to the element mapped to " + path
-                + ", or set autoGenerateAuthorizationPolicies to generate the DENY rules"));
+                .collect(Collectors.joining(", ")) + "}) to the element mapped to " + path));
         inexpressible.forEach(path -> problems.error(path + " is a forbidden path or overlaps one, and an "
                 + "AuthorizationPolicy can't express it: variables must take up whole path segments"));
         return yaml.toString();

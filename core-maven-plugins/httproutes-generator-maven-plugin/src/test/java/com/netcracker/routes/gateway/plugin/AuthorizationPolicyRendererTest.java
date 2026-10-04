@@ -159,8 +159,7 @@ class AuthorizationPolicyRendererTest {
         assertTrue(yaml.contains("deny-public") && !yaml.contains("deny-private"), yaml);
         assertEquals(List.of(ORDER + " is not routed by legacy, but Istio routes it by PathPrefix " + ORDER + " cut from "
                 + ORDER + "/{id}/items on private-gateway: add @ForbiddenRoute({PRIVATE}) "
-                + "to the element mapped to " + ORDER + ", or set autoGenerateAuthorizationPolicies to generate the DENY rules"),
-                problems.errors());
+                + "to the element mapped to " + ORDER), problems.errors());
     }
 
     @Test
@@ -171,8 +170,7 @@ class AuthorizationPolicyRendererTest {
 
         assertEquals(List.of(RESOURCE + "/{id}/internal-api is forbidden by legacy, as its route type is narrower, but Istio "
                 + "routes it by PathPrefix " + RESOURCE + " on public-gateway, private-gateway: add @ForbiddenRoute({PUBLIC, "
-                + "PRIVATE}) to the element mapped to " + RESOURCE + "/{id}/internal-api, or set "
-                + "autoGenerateAuthorizationPolicies to generate the DENY rules"), problems.errors());
+                + "PRIVATE}) to the element mapped to " + RESOURCE + "/{id}/internal-api"), problems.errors());
     }
 
     @Test
@@ -192,11 +190,10 @@ class AuthorizationPolicyRendererTest {
         assertEquals("", render(false, problems, routes, Set.of()));
         assertEquals(List.of(
                 x + "/admin is forbidden by legacy, as its route type is narrower, but Istio routes it by PathPrefix " + x
-                        + " on private-gateway: add @ForbiddenRoute({PRIVATE}) to the element mapped to " + x + "/admin, or "
-                        + "set autoGenerateAuthorizationPolicies to generate the DENY rules",
+                        + " on private-gateway: add @ForbiddenRoute({PRIVATE}) to the element mapped to " + x + "/admin",
                 x + "/{id}/sub is forbidden by legacy, as its route type is narrower, but Istio routes it by PathPrefix " + x
-                        + " on private-gateway: add @ForbiddenRoute({PRIVATE}) to the element mapped to " + x + "/{id}/sub, or "
-                        + "set autoGenerateAuthorizationPolicies to generate the DENY rules"), problems.errors());
+                        + " on private-gateway: add @ForbiddenRoute({PRIVATE}) to the element mapped to " + x + "/{id}/sub"),
+                problems.errors());
 
         String explicit = render(false, routes, Set.of(forbidden(x + "/admin", PRIVATE), forbidden(x + "/{id}/sub", PRIVATE)));
         assertEquals(Map.of("private", List.of(x + "/admin", x + "/{*}/sub")), rules(explicit));
@@ -326,8 +323,7 @@ class AuthorizationPolicyRendererTest {
 
         assertEquals(List.of("/api is not routed by legacy, but Istio routes it by PathPrefix /api cut from "
                 + "/api/{version}/svc/items on public-gateway, private-gateway: add @ForbiddenRoute({PUBLIC, PRIVATE}) "
-                + "to the element mapped to /api, or set autoGenerateAuthorizationPolicies to generate the DENY rules"),
-                problems.errors());
+                + "to the element mapped to /api"), problems.errors());
         List<String> rule = List.of("/api !/api/{*}/svc/items");
         assertEquals(Map.of("public", rule, "private", rule), rules(render(true, routes, Set.of())));
     }

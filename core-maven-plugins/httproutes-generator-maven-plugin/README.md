@@ -253,8 +253,8 @@ Errors:
   (see [Forbidden Routes and AuthorizationPolicies](#forbidden-routes-and-authorizationpolicies)):
 
   ```
-  [ERROR] /api/v1/my-service/resource/{var1}/internal-api is forbidden by legacy, as its route type is narrower, but Istio routes it by PathPrefix /api/v1/my-service/resource on public-gateway, private-gateway: add @ForbiddenRoute({PUBLIC, PRIVATE}) to the element mapped to /api/v1/my-service/resource/{var1}/internal-api, or set autoGenerateAuthorizationPolicies to generate the DENY rules
-  [ERROR] /api/v1/my-service/order is not routed by legacy, but Istio routes it by PathPrefix /api/v1/my-service/order cut from /api/v1/my-service/order/{var1}/items on public-gateway, private-gateway: add @ForbiddenRoute({PUBLIC, PRIVATE}) to the element mapped to /api/v1/my-service/order, or set autoGenerateAuthorizationPolicies to generate the DENY rules
+  [ERROR] /api/v1/my-service/resource/{var1}/internal-api is forbidden by legacy, as its route type is narrower, but Istio routes it by PathPrefix /api/v1/my-service/resource on public-gateway, private-gateway: add @ForbiddenRoute({PUBLIC, PRIVATE}) to the element mapped to /api/v1/my-service/resource/{var1}/internal-api
+  [ERROR] /api/v1/my-service/order is not routed by legacy, but Istio routes it by PathPrefix /api/v1/my-service/order cut from /api/v1/my-service/order/{var1}/items on public-gateway, private-gateway: add @ForbiddenRoute({PUBLIC, PRIVATE}) to the element mapped to /api/v1/my-service/order
   ```
 
 - A DENY rule can't be expressed, because a forbidden path or a route that overlaps it has a variable that takes up
