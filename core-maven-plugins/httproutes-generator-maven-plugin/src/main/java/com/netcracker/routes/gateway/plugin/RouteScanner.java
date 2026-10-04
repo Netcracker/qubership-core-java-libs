@@ -32,6 +32,14 @@ public class RouteScanner {
             GET.class, POST.class, PUT.class, DELETE.class, PATCH.class
     );
 
+    /**
+     * The annotations that Quarkus resources inherit: {@code @Path} like in the Quarkus extension, and the HTTP methods,
+     * which the extension doesn't read.
+     */
+    private static final Set<String> JAX_RS_INHERITED_ANNOTATIONS = Stream.concat(Stream.of(Path.class), JAX_RS_HTTP_ANNOTATIONS.stream())
+            .map(Class::getName)
+            .collect(Collectors.toSet());
+
     private static final String ROUTE_ANNOTATION = Route.class.getName();
     private static final String ROUTES_ANNOTATION = Routes.class.getName();
     private static final String FACADE_ROUTE_ANNOTATION = FacadeRoute.class.getName();
@@ -81,11 +89,14 @@ public class RouteScanner {
         return declarations;
     }
 
+    /**
+     * @return the declarations of Spring controllers
+     */
     Declarations collect(Collection<ClassInfo> classes) {
         Declarations declarations = new Declarations();
         classes.stream()
-                .filter(this::hasRoute)
-                .forEach(classInfo -> collectClass(classInfo, declarations));
+                .filter(classInfo -> hasRoute(classInfo, FrameworkType.SPRING))
+                .forEach(classInfo -> collectClass(classInfo, FrameworkType.SPRING, declarations));
         return declarations;
     }
 
@@ -138,67 +149,49 @@ public class RouteScanner {
     }
 
     private void scanClassesForRoutes(ScanResult scan, FrameworkType framework, Declarations declarations) {
-        getAnnotatedClasses(scan, framework)
-                .distinct()
-                .filter(this::hasRoute)
-                .forEach(classInfo -> collectClass(classInfo, declarations));
+        scan.getAllClasses().stream()
+                .filter(classInfo -> hasRoute(classInfo, framework))
+                .forEach(classInfo -> collectClass(classInfo, framework, declarations));
     }
 
-    private Stream<ClassInfo> getAnnotatedClasses(ScanResult scan, FrameworkType framework) {
-        Set<Class<?>> annotations = framework == FrameworkType.SPRING
-                ? SPRING_HTTP_ANNOTATIONS
-                : JAX_RS_HTTP_ANNOTATIONS;
-
-        if (framework == FrameworkType.QUARKUS) {
-            return Stream.concat(
-                    getClassesWithAnnotations(scan, Set.of(Path.class)),
-                    getClassesWithAnnotations(scan, annotations)
-            );
-        }
-
-        return getClassesWithAnnotations(scan, annotations);
-    }
-
-    private Stream<ClassInfo> getClassesWithAnnotations(ScanResult scan, Set<Class<?>> annotations) {
-        return annotations.stream()
-                .flatMap(annotation -> Stream.concat(
-                        scan.getClassesWithMethodAnnotation(annotation.getName()).stream(),
-                        scan.getClassesWithAnnotation(annotation.getName()).stream()
-                ));
-    }
-
+    /**
+     * @return the routes of a Spring controller
+     */
     public Set<HttpRoute> getRequestMappingPaths(ClassInfo classInfo) {
         Declarations declarations = new Declarations();
-        collectClass(classInfo, declarations);
+        collectClass(classInfo, FrameworkType.SPRING, declarations);
         return declarations.routes();
     }
 
-    private void collectClass(ClassInfo classInfo, Declarations declarations) {
+    /**
+     * Like the legacy libs, maps all methods of a Spring controller with the controller's class annotations, and only
+     * the declared methods of a Quarkus resource.
+     */
+    private void collectClass(ClassInfo classInfo, FrameworkType framework, Declarations declarations) {
         log.info("Get Request Mappings for Class: " + classInfo.getName());
 
         int before = declarations.routes().size();
-        ClassContext classContext = extractClassContext(classInfo);
-        for (MethodInfo methodInfo : classInfo.getMethodInfo()) {
-            getHttpMappingAnnotations(methodInfo)
-                    .forEach(mappingAnn -> collectMethod(classContext, methodInfo, mappingAnn, declarations));
+        ClassContext classContext = extractClassContext(classInfo, framework);
+        MethodInfoList methods = framework == FrameworkType.SPRING ? classInfo.getMethodInfo() : classInfo.getDeclaredMethodInfo();
+        for (MethodInfo methodInfo : methods) {
+            AnnotationInfoList annotations = annotations(methodInfo, framework);
+            getHttpMappingAnnotations(annotations)
+                    .forEach(mappingAnn -> collectMethod(classContext, methodInfo, annotations, mappingAnn, declarations));
         }
         collectClassLevel(classContext, declarations);
-
-        if (classInfo.getSuperclass() != null) {
-            collectClass(classInfo.getSuperclass(), declarations);
-        }
 
         log.info("Found " + (declarations.routes().size() - before) + " routes");
     }
 
-    private ClassContext extractClassContext(ClassInfo classInfo) {
+    private ClassContext extractClassContext(ClassInfo classInfo, FrameworkType framework) {
+        AnnotationInfoList annotations = annotations(classInfo, framework);
         return new ClassContext(
                 classInfo.getName(),
-                resolveRequestMappings(classInfo),
-                resolveGatewayMappings(classInfo::getAnnotationInfo, PathKind.BORDER),
-                resolveGatewayMappings(classInfo::getAnnotationInfo, PathKind.FACADE),
-                readRouteEntries(classInfo.getAnnotationInfo()),
-                classInfo.getAnnotationInfo(FORBIDDEN_ROUTE_ANNOTATION)
+                resolveRequestMappings(annotations),
+                resolveGatewayMappings(annotations::get, PathKind.BORDER),
+                resolveGatewayMappings(annotations::get, PathKind.FACADE),
+                readRouteEntries(annotations),
+                annotations.get(FORBIDDEN_ROUTE_ANNOTATION)
         );
     }
 
@@ -217,21 +210,25 @@ public class RouteScanner {
                         declarations.forbidden().add(new ForbiddenPath(pair.gatewayPath(), gateways))));
     }
 
-    private void collectMethod(ClassContext classContext, MethodInfo methodInfo, AnnotationInfo mappingAnn, Declarations declarations) {
-        List<String> mappingPaths = resolveMappingPaths(methodInfo, mappingAnn);
+    /**
+     * @param annotations the annotations of the method, including the inherited ones
+     */
+    private void collectMethod(ClassContext classContext, MethodInfo methodInfo, AnnotationInfoList annotations,
+                               AnnotationInfo mappingAnn, Declarations declarations) {
+        List<String> mappingPaths = resolveMappingPaths(annotations, mappingAnn);
 
-        for (RouteEntry entry : readRouteEntries(methodInfo.getAnnotationInfo())) {
+        for (RouteEntry entry : readRouteEntries(annotations)) {
             HttpRoute.Type type = entry.type().orElse(HttpRoute.Type.INTERNAL);
             long timeout = entry.timeout().orElse(0L);
             for (Target target : resolveTargets(entry, type)) {
-                methodPairs(classContext, methodInfo, target.pathKind(), mappingPaths).forEach(pair -> declarations.routes().add(
+                methodPairs(classContext, annotations, target.pathKind(), mappingPaths).forEach(pair -> declarations.routes().add(
                         new HttpRoute(pair.servicePath(), pair.gatewayPath(), target.type(), timeout)));
             }
         }
 
-        readForbiddenGateways(methodInfo.getAnnotationInfo(FORBIDDEN_ROUTE_ANNOTATION),
+        readForbiddenGateways(annotations.get(FORBIDDEN_ROUTE_ANNOTATION),
                 classContext.name() + "#" + methodInfo.getName(), declarations)
-                .ifPresent(gateways -> methodPairs(classContext, methodInfo, PathKind.BORDER, mappingPaths).forEach(pair ->
+                .ifPresent(gateways -> methodPairs(classContext, annotations, PathKind.BORDER, mappingPaths).forEach(pair ->
                         declarations.forbidden().add(new ForbiddenPath(pair.gatewayPath(), gateways))));
     }
 
@@ -250,8 +247,8 @@ public class RouteScanner {
         return requestMappings.stream().map(path -> new PathPair(path, path)).toList();
     }
 
-    private List<PathPair> methodPairs(ClassContext classContext, MethodInfo methodInfo, PathKind kind, List<String> mappingPaths) {
-        List<String> methodGatewayMappings = resolveGatewayMappings(methodInfo::getAnnotationInfo, kind);
+    private List<PathPair> methodPairs(ClassContext classContext, AnnotationInfoList annotations, PathKind kind, List<String> mappingPaths) {
+        List<String> methodGatewayMappings = resolveGatewayMappings(annotations::get, kind);
         if (!classContext.gatewayMappings(kind).isEmpty()) {
             return buildClassGatewayPairs(
                     classContext.gatewayMappings(kind),
@@ -357,9 +354,7 @@ public class RouteScanner {
                 .toList();
     }
 
-    private Stream<AnnotationInfo> getHttpMappingAnnotations(MethodInfo methodInfo) {
-        AnnotationInfoList annotations = methodInfo.getAnnotationInfo();
-
+    private Stream<AnnotationInfo> getHttpMappingAnnotations(AnnotationInfoList annotations) {
         List<AnnotationInfo> specificMappings = annotations.stream()
                 .filter(this::isHttpMappingAnnotation)
                 .toList();
@@ -372,9 +367,72 @@ public class RouteScanner {
                 .filter(this::isRequestMappingAnnotation);
     }
 
-    private boolean hasRoute(ClassInfo classInfo) {
+    /**
+     * Like the legacy libs: a Spring controller is a concrete class with a route annotation in its hierarchy, a Quarkus
+     * resource is a class or interface with a route annotation of its own.
+     */
+    private boolean hasRoute(ClassInfo classInfo, FrameworkType framework) {
+        if (framework == FrameworkType.QUARKUS) {
+            return hasOwnRoute(classInfo);
+        }
+        return classInfo.isStandardClass() && !classInfo.isAbstract() && hierarchy(classInfo).anyMatch(this::hasOwnRoute);
+    }
+
+    private boolean hasOwnRoute(ClassInfo classInfo) {
         return ROUTE_SELECTING_ANNOTATIONS.stream()
-                .anyMatch(annotation -> classInfo.hasAnnotation(annotation) || classInfo.hasMethodAnnotation(annotation));
+                .anyMatch(annotation -> classInfo.hasAnnotation(annotation) || classInfo.hasDeclaredMethodAnnotation(annotation));
+    }
+
+    /**
+     * @return the class, then each of its interfaces with their superinterfaces, then its superclass in the same way:
+     * the order in which Spring's {@code AnnotationUtils.findAnnotation} searches
+     */
+    private static Stream<ClassInfo> hierarchy(ClassInfo classInfo) {
+        if (classInfo == null) {
+            return Stream.empty();
+        }
+        return Stream.of(
+                Stream.of(classInfo),
+                classInfo.getInterfaces().directOnly().stream().flatMap(RouteScanner::hierarchy),
+                hierarchy(classInfo.getSuperclass())
+        ).flatMap(Function.identity());
+    }
+
+    private static AnnotationInfoList annotations(ClassInfo classInfo, FrameworkType framework) {
+        return inherit(hierarchy(classInfo).map(ClassInfo::getAnnotationInfo), framework);
+    }
+
+    /**
+     * @return the annotations of the method and of the methods it overrides
+     */
+    private static AnnotationInfoList annotations(MethodInfo methodInfo, FrameworkType framework) {
+        return inherit(hierarchy(methodInfo.getClassInfo())
+                .flatMap(classInfo -> classInfo.getDeclaredMethodInfo(methodInfo.getName()).stream())
+                .filter(method -> method.getTypeDescriptorStr().equals(methodInfo.getTypeDescriptorStr()))
+                .map(MethodInfo::getAnnotationInfo), framework);
+    }
+
+    /**
+     * Adds to the annotations of an element the annotations that it inherits: each annotation type comes from the
+     * first element of the hierarchy that has it, like in Spring's {@code AnnotationUtils.findAnnotation}. Spring
+     * controllers inherit every annotation, Quarkus resources only {@code JAX_RS_INHERITED_ANNOTATIONS}.
+     *
+     * @param hierarchy the annotations of the element, then of the elements it inherits from
+     */
+    private static AnnotationInfoList inherit(Stream<AnnotationInfoList> hierarchy, FrameworkType framework) {
+        Iterator<AnnotationInfoList> elements = hierarchy.iterator();
+        AnnotationInfoList result = new AnnotationInfoList(elements.next());
+        Set<String> found = result.stream().map(AnnotationInfo::getName).collect(Collectors.toCollection(HashSet::new));
+        elements.forEachRemaining(annotations -> {
+            // all annotations of a type, which repeat when classgraph unwraps @Routes
+            List<AnnotationInfo> inherited = annotations.stream()
+                    .filter(annotation -> !found.contains(annotation.getName()))
+                    .filter(annotation -> framework == FrameworkType.SPRING || JAX_RS_INHERITED_ANNOTATIONS.contains(annotation.getName()))
+                    .toList();
+            result.addAll(inherited);
+            inherited.forEach(annotation -> found.add(annotation.getName()));
+        });
+        return result;
     }
 
     private boolean isRequestMappingAnnotation(AnnotationInfo annotationInfo) {
@@ -391,13 +449,13 @@ public class RouteScanner {
         return getAnnotationPathFor(annotations.apply(gateway));
     }
 
-    private List<String> resolveRequestMappings(ClassInfo classInfo) {
+    private List<String> resolveRequestMappings(AnnotationInfoList annotations) {
         return Stream.of(
                         RequestMapping.class, GetMapping.class, PostMapping.class,
                         PutMapping.class, DeleteMapping.class, PatchMapping.class, Path.class
                 )
                 .map(Class::getName)
-                .map(classInfo::getAnnotationInfo)
+                .map(annotations::get)
                 .filter(Objects::nonNull)
                 .findFirst()
                 .map(this::getAnnotationPathFor)
@@ -418,9 +476,9 @@ public class RouteScanner {
                 PATCH.class.getName().equals(name);
     }
 
-    private List<String> resolveMappingPaths(MethodInfo methodInfo, AnnotationInfo mappingAnn) {
+    private List<String> resolveMappingPaths(AnnotationInfoList annotations, AnnotationInfo mappingAnn) {
         if (JAX_RS_HTTP_ANNOTATIONS.stream().map(Class::getName).anyMatch(s -> s.equals(mappingAnn.getClassInfo().getName()))) {
-            List<String> paths = getAnnotationPathFor(methodInfo.getAnnotationInfo(Path.class.getName()));
+            List<String> paths = getAnnotationPathFor(annotations.get(Path.class.getName()));
             return paths.isEmpty() ? List.of("") : paths;
         }
         return getAnnotationPathFor(mappingAnn);

@@ -133,6 +133,21 @@ without a type is `INTERNAL` whatever the class `@Route` says. Each `@Route`/`@F
 
 `hosts` are ignored: Istio has no composite gateways and no virtual hosts on a Service-bound HTTPRoute.
 
+### Inheritance
+
+Superclasses and interfaces are handled as in the legacy route registration libs:
+
+- **Spring**: each annotation is looked up in the class or method first, then in its interfaces, then in its
+  superclass, like Spring's `AnnotationUtils.findAnnotation`, and an annotation of the subclass replaces the same
+  annotation of the parent. Only concrete classes are controllers: a controller maps all its methods, the inherited
+  ones too, with its class annotations, inherited or its own. Abstract classes and interfaces give no routes of their
+  own.
+- **Quarkus**: only `@Path` and the HTTP method annotations (`@GET`, ...) are inherited. `@Route`, `@Gateway` and the
+  other route annotations are read from the class or method itself. A class or interface with a route annotation of its
+  own maps the methods it declares.
+
+Superclasses and interfaces must be in the compiled output of the scanned module.
+
 ## Example: Spring Controller
 
 ```java
@@ -710,8 +725,9 @@ mvn com.netcracker.cloud.plugins:httproutes-generator-maven-plugin:generate-rout
 
 ### Superclass endpoints not discovered
 
-- Scanner recursively processes superclasses, but those classes still must be
-  available in compiled output and inside accepted packages.
+- See [Inheritance](#inheritance): a Spring base class must have a concrete subclass, and a Quarkus resource doesn't
+  inherit `@Route`.
+- Superclasses and interfaces must be available in the compiled output of the scanned module.
 
 ### Helm template syntax issues
 
