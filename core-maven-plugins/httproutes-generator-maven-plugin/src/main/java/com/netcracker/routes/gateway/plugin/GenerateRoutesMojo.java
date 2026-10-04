@@ -37,7 +37,7 @@ public class GenerateRoutesMojo extends AbstractMojo {
     @Parameter(defaultValue = "gateway-httproutes.yaml")
     private String outputFile;
 
-    @Parameter(defaultValue = "{{ .Values.DEPLOYMENT_RESOURCE_NAME }}")
+    @Parameter(defaultValue = "{{ .Values.SERVICE_NAME }}")
     private String backendRefVal;
 
     @Parameter

@@ -36,7 +36,7 @@ class GenerateRoutesMojoExecuteTest {
         set(mojo, "packages", new String[]{E2E_PACKAGE + controllerSet});
         set(mojo, "servicePort", 8080);
         set(mojo, "outputFile", OUTPUT_FILE);
-        set(mojo, "backendRefVal", "{{ .Values.DEPLOYMENT_RESOURCE_NAME }}");
+        set(mojo, "backendRefVal", "{{ .Values.SERVICE_NAME }}");
         return mojo;
     }
 

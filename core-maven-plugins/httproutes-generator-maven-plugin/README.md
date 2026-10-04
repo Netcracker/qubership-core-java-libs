@@ -51,7 +51,7 @@ Add the plugin to your `pom.xml`:
         </packages>
         <servicePort>8080</servicePort>
         <outputFile>helm-templates/my-service/templates/annotations-httproutes.yaml</outputFile>
-        <backendRefVal>{{ .Values.DEPLOYMENT_RESOURCE_NAME }}</backendRefVal>
+        <backendRefVal>{{ .Values.SERVICE_NAME }}</backendRefVal>
         <labels>
           <label>
             <key>app.kubernetes.io/name</key>
@@ -71,7 +71,7 @@ Add the plugin to your `pom.xml`:
 | `packages`                          | `String[]`            | `com.netcracker`                         | Package prefixes scanned in compiled classes.                                           |
 | `servicePort`                       | `int`                 | `8080`                                   | Backend service port for generated `backendRefs`.                                       |
 | `outputFile`                        | `String`              | `gateway-httproutes.yaml`                | Output path relative to project base dir.                                               |
-| `backendRefVal`                     | `String`              | `{{ .Values.DEPLOYMENT_RESOURCE_NAME }}` | Backend service name in generated routes.                                               |
+| `backendRefVal`                     | `String`              | `{{ .Values.SERVICE_NAME }}`             | Backend service name in generated routes.                                               |
 | `labels`                            | `List<Label>`         | empty list                               | Custom labels for the metadata of generated HTTPRoutes and AuthorizationPolicies. When set, they replace default labels. Each `<label>` entry has a `<key>` and `<value>` child element, which allows label names containing `/`. |
 | `autoGenerateAuthorizationPolicies` | `boolean`             | `false`                                  | When `true`, the plugin generates the `DENY` rules that keep the legacy behavior, so you don't have to declare them with `@ForbiddenRoute`. See [Automatic DENY rules](#automatic-deny-rules). |
 
@@ -524,7 +524,7 @@ spec:
     backendRefs:
     - group: ""
       kind: "Service"
-      name: "{{ .Values.DEPLOYMENT_RESOURCE_NAME }}"
+      name: "{{ .Values.SERVICE_NAME }}"
       port: 8080
       weight: 1
 ---
@@ -569,7 +569,7 @@ Example (`@Route(timeout = 5000)`):
     backendRefs:
     - group: ""
       kind: "Service"
-      name: "{{ .Values.DEPLOYMENT_RESOURCE_NAME }}"
+      name: "{{ .Values.SERVICE_NAME }}"
       port: 8080
       weight: 1
     timeouts:
