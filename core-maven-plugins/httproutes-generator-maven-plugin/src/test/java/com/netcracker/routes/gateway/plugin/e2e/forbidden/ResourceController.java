@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * The resource controller of the example in regex-routes-migration.md.
+ * The resource controller of the {@code @ForbiddenRoute} example in the plugin README.
  */
 @RestController
 @RequestMapping("/resource")

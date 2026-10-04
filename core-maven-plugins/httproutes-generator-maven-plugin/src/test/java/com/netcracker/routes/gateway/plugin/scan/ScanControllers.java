@@ -92,6 +92,15 @@ public final class ScanControllers {
     }
 
     @RestController
+    @RequestMapping("/items")
+    @Route(RouteType.PUBLIC)
+    public static class MethodWithoutRoute {
+        @GetMapping("/{id}")
+        public void item() {
+        }
+    }
+
+    @RestController
     public static class ValueAndType {
         @GetMapping("/value")
         @Route(value = RouteType.PUBLIC, type = RouteType.PRIVATE)

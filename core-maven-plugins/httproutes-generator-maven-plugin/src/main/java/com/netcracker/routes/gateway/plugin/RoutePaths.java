@@ -61,8 +61,9 @@ final class RoutePaths {
     }
 
     /**
-     * @return whether every request path matching {@code path} matches the {@code PathPrefix} or legacy route
-     * {@code route} too
+     * @return whether {@code route} has no more segments than {@code path} and overlaps it: for a request path, whether
+     * the {@code PathPrefix} or legacy route {@code route} matches it; for a pattern, whether it matches some request
+     * path that matches the pattern
      */
     static boolean covers(String route, String path) {
         return segments(route).size() <= segments(path).size() && overlaps(route, path);

@@ -93,6 +93,11 @@ class RouteScannerDeclarationsTest {
     }
 
     @Test
+    void methodWithoutRouteGivesNoRoute() {
+        assertEquals(Set.of(new HttpRoute("/items", PUBLIC, 0)), routes(ScanControllers.MethodWithoutRoute.class));
+    }
+
+    @Test
     void valueWinsOverTypeUnlessItIsInternal() {
         assertEquals(Set.of(new HttpRoute("/value", PUBLIC, 0), new HttpRoute("/type", PRIVATE, 0)),
                 routes(ScanControllers.ValueAndType.class));

@@ -24,8 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * End-to-end tests of the controller sets in the {@code e2e} test packages: the example of regex-routes-migration.md
- * with and without {@code @ForbiddenRoute}, and facade and composite routes.
+ * End-to-end tests of the controller sets in the {@code e2e} test packages: the {@code @ForbiddenRoute} example of the
+ * plugin README with and without {@code @ForbiddenRoute}, and facade and composite routes.
  */
 class RouteMigrationE2ETest {
 

@@ -7,10 +7,10 @@ Defines how routes declared with legacy route-registration annotations are trans
 ## ADDED Requirements
 
 ### Requirement: Allowed output resource kinds
-The plugin SHALL emit only `gateway.networking.k8s.io/v1` `HTTPRoute` resources and, when forbidden routes are declared, `security.istio.io/v1` `AuthorizationPolicy` resources. The plugin MUST NOT emit `VirtualService`, `EnvoyFilter` or any other resource kind.
+The plugin SHALL emit only `gateway.networking.k8s.io/v1` `HTTPRoute` resources and, when DENY rules are needed, from `@ForbiddenRoute` or generated with `autoGenerateAuthorizationPolicies`, `security.istio.io/v1` `AuthorizationPolicy` resources. The plugin MUST NOT emit `VirtualService`, `EnvoyFilter` or any other resource kind.
 
 #### Scenario: Routes without forbidden declarations
-- **WHEN** the scanned project declares routes and no forbidden routes
+- **WHEN** the scanned project declares routes and no forbidden routes, and no path needs a DENY rule
 - **THEN** the output file contains only `HTTPRoute` resources
 
 ### Requirement: Single backend for all rules

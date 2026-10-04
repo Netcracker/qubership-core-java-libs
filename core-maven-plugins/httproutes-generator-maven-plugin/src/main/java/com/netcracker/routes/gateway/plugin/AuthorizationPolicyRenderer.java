@@ -114,11 +114,12 @@ public class AuthorizationPolicyRenderer {
         }
         for (String path : allowed) {
             String prefix = RoutePaths.cut(path);
-            if (!RoutePaths.hasVariable(path) || needed.containsKey(prefix)) {
+            if (!RoutePaths.hasVariable(path)) {
                 continue;
             }
             if (legacyRoute(prefix, allowed, implicit).filter(allowed::contains).isEmpty()) {
-                needed.put(prefix, "is not routed by legacy, but Istio routes it by PathPrefix " + prefix + " cut from " + path);
+                needed.putIfAbsent(prefix,
+                        "is not routed by legacy, but Istio routes it by PathPrefix " + prefix + " cut from " + path);
             }
         }
 
@@ -142,7 +143,6 @@ public class AuthorizationPolicyRenderer {
             Set<String> excluded = new TreeSet<>(overlapping);
             Stream.concat(Stream.of(path), allowed.stream().filter(route -> RoutePaths.overlaps(path, route)))
                     .map(route -> RoutePaths.sample(path, route))
-                    .filter(request -> overlapping.stream().noneMatch(route -> RoutePaths.covers(route, request)))
                     .forEach(request -> legacyRoute(request, allowed, implicit).filter(allowed::contains)
                             .ifPresent(excluded::add));
             if (explicit.contains(path)) {

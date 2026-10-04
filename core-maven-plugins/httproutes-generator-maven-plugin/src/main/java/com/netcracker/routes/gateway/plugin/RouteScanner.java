@@ -280,7 +280,6 @@ public class RouteScanner {
                 .map(name -> Optional.ofNullable(BORDER_GATEWAY_NAMES.get(name))
                         .map(borderType -> new Target(borderType, PathKind.BORDER))
                         .orElse(new Target(HttpRoute.Type.FACADE, PathKind.BORDER)))
-                .distinct()
                 .toList();
     }
 
@@ -333,13 +332,16 @@ public class RouteScanner {
         );
     }
 
-    private static List<String> stringValues(Object value) {
-        Stream<?> values = switch (value) {
+    private static Stream<?> values(Object value) {
+        return switch (value) {
             case null -> Stream.empty();
             case Object[] objects -> Arrays.stream(objects);
             default -> Stream.of(value);
         };
-        return values
+    }
+
+    private static List<String> stringValues(Object value) {
+        return values(value)
                 .filter(String.class::isInstance)
                 .map(String.class::cast)
                 .filter(s -> !s.isEmpty())
@@ -348,12 +350,7 @@ public class RouteScanner {
     }
 
     private static List<String> enumValueNames(Object value) {
-        Stream<?> values = switch (value) {
-            case null -> Stream.empty();
-            case Object[] objects -> Arrays.stream(objects);
-            default -> Stream.of(value);
-        };
-        return values
+        return values(value)
                 .filter(AnnotationEnumValue.class::isInstance)
                 .map(AnnotationEnumValue.class::cast)
                 .map(AnnotationEnumValue::getValueName)

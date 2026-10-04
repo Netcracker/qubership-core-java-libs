@@ -163,7 +163,7 @@ public class UserController {
 
 Generated route characteristics for this example:
 
-- match `PathPrefix /api/users` (the `/{id}` route is cut to the same prefix and merged with it),
+- match `PathPrefix /api/users`: only the class has `@Route`, so it gives the only route, and the methods are reached below it,
 - URL rewrite filter `ReplacePrefixMatch /users`, because gateway and service paths differ,
 - parent refs for `private-gateway`, `internal-gateway-service`.
 

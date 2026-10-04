@@ -241,6 +241,13 @@ class AuthorizationPolicyRendererTest {
     }
 
     @Test
+    void narrowerRouteBelowALiteralPrefixByAVariableNeedsARule() throws Exception {
+        List<String> rule = List.of("/api/v1/svc/{*}/internal");
+        assertEquals(Map.of("public", rule, "private", rule), rules(render(true,
+                Set.of(route(ORDER, PUBLIC), route("/api/v1/svc/{entity}/internal", INTERNAL)), Set.of())));
+    }
+
+    @Test
     void facadeRoutesNeedNoRule() {
         assertEquals("", render(false, Set.of(route(ORDER + "/{id}", HttpRoute.Type.FACADE)), Set.of()));
     }
@@ -305,6 +312,12 @@ class AuthorizationPolicyRendererTest {
     }
 
     @Test
+    void routesOfOneTemplateWithOtherVariableNamesAreOnePath() {
+        render(false, Set.of(route(ORDER, PUBLIC), route(ORDER + "/{id}", PUBLIC), route(ORDER + "/{orderId}", INTERNAL)),
+                Set.of());
+    }
+
+    @Test
     void shortPrefixCutBeforeTheServiceSegmentIsNotChecked() throws Exception {
         Set<HttpRoute> routes = Set.of(route("/api/{version}/svc/items", PUBLIC));
         Problems problems = new Problems();
@@ -327,6 +340,21 @@ class AuthorizationPolicyRendererTest {
         assertEquals(List.of("/ !" + order + "/{*}/items !/{*}/{*}/{*}/{*}/{*}",
                         order + " !" + order + "/{*}/items !/{*}/{*}/{*}/{*}/{*}"),
                 rules(yaml).get("public"));
+    }
+
+    @Test
+    void cutMatchBelowAShorterForbiddenRouteNeedsARule() throws Exception {
+        List<String> rule = List.of(ORDER + " !" + ORDER + "/{*}");
+        assertEquals(Map.of("public", rule, "private", rule), rules(render(true,
+                Set.of(route("/api/v1/svc", INTERNAL), route(ORDER + "/{id}", PUBLIC)), Set.of())));
+    }
+
+    @Test
+    void rootRuleDeniesItsSubtree() {
+        String yaml = render(true, Set.of(route("/{tenant}/items", PUBLIC)), Set.of());
+
+        assertTrue(yaml.contains("- \"/{**}\""), yaml);
+        assertFalse(yaml.contains("//"), yaml);
     }
 
     @Test
