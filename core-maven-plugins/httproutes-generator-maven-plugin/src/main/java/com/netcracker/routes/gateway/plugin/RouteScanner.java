@@ -388,13 +388,10 @@ public class RouteScanner {
      * the order in which Spring's {@code AnnotationUtils.findAnnotation} searches
      */
     private static Stream<ClassInfo> hierarchy(ClassInfo classInfo) {
-        if (classInfo == null) {
-            return Stream.empty();
-        }
         return Stream.of(
                 Stream.of(classInfo),
                 classInfo.getInterfaces().directOnly().stream().flatMap(RouteScanner::hierarchy),
-                hierarchy(classInfo.getSuperclass())
+                Stream.ofNullable(classInfo.getSuperclass()).flatMap(RouteScanner::hierarchy)
         ).flatMap(Function.identity());
     }
 
