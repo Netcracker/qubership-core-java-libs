@@ -86,11 +86,25 @@ class SelfTokenReaderTest {
     }
 
     @Test
-    void readFailsWithIOExceptionOnNonSuccessCode() {
+    void aRefusedTokenReachesTheCallerWithItsCode() {
         when(consulClient.getSelfToken(anyString()))
                 .thenReturn(new ConsulClientResponse("token does not exist: ACL not found", 403));
 
-        assertThrows(IOException.class, () -> selfTokenReader.read("test-current-secret-id"));
+        ConsulResponseException thrown = assertThrows(ConsulResponseException.class,
+                () -> selfTokenReader.read("test-current-secret-id"));
+
+        assertEquals(403, thrown.getCode());
+    }
+
+    @Test
+    void anUnavailableConsulReachesTheCallerWithItsCode() {
+        when(consulClient.getSelfToken(anyString()))
+                .thenReturn(new ConsulClientResponse("service unavailable", 503));
+
+        ConsulResponseException thrown = assertThrows(ConsulResponseException.class,
+                () -> selfTokenReader.read("test-current-secret-id"));
+
+        assertEquals(503, thrown.getCode());
     }
 
     @Test

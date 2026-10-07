@@ -3,7 +3,7 @@ package com.netcracker.cloud.bluegreen.quarkus.config;
 import com.netcracker.cloud.bluegreen.api.service.MicroserviceMutexService;
 import com.netcracker.cloud.bluegreen.impl.service.ConsulMicroserviceMutexService;
 import com.netcracker.cloud.bluegreen.impl.util.EnvUtil;
-import com.netcracker.cloud.consul.provider.common.TokenStorage;
+import com.netcracker.cloud.consul.provider.common.ConsulTokenSource;
 import io.quarkus.arc.DefaultBean;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Disposes;
@@ -29,9 +29,10 @@ public class ConsulBlueGreenMicroserviceMutexConfiguration {
     @DefaultBean
     @ApplicationScoped
     @Named("microserviceMutexService")
-    public MicroserviceMutexService microserviceMutexService(TokenStorage tokenStorage) {
+    public MicroserviceMutexService microserviceMutexService(ConsulTokenSource tokenSource) {
         String podName = pod.orElseGet(EnvUtil::getPodName);
-        return new ConsulMicroserviceMutexService(tokenStorage::get, consulUrl, namespace, name, podName);
+        return new ConsulMicroserviceMutexService(tokenSource::get, consulUrl, namespace, name, podName,
+                tokenSource::reportRefusal);
     }
 
     public void close(@Disposes @Named("microserviceMutexService") MicroserviceMutexService service) throws Exception {

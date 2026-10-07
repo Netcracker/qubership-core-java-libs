@@ -1,6 +1,7 @@
 package com.netcracker.cloud.quarkus.consul.client;
 
 import com.netcracker.cloud.consul.provider.common.ConsulLoginMode;
+import com.netcracker.cloud.consul.provider.common.ConsulTokenSource;
 import com.netcracker.cloud.consul.provider.common.TokenStorage;
 import com.netcracker.cloud.consul.provider.common.TokenStorageFactory;
 import com.netcracker.cloud.security.core.utils.k8s.AudienceName;
@@ -47,21 +48,40 @@ class ConsulClientConfigurationTest {
     @Test
     void test() {
         Assert.assertNotNull(tokenStorage);
-        verify(tokenStorageFactory, never()).create(any());
+        verify(tokenStorageFactory, never()).createTokens(any());
     }
 
     @Test
     void defaultsAreTakenWhenNoLoginPropertyIsSet() {
-        when(tokenStorageFactory.create(any())).thenReturn(new NoopTokenStorage());
+        when(tokenStorageFactory.createTokens(any())).thenReturn(noopTokens());
 
         tokenStorage.get();
 
         ArgumentCaptor<TokenStorageFactory.CreateOptions> options =
                 ArgumentCaptor.forClass(TokenStorageFactory.CreateOptions.class);
-        verify(tokenStorageFactory).create(options.capture());
+        verify(tokenStorageFactory).createTokens(options.capture());
         Assertions.assertEquals(ConsulLoginMode.KUBERNETES_WITH_M2M_FALLBACK, options.getValue().getMode());
         Assertions.assertEquals(TokenStorageFactory.CreateOptions.DEFAULT_AUTH_METHOD, options.getValue().getAuthMethod());
         Assertions.assertEquals(AudienceName.NETCRACKER, options.getValue().getAudience());
+        Assertions.assertEquals(TokenStorageFactory.CreateOptions.DEFAULT_VALIDATION_INTERVAL,
+                options.getValue().getValidationInterval());
+    }
+
+    static TokenStorageFactory.Tokens noopTokens() {
+        return new TokenStorageFactory.Tokens(new NoopTokenStorage(), new NoopTokenSource());
+    }
+
+    static class NoopTokenSource implements ConsulTokenSource {
+
+        @Override
+        public String get() {
+            return "";
+        }
+
+        @Override
+        public void reportRefusal() {
+            // nothing
+        }
     }
 
     static class NoopTokenStorage implements TokenStorage {

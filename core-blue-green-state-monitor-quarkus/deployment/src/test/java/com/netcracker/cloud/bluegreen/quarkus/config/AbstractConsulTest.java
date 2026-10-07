@@ -2,7 +2,7 @@ package com.netcracker.cloud.bluegreen.quarkus.config;
 
 
 import com.netcracker.cloud.bluegreen.impl.http.HttpClientAdapter;
-import com.netcracker.cloud.consul.provider.common.TokenStorage;
+import com.netcracker.cloud.consul.provider.common.ConsulTokenSource;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -54,7 +54,7 @@ public abstract class AbstractConsulTest {
     }
 
     @ApplicationScoped
-    static class TestTokenStorage implements TokenStorage {
+    static class TestTokenSource implements ConsulTokenSource {
 
         @Override
         public String get() {
@@ -62,7 +62,7 @@ public abstract class AbstractConsulTest {
         }
 
         @Override
-        public void update(String s) {
+        public void reportRefusal() {
         }
     }
 }

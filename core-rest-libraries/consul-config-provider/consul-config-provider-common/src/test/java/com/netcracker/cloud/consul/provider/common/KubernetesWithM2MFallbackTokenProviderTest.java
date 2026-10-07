@@ -347,6 +347,55 @@ class KubernetesWithM2MFallbackTokenProviderTest {
         verifyNoInteractions(m2m);
     }
 
+    @Test
+    void aProbeRefusedWithForbiddenStillLeadsToTheOldWay() throws IOException {
+        when(kubernetes.getToken()).thenThrow(new ConsulResponseException(403, AUTH_METHOD_NOT_FOUND));
+        Token m2mToken = new Token(SECRET_ID, null);
+        when(m2m.getToken()).thenReturn(m2mToken);
+
+        assertEquals(m2mToken, probing().getToken());
+    }
+
+    /**
+     * The validation schedule reads the self token over and over, and the read adopts the way the token came from.
+     * A pod on m2m has to keep the moment it fell back, so that the probe comes due one recheck interval later
+     * however many reads happen in between.
+     */
+    @Test
+    void repeatedSelfReadsDoNotPostponeTheProbe() throws IOException {
+        when(kubernetes.getSelfToken(CURRENT_SECRET_ID)).thenReturn(new Token(SECRET_ID, null, M2M_AUTH_METHOD));
+        when(m2m.getToken()).thenReturn(new Token(SECRET_ID, null));
+        Token kubernetesToken = new Token("kubernetes-secret-id", null);
+        when(kubernetes.getToken()).thenReturn(kubernetesToken);
+
+        KubernetesWithM2MFallbackTokenProvider probing = probing();
+        probing.getSelfToken(CURRENT_SECRET_ID);
+        clock.advance(RECHECK_INTERVAL.minusMinutes(1));
+        probing.getSelfToken(CURRENT_SECRET_ID);
+        clock.advance(Duration.ofMinutes(1));
+
+        assertEquals(kubernetesToken, probing.getToken());
+    }
+
+    /**
+     * A pod migrated to the kubernetes way must stay there across the self reads of the validation schedule, so that
+     * a relogin forced by a refused token logs in the same way instead of falling back.
+     */
+    @Test
+    void aConfirmedWayOutlivesTheSelfReadsOfTheValidationSchedule() throws IOException {
+        when(kubernetes.getSelfToken(CURRENT_SECRET_ID)).thenReturn(new Token(SECRET_ID, null, KUBERNETES_AUTH_METHOD));
+        when(kubernetes.getToken()).thenThrow(new IOException(
+                "login to consul failed: response code=500; body='" + TOKEN_REVIEW_UNREACHABLE + "'"));
+
+        KubernetesWithM2MFallbackTokenProvider probing = probing();
+        probing.getSelfToken(CURRENT_SECRET_ID);
+        probing.getSelfToken(CURRENT_SECRET_ID);
+        probing.getSelfToken(CURRENT_SECRET_ID);
+
+        assertThrows(IOException.class, probing::getToken);
+        verifyNoInteractions(m2m);
+    }
+
     private static final class TestClock extends Clock {
 
         private Instant now;

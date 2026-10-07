@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static com.netcracker.cloud.bluegreen.spring.config.AbstractConsulTest.assertField;
 
-@SpringBootTest(classes = {AbstractConsulTest.TestTokenStorageConfig.class, BlueGreenMicroserviceMutexConfiguration.class},
+@SpringBootTest(classes = {AbstractConsulTest.TestTokenSourceConfig.class, BlueGreenMicroserviceMutexConfiguration.class},
         properties = {
                 "consul.url=http://test.consul:8500",
                 "cloud.microservice.namespace=test-namespace-1",

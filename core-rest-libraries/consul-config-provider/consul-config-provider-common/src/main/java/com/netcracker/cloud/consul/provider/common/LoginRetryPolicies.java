@@ -5,16 +5,25 @@ import net.jodah.failsafe.RetryPolicy;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.function.Predicate;
 
 /**
  * Retry policies shared by the login callers. Only {@link IOException} is retried: by the exception contract of the
  * module it means a transport failure or a non-2xx answer, where another attempt may help. Anything else — a missing
  * projected token, an answer without a {@code SecretID} — comes out the same however many times it is tried.
+ *
+ * <p>A token Consul refuses to resolve is the exception: {@link ConsulResponseException} with {@code 403} is an
+ * {@link IOException}, but reading the same dead token again gives the same answer, so the policy aborts on it and
+ * lets the caller force a relogin instead.
  */
 final class LoginRetryPolicies {
 
     static final double JITTER = 0.25;
     private static final int MAX_BACKOFF_FACTOR = 8;
+    private static final int REJECTED = 403;
+
+    private static final Predicate<Throwable> REJECTED_TOKEN = failure -> failure instanceof ConsulResponseException
+            && ((ConsulResponseException) failure).getCode() == REJECTED;
 
     private LoginRetryPolicies() {
     }
@@ -27,6 +36,7 @@ final class LoginRetryPolicies {
     static <T> RetryPolicy<T> onTransportFailure(int attempts, Duration delay) {
         RetryPolicy<T> policy = new RetryPolicy<T>()
                 .handle(IOException.class)
+                .abortOn(REJECTED_TOKEN)
                 .withMaxAttempts(attempts);
         if (delay.isZero() || delay.isNegative()) {
             return policy;

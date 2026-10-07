@@ -5,8 +5,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 import com.netcracker.cloud.consul.provider.common.ConsulLoginCredentials;
+import com.netcracker.cloud.consul.provider.common.ConsulTokenSource;
+import java.util.concurrent.atomic.AtomicInteger;
 import com.netcracker.cloud.consul.provider.common.client.ConsulClientResponse;
 import com.netcracker.cloud.consul.provider.common.client.ConsulRestClient;
+import com.netcracker.cloud.consul.provider.spring.common.TokenRefusals;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import com.netcracker.cloud.security.core.auth.M2MManager;
 import com.netcracker.cloud.security.core.auth.Token;
@@ -23,8 +26,13 @@ import org.springframework.boot.context.properties.source.MapConfigurationProper
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.cloud.consul.ConsulProperties;
 import org.springframework.cloud.consul.config.ConsulConfigProperties;
+import com.sun.net.httpserver.HttpServer;
+
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import static com.netcracker.cloud.consul.provider.spring.common.config.ConsulM2MConfigDataLocationResolver.ENV_CLOUD_NAMESPACE;
@@ -147,6 +155,57 @@ class ConsulM2MConfigDataLocationResolverTest {
     private ConsulConfigProperties resolve() {
         return new TestResolver(Mockito.mock(DeferredLogFactory.class, Mockito.RETURNS_DEEP_STUBS), consulRestClient)
                 .loadConfigProperties(resolverContext);
+    }
+
+    /**
+     * Runs the whole Spring seam against a Consul that refuses the token: the client this phase builds, the header it
+     * sends, the status it reads, and the refusals object it was promoted beside.
+     */
+    @Test
+    void theClientOfTheConfigDataPhaseReportsARefusedToken() throws IOException {
+        HttpServer consul = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
+        consul.createContext("/", exchange -> {
+            exchange.sendResponseHeaders(403, -1);
+            exchange.close();
+        });
+        consul.start();
+        try {
+            properties.put(PROP_AUTH_MODE, "kubernetes");
+            bootstrapContext.register(ConsulProperties.class,
+                    BootstrapRegistry.InstanceSupplier.of(consulPropertiesAt(consul.getAddress().getPort())));
+            TestResolver resolver =
+                    new TestResolver(Mockito.mock(DeferredLogFactory.class, Mockito.RETURNS_DEEP_STUBS), consulRestClient);
+            resolver.loadConfigProperties(resolverContext);
+            AtomicInteger reported = new AtomicInteger();
+            bootstrapContext.get(TokenRefusals.class).reportTo(countedBy(reported));
+
+            resolver.createConsulClient(bootstrapContext).getKVValues("config/test-namespace/application", SECRET_ID);
+
+            Assertions.assertEquals(1, reported.get(), "reported refusals");
+        } finally {
+            consul.stop(0);
+        }
+    }
+
+    private static ConsulProperties consulPropertiesAt(int port) {
+        ConsulProperties properties = consulProperties();
+        properties.setHost("localhost");
+        properties.setPort(port);
+        return properties;
+    }
+
+    private static ConsulTokenSource countedBy(AtomicInteger reported) {
+        return new ConsulTokenSource() {
+            @Override
+            public String get() {
+                return SECRET_ID;
+            }
+
+            @Override
+            public void reportRefusal() {
+                reported.incrementAndGet();
+            }
+        };
     }
 
     @Test

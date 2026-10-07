@@ -1,10 +1,16 @@
 package com.netcracker.cloud.consul.provider.common;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Clock;
@@ -17,6 +23,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.LongSupplier;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,6 +33,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class TokenUpdaterTest {
+
+    private static final LongSupplier NO_JITTER = () -> 0L;
+    private static final Duration NO_VALIDATION = Duration.ZERO;
+    private static final Duration VALIDATION_INTERVAL = Duration.ofMinutes(5);
+
     private TokenUpdater tokenUpdater;
     private ConsulTokenProvider tokenProvider;
     private ScheduledExecutorService scheduledExecutorService;
@@ -35,7 +48,8 @@ class TokenUpdaterTest {
 
         tokenProvider = Mockito.mock(ConsulTokenProvider.class);
         scheduledExecutorService = Mockito.mock(ScheduledExecutorService.class);
-        tokenUpdater = new TokenUpdater(tokenProvider, scheduledExecutorService, Clock.fixed(currentTime, ZoneId.of("UTC")), 2, Duration.ZERO);
+        tokenUpdater = new TokenUpdater(tokenProvider, scheduledExecutorService, Clock.fixed(currentTime, ZoneId.of("UTC")), 2,
+                Duration.ZERO, NO_VALIDATION, NO_JITTER);
     }
 
     @Test
@@ -131,8 +145,9 @@ class TokenUpdaterTest {
         ConsulTokenProvider login = Mockito.mock(ConsulTokenProvider.class);
         when(login.getToken()).thenReturn(new Token("test-token", expirationTime));
 
-        new TokenUpdater(login, executor, Clock.fixed(now, ZoneId.of("UTC")), 2, Duration.ZERO).watch(unused -> {
-        }, "");
+        new TokenUpdater(login, executor, Clock.fixed(now, ZoneId.of("UTC")), 2, Duration.ZERO, NO_VALIDATION, NO_JITTER)
+                .watch(unused -> {
+                }, "");
 
         ArgumentCaptor<Long> delay = ArgumentCaptor.forClass(Long.class);
         verify(executor).schedule(any(Runnable.class), delay.capture(), eq(TimeUnit.SECONDS));
@@ -166,7 +181,7 @@ class TokenUpdaterTest {
                 .thenReturn(new Token("test-token", secretExpirationTime));
 
         TokenUpdater updater = new TokenUpdater(tokenProvider, scheduledExecutorService,
-                Clock.fixed(currentTime, ZoneId.of("UTC")), 2, retryPause);
+                Clock.fixed(currentTime, ZoneId.of("UTC")), 2, retryPause, NO_VALIDATION, NO_JITTER);
 
         long startedAt = System.nanoTime();
         updater.watch(unused -> {
@@ -202,6 +217,150 @@ class TokenUpdaterTest {
                 });
     }
 
+
+    private TokenUpdater validating(Duration validationInterval, LongSupplier jitter) {
+        return new TokenUpdater(tokenProvider, scheduledExecutorService, Clock.fixed(currentTime, ZoneId.of("UTC")), 2,
+                Duration.ZERO, validationInterval, jitter);
+    }
+
+    private static Token endless(String secretId) {
+        return new Token(secretId, null);
+    }
+
+    @Test
+    void aValidationTickThatMeetsARefusedTokenForcesARelogin() throws IOException {
+        when(tokenProvider.getToken())
+                .thenReturn(endless("test-token"))
+                .thenReturn(endless("test-rotated-token"));
+        when(tokenProvider.getSelfToken("test-token"))
+                .thenThrow(new ConsulResponseException(403, "ACL not found"));
+
+        AtomicReference<String> updater = new AtomicReference<>("");
+        runScheduledTasks(2, null);
+        validating(VALIDATION_INTERVAL, NO_JITTER).watch(updater::set, "");
+
+        assertEquals("test-rotated-token", updater.get());
+    }
+
+    @Test
+    void aValidationTickThatMeetsAServerErrorKeepsTheToken() throws IOException {
+        when(tokenProvider.getToken()).thenReturn(endless("test-token"));
+        when(tokenProvider.getSelfToken("test-token"))
+                .thenThrow(new ConsulResponseException(500, "consul is unavailable"));
+
+        AtomicReference<String> updater = new AtomicReference<>("");
+        runScheduledTasks(2, null);
+        validating(VALIDATION_INTERVAL, NO_JITTER).watch(updater::set, "");
+
+        assertEquals("test-token", updater.get());
+        verify(tokenProvider, times(1)).getToken();
+    }
+
+    @Test
+    void aTokenWithoutExpirationIsStillValidatedOnASchedule() throws IOException {
+        when(tokenProvider.getToken()).thenReturn(endless("test-endless-token"));
+
+        validating(VALIDATION_INTERVAL, NO_JITTER).watch(unused -> {
+        }, "");
+
+        verify(scheduledExecutorService).schedule(any(Runnable.class), eq(300L), eq(TimeUnit.SECONDS));
+    }
+    @Test
+    void aRefusalOfATokenConsulStillResolvesReplacesNothing() throws IOException {
+        when(tokenProvider.getToken()).thenReturn(endless("test-token"));
+        when(tokenProvider.getSelfToken("test-token")).thenReturn(endless("test-token"));
+        TokenUpdater updater = validating(NO_VALIDATION, NO_JITTER);
+
+        runScheduledTasks(1, null);
+        AtomicReference<String> published = new AtomicReference<>("");
+        updater.watch(published::set, "");
+        updater.reportRefusal();
+
+        assertEquals("test-token", published.get());
+        verify(tokenProvider, times(1)).getToken();
+    }
+
+    @Test
+    void aRefusalOfATokenConsulNoLongerResolvesReplacesIt() throws IOException {
+        when(tokenProvider.getToken())
+                .thenReturn(endless("test-token"))
+                .thenReturn(endless("test-rotated-token"));
+        when(tokenProvider.getSelfToken("test-token"))
+                .thenThrow(new ConsulResponseException(403, "ACL not found"));
+        TokenUpdater updater = validating(NO_VALIDATION, NO_JITTER);
+
+        runScheduledTasks(1, null);
+        AtomicReference<String> published = new AtomicReference<>("");
+        updater.watch(published::set, "");
+        updater.reportRefusal();
+
+        assertEquals("test-rotated-token", published.get());
+    }
+
+    @Test
+    void aSecondRefusalDuringTheFirstCheckIsDropped() throws IOException {
+        when(tokenProvider.getToken()).thenReturn(endless("test-token"));
+        TokenUpdater updater = validating(NO_VALIDATION, () -> 17L);
+
+        updater.watch(unused -> {
+        }, "");
+        updater.reportRefusal();
+        updater.reportRefusal();
+
+        verify(scheduledExecutorService, times(1)).schedule(any(Runnable.class), eq(17L), eq(TimeUnit.SECONDS));
+    }
+
+    @Test
+    void aSecondRefusalWithinTheMinimumIntervalIsDropped() throws IOException {
+        when(tokenProvider.getToken())
+                .thenReturn(endless("test-token"))
+                .thenReturn(endless("test-rotated-token"));
+        when(tokenProvider.getSelfToken("test-token"))
+                .thenThrow(new ConsulResponseException(403, "ACL not found"));
+        TokenUpdater updater = validating(NO_VALIDATION, NO_JITTER);
+
+        runScheduledTasks(1, null);
+        updater.watch(unused -> {
+        }, "");
+        updater.reportRefusal();
+        updater.reportRefusal();
+
+        verify(tokenProvider, times(2)).getToken();
+    }
+
+    @Test
+    void oneRecordNamesTheReplacementPerCheck() throws IOException {
+        when(tokenProvider.getToken())
+                .thenReturn(endless("test-token"))
+                .thenReturn(endless("test-rotated-token"));
+        when(tokenProvider.getSelfToken("test-token"))
+                .thenThrow(new ConsulResponseException(403, "ACL not found"));
+        ch.qos.logback.classic.Logger logger =
+                ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger(TokenUpdater.class);
+        ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        logger.addAppender(appender);
+        logger.setLevel(Level.WARN);
+        TokenUpdater updater = validating(NO_VALIDATION, NO_JITTER);
+
+        try {
+            runScheduledTasks(1, null);
+            updater.watch(unused -> {
+            }, "");
+            updater.reportRefusal();
+            updater.reportRefusal();
+        } finally {
+            logger.detachAppender(appender);
+            logger.setLevel(null);
+        }
+
+        List<String> records = appender.list.stream()
+                .filter(event -> event.getLevel() == Level.WARN)
+                .map(ILoggingEvent::getFormattedMessage)
+                .collect(Collectors.toList());
+        assertEquals(1, records.size(), records.toString());
+        Assertions.assertTrue(records.get(0).contains("ACL token"), records.get(0));
+    }
     private static final class TestClock extends Clock {
 
         private Instant now;
@@ -256,7 +415,8 @@ class TokenUpdaterTest {
                 .thenReturn(new Token("test-token", expiration))
                 .thenThrow(new IOException())
                 .thenThrow(new IOException());
-        TokenUpdater updater = new TokenUpdater(tokenProvider, scheduledExecutorService, clock, 2, Duration.ZERO);
+        TokenUpdater updater = new TokenUpdater(tokenProvider, scheduledExecutorService, clock, 2, Duration.ZERO,
+                NO_VALIDATION, NO_JITTER);
 
         runScheduledTaskOnce(clock);
         updater.watch(unused -> {
@@ -277,7 +437,8 @@ class TokenUpdaterTest {
         when(tokenProvider.getToken())
                 .thenReturn(new Token("test-token", expiration))
                 .thenThrow(new IOException());
-        TokenUpdater updater = new TokenUpdater(tokenProvider, scheduledExecutorService, clock, 1, Duration.ZERO);
+        TokenUpdater updater = new TokenUpdater(tokenProvider, scheduledExecutorService, clock, 1, Duration.ZERO,
+                NO_VALIDATION, NO_JITTER);
 
         runScheduledTasks(7, clock);
         updater.watch(unused -> {
@@ -299,7 +460,8 @@ class TokenUpdaterTest {
                 .thenThrow(new IOException())
                 .thenReturn(new Token("test-rotated-token", secondExpiration))
                 .thenThrow(new IOException());
-        TokenUpdater updater = new TokenUpdater(tokenProvider, scheduledExecutorService, clock, 1, Duration.ZERO);
+        TokenUpdater updater = new TokenUpdater(tokenProvider, scheduledExecutorService, clock, 1, Duration.ZERO,
+                NO_VALIDATION, NO_JITTER);
 
         runScheduledTasks(4, clock);
         updater.watch(unused -> {
