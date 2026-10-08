@@ -44,6 +44,10 @@ Please ensure, that your pod runtime environment variables contains:
 
 To add missed variables to your pod runtime environment, you need to edit your deployment chart files.  
 
+With `M2M_AUTH_MODE=hybrid` or `k8s` the client sends requests to MaaS at `maas.internal.address`, or at the
+`MAAS_INTERNAL_ADDRESS` environment variable when the property is not set, instead of maas-agent. In `k8s` mode one of
+them is required; see [M2MClient](../core-utils/k8s/README.md#m2mclient) for the modes.
+
 ## Start
 First of all we need to create instance of [MaaSAPIClient](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/com/netcracker/cloud/maas/client/api/MaaSAPIClient.java). 
 Default implementation for this interface is [MaaSAPIClientImpl](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/com/netcracker/cloud/maas/client/impl/MaaSAPIClientImpl.java).

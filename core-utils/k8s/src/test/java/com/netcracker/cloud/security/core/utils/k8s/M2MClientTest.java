@@ -2,18 +2,31 @@ package com.netcracker.cloud.security.core.utils.k8s;
 
 import com.netcracker.cloud.security.core.utils.k8s.impl.M2MInterceptor;
 import com.netcracker.cloud.security.core.utils.k8s.impl.UrlCache;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import lombok.SneakyThrows;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mockStatic;
@@ -26,21 +39,27 @@ class M2MClientTest {
     @SystemStub
     private EnvironmentVariables environmentVariables;
 
+    private final List<WireMockServer> servers = new ArrayList<>();
+
     @Test
-    void testK8sM2mEnabledIsReadFromEnvironment() {
-        environmentVariables.set("KUBERNETES_M2M_ENABLED", "true");
-        assertTrue(M2MClient.isK8sM2mEnabled());
-        assertEquals(true, getFieldValue(buildInterceptor(M2MClient.builder()), "k8sM2mEnabled"));
+    void testModeIsReadFromEnvironment() {
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "k8s");
 
-        environmentVariables.set("KUBERNETES_M2M_ENABLED", "false");
-        assertFalse(M2MClient.isK8sM2mEnabled());
-        assertEquals(false, getFieldValue(buildInterceptor(M2MClient.builder()), "k8sM2mEnabled"));
+        assertEquals(M2MAuthMode.K8S, getFieldValue(buildInterceptor(M2MClient.builder()), "mode"));
+    }
 
-        environmentVariables.remove("KUBERNETES_M2M_ENABLED");
-        assertFalse(M2MClient.isK8sM2mEnabled());
+    @Test
+    void testExplicitModeWinsOverTheEnvironment() {
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "k8s");
 
-        // explicitly configured flag wins over the environment
-        assertEquals(true, getFieldValue(buildInterceptor(M2MClient.builder().k8sM2mEnabled(true)), "k8sM2mEnabled"));
+        assertEquals(M2MAuthMode.HYBRID, getFieldValue(buildInterceptor(M2MClient.builder().mode(M2MAuthMode.HYBRID)), "mode"));
+    }
+
+    @Test
+    void testUnsupportedModeInEnvironmentFailsTheBuilder() {
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "true");
+
+        assertThrows(IllegalArgumentException.class, M2MClient::builder);
     }
 
     @Test
@@ -83,10 +102,30 @@ class M2MClientTest {
         assertEquals(HttpUrl.get("http://maas-agent:8080"), getFieldValue(interceptor, "fallbackBaseUrl"));
     }
 
+    @ParameterizedTest
+    @EnumSource(value = M2MAuthMode.class, names = {"LEGACY", "HYBRID"})
+    void testTokenSupplierIsRequiredUnlessK8sMode(M2MAuthMode mode) {
+        M2MClient.M2MClientBuilder builder = M2MClient.builder().audience(AudienceName.DBAAS).mode(mode);
+        assertThrows(IllegalStateException.class, builder::build);
+    }
+
     @Test
-    void testTokenSupplierIsRequired() {
-        M2MClient.M2MClientBuilder builder = M2MClient.builder().audience(AudienceName.DBAAS);
-        assertThrows(NullPointerException.class, builder::build);
+    @SneakyThrows
+    void builtClient_K8sModeWithoutTokenSupplier_SendsKubernetesTokenToTarget() {
+        WireMockServer agent = startServer();
+        WireMockServer target = startServer();
+
+        try (var tokenSource = mockStatic(KubernetesAudienceToken.class)) {
+            tokenSource.when(() -> KubernetesAudienceToken.getToken(anyString())).thenReturn("k8s-token");
+            OkHttpClient client = M2MClient.builder()
+                    .mode(M2MAuthMode.K8S)
+                    .agentUrl(agent.baseUrl())
+                    .build();
+            client.newCall(new Request.Builder().url(target.baseUrl() + "/api/v1/resource").build()).execute().close();
+        }
+
+        target.verify(1, getRequestedFor(urlEqualTo("/api/v1/resource")).withHeader("Authorization", equalTo("Bearer k8s-token")));
+        agent.verify(0, getRequestedFor(urlEqualTo("/api/v1/resource")));
     }
 
     @Test
@@ -174,7 +213,57 @@ class M2MClientTest {
         assertSame(builder, builder.audience(AudienceName.DBAAS));
         assertSame(builder, builder.agentUrl("http://dbaas-agent:8080"));
         assertSame(builder, builder.keycloakTokenSupplier(TOKEN_SUPPLIER));
-        assertSame(builder, builder.k8sM2mEnabled(true));
+        assertSame(builder, builder.mode(M2MAuthMode.HYBRID));
+    }
+
+    @Test
+    @SneakyThrows
+    void builtClient_HybridMode_SendsKubernetesTokenToTarget() {
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "hybrid");
+        WireMockServer agent = startServer();
+        WireMockServer target = startServer();
+
+        try (var tokenSource = mockStatic(KubernetesAudienceToken.class)) {
+            tokenSource.when(() -> KubernetesAudienceToken.getToken(anyString())).thenReturn("k8s-token");
+            OkHttpClient client = M2MClient.builder()
+                    .agentUrl(agent.baseUrl())
+                    .keycloakTokenSupplier(TOKEN_SUPPLIER)
+                    .build();
+            client.newCall(new Request.Builder().url(target.baseUrl() + "/api/v1/resource").build()).execute().close();
+        }
+
+        target.verify(1, getRequestedFor(urlEqualTo("/api/v1/resource")).withHeader("Authorization", equalTo("Bearer k8s-token")));
+        agent.verify(0, getRequestedFor(urlEqualTo("/api/v1/resource")));
+    }
+
+    @Test
+    @SneakyThrows
+    void builtClient_ModeNotSet_SendsKeycloakTokenThroughAgent() {
+        environmentVariables.remove(M2MAuthMode.M2M_AUTH_MODE_ENV);
+        WireMockServer agent = startServer();
+        WireMockServer target = startServer();
+
+        OkHttpClient client = M2MClient.builder()
+                .agentUrl(agent.baseUrl())
+                .keycloakTokenSupplier(TOKEN_SUPPLIER)
+                .build();
+        client.newCall(new Request.Builder().url(target.baseUrl() + "/api/v1/resource").build()).execute().close();
+
+        agent.verify(1, getRequestedFor(urlEqualTo("/api/v1/resource")).withHeader("Authorization", equalTo("Bearer test-token")));
+        target.verify(0, getRequestedFor(urlEqualTo("/api/v1/resource")));
+    }
+
+    private WireMockServer startServer() {
+        WireMockServer server = new WireMockServer(0);
+        server.start();
+        server.stubFor(get(urlEqualTo("/api/v1/resource")).willReturn(aResponse().withStatus(200)));
+        servers.add(server);
+        return server;
+    }
+
+    @AfterEach
+    void stopServers() {
+        servers.forEach(WireMockServer::stop);
     }
 
     @SuppressWarnings("unchecked")

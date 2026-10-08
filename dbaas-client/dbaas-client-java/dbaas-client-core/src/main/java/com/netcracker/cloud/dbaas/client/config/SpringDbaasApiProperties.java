@@ -1,6 +1,6 @@
 package com.netcracker.cloud.dbaas.client.config;
 
-import com.netcracker.cloud.security.core.utils.k8s.M2MClient;
+import com.netcracker.cloud.security.core.utils.k8s.M2MAuthMode;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -30,14 +30,23 @@ public class SpringDbaasApiProperties {
     @Value("${dbaas.api.retry.async.template.timeout.seconds:1200}")
     private int dbaasAsyncRetryTimeoutInS;
 
+    /**
+     * @throws IllegalStateException if the M2M auth mode is k8s and {@code api.dbaas.address} is not set or empty
+     */
     public String getAddress() {
-        if(!M2MClient.isK8sM2mEnabled()) {
-            return dbaasAgentAddress.orElse(DEFAULT_DBAAS_AGENT_URL);
-        }
-        if(dbaasAddress.isEmpty()) {
-            log.warn("DBaaS address is not available, falling back to dbaas-agent. Specify 'api.dbaas.address' property to DBaaS url");
-            return dbaasAgentAddress.orElse(DEFAULT_DBAAS_AGENT_URL);
-        }
-        return dbaasAddress.get();
+        Optional<String> address = dbaasAddress.filter(value -> !value.isEmpty());
+        return switch (M2MAuthMode.readFromEnv()) {
+            case LEGACY -> agentAddress();
+            case HYBRID -> address.orElseGet(() -> {
+                log.warn("DBaaS address is not available, falling back to dbaas-agent. Specify 'api.dbaas.address' property to DBaaS url");
+                return agentAddress();
+            });
+            case K8S -> address.orElseThrow(() -> new IllegalStateException(
+                    "api.dbaas.address is not set: with M2M_AUTH_MODE=k8s the client sends requests directly to DBaaS, set api.dbaas.address to the DBaaS URL"));
+        };
+    }
+
+    private String agentAddress() {
+        return dbaasAgentAddress.orElse(DEFAULT_DBAAS_AGENT_URL);
     }
 }

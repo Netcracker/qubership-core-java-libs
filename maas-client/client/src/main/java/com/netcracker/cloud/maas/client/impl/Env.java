@@ -1,6 +1,6 @@
 package com.netcracker.cloud.maas.client.impl;
 
-import com.netcracker.cloud.security.core.utils.k8s.M2MClient;
+import com.netcracker.cloud.security.core.utils.k8s.M2MAuthMode;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +24,7 @@ public class Env {
     static final String ENV_CLOUD_NAMESPACE = "CLOUD_NAMESPACE";
     static final String ENV_ORIGIN_NAMESPACE = "ORIGIN_NAMESPACE";
     static final String ENV_MICROSERVICE_NAME = "MICROSERVICE_NAME";
+    static final String ENV_MAAS_URL = "MAAS_INTERNAL_ADDRESS";
 
     public static final String PROP_CLOUD_NAMESPACE = "cloud.microservice.namespace";
     public static final String PROP_NAMESPACE = "maas.client.classifier.namespace"; //todo deprecated - delete in the next major release
@@ -38,7 +39,7 @@ public class Env {
     public static final String PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS = "maas.http.retry.max-total-duration-ms";
 
     public static String apiUrl() {
-        return apiUrl(M2MClient.isK8sM2mEnabled());
+        return apiUrl(M2MAuthMode.readFromEnv());
     }
 
     public static String maasAgentUrl() {
@@ -47,17 +48,25 @@ public class Env {
                 .orElse(DEFAULT_MAAS_AGENT_URL);
     }
 
-    public static String apiUrl(boolean k8sM2mEnabled) {
-        String maasAgentUrl = maasAgentUrl();
-        if(!k8sM2mEnabled) {
-            return maasAgentUrl;
-        }
-        return stringProperty(PROP_MAAS_URL)
-                .map(Env::normalizeUrl)
-                .orElseGet(() -> {
-                    log.warn("MaaS address is not available, falling back to maas-agent. Specify '{}'property to MaaS url", PROP_MAAS_URL);
-                    return maasAgentUrl;
-                });
+    /**
+     * @throws IllegalStateException if {@code mode} is k8s and neither {@value #PROP_MAAS_URL} nor {@value #ENV_MAAS_URL}
+     *                               is set to a non-empty value
+     */
+    public static String apiUrl(M2MAuthMode mode) {
+        return switch (mode) {
+            case LEGACY -> maasAgentUrl();
+            case HYBRID -> maasUrl().orElseGet(() -> {
+                log.warn("MaaS address is not available, falling back to maas-agent. Specify '{}'property to MaaS url", PROP_MAAS_URL);
+                return maasAgentUrl();
+            });
+            case K8S -> maasUrl().orElseThrow(() -> new IllegalStateException(PROP_MAAS_URL
+                    + " is not set: with M2M_AUTH_MODE=k8s the client sends requests directly to MaaS, set " + PROP_MAAS_URL
+                    + " or " + ENV_MAAS_URL + " to the MaaS URL"));
+        };
+    }
+
+    private static Optional<String> maasUrl() {
+        return getPropsOrEnvs(args(PROP_MAAS_URL), args(ENV_MAAS_URL)).filter(value -> !value.isEmpty()).map(Env::normalizeUrl);
     }
 
     public static String apiAuth() {

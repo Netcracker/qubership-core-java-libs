@@ -1,11 +1,15 @@
 package com.netcracker.cloud.maas.client.impl;
 
+import com.netcracker.cloud.security.core.utils.k8s.M2MAuthMode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import static com.netcracker.cloud.maas.client.Utils.withProp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.org.webcompere.systemstubs.SystemStubs.withEnvironmentVariable;
 
 class EnvTest {
@@ -55,19 +59,65 @@ class EnvTest {
     void testApiUrlFallsBackToTheAgentWhenMaasUrlIsNotSet() {
         withProp(Env.PROP_MAAS_AGENT_URL, "http://maas-agent-custom:8080", () ->
                 withProp(Env.PROP_MAAS_URL, null, () -> {
-                    assertEquals("http://maas-agent-custom:8080", Env.apiUrl(true));
-                    assertEquals("http://maas-agent-custom:8080", Env.apiUrl(false));
+                    assertEquals("http://maas-agent-custom:8080", Env.apiUrl(M2MAuthMode.HYBRID));
+                    assertEquals("http://maas-agent-custom:8080", Env.apiUrl(M2MAuthMode.LEGACY));
                 })
         );
     }
 
     @Test
-    void testApiUrlK8sM2mEnabled() {
-        withProp(Env.PROP_MAAS_AGENT_URL, null, () ->
-                assertEquals("http://maas-agent:8080", Env.apiUrl(true))
+    void testApiUrlFallsBackToTheAgentWhenMaasUrlIsEmpty() {
+        withProp(Env.PROP_MAAS_AGENT_URL, "http://maas-agent-custom:8080", () ->
+                withProp(Env.PROP_MAAS_URL, "", () -> {
+                    assertEquals("http://maas-agent-custom:8080", Env.apiUrl(M2MAuthMode.HYBRID));
+                    assertEquals("http://maas-agent-custom:8080", Env.apiUrl(M2MAuthMode.LEGACY));
+                })
         );
-        withProp(Env.PROP_MAAS_URL,  "http://localhost:8080/", () ->
-                assertEquals(  "http://localhost:8080", Env.apiUrl(true))
+    }
+
+    @Test
+    void testApiUrlHybridModeUsesTheMaasUrl() {
+        withProp(Env.PROP_MAAS_URL, "http://localhost:8080/", () ->
+                assertEquals("http://localhost:8080", Env.apiUrl(M2MAuthMode.HYBRID))
+        );
+    }
+
+    @Test
+    void testApiUrlLegacyModeIgnoresTheMaasUrl() {
+        withProp(Env.PROP_MAAS_AGENT_URL, null, () ->
+                withProp(Env.PROP_MAAS_URL, "localhost:8080", () ->
+                        assertEquals("http://maas-agent:8080", Env.apiUrl(M2MAuthMode.LEGACY))
+                )
+        );
+    }
+
+    @Test
+    void testApiUrlK8sModeUsesTheMaasUrl() {
+        withProp(Env.PROP_MAAS_AGENT_URL, "http://maas-agent-custom:8080", () ->
+                withProp(Env.PROP_MAAS_URL, "http://localhost:8080/", () ->
+                        assertEquals("http://localhost:8080", Env.apiUrl(M2MAuthMode.K8S))
+                )
+        );
+    }
+
+    @Test
+    void testApiUrlK8sModeReadsTheMaasUrlFromTheEnvironment() {
+        withProp(Env.PROP_MAAS_URL, null, () -> {
+            var value = withEnvironmentVariable(Env.ENV_MAAS_URL, "http://maas-env:8080/")
+                    .execute(() -> Env.apiUrl(M2MAuthMode.K8S));
+
+            assertEquals("http://maas-env:8080", value);
+        });
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void testApiUrlK8sModeRejectsMissingMaasUrl(String maasUrl) {
+        withProp(Env.PROP_MAAS_AGENT_URL, "http://maas-agent-custom:8080", () ->
+                withProp(Env.PROP_MAAS_URL, maasUrl, () -> {
+                    IllegalStateException e = assertThrows(IllegalStateException.class, () -> Env.apiUrl(M2MAuthMode.K8S));
+                    assertTrue(e.getMessage().startsWith(Env.PROP_MAAS_URL + " is not set"), e.getMessage());
+                })
         );
     }
 
