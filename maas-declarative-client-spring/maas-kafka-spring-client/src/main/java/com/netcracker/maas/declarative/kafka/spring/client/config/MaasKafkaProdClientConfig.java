@@ -2,6 +2,7 @@ package com.netcracker.maas.declarative.kafka.spring.client.config;
 
 import com.netcracker.cloud.maas.client.api.kafka.KafkaMaaSClient;
 import com.netcracker.cloud.maas.client.impl.ApiUrlProvider;
+import com.netcracker.cloud.maas.client.impl.Env;
 import com.netcracker.cloud.maas.client.impl.apiversion.ServerApiVersion;
 import com.netcracker.cloud.maas.client.impl.http.HttpClient;
 import com.netcracker.cloud.maas.client.impl.kafka.KafkaMaaSClientImpl;
@@ -13,7 +14,6 @@ import com.netcracker.maas.declarative.kafka.client.impl.tenant.impl.InternalTen
 import com.netcracker.maas.declarative.kafka.client.impl.topic.provider.api.MaasKafkaTopicServiceProvider;
 import com.netcracker.maas.declarative.kafka.client.impl.topic.provider.impl.MaasKafkaTopicServiceProviderImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,9 +24,6 @@ import static com.netcracker.maas.declarative.kafka.client.impl.common.constant.
 @Configuration
 @ConditionalOnProperty(value = KAFKA_LOCAL_DEV_ENABLED, havingValue = "false", matchIfMissing = true)
 public class MaasKafkaProdClientConfig {
-
-    @Autowired
-    MaasKafkaProps props;
 
     @Bean
     HttpClient maasHttpClient(@Autowired M2MManager m2MManager) {
@@ -40,10 +37,11 @@ public class MaasKafkaProdClientConfig {
 
     @Bean
     KafkaMaaSClient kafkaMaaSClient(HttpClient client, TenantManagerConnector tenantManagerConnector) {
+        String maasApiUrl = Env.apiUrl();
         return new KafkaMaaSClientImpl(
                 client,
                 () -> tenantManagerConnector,
-                new ApiUrlProvider(new ServerApiVersion(client, props.maasAgentUrl), props.maasAgentUrl)
+                new ApiUrlProvider(new ServerApiVersion(client, maasApiUrl), maasApiUrl)
         );
     }
 
