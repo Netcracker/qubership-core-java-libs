@@ -150,8 +150,8 @@ class ConsulM2MConfigDataLocationResolverTest {
     }
 
     @Test
-    void kubernetesModeWritesSecretIdWithoutTouchingTheBootstrapRegistry() {
-        properties.put(PROP_AUTH_MODE, "kubernetes");
+    void k8sModeWritesSecretIdWithoutTouchingTheBootstrapRegistry() {
+        properties.put(PROP_AUTH_MODE, "k8s");
         properties.put(PROP_AUTH_METHOD, "core-k8s");
 
         ConsulConfigProperties resolved = resolve();
@@ -161,8 +161,8 @@ class ConsulM2MConfigDataLocationResolverTest {
     }
 
     @Test
-    void fallbackModeLeavesTheRegistryAloneWhileTheNewWayWorks() {
-        properties.put(PROP_AUTH_MODE, "kubernetes-with-m2m-fallback");
+    void hybridModeLeavesTheRegistryAloneWhileTheNewWayWorks() {
+        properties.put(PROP_AUTH_MODE, "hybrid");
         properties.put(PROP_AUTH_METHOD, "core-k8s");
 
         ConsulConfigProperties resolved = resolve();
@@ -172,8 +172,8 @@ class ConsulM2MConfigDataLocationResolverTest {
     }
 
     @Test
-    void fallbackModeAsksTheRegistryOnlyWhenBearerTokenIsNeeded() {
-        properties.put(PROP_AUTH_MODE, "kubernetes-with-m2m-fallback");
+    void hybridModeAsksTheRegistryOnlyWhenBearerTokenIsNeeded() {
+        properties.put(PROP_AUTH_MODE, "hybrid");
         properties.put(PROP_AUTH_METHOD, "core-k8s");
         rejectedAuthMethod = "core-k8s";
         clientReadsBearerToken = true;
@@ -196,8 +196,8 @@ class ConsulM2MConfigDataLocationResolverTest {
     }
 
     @Test
-    void m2mModeSkipsTheNewWayEntirely() {
-        properties.put(PROP_AUTH_MODE, "m2m");
+    void legacyModeSkipsTheNewWayEntirely() {
+        properties.put(PROP_AUTH_MODE, "legacy");
         clientReadsBearerToken = true;
 
         ConsulConfigProperties resolved = resolve();
@@ -211,7 +211,7 @@ class ConsulM2MConfigDataLocationResolverTest {
         Mockito.when(consulRestClient.login(Mockito.any(ConsulLoginCredentials.class)))
                 .thenThrow(new IOException("consul refused the login (missing auth method, unmatched binding rule or wrong audience): response code=403; body='ACL not found'"));
 
-        for (String mode : new String[]{"kubernetes", "kubernetes-with-m2m-fallback", "m2m"}) {
+        for (String mode : new String[]{"k8s", "hybrid", "legacy"}) {
             properties.put(PROP_AUTH_MODE, mode);
 
             Assertions.assertNull(resolve().getAclToken(), mode);
@@ -220,7 +220,7 @@ class ConsulM2MConfigDataLocationResolverTest {
 
     @Test
     void aMalformedAnswerEndsTheSameWayAsARejectedLogin() throws IOException {
-        properties.put(PROP_AUTH_MODE, "kubernetes");
+        properties.put(PROP_AUTH_MODE, "k8s");
         Mockito.when(consulRestClient.login(Mockito.any(ConsulLoginCredentials.class)))
                 .thenReturn(new ConsulClientResponse("{\"NoSecretHere\":true}", 200));
 
@@ -238,7 +238,7 @@ class ConsulM2MConfigDataLocationResolverTest {
     void aMissingNamespaceBreaksTheConfigDataPhase() {
         Assumptions.assumeTrue(System.getenv(ENV_NAMESPACE) == null && System.getenv(ENV_CLOUD_NAMESPACE) == null);
         System.clearProperty(PROP_CLOUD_NAMESPACE);
-        properties.put(PROP_AUTH_MODE, "kubernetes-with-m2m-fallback");
+        properties.put(PROP_AUTH_MODE, "hybrid");
 
         Assertions.assertThrows(IllegalArgumentException.class, this::resolve);
     }

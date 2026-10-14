@@ -35,12 +35,12 @@ class ConsulM2MRestTemplateAutoConfigurationTest {
 
     @Test
     void loginPropertiesReachTheOptions() {
-        loginProperties.setMode(ConsulLoginMode.KUBERNETES);
+        loginProperties.setMode(ConsulLoginMode.K8S);
         loginProperties.setMethod("core-k8s");
 
         TokenStorageFactory.CreateOptions opts = options();
 
-        Assertions.assertEquals(ConsulLoginMode.KUBERNETES, opts.getMode());
+        Assertions.assertEquals(ConsulLoginMode.K8S, opts.getMode());
         Assertions.assertEquals("core-k8s", opts.getAuthMethod());
     }
 

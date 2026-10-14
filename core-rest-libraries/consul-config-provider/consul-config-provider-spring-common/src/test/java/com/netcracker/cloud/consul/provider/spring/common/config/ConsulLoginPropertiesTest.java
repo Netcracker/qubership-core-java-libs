@@ -28,8 +28,8 @@ class ConsulLoginPropertiesTest {
     }
 
     @Test
-    void modeIsKubernetesWithM2MFallbackWhenNothingIsConfigured() {
-        Assertions.assertEquals(ConsulLoginMode.KUBERNETES_WITH_M2M_FALLBACK, options().getMode());
+    void modeIsLegacyWhenNothingIsConfigured() {
+        Assertions.assertEquals(ConsulLoginMode.LEGACY, options().getMode());
     }
 
     @Test
@@ -43,7 +43,7 @@ class ConsulLoginPropertiesTest {
 
     @Test
     void authMethodAndAudienceDefaultsComeFromTheBuilder() {
-        loginProperties.setMode(ConsulLoginMode.KUBERNETES);
+        loginProperties.setMode(ConsulLoginMode.K8S);
 
         TokenStorageFactory.CreateOptions opts = options();
 
@@ -53,7 +53,7 @@ class ConsulLoginPropertiesTest {
 
     @Test
     void authMethodAndAudienceAreReadFromTheConfiguration() {
-        loginProperties.setMode(ConsulLoginMode.KUBERNETES);
+        loginProperties.setMode(ConsulLoginMode.K8S);
         loginProperties.setMethod("core-k8s");
         loginProperties.setAudience(AudienceName.DBAAS);
 
@@ -83,7 +83,7 @@ class ConsulLoginPropertiesTest {
                 .m2mSupplier(() -> "m2m-token")
                 .build();
 
-        Assertions.assertEquals(ConsulLoginMode.M2M, opts.getMode(), "mode");
+        Assertions.assertEquals(ConsulLoginMode.K8S, opts.getMode(), "mode");
         Assertions.assertEquals("core-k8s", opts.getAuthMethod(), "auth method");
         Assertions.assertEquals(AudienceName.DBAAS, opts.getAudience(), "audience");
         Assertions.assertEquals(Duration.ofMinutes(30), opts.getFallbackRecheckInterval(), "recheck interval");
@@ -92,7 +92,7 @@ class ConsulLoginPropertiesTest {
     @Test
     void everyPropertyNameTheDocumentationGivesBinds() {
         MapConfigurationPropertySource source = new MapConfigurationPropertySource(Map.of(
-                "consul.auth.mode", "m2m",
+                "consul.auth.mode", "k8s",
                 "consul.auth.method", "core-k8s",
                 "consul.auth.audience", AudienceName.DBAAS,
                 "consul.auth.fallback-recheck-interval", "30m"));
@@ -110,7 +110,7 @@ class ConsulLoginPropertiesTest {
     void everyEnvironmentVariableNameTheDocumentationGivesBinds() {
         StandardEnvironment environment = new StandardEnvironment();
         environment.getPropertySources().addFirst(new SystemEnvironmentPropertySource("systemEnvironment", Map.<String, Object>of(
-                "CONSUL_AUTH_MODE", "m2m",
+                "CONSUL_AUTH_MODE", "k8s",
                 "CONSUL_AUTH_METHOD", "core-k8s",
                 "CONSUL_AUTH_AUDIENCE", AudienceName.DBAAS,
                 "CONSUL_AUTH_FALLBACK_RECHECK_INTERVAL", "30m")));

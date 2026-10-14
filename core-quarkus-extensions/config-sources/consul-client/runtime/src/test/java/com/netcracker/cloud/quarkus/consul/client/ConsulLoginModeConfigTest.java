@@ -23,9 +23,9 @@ class ConsulLoginModeConfigTest {
 
     @Test
     void everyModeIsReadFromItsPropertyValue() {
-        Assertions.assertEquals(ConsulLoginMode.KUBERNETES, read("kubernetes"));
-        Assertions.assertEquals(ConsulLoginMode.M2M, read("m2m"));
-        Assertions.assertEquals(ConsulLoginMode.KUBERNETES_WITH_M2M_FALLBACK, read("kubernetes-with-m2m-fallback"));
+        Assertions.assertEquals(ConsulLoginMode.K8S, read("k8s"));
+        Assertions.assertEquals(ConsulLoginMode.LEGACY, read("legacy"));
+        Assertions.assertEquals(ConsulLoginMode.HYBRID, read("hybrid"));
     }
 
     @Test
