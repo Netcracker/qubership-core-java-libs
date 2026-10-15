@@ -56,6 +56,16 @@ public class ConsulMicroserviceMutexService implements MicroserviceMutexService 
         this(new HttpClientAdapter(consulTokenSupplier), consulUrl, namespace, microserviceName, podName, DEFAULT_TTL);
     }
 
+    /**
+     * @param onRefusal runs whenever Consul answers {@code 403} to this service, so that the owner of the token can
+     *                  check whether Consul still resolves it
+     */
+    public ConsulMicroserviceMutexService(Supplier<String> consulTokenSupplier, String consulUrl, String namespace,
+                                          String microserviceName, String podName, Runnable onRefusal) {
+        this(new HttpClientAdapter(consulTokenSupplier, onRefusal), consulUrl, namespace, microserviceName, podName,
+                DEFAULT_TTL);
+    }
+
     public ConsulMicroserviceMutexService(Supplier<String> consulTokenSupplier, String consulUrl, String namespace, String microserviceName, String podName, Duration sessionTTL) {
         this(new HttpClientAdapter(consulTokenSupplier), consulUrl, namespace, microserviceName, podName, sessionTTL);
     }

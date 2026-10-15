@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.bluegreen.api.service.MicroserviceMutexService;
 import com.netcracker.cloud.bluegreen.impl.service.ConsulMicroserviceMutexService;
-import com.netcracker.cloud.consul.provider.common.TokenStorage;
+import com.netcracker.cloud.consul.provider.common.ConsulTokenSource;
 
 import java.util.Optional;
 
@@ -35,10 +35,10 @@ class ConsulBlueGreenMicroserviceMutexConfigurationTest {
 
     @Test
     void testMicroserviceMutexServiceCreation() {
-        TokenStorage tokenStorage = mock(TokenStorage.class);
-        when(tokenStorage.get()).thenReturn(TEST_TOKEN);
+        ConsulTokenSource tokenSource = mock(ConsulTokenSource.class);
+        when(tokenSource.get()).thenReturn(TEST_TOKEN);
 
-        MicroserviceMutexService service = configuration.microserviceMutexService(tokenStorage);
+        MicroserviceMutexService service = configuration.microserviceMutexService(tokenSource);
 
         assertNotNull(service);
         assertInstanceOf(ConsulMicroserviceMutexService.class, service);
@@ -46,11 +46,11 @@ class ConsulBlueGreenMicroserviceMutexConfigurationTest {
 
     @Test
     void testMicroserviceMutexServiceWithDefaultPodName() {
-        TokenStorage tokenStorage = mock(TokenStorage.class);
-        when(tokenStorage.get()).thenReturn(TEST_TOKEN);
+        ConsulTokenSource tokenSource = mock(ConsulTokenSource.class);
+        when(tokenSource.get()).thenReturn(TEST_TOKEN);
         configuration.pod = Optional.empty();
 
-        MicroserviceMutexService service = configuration.microserviceMutexService(tokenStorage);
+        MicroserviceMutexService service = configuration.microserviceMutexService(tokenSource);
 
         assertNotNull(service);
         assertInstanceOf(ConsulMicroserviceMutexService.class, service);

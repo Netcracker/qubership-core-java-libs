@@ -35,7 +35,8 @@ class ConsulClientConfigurationKubernetesModeTest {
                     ConsulClientConfiguration.PROP_AUTH_MODE, "kubernetes",
                     ConsulClientConfiguration.PROP_AUTH_METHOD, "core-k8s",
                     ConsulClientConfiguration.PROP_AUTH_AUDIENCE, "dbaas",
-                    ConsulClientConfiguration.PROP_AUTH_FALLBACK_RECHECK_INTERVAL, "30m"
+                    ConsulClientConfiguration.PROP_AUTH_FALLBACK_RECHECK_INTERVAL, "30m",
+                    ConsulClientConfiguration.PROP_AUTH_VALIDATION_INTERVAL, "30s"
             );
         }
     }
@@ -48,16 +49,17 @@ class ConsulClientConfigurationKubernetesModeTest {
 
     @Test
     void loginPropertiesReachCreateOptionsAtRuntime() {
-        when(tokenStorageFactory.create(any())).thenReturn(new ConsulClientConfigurationTest.NoopTokenStorage());
+        when(tokenStorageFactory.createTokens(any())).thenReturn(ConsulClientConfigurationTest.noopTokens());
 
         tokenStorage.get();
 
         ArgumentCaptor<TokenStorageFactory.CreateOptions> options =
                 ArgumentCaptor.forClass(TokenStorageFactory.CreateOptions.class);
-        verify(tokenStorageFactory).create(options.capture());
+        verify(tokenStorageFactory).createTokens(options.capture());
         Assertions.assertEquals(ConsulLoginMode.KUBERNETES, options.getValue().getMode());
         Assertions.assertEquals("core-k8s", options.getValue().getAuthMethod());
         Assertions.assertEquals("dbaas", options.getValue().getAudience());
         Assertions.assertEquals(Duration.ofMinutes(30), options.getValue().getFallbackRecheckInterval());
+        Assertions.assertEquals(Duration.ofSeconds(30), options.getValue().getValidationInterval());
     }
 }

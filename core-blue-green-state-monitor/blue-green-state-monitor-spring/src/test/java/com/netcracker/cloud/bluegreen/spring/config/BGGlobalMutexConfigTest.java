@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static com.netcracker.cloud.bluegreen.spring.config.AbstractConsulTest.assertField;
 
 @SpringBootTest(classes = {
-        AbstractConsulTest.TestTokenStorageConfig.class,
+        AbstractConsulTest.TestTokenSourceConfig.class,
         BlueGreenGlobalMutexConfiguration.class},
         properties = {"consul.url=http://test.consul:8500"})
 public class BGGlobalMutexConfigTest {

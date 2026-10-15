@@ -20,6 +20,7 @@ public class ConsulLoginProperties {
     private String method;
     private String audience;
     private Duration fallbackRecheckInterval;
+    private Duration validationInterval;
 
     public ConsulLoginMode getMode() {
         return mode;
@@ -53,8 +54,16 @@ public class ConsulLoginProperties {
         this.fallbackRecheckInterval = fallbackRecheckInterval;
     }
 
+    public Duration getValidationInterval() {
+        return validationInterval;
+    }
+
+    public void setValidationInterval(Duration validationInterval) {
+        this.validationInterval = validationInterval;
+    }
+
     /**
-     * Starts an options builder from the four login inputs, leaving the absent ones {@code null} for the builder to
+     * Starts an options builder from the login inputs, leaving the absent ones {@code null} for the builder to
      * default. The Consul URL, the namespace and the M2M token supplier stay with the caller: every entry point
      * resolves them its own way, and the ConfigData phase leaves out the last two in the {@code kubernetes} mode.
      */
@@ -63,6 +72,7 @@ public class ConsulLoginProperties {
                 .mode(mode)
                 .authMethod(method)
                 .audience(audience)
-                .fallbackRecheckInterval(fallbackRecheckInterval);
+                .fallbackRecheckInterval(fallbackRecheckInterval)
+                .validationInterval(validationInterval);
     }
 }

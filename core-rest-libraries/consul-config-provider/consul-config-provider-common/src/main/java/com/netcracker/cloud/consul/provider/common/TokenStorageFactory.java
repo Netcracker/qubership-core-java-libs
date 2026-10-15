@@ -2,6 +2,8 @@ package com.netcracker.cloud.consul.provider.common;
 
 import com.netcracker.cloud.consul.provider.common.client.ConsulClient;
 import com.netcracker.cloud.security.core.utils.k8s.AudienceName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.Locale;
@@ -13,16 +15,35 @@ import java.util.function.Supplier;
  */
 public abstract class TokenStorageFactory {
 
+    private static final Logger log = LoggerFactory.getLogger(TokenStorageFactory.class);
 
     protected TokenStorageFactory() {
     }
 
     public TokenStorage create(CreateOptions config) {
+        return createTokens(config).storage();
+    }
+
+    /**
+     * Obtains the first token and returns both views of it: the storage that holds the value, and the source a
+     * consumer reports a refusal on. One call starts one updater, so a caller that needs both takes them from here
+     * rather than calling {@link #create(CreateOptions)} a second time.
+     */
+    public Tokens createTokens(CreateOptions config) {
         ConsulClient consulClient = createTokenExchanger(config);
-        TokenUpdater tokenUpdater = new TokenUpdater(from(consulClient, config));
+        TokenUpdater tokenUpdater = new TokenUpdater(from(consulClient, config), config);
         TokenStorage tokenStorage = createTokenStorage(config);
         tokenUpdater.watch(tokenStorage::update, tokenStorage.get());
-        return tokenStorage;
+        log.info("Consul ACL token is read back every {}, and whenever a consumer reports that consul refused it",
+                config.getValidationInterval());
+        return new Tokens(tokenStorage, tokenUpdater);
+    }
+
+    /**
+     * The storage a consumer reads the token from, and the source it reports a refusal on. One token updater backs
+     * both.
+     */
+    public record Tokens(TokenStorage storage, ConsulTokenSource source) {
     }
 
     /**
@@ -60,6 +81,7 @@ public abstract class TokenStorageFactory {
 
         public static final String DEFAULT_AUTH_METHOD = "applications-k8s-m2m";
         public static final Duration DEFAULT_FALLBACK_RECHECK_INTERVAL = Duration.ofHours(5);
+        public static final Duration DEFAULT_VALIDATION_INTERVAL = Duration.ofMinutes(5);
 
         String consulUrl;
         String namespace;
@@ -68,6 +90,7 @@ public abstract class TokenStorageFactory {
         String authMethod;
         String audience;
         Duration fallbackRecheckInterval;
+        Duration validationInterval;
 
         public ConsulLoginMode getMode() {
             return mode;
@@ -83,6 +106,14 @@ public abstract class TokenStorageFactory {
 
         public Duration getFallbackRecheckInterval() {
             return fallbackRecheckInterval;
+        }
+
+        /**
+         * How often the pod reads the token it holds to learn whether Consul still resolves it. Zero or negative
+         * turns the check off, leaving the pod with the relogin schedule and with what its consumers report.
+         */
+        public Duration getValidationInterval() {
+            return validationInterval;
         }
 
         public static class Builder {
@@ -126,6 +157,11 @@ public abstract class TokenStorageFactory {
                 return this;
             }
 
+            public Builder validationInterval(Duration interval) {
+                options.validationInterval = interval;
+                return this;
+            }
+
             /**
              * Applies the defaults and checks the inputs the mode needs. Defaults live here rather than in the entry
              * points so that an external caller of the builder gets them too. A blank auth method or audience counts
@@ -145,6 +181,9 @@ public abstract class TokenStorageFactory {
                 }
                 if (options.fallbackRecheckInterval == null) {
                     options.fallbackRecheckInterval = DEFAULT_FALLBACK_RECHECK_INTERVAL;
+                }
+                if (options.validationInterval == null) {
+                    options.validationInterval = DEFAULT_VALIDATION_INTERVAL;
                 }
                 require(options.consulUrl != null, "consulUrl", options.mode);
                 if (options.mode != ConsulLoginMode.KUBERNETES) {

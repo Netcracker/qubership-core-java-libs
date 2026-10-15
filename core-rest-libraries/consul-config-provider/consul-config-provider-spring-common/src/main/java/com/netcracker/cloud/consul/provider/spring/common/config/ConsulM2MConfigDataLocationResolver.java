@@ -5,19 +5,24 @@ import com.netcracker.cloud.consul.provider.common.ConsulLoginMode;
 import com.netcracker.cloud.consul.provider.common.ConsulTokenProvider;
 import com.netcracker.cloud.consul.provider.common.TokenStorageFactory;
 import com.netcracker.cloud.consul.provider.common.client.ConsulRestClient;
+import com.netcracker.cloud.consul.provider.spring.common.TokenRefusals;
 import com.netcracker.cloud.consul.provider.spring.common.Utils;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import com.netcracker.cloud.security.core.auth.M2MManager;
+import org.springframework.boot.bootstrap.BootstrapContext;
 import org.springframework.boot.bootstrap.BootstrapRegistry;
 import org.springframework.boot.context.config.ConfigDataLocation;
 import org.springframework.boot.context.config.ConfigDataLocationResolverContext;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.DeferredLogFactory;
+import org.springframework.cloud.consul.ConsulAutoConfiguration;
+import org.springframework.cloud.consul.ConsulClient;
 import org.springframework.cloud.consul.ConsulProperties;
 import org.springframework.cloud.consul.config.ConsulConfigDataLocationResolver;
 import org.springframework.cloud.consul.config.ConsulConfigProperties;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
+import org.springframework.web.service.invoker.HttpExchangeAdapter;
 import org.springframework.web.util.UriComponents;
 
 import java.util.Arrays;
@@ -35,6 +40,7 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
     static final String ENV_CLOUD_NAMESPACE = "CLOUD_NAMESPACE";
 
     private final Log log;
+    private final TokenRefusals refusals = new TokenRefusals();
 
     protected ConsulM2MConfigDataLocationResolver(DeferredLogFactory log) {
         super(log);
@@ -79,7 +85,30 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
             log.error("can not get consul token: ", e);
         }
         registerAndPromoteBean(resolverContext, ConsulProperties.class, BootstrapRegistry.InstanceSupplier.of(properties));
+        registerAndPromoteBean(resolverContext, TokenRefusals.class, BootstrapRegistry.InstanceSupplier.of(refusals));
         return consulConfigProperties;
+    }
+
+    /**
+     * Builds the client of the ConfigData phase over an exchange adapter that reports a refused ACL token, so that the
+     * pod stops sending one Consul no longer resolves.
+     *
+     * <p>The seam is here rather than in a bean of the application context: the client this method returns is promoted
+     * into the context as a manual singleton, which no {@code BeanPostProcessor} reaches and no second bean may shadow
+     * without making the injection into the config watch ambiguous. What the superclass builds is assembled here from
+     * the same two factory methods it calls, with the adapter wrapped in between.
+     */
+    @Override
+    protected ConsulClient createConsulClient(BootstrapContext context) {
+        ConsulProperties properties = context.get(ConsulProperties.class);
+        try {
+            HttpExchangeAdapter adapter = ConsulAutoConfiguration.createConsulClientSettings(
+                    ConsulAutoConfiguration.createConsulClientBaseUrl(properties), properties.getTls()).adapter();
+            return ConsulAutoConfiguration.createNewConsulClient(
+                    new RefusedTokenReportingAdapter(adapter, refusals));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Nullable

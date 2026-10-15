@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
 import com.netcracker.cloud.bluegreen.impl.service.ConsulBlueGreenStatePublisher;
-import com.netcracker.cloud.consul.provider.common.TokenStorage;
+import com.netcracker.cloud.consul.provider.common.ConsulTokenSource;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -24,7 +24,7 @@ class ConsulBlueGreenStatePublisherConfigurationTest {
     void setUp() {
         configuration = new ConsulBlueGreenStatePublisherConfiguration() {
             @Override
-            public BlueGreenStatePublisher blueGreenStatePublisher(TokenStorage tokenStorage) {
+            public BlueGreenStatePublisher blueGreenStatePublisher(ConsulTokenSource tokenSource) {
                 ConsulBlueGreenStatePublisher mockPublisher = mock(ConsulBlueGreenStatePublisher.class);
                 when(mockPublisher.getBlueGreenState()).thenReturn(null);
                 return mockPublisher;
@@ -36,10 +36,10 @@ class ConsulBlueGreenStatePublisherConfigurationTest {
 
     @Test
     void shouldCreatePublisherWithCorrectType() {
-        TokenStorage tokenStorage = mock(TokenStorage.class);
-        when(tokenStorage.get()).thenReturn(TEST_TOKEN);
+        ConsulTokenSource tokenSource = mock(ConsulTokenSource.class);
+        when(tokenSource.get()).thenReturn(TEST_TOKEN);
 
-        BlueGreenStatePublisher publisher = configuration.blueGreenStatePublisher(tokenStorage);
+        BlueGreenStatePublisher publisher = configuration.blueGreenStatePublisher(tokenSource);
 
         assertNotNull(publisher);
         assertInstanceOf(ConsulBlueGreenStatePublisher.class, publisher);
