@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.Optional;
 
 class ConsulLoginModeConfigTest {
 
@@ -34,6 +35,22 @@ class ConsulLoginModeConfigTest {
 
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> config.getValue(ConsulClientConfiguration.PROP_AUTH_MODE, ConsulLoginMode.class));
+    }
+
+    @Test
+    void oldModeValuesBreakTheStart() {
+        for (String mode : new String[]{"kubernetes-with-m2m-fallback", "kubernetes", "m2m"}) {
+            SmallRyeConfig config = configWithMode(mode);
+
+            Assertions.assertThrows(IllegalArgumentException.class,
+                    () -> config.getValue(ConsulClientConfiguration.PROP_AUTH_MODE, ConsulLoginMode.class), mode);
+        }
+    }
+
+    @Test
+    void anEmptyModeIsReadAsAbsent() {
+        Assertions.assertEquals(Optional.empty(), configWithMode("")
+                .getOptionalValue(ConsulClientConfiguration.PROP_AUTH_MODE, ConsulLoginMode.class));
     }
 
     /**

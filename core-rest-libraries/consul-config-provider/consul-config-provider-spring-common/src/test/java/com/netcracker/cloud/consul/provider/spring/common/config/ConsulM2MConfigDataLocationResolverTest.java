@@ -235,6 +235,15 @@ class ConsulM2MConfigDataLocationResolverTest {
     }
 
     @Test
+    void oldModeValuesBreakTheConfigDataPhase() {
+        for (String mode : new String[]{"kubernetes-with-m2m-fallback", "kubernetes", "m2m"}) {
+            properties.put(PROP_AUTH_MODE, mode);
+
+            Assertions.assertThrows(BindException.class, this::resolve, mode);
+        }
+    }
+
+    @Test
     void aMissingNamespaceBreaksTheConfigDataPhase() {
         Assumptions.assumeTrue(System.getenv(ENV_NAMESPACE) == null && System.getenv(ENV_CLOUD_NAMESPACE) == null);
         System.clearProperty(PROP_CLOUD_NAMESPACE);

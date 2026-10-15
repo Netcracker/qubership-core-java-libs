@@ -56,7 +56,7 @@ public class ConsulLoginProperties {
     /**
      * Starts an options builder from the four login inputs, leaving the absent ones {@code null} for the builder to
      * default. The Consul URL, the namespace and the M2M token supplier stay with the caller: every entry point
-     * resolves them its own way, and the ConfigData phase leaves out the last two in the {@code kubernetes} mode.
+     * resolves them its own way, and the ConfigData phase leaves out the last two in the {@code k8s} mode.
      */
     public TokenStorageFactory.CreateOptions.Builder toOptionsBuilder() {
         return new TokenStorageFactory.CreateOptions.Builder()

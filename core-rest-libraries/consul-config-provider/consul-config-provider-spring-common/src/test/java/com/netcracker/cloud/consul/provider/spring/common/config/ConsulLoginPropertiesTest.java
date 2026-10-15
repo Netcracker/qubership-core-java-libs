@@ -101,6 +101,25 @@ class ConsulLoginPropertiesTest {
                 .get());
     }
 
+    @Test
+    void anEmptyModeVariableLeavesTheLegacyDefault() {
+        StandardEnvironment environment = new StandardEnvironment();
+        environment.getPropertySources().addFirst(new SystemEnvironmentPropertySource("systemEnvironment", Map.<String, Object>of(
+                "CONSUL_AUTH_MODE", "",
+                "CONSUL_AUTH_METHOD", "core-k8s")));
+
+        ConsulLoginProperties bound = Binder.get(environment)
+                .bind(ConsulLoginProperties.PREFIX, ConsulLoginProperties.class)
+                .get();
+
+        Assertions.assertEquals(ConsulLoginMode.LEGACY, bound.toOptionsBuilder()
+                .consulUrl(CONSUL_URL)
+                .namespace("ns")
+                .m2mSupplier(() -> "m2m-token")
+                .build()
+                .getMode());
+    }
+
     /**
      * The environment variable names are the ones the go and the Quarkus stacks read as well, so a deployment sets
      * the same four whatever the stack. The interval carries the hyphenated property name here and the dotted one in
