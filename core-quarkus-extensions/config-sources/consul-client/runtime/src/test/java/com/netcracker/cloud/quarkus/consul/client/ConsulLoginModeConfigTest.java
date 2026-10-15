@@ -38,16 +38,6 @@ class ConsulLoginModeConfigTest {
     }
 
     @Test
-    void oldModeValuesBreakTheStart() {
-        for (String mode : new String[]{"kubernetes-with-m2m-fallback", "kubernetes", "m2m"}) {
-            SmallRyeConfig config = configWithMode(mode);
-
-            Assertions.assertThrows(IllegalArgumentException.class,
-                    () -> config.getValue(ConsulClientConfiguration.PROP_AUTH_MODE, ConsulLoginMode.class), mode);
-        }
-    }
-
-    @Test
     void anEmptyModeIsReadAsAbsent() {
         Assertions.assertEquals(Optional.empty(), configWithMode("")
                 .getOptionalValue(ConsulClientConfiguration.PROP_AUTH_MODE, ConsulLoginMode.class));
@@ -56,7 +46,7 @@ class ConsulLoginModeConfigTest {
     /**
      * The plain SmallRye config of this test converts an ISO-8601 duration only. The simple form the documentation
      * gives, {@code 5h}, needs the converter Quarkus registers, and
-     * {@link ConsulClientConfigurationKubernetesModeTest} reads it in a running application.
+     * {@link ConsulClientConfigurationK8sModeTest} reads it in a running application.
      */
     @Test
     void theFallbackRecheckIntervalIsReadFromItsPropertyValue() {

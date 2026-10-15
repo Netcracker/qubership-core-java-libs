@@ -20,8 +20,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @QuarkusTest
-@TestProfile(ConsulClientConfigurationKubernetesModeTest.Profile.class)
-class ConsulClientConfigurationKubernetesModeTest {
+@TestProfile(ConsulClientConfigurationK8sModeTest.Profile.class)
+class ConsulClientConfigurationK8sModeTest {
 
     public static class Profile implements QuarkusTestProfile {
 
