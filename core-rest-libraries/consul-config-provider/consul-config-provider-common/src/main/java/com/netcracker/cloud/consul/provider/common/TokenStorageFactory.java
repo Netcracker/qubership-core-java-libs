@@ -32,11 +32,11 @@ public abstract class TokenStorageFactory {
      */
     public static ConsulTokenProvider from(ConsulClient client, CreateOptions options) {
         switch (options.mode) {
-            case M2M:
+            case LEGACY:
                 return m2mProvider(client, options);
-            case KUBERNETES:
+            case K8S:
                 return kubernetesProvider(client, options);
-            case KUBERNETES_WITH_M2M_FALLBACK:
+            case HYBRID:
                 return new KubernetesWithM2MFallbackTokenProvider(kubernetesProvider(client, options),
                         m2mProvider(client, options), options.authMethod, options.fallbackRecheckInterval);
             default:
@@ -135,7 +135,7 @@ public abstract class TokenStorageFactory {
              */
             public CreateOptions build() {
                 if (options.mode == null) {
-                    options.mode = ConsulLoginMode.KUBERNETES_WITH_M2M_FALLBACK;
+                    options.mode = ConsulLoginMode.LEGACY;
                 }
                 if (isBlank(options.authMethod)) {
                     options.authMethod = DEFAULT_AUTH_METHOD;
@@ -147,7 +147,7 @@ public abstract class TokenStorageFactory {
                     options.fallbackRecheckInterval = DEFAULT_FALLBACK_RECHECK_INTERVAL;
                 }
                 require(options.consulUrl != null, "consulUrl", options.mode);
-                if (options.mode != ConsulLoginMode.KUBERNETES) {
+                if (options.mode != ConsulLoginMode.K8S) {
                     require(options.namespace != null, "namespace", options.mode);
                     require(options.m2mSupplier != null, "m2mSupplier", options.mode);
                 }

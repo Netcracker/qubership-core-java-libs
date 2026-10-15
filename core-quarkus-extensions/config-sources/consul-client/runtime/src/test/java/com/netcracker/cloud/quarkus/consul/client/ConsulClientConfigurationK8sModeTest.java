@@ -20,8 +20,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @QuarkusTest
-@TestProfile(ConsulClientConfigurationKubernetesModeTest.Profile.class)
-class ConsulClientConfigurationKubernetesModeTest {
+@TestProfile(ConsulClientConfigurationK8sModeTest.Profile.class)
+class ConsulClientConfigurationK8sModeTest {
 
     public static class Profile implements QuarkusTestProfile {
 
@@ -32,7 +32,7 @@ class ConsulClientConfigurationKubernetesModeTest {
                     "cloud.microservice.namespace", "test-namespace",
                     "quarkus.consul-source-config.enabled", "false",
                     "quarkus.consul-source-config.agent.url", "http://localhost:8500",
-                    ConsulClientConfiguration.PROP_AUTH_MODE, "kubernetes",
+                    ConsulClientConfiguration.PROP_AUTH_MODE, "k8s",
                     ConsulClientConfiguration.PROP_AUTH_METHOD, "core-k8s",
                     ConsulClientConfiguration.PROP_AUTH_AUDIENCE, "dbaas",
                     ConsulClientConfiguration.PROP_AUTH_FALLBACK_RECHECK_INTERVAL, "30m"
@@ -55,7 +55,7 @@ class ConsulClientConfigurationKubernetesModeTest {
         ArgumentCaptor<TokenStorageFactory.CreateOptions> options =
                 ArgumentCaptor.forClass(TokenStorageFactory.CreateOptions.class);
         verify(tokenStorageFactory).create(options.capture());
-        Assertions.assertEquals(ConsulLoginMode.KUBERNETES, options.getValue().getMode());
+        Assertions.assertEquals(ConsulLoginMode.K8S, options.getValue().getMode());
         Assertions.assertEquals("core-k8s", options.getValue().getAuthMethod());
         Assertions.assertEquals("dbaas", options.getValue().getAudience());
         Assertions.assertEquals(Duration.ofMinutes(30), options.getValue().getFallbackRecheckInterval());

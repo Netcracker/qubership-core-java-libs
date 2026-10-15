@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.Optional;
 
 class ConsulLoginModeConfigTest {
 
@@ -23,9 +24,9 @@ class ConsulLoginModeConfigTest {
 
     @Test
     void everyModeIsReadFromItsPropertyValue() {
-        Assertions.assertEquals(ConsulLoginMode.KUBERNETES, read("kubernetes"));
-        Assertions.assertEquals(ConsulLoginMode.M2M, read("m2m"));
-        Assertions.assertEquals(ConsulLoginMode.KUBERNETES_WITH_M2M_FALLBACK, read("kubernetes-with-m2m-fallback"));
+        Assertions.assertEquals(ConsulLoginMode.K8S, read("k8s"));
+        Assertions.assertEquals(ConsulLoginMode.LEGACY, read("legacy"));
+        Assertions.assertEquals(ConsulLoginMode.HYBRID, read("hybrid"));
     }
 
     @Test
@@ -36,10 +37,16 @@ class ConsulLoginModeConfigTest {
                 () -> config.getValue(ConsulClientConfiguration.PROP_AUTH_MODE, ConsulLoginMode.class));
     }
 
+    @Test
+    void anEmptyModeIsReadAsAbsent() {
+        Assertions.assertEquals(Optional.empty(), configWithMode("")
+                .getOptionalValue(ConsulClientConfiguration.PROP_AUTH_MODE, ConsulLoginMode.class));
+    }
+
     /**
      * The plain SmallRye config of this test converts an ISO-8601 duration only. The simple form the documentation
      * gives, {@code 5h}, needs the converter Quarkus registers, and
-     * {@link ConsulClientConfigurationKubernetesModeTest} reads it in a running application.
+     * {@link ConsulClientConfigurationK8sModeTest} reads it in a running application.
      */
     @Test
     void theFallbackRecheckIntervalIsReadFromItsPropertyValue() {

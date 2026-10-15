@@ -67,7 +67,7 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
         ConsulRestClient client = createConsulRestClient(consulAddress, m2mTokenSupplier);
 
         TokenStorageFactory.CreateOptions.Builder options = login.toOptionsBuilder().consulUrl(consulAddress);
-        if (login.getMode() != ConsulLoginMode.KUBERNETES) {
+        if (login.getMode() != ConsulLoginMode.K8S) {
             options.namespace(getPropsOrEnvsMust(args(PROP_CLOUD_NAMESPACE), args(ENV_NAMESPACE, ENV_CLOUD_NAMESPACE)))
                     .m2mSupplier(m2mTokenSupplier);
         }

@@ -13,21 +13,24 @@ Two ways to obtain the token are supported:
 ## Login properties
 
 The four properties below are read at startup, in the ConfigData phase and again when the `TokenStorage` bean is
-built. In `kubernetes-with-m2m-fallback` mode the first login picks the way the pod starts on, a recheck can move it
+built. In `hybrid` mode the first login picks the way the pod starts on, a recheck can move it
 to the `kubernetes` way later, and nothing ever moves it back.
 
 | Property name                           | Environment variable                    | Type                          | Default                        | Read when                                         |
 |-----------------------------------------|-----------------------------------------|-------------------------------|--------------------------------|---------------------------------------------------|
-| `consul.auth.mode`                      | `CONSUL_AUTH_MODE`                      | `kubernetes-with-m2m-fallback`, `kubernetes` or `m2m` | `kubernetes-with-m2m-fallback` | ConfigData phase and `TokenStorage` bean creation |
-| `consul.auth.method`                    | `CONSUL_AUTH_METHOD`                    | string                        | `applications-k8s-m2m`         | same; not used in `m2m` mode                      |
+| `consul.auth.mode`                      | `CONSUL_AUTH_MODE`                      | `legacy`, `hybrid` or `k8s`   | `legacy`                       | ConfigData phase and `TokenStorage` bean creation |
+| `consul.auth.method`                    | `CONSUL_AUTH_METHOD`                    | string                        | `applications-k8s-m2m`         | same; not used in `legacy` mode                   |
 | `consul.auth.audience`                  | `CONSUL_AUTH_AUDIENCE`                  | string                        | `netcracker`                   | same; read only when the `kubernetes` way logs in |
-| `consul.auth.fallback-recheck-interval` | `CONSUL_AUTH_FALLBACK_RECHECK_INTERVAL` | duration                      | `5h`                           | same, and only in the fallback mode               |
+| `consul.auth.fallback-recheck-interval` | `CONSUL_AUTH_FALLBACK_RECHECK_INTERVAL` | duration                      | `5h`                           | same, and only in `hybrid` mode                   |
 
-In `kubernetes-with-m2m-fallback` mode the `kubernetes` way is tried first. If it fails, the pod falls back to the
+The default `legacy` mode logs in the `m2m` way only. To move a service to the `kubernetes` way, set
+`CONSUL_AUTH_MODE` to `hybrid` or `k8s`.
+
+In `hybrid` mode the `kubernetes` way is tried first. If it fails, the pod falls back to the
 `m2m` way and logs the reason, the Consul response code, and a truncated response body in a single `INFO` record. That
 record marks the decision, so it appears once rather than on every retry; each login attempt logs an `INFO` record of
-its own, naming the auth method it went to. In `kubernetes` mode there is no probe and no fallback, and neither
-`M2MManager` nor the namespace is needed. In `m2m` mode the auth method name and the audience are not used at all.
+its own, naming the auth method it went to. In `k8s` mode there is no probe and no fallback, and neither
+`M2MManager` nor the namespace is needed. In `legacy` mode the auth method name and the audience are not used at all.
 
 The fallback is temporary. Once `fallback-recheck-interval` has passed, the next scheduled relogin tries the
 `kubernetes` way again, and the first success switches the pod over for good, with a second `INFO` record. Going back
@@ -46,7 +49,7 @@ A failed relogin is retried at 80% of the remaining lifetime of the token, or af
 and doubles up to 5 minutes, whichever is later. The delay returns to 10 seconds on the next success. Until a relogin
 succeeds the pod keeps the token it holds, which may already have expired.
 
-An unknown `consul.auth.mode`, or no namespace in the `m2m` and `kubernetes-with-m2m-fallback` modes, ends the startup
+An unknown `consul.auth.mode`, or no namespace in the `legacy` and `hybrid` modes, ends the startup
 before the first login attempt. A failed login
 does not: the ConfigData phase logs one `ERROR` record and the application starts without an ACL token, so Consul reads
 fail until the `TokenStorage` bean obtains one. The bean is stricter — a login failure its retries do not fix ends the
