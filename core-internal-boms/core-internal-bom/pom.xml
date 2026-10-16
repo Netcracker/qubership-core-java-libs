@@ -114,7 +114,7 @@
         <kotlin-bom.version>2.3.21</kotlin-bom.version>
 
         <!-- Messaging -->
-        <rabbitmq.version>5.34.0</rabbitmq.version>
+        <rabbitmq.version>5.37.0</rabbitmq.version>
         <rabbitmq-mock.version>1.2.0</rabbitmq-mock.version>
         <!-- Spring Boot 4.1.1: 4.2.1 | Quarkus 3.33.3.3: 4.1.2. Follows Spring, unlike the pins above:
              spring-kafka-test 4.1.0 calls ConfigDef$ValidList.anyNonDuplicateValues, added in Kafka 4.2.x, so
