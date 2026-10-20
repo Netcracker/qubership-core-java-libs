@@ -49,10 +49,16 @@ public class Env {
     }
 
     /**
-     * @throws IllegalStateException if {@code mode} is k8s and neither {@value #PROP_MAAS_URL} nor {@value #ENV_MAAS_URL}
-     *                               is set to a non-empty value
+     * With a custom auth scheme in {@value #PROP_API_AUTH} the client calls an external MaaS directly, so
+     * {@value #PROP_MAAS_AGENT_URL} is used regardless of {@code mode}.
+     *
+     * @throws IllegalStateException if {@code mode} is k8s, no custom auth scheme is set and neither
+     *                               {@value #PROP_MAAS_URL} nor {@value #ENV_MAAS_URL} is set to a non-empty value
      */
     public static String apiUrl(M2MAuthMode mode) {
+        if (customApiAuth().isPresent()) {
+            return maasAgentUrl();
+        }
         return switch (mode) {
             case LEGACY -> maasAgentUrl();
             case HYBRID -> maasUrl().orElseGet(() -> {

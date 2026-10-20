@@ -53,7 +53,8 @@ To reach a MaaS instance directly, for example one in another cluster, set `maas
 `maas.client.api.auth` to the auth scheme, e.g. `Basic`. The client then sends `Authorization: <scheme> <token>` with the
 value from the token supplier as is and skips m2m authentication, so for `Basic` the supplier returns the Base64 encoded
 `username:password` of a MaaS account. The property is read from JVM system properties or MicroProfile Config; `Bearer`
-or an empty value keeps the default m2m authentication.
+or an empty value keeps the default m2m authentication. With a custom scheme `maas.client.api.url` is used regardless of
+`M2M_AUTH_MODE`, and `maas.internal.address` / `MAAS_INTERNAL_ADDRESS` are ignored.
 
 ## Start
 First of all we need to create instance of [MaaSAPIClient](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/com/netcracker/cloud/maas/client/api/MaaSAPIClient.java). 

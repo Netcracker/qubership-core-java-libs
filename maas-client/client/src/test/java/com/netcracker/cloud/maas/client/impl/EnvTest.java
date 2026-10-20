@@ -4,6 +4,7 @@ import com.netcracker.cloud.security.core.utils.k8s.M2MAuthMode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import static com.netcracker.cloud.maas.client.Utils.withProp;
@@ -118,6 +119,40 @@ class EnvTest {
                     IllegalStateException e = assertThrows(IllegalStateException.class, () -> Env.apiUrl(M2MAuthMode.K8S));
                     assertTrue(e.getMessage().startsWith(Env.PROP_MAAS_URL + " is not set"), e.getMessage());
                 })
+        );
+    }
+
+    @ParameterizedTest
+    @EnumSource(M2MAuthMode.class)
+    void testApiUrlCustomApiAuthUsesTheConfiguredUrlInAnyMode(M2MAuthMode mode) {
+        withProp(Env.PROP_API_AUTH, "Basic", () ->
+                withProp(Env.PROP_MAAS_AGENT_URL, "http://external-maas:8080/", () ->
+                        withProp(Env.PROP_MAAS_URL, "http://maas-internal:8080", () ->
+                                assertEquals("http://external-maas:8080", Env.apiUrl(mode))
+                        )
+                )
+        );
+    }
+
+    @Test
+    void testApiUrlCustomApiAuthK8sModeDoesNotRequireMaasUrl() {
+        withProp(Env.PROP_API_AUTH, "Basic", () ->
+                withProp(Env.PROP_MAAS_AGENT_URL, "http://external-maas:8080", () ->
+                        withProp(Env.PROP_MAAS_URL, null, () ->
+                                assertEquals("http://external-maas:8080", Env.apiUrl(M2MAuthMode.K8S))
+                        )
+                )
+        );
+    }
+
+    @Test
+    void testApiUrlBearerApiAuthKeepsM2mRouting() {
+        withProp(Env.PROP_API_AUTH, "Bearer", () ->
+                withProp(Env.PROP_MAAS_AGENT_URL, "http://maas-agent-custom:8080", () ->
+                        withProp(Env.PROP_MAAS_URL, "http://maas-internal:8080", () ->
+                                assertEquals("http://maas-internal:8080", Env.apiUrl(M2MAuthMode.HYBRID))
+                        )
+                )
         );
     }
 
