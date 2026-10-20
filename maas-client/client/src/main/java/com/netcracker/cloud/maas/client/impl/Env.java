@@ -73,16 +73,6 @@ public class Env {
         return stringProperty(PROP_API_AUTH).orElse("Bearer");
     }
 
-    /**
-     * Returns the auth scheme set in {@value #PROP_API_AUTH} when it is not Bearer, for example Basic for an external
-     * MaaS in another cluster. Bearer or an unset value means the default m2m authentication is used.
-     */
-    public static Optional<String> customApiAuth() {
-        return stringProperty(PROP_API_AUTH)
-                .map(String::trim)
-                .filter(scheme -> !scheme.isEmpty() && !scheme.equalsIgnoreCase("Bearer"));
-    }
-
     static Args namespaceProps = new Args(args(PROP_CLOUD_NAMESPACE, PROP_NAMESPACE), args(ENV_CLOUD_NAMESPACE, ENV_NAMESPACE),
             args(new Deprecated(PROP_NAMESPACE, PROP_CLOUD_NAMESPACE)));
 

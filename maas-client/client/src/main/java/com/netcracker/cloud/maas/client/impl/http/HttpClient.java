@@ -13,30 +13,17 @@ public class HttpClient {
     private final OkHttpClient httpClient;
 
     public static HttpClient getM2mClient(Supplier<String> tokenSupplier) {
-        return Env.customApiAuth()
-                .map(scheme -> new HttpClient(customAuthClient(scheme, tokenSupplier)))
-                .orElseGet(() -> new HttpClient(M2MClient.builder()
-                        .keycloakTokenSupplier(tokenSupplier)
-                        .build()));
+        return new HttpClient(M2MClient.builder()
+                .keycloakTokenSupplier(tokenSupplier)
+                .build());
     }
 
     public static HttpClient getMaasClient(Supplier<String> tokenSupplier) {
-        return Env.customApiAuth()
-                .map(scheme -> new HttpClient(customAuthClient(scheme, tokenSupplier)))
-                .orElseGet(() -> new HttpClient(M2MClient.builder()
-                        .audience(AudienceName.MAAS)
-                        .agentUrl(Env.maasAgentUrl())
-                        .keycloakTokenSupplier(tokenSupplier)
-                        .build()));
-    }
-
-    // sends the token as is with the configured scheme, e.g. Basic credentials for an external MaaS
-    private static OkHttpClient customAuthClient(String scheme, Supplier<String> tokenSupplier) {
-        return new OkHttpClient.Builder()
-                .addInterceptor(chain -> chain.proceed(chain.request().newBuilder()
-                        .header("Authorization", scheme + " " + tokenSupplier.get())
-                        .build()))
-                .build();
+        return new HttpClient(M2MClient.builder()
+                .audience(AudienceName.MAAS)
+                .agentUrl(Env.maasAgentUrl())
+                .keycloakTokenSupplier(tokenSupplier)
+                .build());
     }
 
     private HttpClient(OkHttpClient client) {
