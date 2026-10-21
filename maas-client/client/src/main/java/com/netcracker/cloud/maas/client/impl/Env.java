@@ -40,7 +40,7 @@ public class Env {
 
     public static String apiUrl() {
         // a custom auth scheme does not depend on the m2m mode, so M2M_AUTH_MODE is not read for it
-        return customApiAuth().isPresent() ? customAuthApiUrl() : apiUrl(M2MAuthMode.readFromEnv());
+        return customApiAuth().isPresent() ? maasAgentUrl() : apiUrl(M2MAuthMode.readFromEnv());
     }
 
     public static String maasAgentUrl() {
@@ -53,13 +53,12 @@ public class Env {
      * With a custom auth scheme in {@value #PROP_API_AUTH} the client calls an external MaaS directly, so
      * {@value #PROP_MAAS_AGENT_URL} is used regardless of {@code mode}.
      *
-     * @throws IllegalStateException if a custom auth scheme is set and {@value #PROP_MAAS_AGENT_URL} is not, or if
-     *                               {@code mode} is k8s, no custom auth scheme is set and neither {@value #PROP_MAAS_URL}
-     *                               nor {@value #ENV_MAAS_URL} is set to a non-empty value
+     * @throws IllegalStateException if {@code mode} is k8s, no custom auth scheme is set and neither
+     *                               {@value #PROP_MAAS_URL} nor {@value #ENV_MAAS_URL} is set to a non-empty value
      */
     public static String apiUrl(M2MAuthMode mode) {
         if (customApiAuth().isPresent()) {
-            return customAuthApiUrl();
+            return maasAgentUrl();
         }
         return switch (mode) {
             case LEGACY -> maasAgentUrl();
@@ -73,35 +72,20 @@ public class Env {
         };
     }
 
-    // no maas-agent fallback: the agent replaces the Authorization header with its own account
-    private static String customAuthApiUrl() {
-        return stringProperty(PROP_MAAS_AGENT_URL)
-                .filter(value -> !value.isBlank())
-                .map(Env::normalizeUrl)
-                .orElseThrow(() -> new IllegalStateException(PROP_MAAS_AGENT_URL
-                        + " is not set: with a custom " + PROP_API_AUTH + " scheme the client sends requests directly to MaaS, set "
-                        + PROP_MAAS_AGENT_URL + " to the MaaS URL"));
-    }
-
     private static Optional<String> maasUrl() {
         return getPropsOrEnvs(args(PROP_MAAS_URL), args(ENV_MAAS_URL)).filter(value -> !value.isEmpty()).map(Env::normalizeUrl);
     }
 
-    /**
-     * @deprecated use {@link #customApiAuth()}
-     */
-    @java.lang.Deprecated(forRemoval = true)
     public static String apiAuth() {
-        return customApiAuth().orElse("Bearer");
+        return stringProperty(PROP_API_AUTH).orElse("Bearer");
     }
 
     /**
-     * Returns the auth scheme set in {@value #PROP_API_AUTH} when it is not Bearer, for example Basic for an external
-     * MaaS in another cluster. Bearer or an unset value means the default m2m authentication is used.
+     * Returns {@link #apiAuth()} when it is not Bearer, e.g. Basic for an external MaaS in another cluster. Bearer or an
+     * empty value means the default m2m authentication is used.
      */
     public static Optional<String> customApiAuth() {
-        return stringProperty(PROP_API_AUTH)
-                .map(String::trim)
+        return Optional.of(apiAuth().trim())
                 .filter(scheme -> !scheme.isEmpty() && !scheme.equalsIgnoreCase("Bearer"));
     }
 

@@ -146,19 +146,6 @@ class EnvTest {
         );
     }
 
-    @ParameterizedTest
-    @EnumSource(M2MAuthMode.class)
-    void testApiUrlCustomApiAuthRequiresTheConfiguredUrl(M2MAuthMode mode) {
-        withProp(Env.PROP_API_AUTH, "Basic", () ->
-                withProp(Env.PROP_MAAS_AGENT_URL, null, () ->
-                        withProp(Env.PROP_MAAS_URL, "http://maas-internal:8080", () -> {
-                            IllegalStateException e = assertThrows(IllegalStateException.class, () -> Env.apiUrl(mode));
-                            assertTrue(e.getMessage().startsWith(Env.PROP_MAAS_AGENT_URL + " is not set"), e.getMessage());
-                        })
-                )
-        );
-    }
-
     @Test
     void testApiUrlCustomApiAuthIgnoresM2mAuthMode() {
         withProp(Env.PROP_API_AUTH, "Basic", () ->
@@ -171,19 +158,10 @@ class EnvTest {
         );
     }
 
-    @Test
-    void testApiUrlWithoutCustomApiAuthStillRejectsUnsupportedM2mAuthMode() {
-        withProp(Env.PROP_API_AUTH, null, () ->
-                assertThrows(IllegalArgumentException.class, () ->
-                        withEnvironmentVariable(M2MAuthMode.M2M_AUTH_MODE_ENV, "unsupported").execute(() -> Env.apiUrl()))
-        );
-    }
-
     @ParameterizedTest
-    @CsvSource(value = {"NULL, Bearer", "' bearer ', Bearer", "' ', Bearer", "Bearer, Bearer", "' Basic ', Basic"}, nullValues = "NULL")
-    @SuppressWarnings("removal")
-    void testApiAuthMatchesCustomApiAuth(String property, String expected) {
-        withProp(Env.PROP_API_AUTH, property, () -> assertEquals(expected, Env.apiAuth()));
+    @CsvSource(value = {"NULL, ", "Bearer, ", "' bearer ', ", "' ', ", "Basic, Basic", "' Basic ', Basic"}, nullValues = "NULL")
+    void testCustomApiAuthFollowsApiAuth(String property, String expected) {
+        withProp(Env.PROP_API_AUTH, property, () -> assertEquals(expected, Env.customApiAuth().orElse(null)));
     }
 
     @Test

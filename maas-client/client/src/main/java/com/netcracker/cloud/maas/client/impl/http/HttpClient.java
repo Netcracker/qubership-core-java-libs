@@ -33,15 +33,9 @@ public class HttpClient {
     // sends the token as is with the configured scheme, e.g. Basic credentials for an external MaaS
     private static OkHttpClient customAuthClient(String scheme, Supplier<String> tokenSupplier) {
         return new OkHttpClient.Builder()
-                .addInterceptor(chain -> {
-                    String token = tokenSupplier.get();
-                    if (token == null || token.isBlank()) {
-                        throw new IllegalStateException("MaaS auth token for the '" + scheme + "' scheme is empty, check the token supplier");
-                    }
-                    return chain.proceed(chain.request().newBuilder()
-                            .header("Authorization", scheme + " " + token)
-                            .build());
-                })
+                .addInterceptor(chain -> chain.proceed(chain.request().newBuilder()
+                        .header("Authorization", scheme + " " + tokenSupplier.get())
+                        .build()))
                 .build();
     }
 
