@@ -4,6 +4,7 @@ import com.netcracker.cloud.security.core.utils.k8s.M2MAuthMode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
@@ -143,6 +144,46 @@ class EnvTest {
                         )
                 )
         );
+    }
+
+    @ParameterizedTest
+    @EnumSource(M2MAuthMode.class)
+    void testApiUrlCustomApiAuthRequiresTheConfiguredUrl(M2MAuthMode mode) {
+        withProp(Env.PROP_API_AUTH, "Basic", () ->
+                withProp(Env.PROP_MAAS_AGENT_URL, null, () ->
+                        withProp(Env.PROP_MAAS_URL, "http://maas-internal:8080", () -> {
+                            IllegalStateException e = assertThrows(IllegalStateException.class, () -> Env.apiUrl(mode));
+                            assertTrue(e.getMessage().startsWith(Env.PROP_MAAS_AGENT_URL + " is not set"), e.getMessage());
+                        })
+                )
+        );
+    }
+
+    @Test
+    void testApiUrlCustomApiAuthIgnoresM2mAuthMode() {
+        withProp(Env.PROP_API_AUTH, "Basic", () ->
+                withProp(Env.PROP_MAAS_AGENT_URL, "http://external-maas:8080", () -> {
+                    var value = withEnvironmentVariable(M2MAuthMode.M2M_AUTH_MODE_ENV, "unsupported")
+                            .execute(() -> Env.apiUrl());
+
+                    assertEquals("http://external-maas:8080", value);
+                })
+        );
+    }
+
+    @Test
+    void testApiUrlWithoutCustomApiAuthStillRejectsUnsupportedM2mAuthMode() {
+        withProp(Env.PROP_API_AUTH, null, () ->
+                assertThrows(IllegalArgumentException.class, () ->
+                        withEnvironmentVariable(M2MAuthMode.M2M_AUTH_MODE_ENV, "unsupported").execute(() -> Env.apiUrl()))
+        );
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"NULL, Bearer", "' bearer ', Bearer", "' ', Bearer", "Bearer, Bearer", "' Basic ', Basic"}, nullValues = "NULL")
+    @SuppressWarnings("removal")
+    void testApiAuthMatchesCustomApiAuth(String property, String expected) {
+        withProp(Env.PROP_API_AUTH, property, () -> assertEquals(expected, Env.apiAuth()));
     }
 
     @Test

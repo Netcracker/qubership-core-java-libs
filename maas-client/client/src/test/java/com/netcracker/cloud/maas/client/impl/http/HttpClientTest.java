@@ -4,9 +4,11 @@ import com.netcracker.cloud.maas.client.impl.Env;
 import com.netcracker.cloud.security.core.utils.k8s.impl.M2MInterceptor;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.junit.jupiter.MockServerExtension;
@@ -19,6 +21,8 @@ import static com.netcracker.cloud.maas.client.Utils.withProp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
@@ -71,6 +75,19 @@ class HttpClientTest {
                     .sendAndReceive(s -> s)
                     .orElse(null);
             assertEquals("ok", body);
+        });
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = " ")
+    void customApiAuthRejectsAnEmptyToken(String token) {
+        withProp(Env.PROP_API_AUTH, "Basic", () -> {
+            OkHttpClient client = HttpClient.getMaasClient(() -> token).getClient();
+            Request request = new Request.Builder().url("http://localhost:1/api-version").build();
+
+            IllegalStateException e = assertThrows(IllegalStateException.class, () -> client.newCall(request).execute());
+            assertTrue(e.getMessage().contains("'Basic' scheme is empty"), e.getMessage());
         });
     }
 
