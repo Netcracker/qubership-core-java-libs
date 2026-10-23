@@ -55,7 +55,8 @@ value from the token supplier as is, as before m2m authentication, so for `Basic
 `username:password` of a MaaS account. `maas.client.api.url` is used regardless of `M2M_AUTH_MODE`. The properties are
 read from JVM system properties or MicroProfile Config; `Bearer` or an empty value keeps the default m2m authentication.
 
-`maas.client.api.auth` only works with a custom `MaaSAPIClient` bean whose token supplier returns the credentials:
+`maas.client.api.auth` only works with a custom `MaaSAPIClient` bean whose token supplier returns the credentials, e.g. in
+Spring:
 ```java
 @Bean
 MaaSAPIClient maaSAPIClient() {
@@ -63,8 +64,9 @@ MaaSAPIClient maaSAPIClient() {
     return new MaaSAPIClientImpl(() -> credentials);
 }
 ```
-The default beans of maas-client-spring and maas-client-quarkus and the declarative clients pass the m2m token, so with
-a custom scheme they would send `<scheme> <m2m token>`.
+The custom bean replaces the default `MaaSAPIClient` beans of maas-client-spring and maas-client-quarkus, which pass the
+m2m token. The declarative clients do not use the `MaaSAPIClient` bean and always pass the m2m token, so the setting is
+not supported with them: they would send `<scheme> <m2m token>` to `maas.agent.url`.
 
 ## Start
 First of all we need to create instance of [MaaSAPIClient](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/com/netcracker/cloud/maas/client/api/MaaSAPIClient.java). 
