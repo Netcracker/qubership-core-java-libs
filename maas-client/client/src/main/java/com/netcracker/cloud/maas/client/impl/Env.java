@@ -39,7 +39,8 @@ public class Env {
     public static final String PROP_HTTP_RETRY_MAX_TOTAL_DURATION_MS = "maas.http.retry.max-total-duration-ms";
 
     public static String apiUrl() {
-        return apiUrl(M2MAuthMode.readFromEnv());
+        // a custom auth scheme does not depend on the m2m mode, so M2M_AUTH_MODE is not read for it
+        return customApiAuth().isPresent() ? maasAgentUrl() : apiUrl(M2MAuthMode.readFromEnv());
     }
 
     public static String maasAgentUrl() {
@@ -49,10 +50,16 @@ public class Env {
     }
 
     /**
-     * @throws IllegalStateException if {@code mode} is k8s and neither {@value #PROP_MAAS_URL} nor {@value #ENV_MAAS_URL}
-     *                               is set to a non-empty value
+     * With a custom auth scheme in {@value #PROP_API_AUTH} the client calls an external MaaS directly, so
+     * {@value #PROP_MAAS_AGENT_URL} is used regardless of {@code mode}.
+     *
+     * @throws IllegalStateException if {@code mode} is k8s, no custom auth scheme is set and neither
+     *                               {@value #PROP_MAAS_URL} nor {@value #ENV_MAAS_URL} is set to a non-empty value
      */
     public static String apiUrl(M2MAuthMode mode) {
+        if (customApiAuth().isPresent()) {
+            return maasAgentUrl();
+        }
         return switch (mode) {
             case LEGACY -> maasAgentUrl();
             case HYBRID -> maasUrl().orElseGet(() -> {
@@ -71,6 +78,15 @@ public class Env {
 
     public static String apiAuth() {
         return stringProperty(PROP_API_AUTH).orElse("Bearer");
+    }
+
+    /**
+     * Returns {@link #apiAuth()} when it is not Bearer, e.g. Basic for an external MaaS in another cluster. Bearer or an
+     * empty value means the default m2m authentication is used.
+     */
+    public static Optional<String> customApiAuth() {
+        return Optional.of(apiAuth().trim())
+                .filter(scheme -> !scheme.isEmpty() && !scheme.equalsIgnoreCase("Bearer"));
     }
 
     static Args namespaceProps = new Args(args(PROP_CLOUD_NAMESPACE, PROP_NAMESPACE), args(ENV_CLOUD_NAMESPACE, ENV_NAMESPACE),
