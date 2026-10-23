@@ -10,9 +10,12 @@ import com.netcracker.cloud.consul.provider.common.client.ConsulRestClient;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import com.netcracker.cloud.security.core.auth.M2MManager;
 import com.netcracker.cloud.security.core.auth.Token;
+import com.netcracker.cloud.security.core.utils.k8s.M2MAuthMode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.boot.bootstrap.DefaultBootstrapContext;
 import org.springframework.boot.bootstrap.BootstrapRegistry;
@@ -23,6 +26,9 @@ import org.springframework.boot.context.properties.source.MapConfigurationProper
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.cloud.consul.ConsulProperties;
 import org.springframework.cloud.consul.config.ConsulConfigProperties;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,7 +42,11 @@ import static com.netcracker.cloud.consul.provider.spring.common.config.ConsulM2
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@ExtendWith(SystemStubsExtension.class)
 class ConsulM2MConfigDataLocationResolverTest {
+
+    @SystemStub
+    private EnvironmentVariables environmentVariables;
 
     @Test
     void getPropsOrEnvsMust() {
@@ -77,16 +87,25 @@ class ConsulM2MConfigDataLocationResolverTest {
     private DefaultBootstrapContext bootstrapContext;
     private String rejectedAuthMethod;
     private boolean clientReadsBearerToken;
+    private Supplier<M2MAuthMode> m2mAuthMode = () -> M2MAuthMode.LEGACY;
     private ConfigDataLocationResolverContext resolverContext;
     private ConsulRestClient consulRestClient;
 
     private static class TestResolver extends ConsulM2MConfigDataLocationResolver {
 
         private final ConsulRestClient consulRestClient;
+        private final Supplier<M2MAuthMode> m2mAuthMode;
 
-        TestResolver(DeferredLogFactory log, ConsulRestClient consulRestClient) {
+        TestResolver(DeferredLogFactory log, ConsulRestClient consulRestClient, Supplier<M2MAuthMode> m2mAuthMode) {
             super(log);
             this.consulRestClient = consulRestClient;
+            this.m2mAuthMode = m2mAuthMode;
+        }
+
+        /** A {@code null} supplier leaves the read of the environment variable to the resolver itself. */
+        @Override
+        M2MAuthMode m2mAuthMode() {
+            return m2mAuthMode == null ? super.m2mAuthMode() : m2mAuthMode.get();
         }
 
         @Override
@@ -145,8 +164,57 @@ class ConsulM2MConfigDataLocationResolverTest {
     }
 
     private ConsulConfigProperties resolve() {
-        return new TestResolver(Mockito.mock(DeferredLogFactory.class, Mockito.RETURNS_DEEP_STUBS), consulRestClient)
+        return new TestResolver(Mockito.mock(DeferredLogFactory.class, Mockito.RETURNS_DEEP_STUBS), consulRestClient,
+                m2mAuthMode)
                 .loadConfigProperties(resolverContext);
+    }
+
+    @Test
+    void k8sTakenFromM2MAuthModeNeedsNoNamespace() {
+        Assumptions.assumeTrue(System.getenv(ENV_NAMESPACE) == null && System.getenv(ENV_CLOUD_NAMESPACE) == null);
+        System.clearProperty(PROP_CLOUD_NAMESPACE);
+        m2mAuthMode = () -> M2MAuthMode.K8S;
+
+        ConsulConfigProperties resolved = resolve();
+
+        Assertions.assertEquals(SECRET_ID, resolved.getAclToken());
+        Assertions.assertEquals(0, m2mLookups.get());
+    }
+
+    @Test
+    void m2mAuthModeIsReadFromTheEnvironmentVariable() throws IOException {
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "k8s");
+        m2mAuthMode = null;
+        properties.put(PROP_AUTH_METHOD, "core-k8s");
+
+        ConsulConfigProperties resolved = resolve();
+
+        Assertions.assertEquals(SECRET_ID, resolved.getAclToken());
+        ArgumentCaptor<ConsulLoginCredentials> used = ArgumentCaptor.forClass(ConsulLoginCredentials.class);
+        Mockito.verify(consulRestClient).login(used.capture());
+        Assertions.assertEquals("core-k8s", used.getValue().getAuthMethod());
+    }
+
+    @Test
+    void consulAuthModeOverridesM2MAuthMode() {
+        properties.put(PROP_AUTH_MODE, "legacy");
+        m2mAuthMode = () -> M2MAuthMode.K8S;
+        clientReadsBearerToken = true;
+
+        ConsulConfigProperties resolved = resolve();
+
+        Assertions.assertEquals(SECRET_ID, resolved.getAclToken());
+        Assertions.assertEquals(1, m2mLookups.get());
+    }
+
+    @Test
+    void unsupportedM2MAuthModeBreaksTheConfigDataPhaseWhenConsulAuthModeIsUnset() {
+        m2mAuthMode = () -> {
+            throw new IllegalArgumentException("M2M_AUTH_MODE has unsupported value \"cloud-foundry\"");
+        };
+
+        IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class, this::resolve);
+        Assertions.assertTrue(thrown.getMessage().contains("consul.auth.mode is not set"), thrown.getMessage());
     }
 
     @Test

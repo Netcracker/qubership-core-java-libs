@@ -4,6 +4,7 @@ import com.netcracker.cloud.consul.provider.common.ConsulLoginMode;
 import com.netcracker.cloud.consul.provider.common.TokenStorage;
 import com.netcracker.cloud.consul.provider.common.TokenStorageFactory;
 import com.netcracker.cloud.security.core.utils.k8s.AudienceName;
+import com.netcracker.cloud.security.core.utils.k8s.M2MAuthMode;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.QuarkusTestProfile;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.wildfly.common.Assert;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 
 import java.util.Map;
 
@@ -50,11 +52,15 @@ class ConsulClientConfigurationTest {
         verify(tokenStorageFactory, never()).create(any());
     }
 
+    /**
+     * The producer would take the mode from the {@code M2M_AUTH_MODE} of the machine running the test, so the variable
+     * is removed around the first call of the bean, where the producer runs.
+     */
     @Test
-    void defaultsAreTakenWhenNoLoginPropertyIsSet() {
+    void defaultsAreTakenWhenNoLoginPropertyIsSet() throws Exception {
         when(tokenStorageFactory.create(any())).thenReturn(new NoopTokenStorage());
 
-        tokenStorage.get();
+        new EnvironmentVariables().remove(M2MAuthMode.M2M_AUTH_MODE_ENV).execute(() -> tokenStorage.get());
 
         ArgumentCaptor<TokenStorageFactory.CreateOptions> options =
                 ArgumentCaptor.forClass(TokenStorageFactory.CreateOptions.class);

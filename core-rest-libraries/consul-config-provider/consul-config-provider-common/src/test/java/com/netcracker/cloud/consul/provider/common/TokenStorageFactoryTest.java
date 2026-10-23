@@ -3,9 +3,15 @@ package com.netcracker.cloud.consul.provider.common;
 import com.netcracker.cloud.consul.provider.common.client.ConsulClient;
 import com.netcracker.cloud.consul.provider.common.client.ConsulClientResponse;
 import com.netcracker.cloud.security.core.utils.k8s.AudienceName;
+import com.netcracker.cloud.security.core.utils.k8s.M2MAuthMode;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -17,10 +23,23 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(SystemStubsExtension.class)
 class TokenStorageFactoryTest {
 
     private final String NAMESPACE = "ns";
     private final String CONSUL_URL = "http://consul.namespace:8500";
+
+    @SystemStub
+    private EnvironmentVariables environmentVariables;
+
+    /**
+     * Every test that builds without a mode would otherwise take it from the {@code M2M_AUTH_MODE} of the machine
+     * running it.
+     */
+    @BeforeEach
+    void removeM2MAuthMode() {
+        environmentVariables.remove(M2MAuthMode.M2M_AUTH_MODE_ENV);
+    }
 
     @Test
     void returnsFine() {
@@ -52,7 +71,7 @@ class TokenStorageFactoryTest {
     }
 
     @Test
-    void modeIsLegacyWhenNotGiven() {
+    void modeIsLegacyWhenNotGivenAndM2MAuthModeIsUnset() {
         TokenStorageFactory.CreateOptions opts = new TokenStorageFactory.CreateOptions.Builder()
                 .consulUrl(CONSUL_URL)
                 .namespace(NAMESPACE)
@@ -60,6 +79,53 @@ class TokenStorageFactoryTest {
                 .build();
 
         Assertions.assertEquals(ConsulLoginMode.LEGACY, opts.mode);
+    }
+
+    @Test
+    void absentModeIsReadFromTheM2MAuthModeVariable() {
+        environmentVariables.set(M2MAuthMode.M2M_AUTH_MODE_ENV, "k8s");
+
+        TokenStorageFactory.CreateOptions opts = new TokenStorageFactory.CreateOptions.Builder()
+                .consulUrl(CONSUL_URL)
+                .build();
+
+        Assertions.assertEquals(ConsulLoginMode.K8S, opts.mode);
+    }
+
+    @Test
+    void absentModeIsTakenFromM2MAuthModeWithThatModesRequirements() {
+        TokenStorageFactory.CreateOptions.Builder builder = new TokenStorageFactory.CreateOptions.Builder();
+        builder.m2mAuthMode = () -> M2MAuthMode.K8S;
+
+        TokenStorageFactory.CreateOptions opts = builder.consulUrl(CONSUL_URL).build();
+
+        Assertions.assertEquals(ConsulLoginMode.K8S, opts.mode);
+    }
+
+    @Test
+    void givenModeOverridesM2MAuthMode() {
+        TokenStorageFactory.CreateOptions.Builder builder = new TokenStorageFactory.CreateOptions.Builder();
+        builder.m2mAuthMode = () -> M2MAuthMode.K8S;
+
+        TokenStorageFactory.CreateOptions opts = builder.consulUrl(CONSUL_URL)
+                .mode(ConsulLoginMode.LEGACY)
+                .namespace(NAMESPACE)
+                .m2mSupplier(() -> "token")
+                .build();
+
+        Assertions.assertEquals(ConsulLoginMode.LEGACY, opts.mode);
+    }
+
+    @Test
+    void hybridTakenFromM2MAuthModeStillNeedsTheNamespace() {
+        TokenStorageFactory.CreateOptions.Builder builder = new TokenStorageFactory.CreateOptions.Builder();
+        builder.m2mAuthMode = () -> M2MAuthMode.HYBRID;
+
+        IllegalArgumentException thrown = Assertions.assertThrows(IllegalArgumentException.class,
+                () -> builder.consulUrl(CONSUL_URL).build());
+
+        Assertions.assertTrue(thrown.getMessage().contains("namespace"), thrown.getMessage());
+        Assertions.assertTrue(thrown.getMessage().contains("hybrid"), thrown.getMessage());
     }
 
     @Test
