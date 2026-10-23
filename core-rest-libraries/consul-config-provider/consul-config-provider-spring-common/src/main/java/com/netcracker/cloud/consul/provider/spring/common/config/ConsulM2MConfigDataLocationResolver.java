@@ -8,6 +8,7 @@ import com.netcracker.cloud.consul.provider.common.client.ConsulRestClient;
 import com.netcracker.cloud.consul.provider.spring.common.Utils;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import com.netcracker.cloud.security.core.auth.M2MManager;
+import com.netcracker.cloud.security.core.utils.k8s.M2MAuthMode;
 import org.springframework.boot.bootstrap.BootstrapRegistry;
 import org.springframework.boot.context.config.ConfigDataLocation;
 import org.springframework.boot.context.config.ConfigDataLocationResolverContext;
@@ -66,8 +67,9 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
         String consulAddress = Utils.formatConsulAddress(properties);
         ConsulRestClient client = createConsulRestClient(consulAddress, m2mTokenSupplier);
 
-        TokenStorageFactory.CreateOptions.Builder options = login.toOptionsBuilder().consulUrl(consulAddress);
-        if (login.getMode() != ConsulLoginMode.K8S) {
+        ConsulLoginMode mode = ConsulLoginMode.resolve(login.getMode(), this::m2mAuthMode);
+        TokenStorageFactory.CreateOptions.Builder options = login.toOptionsBuilder().mode(mode).consulUrl(consulAddress);
+        if (mode != ConsulLoginMode.K8S) {
             options.namespace(getPropsOrEnvsMust(args(PROP_CLOUD_NAMESPACE), args(ENV_NAMESPACE, ENV_CLOUD_NAMESPACE)))
                     .m2mSupplier(m2mTokenSupplier);
         }
@@ -91,6 +93,14 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
         }
 
         return super.parseLocation(context, ConfigDataLocation.of(originalLocation.replaceAll("^.+//", "")));
+    }
+
+    /**
+     * The mode {@code M2M_AUTH_MODE} names, which the login takes when {@code consul.auth.mode} is not set. Resolved
+     * here rather than left to the builder because the mode decides whether the namespace is required.
+     */
+    M2MAuthMode m2mAuthMode() {
+        return M2MAuthMode.readFromEnv();
     }
 
     protected ConsulRestClient createConsulRestClient(String consulAddr, Supplier<String> m2mTokenSupplier) {
