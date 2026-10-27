@@ -48,6 +48,26 @@ With `M2M_AUTH_MODE=hybrid` or `k8s` the client sends requests to MaaS at `maas.
 `MAAS_INTERNAL_ADDRESS` environment variable when the property is not set, instead of maas-agent. In `k8s` mode one of
 them is required; see [M2MClient](../core-utils/k8s/README.md#m2mclient) for the modes.
 
+### External MaaS with a custom auth scheme
+To reach a MaaS instance directly, for example one in another cluster, set `maas.client.api.url` to the MaaS URL and
+`maas.client.api.auth` to the auth scheme, e.g. `Basic`. The client then sends `Authorization: <scheme> <token>` with the
+value from the token supplier as is, as before m2m authentication, so for `Basic` the supplier returns the Base64 encoded
+`username:password` of a MaaS account. `maas.client.api.url` is used regardless of `M2M_AUTH_MODE`. The properties are
+read from JVM system properties or MicroProfile Config; `Bearer` or an empty value keeps the default m2m authentication.
+
+`maas.client.api.auth` only works with a custom `MaaSAPIClient` bean whose token supplier returns the credentials, e.g. in
+Spring:
+```java
+@Bean
+MaaSAPIClient maaSAPIClient() {
+    String credentials = Base64.getEncoder().encodeToString((user + ":" + password).getBytes(StandardCharsets.UTF_8));
+    return new MaaSAPIClientImpl(() -> credentials);
+}
+```
+The custom bean replaces the default `MaaSAPIClient` beans of maas-client-spring and maas-client-quarkus, which pass the
+m2m token. The declarative clients do not use the `MaaSAPIClient` bean and always pass the m2m token, so the setting is
+not supported with them: they would send `<scheme> <m2m token>` to `maas.agent.url`.
+
 ## Start
 First of all we need to create instance of [MaaSAPIClient](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/com/netcracker/cloud/maas/client/api/MaaSAPIClient.java). 
 Default implementation for this interface is [MaaSAPIClientImpl](https://github.com/Netcracker/qubership-maas-client/blob/main/client/src/main/java/com/netcracker/cloud/maas/client/impl/MaaSAPIClientImpl.java).
