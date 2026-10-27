@@ -43,6 +43,10 @@ public enum ConsulLoginMode {
             throw new IllegalArgumentException("consul.auth.mode is not set, so the consul login mode is taken from "
                     + M2MAuthMode.M2M_AUTH_MODE_ENV + ": " + e.getMessage(), e);
         }
-        return valueOf(m2m.name());
+        return switch (m2m) {
+            case LEGACY -> LEGACY;
+            case HYBRID -> HYBRID;
+            case K8S -> K8S;
+        };
     }
 }

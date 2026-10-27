@@ -171,7 +171,7 @@ class ConsulM2MConfigDataLocationResolverTest {
 
     @Test
     void k8sTakenFromM2MAuthModeNeedsNoNamespace() {
-        Assumptions.assumeTrue(System.getenv(ENV_NAMESPACE) == null && System.getenv(ENV_CLOUD_NAMESPACE) == null);
+        environmentVariables.remove(ENV_NAMESPACE).remove(ENV_CLOUD_NAMESPACE);
         System.clearProperty(PROP_CLOUD_NAMESPACE);
         m2mAuthMode = () -> M2MAuthMode.K8S;
 
@@ -304,7 +304,7 @@ class ConsulM2MConfigDataLocationResolverTest {
 
     @Test
     void aMissingNamespaceBreaksTheConfigDataPhase() {
-        Assumptions.assumeTrue(System.getenv(ENV_NAMESPACE) == null && System.getenv(ENV_CLOUD_NAMESPACE) == null);
+        environmentVariables.remove(ENV_NAMESPACE).remove(ENV_CLOUD_NAMESPACE);
         System.clearProperty(PROP_CLOUD_NAMESPACE);
         properties.put(PROP_AUTH_MODE, "hybrid");
 

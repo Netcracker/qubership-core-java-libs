@@ -26,8 +26,9 @@ to the `kubernetes` way later, and nothing ever moves it back.
 When `consul.auth.mode` is unset or empty, the mode is taken from the `M2M_AUTH_MODE` environment variable, so one
 variable sets the M2M calls and the Consul login together, and `CONSUL_AUTH_MODE` overrides it for the Consul login
 alone. With neither set the mode is `legacy`, which logs in the `m2m` way only. To move a service to the `kubernetes`
-way, set `CONSUL_AUTH_MODE` or `M2M_AUTH_MODE` to `hybrid` or `k8s`. Set `CONSUL_AUTH_MODE=legacy` to keep the Consul
-login on `m2m` when `M2M_AUTH_MODE` moves the M2M calls before Consul has the auth method below.
+way, set `CONSUL_AUTH_MODE` or `M2M_AUTH_MODE` to `hybrid` or `k8s`. If you switch `M2M_AUTH_MODE` to `hybrid` or
+`k8s` before the Consul auth method below is configured, set `CONSUL_AUTH_MODE=legacy` to keep the Consul login on
+`m2m`.
 
 In `hybrid` mode the `kubernetes` way is tried first. If it fails, the pod falls back to the
 `m2m` way and logs the reason, the Consul response code, and a truncated response body in a single `INFO` record. That
