@@ -47,8 +47,12 @@ when the `TokenStorage` bean is built, so the way can be switched without rebuil
 Each login property has an environment-variable form: `consul.auth.mode` is `CONSUL_AUTH_MODE`, and
 `consul.auth.fallback-recheck-interval` is `CONSUL_AUTH_FALLBACK_RECHECK_INTERVAL`.
 
-The default `legacy` mode logs in the `m2m` way only. To move a service to the `kubernetes` way, set
-`CONSUL_AUTH_MODE` to `hybrid` or `k8s`.
+When `consul.auth.mode` is unset or empty, the mode is taken from the `M2M_AUTH_MODE` environment variable, so one
+variable sets the M2M calls and the Consul login together, and `CONSUL_AUTH_MODE` overrides it for the Consul login
+alone. With neither set the mode is `legacy`, which logs in the `m2m` way only. To move a service to the `kubernetes`
+way, set `CONSUL_AUTH_MODE` or `M2M_AUTH_MODE` to `hybrid` or `k8s`. If you switch `M2M_AUTH_MODE` to `hybrid` or
+`k8s` before the Consul auth method below is configured, set `CONSUL_AUTH_MODE=legacy` to keep the Consul login on
+`m2m`.
 
 In `hybrid` mode the `kubernetes` way is tried first. If it fails, the pod falls back to the
 `m2m` way and logs the reason, the Consul response code, and a truncated response body in a single `INFO` record. That
@@ -73,7 +77,8 @@ A failed relogin is retried at 80% of the remaining lifetime of the token, or af
 and doubles up to 5 minutes, whichever is later. The delay returns to 10 seconds on the next success. Until a relogin
 succeeds the pod keeps the token it holds, which may already have expired.
 
-An unknown value of `consul.auth.mode` fails the startup, and so does a login failure the retries do not fix: the
+An unknown value of `consul.auth.mode`, or an unsupported `M2M_AUTH_MODE` while `consul.auth.mode` is unset, fails
+the startup, and so does a login failure the retries do not fix: the
 `TokenStorage` bean cannot be produced without a token. With `quarkus.consul-source-config.m2m.enabled=false` none of
 the four properties are read.
 
@@ -91,7 +96,7 @@ the token directory elsewhere with `com.netcracker.cloud.security.kubernetes.tok
 | quarkus.consul-source-config.properties-root | List of properties roots                                      | config/$namespace/application, config/$namespace/$appName |
 | quarkus.consul-source-config.wait-time       | Maximum Value for Consul blocking queries wait time (seconds) | 570                                                       |
 | quarkus.consul-source-config.m2m.enabled     | Enable the Consul ACL token exchange (bool, build time)       | true                                                      |
-| consul.auth.mode                             | Way to obtain the ACL token: legacy, hybrid or k8s            | legacy                                                    |
+| consul.auth.mode                             | Way to obtain the ACL token: legacy, hybrid or k8s            | M2M_AUTH_MODE, else legacy                                |
 | consul.auth.method                           | Consul auth method name, used by the kubernetes way           | applications-k8s-m2m                                      |
 | consul.auth.audience                         | Projected token audience, used by the kubernetes way          | netcracker                                                |
 | consul.auth.fallback-recheck-interval        | Lower bound on how often the fallback retries the kubernetes way | 5h                                                        |

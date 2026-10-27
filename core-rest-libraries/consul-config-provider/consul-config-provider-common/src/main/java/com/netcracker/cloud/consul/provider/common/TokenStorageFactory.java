@@ -2,6 +2,7 @@ package com.netcracker.cloud.consul.provider.common;
 
 import com.netcracker.cloud.consul.provider.common.client.ConsulClient;
 import com.netcracker.cloud.security.core.utils.k8s.AudienceName;
+import com.netcracker.cloud.security.core.utils.k8s.M2MAuthMode;
 
 import java.time.Duration;
 import java.util.Locale;
@@ -87,6 +88,7 @@ public abstract class TokenStorageFactory {
 
         public static class Builder {
             CreateOptions options = new CreateOptions();
+            Supplier<M2MAuthMode> m2mAuthMode = M2MAuthMode::readFromEnv;
 
             public Builder consulUrl(String url) {
                 options.consulUrl = url;
@@ -129,14 +131,13 @@ public abstract class TokenStorageFactory {
             /**
              * Applies the defaults and checks the inputs the mode needs. Defaults live here rather than in the entry
              * points so that an external caller of the builder gets them too. A blank auth method or audience counts
-             * as absent.
+             * as absent, and an absent mode is resolved by {@link ConsulLoginMode#resolve(ConsulLoginMode)}.
              *
-             * @throws IllegalArgumentException naming the missing input and the mode that requires it
+             * @throws IllegalArgumentException naming the missing input and the mode that requires it, or the
+             *                                  unsupported {@code M2M_AUTH_MODE} an absent mode is taken from
              */
             public CreateOptions build() {
-                if (options.mode == null) {
-                    options.mode = ConsulLoginMode.LEGACY;
-                }
+                options.mode = ConsulLoginMode.resolve(options.mode, m2mAuthMode);
                 if (isBlank(options.authMethod)) {
                     options.authMethod = DEFAULT_AUTH_METHOD;
                 }

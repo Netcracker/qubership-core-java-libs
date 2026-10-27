@@ -18,13 +18,17 @@ to the `kubernetes` way later, and nothing ever moves it back.
 
 | Property name                           | Environment variable                    | Type                          | Default                        | Read when                                         |
 |-----------------------------------------|-----------------------------------------|-------------------------------|--------------------------------|---------------------------------------------------|
-| `consul.auth.mode`                      | `CONSUL_AUTH_MODE`                      | `legacy`, `hybrid` or `k8s`   | `legacy`                       | ConfigData phase and `TokenStorage` bean creation |
+| `consul.auth.mode`                      | `CONSUL_AUTH_MODE`                      | `legacy`, `hybrid` or `k8s`   | `M2M_AUTH_MODE`, else `legacy` | ConfigData phase and `TokenStorage` bean creation |
 | `consul.auth.method`                    | `CONSUL_AUTH_METHOD`                    | string                        | `applications-k8s-m2m`         | same; not used in `legacy` mode                   |
 | `consul.auth.audience`                  | `CONSUL_AUTH_AUDIENCE`                  | string                        | `netcracker`                   | same; read only when the `kubernetes` way logs in |
 | `consul.auth.fallback-recheck-interval` | `CONSUL_AUTH_FALLBACK_RECHECK_INTERVAL` | duration                      | `5h`                           | same, and only in `hybrid` mode                   |
 
-The default `legacy` mode logs in the `m2m` way only. To move a service to the `kubernetes` way, set
-`CONSUL_AUTH_MODE` to `hybrid` or `k8s`.
+When `consul.auth.mode` is unset or empty, the mode is taken from the `M2M_AUTH_MODE` environment variable, so one
+variable sets the M2M calls and the Consul login together, and `CONSUL_AUTH_MODE` overrides it for the Consul login
+alone. With neither set the mode is `legacy`, which logs in the `m2m` way only. To move a service to the `kubernetes`
+way, set `CONSUL_AUTH_MODE` or `M2M_AUTH_MODE` to `hybrid` or `k8s`. If you switch `M2M_AUTH_MODE` to `hybrid` or
+`k8s` before the Consul auth method below is configured, set `CONSUL_AUTH_MODE=legacy` to keep the Consul login on
+`m2m`.
 
 In `hybrid` mode the `kubernetes` way is tried first. If it fails, the pod falls back to the
 `m2m` way and logs the reason, the Consul response code, and a truncated response body in a single `INFO` record. That
@@ -49,8 +53,8 @@ A failed relogin is retried at 80% of the remaining lifetime of the token, or af
 and doubles up to 5 minutes, whichever is later. The delay returns to 10 seconds on the next success. Until a relogin
 succeeds the pod keeps the token it holds, which may already have expired.
 
-An unknown `consul.auth.mode`, or no namespace in the `legacy` and `hybrid` modes, ends the startup
-before the first login attempt. A failed login
+An unknown `consul.auth.mode`, an unsupported `M2M_AUTH_MODE` while `consul.auth.mode` is unset, or no namespace in
+the `legacy` and `hybrid` modes, ends the startup before the first login attempt. A failed login
 does not: the ConfigData phase logs one `ERROR` record and the application starts without an ACL token, so Consul reads
 fail until the `TokenStorage` bean obtains one. The bean is stricter — a login failure its retries do not fix ends the
 startup. The ConfigData phase takes the namespace from the `cloud.microservice.namespace` system property, or from
