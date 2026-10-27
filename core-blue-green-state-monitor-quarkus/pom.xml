@@ -25,7 +25,7 @@
         <cloud-core.core-blue-green-state-monitor.version>2.2.7-SNAPSHOT</cloud-core.core-blue-green-state-monitor.version>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../aggregator-for-jacoco/target/jacoco-ut/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
-        <surefire-plugin.version>3.5.6</surefire-plugin.version>
+        <surefire-plugin.version>3.6.1</surefire-plugin.version>
         <jandex-maven-plugin.version>3.5.3</jandex-maven-plugin.version>
     </properties>
 
@@ -138,7 +138,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.15</version>
+                    <version>0.8.16</version>
                     <executions>
                         <execution>
                             <goals>
