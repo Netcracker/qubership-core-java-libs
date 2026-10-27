@@ -15,4 +15,4 @@ permissions:
 
 jobs:
   call-apply-filter:
-    uses: Netcracker/qubership-workflow-hub/.github/workflows/profanityFilter.yaml@93a4ff0542012e0839b4261f109c38fdc2f275f0 # main
+    uses: Netcracker/qubership-workflow-hub/.github/workflows/profanityFilter.yaml@e6afd0a6bcc4f24d73e3e4d5fb9a31ada009e3f1 # main
