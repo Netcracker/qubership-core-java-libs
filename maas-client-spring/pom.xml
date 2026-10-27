@@ -24,7 +24,7 @@
         <cloud-core.core-utils.version>3.2.7-SNAPSHOT</cloud-core.core-utils.version>
         <cloud-core.core-internal-boms.version>1.1.7-SNAPSHOT</cloud-core.core-internal-boms.version>
 
-        <jacoco.plugin.version>0.8.15</jacoco.plugin.version>
+        <jacoco.plugin.version>0.8.16</jacoco.plugin.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../maas-client-spring-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -96,7 +96,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.5.6</version>
+                    <version>3.6.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
