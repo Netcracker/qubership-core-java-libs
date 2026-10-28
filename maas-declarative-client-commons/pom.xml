@@ -26,7 +26,7 @@
         <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
         <maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
 
-        <kafka-clients.version>4.2.1</kafka-clients.version>
+        <kafka-clients.version>4.2.2</kafka-clients.version>
 
         <cloud-core.maas-client.version>12.4.4-SNAPSHOT</cloud-core.maas-client.version>
         <cloud-core.core-internal-boms.version>1.1.7-SNAPSHOT</cloud-core.core-internal-boms.version>
@@ -77,7 +77,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.46</version>
+                            <version>1.18.48</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
