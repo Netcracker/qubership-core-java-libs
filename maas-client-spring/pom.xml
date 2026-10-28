@@ -4,7 +4,7 @@
 
     <artifactId>maas-client-spring-parent</artifactId>
     <groupId>com.netcracker.cloud.maas.client</groupId>
-    <version>9.2.8-SNAPSHOT</version>
+    <version>9.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <licenses>
@@ -20,9 +20,9 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <cloud-core.maas-client.version>12.4.5-SNAPSHOT</cloud-core.maas-client.version>
-        <cloud-core.core-utils.version>3.2.8-SNAPSHOT</cloud-core.core-utils.version>
-        <cloud-core.core-internal-boms.version>1.1.8-SNAPSHOT</cloud-core.core-internal-boms.version>
+        <cloud-core.maas-client.version>12.5.0-SNAPSHOT</cloud-core.maas-client.version>
+        <cloud-core.core-utils.version>3.3.0-SNAPSHOT</cloud-core.core-utils.version>
+        <cloud-core.core-internal-boms.version>1.2.0-SNAPSHOT</cloud-core.core-internal-boms.version>
 
         <jacoco.plugin.version>0.8.16</jacoco.plugin.version>
         <sonar.coverage.jacoco.xmlReportPaths>
