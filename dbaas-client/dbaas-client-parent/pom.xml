@@ -23,7 +23,7 @@
         <cassandra-unit.version>4.3.1.0</cassandra-unit.version>
         <maven.surefire.version>3.6.1</maven.surefire.version>
 
-        <!-- Spring Boot 4.1.1: 1.83.1 | Quarkus 3.33.4: 1.81.0 -->
+        <!-- Spring Boot 4.1.2: 1.84.1 | Quarkus 3.33.4.1: 1.81.0 -->
         <io.grpc.version>1.84.1</io.grpc.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../dbaas-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
