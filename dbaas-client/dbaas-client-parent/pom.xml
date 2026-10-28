@@ -24,7 +24,7 @@
         <maven.surefire.version>3.6.1</maven.surefire.version>
 
         <!-- Spring Boot 4.1.1: 1.83.1 | Quarkus 3.33.4: 1.81.0 -->
-        <io.grpc.version>1.83.1</io.grpc.version>
+        <io.grpc.version>1.84.1</io.grpc.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../dbaas-client-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -83,7 +83,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.46</version>
+                            <version>1.18.48</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>

@@ -15,8 +15,8 @@
     </licenses>
 
     <properties>
-        <lombok.version>1.18.46</lombok.version>
-        <quarkus.version>3.33.4</quarkus.version>
+        <lombok.version>1.18.48</lombok.version>
+        <quarkus.version>3.33.4.1</quarkus.version>
         <maven.compiler.release>21</maven.compiler.release>
     </properties>
 
