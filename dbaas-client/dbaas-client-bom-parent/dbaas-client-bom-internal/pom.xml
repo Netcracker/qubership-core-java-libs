@@ -17,7 +17,6 @@
         <powermock.version>2.0.9</powermock.version>
         <arangodb.driver.version>7.28.0</arangodb.driver.version>
         <arangodb.spring.data.version>5.1.0</arangodb.spring.data.version>
-        <java.driver.core.version>4.19.4</java.driver.core.version>
         <jedis.client.version>7.4.1</jedis.client.version>
         <shedlock.version>7.10.1</shedlock.version>
 
@@ -109,16 +108,6 @@
                 <groupId>com.arangodb</groupId>
                 <artifactId>arangodb-spring-data</artifactId>
                 <version>${arangodb.spring.data.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.cassandra</groupId>
-                <artifactId>java-driver-core</artifactId>
-                <version>${java.driver.core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.cassandra</groupId>
-                <artifactId>java-driver-metrics-micrometer</artifactId>
-                <version>${java.driver.core.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.stephenc.jcip</groupId>
