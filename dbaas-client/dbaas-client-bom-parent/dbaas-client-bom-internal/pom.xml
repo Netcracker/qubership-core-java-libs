@@ -3,7 +3,7 @@
     <parent>
         <artifactId>dbaas-client-parent</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>9.2.7-SNAPSHOT</version>
+        <version>9.3.0-SNAPSHOT</version>
         <relativePath>./../../dbaas-client-parent/pom.xml</relativePath>
     </parent>
 
@@ -17,15 +17,14 @@
         <powermock.version>2.0.9</powermock.version>
         <arangodb.driver.version>7.28.0</arangodb.driver.version>
         <arangodb.spring.data.version>5.1.0</arangodb.spring.data.version>
-        <java.driver.core.version>4.19.3</java.driver.core.version>
         <shedlock.version>7.10.1</shedlock.version>
 
         <!--Qubership's libs-->
-        <cloud-core.core-internal-boms.version>1.1.7-SNAPSHOT</cloud-core.core-internal-boms.version>
-        <cloud-core.core-rest-libraries.version>7.5.4-SNAPSHOT</cloud-core.core-rest-libraries.version>
-        <cloud-core.core-restclient.version>7.2.7-SNAPSHOT</cloud-core.core-restclient.version>
-        <cloud-core.core-context-propagation.version>8.3.7-SNAPSHOT</cloud-core.core-context-propagation.version>
-        <cloud-core.core-utils.version>3.2.7-SNAPSHOT</cloud-core.core-utils.version>
+        <cloud-core.core-internal-boms.version>1.2.0-SNAPSHOT</cloud-core.core-internal-boms.version>
+        <cloud-core.core-rest-libraries.version>7.6.0-SNAPSHOT</cloud-core.core-rest-libraries.version>
+        <cloud-core.core-restclient.version>7.3.0-SNAPSHOT</cloud-core.core-restclient.version>
+        <cloud-core.core-context-propagation.version>8.4.0-SNAPSHOT</cloud-core.core-context-propagation.version>
+        <cloud-core.core-utils.version>3.3.0-SNAPSHOT</cloud-core.core-utils.version>
     </properties>
 
     <dependencyManagement>
@@ -98,16 +97,6 @@
                 <groupId>com.arangodb</groupId>
                 <artifactId>arangodb-spring-data</artifactId>
                 <version>${arangodb.spring.data.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.cassandra</groupId>
-                <artifactId>java-driver-core</artifactId>
-                <version>${java.driver.core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.cassandra</groupId>
-                <artifactId>java-driver-metrics-micrometer</artifactId>
-                <version>${java.driver.core.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.stephenc.jcip</groupId>

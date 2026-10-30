@@ -3,7 +3,7 @@
     <parent>
         <artifactId>framework-extensions-parent</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>7.2.7-SNAPSHOT</version>
+        <version>7.3.0-SNAPSHOT</version>
         <relativePath>../framework-extensions-parent/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -49,7 +49,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.46</version>
+                            <version>1.18.48</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>

@@ -3,7 +3,7 @@
     <packaging>pom</packaging>
     <groupId>com.netcracker.cloud.junit.cloudcore</groupId>
     <artifactId>cloud-core-parent</artifactId>
-    <version>8.11.4-SNAPSHOT</version>
+    <version>8.12.0-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -20,7 +20,7 @@
         <jacoco.plugin.version>0.8.16</jacoco.plugin.version>
         <skipIT>true</skipIT>
 
-        <cloud-core.core-internal-boms.version>1.1.7-SNAPSHOT</cloud-core.core-internal-boms.version>
+        <cloud-core.core-internal-boms.version>1.2.0-SNAPSHOT</cloud-core.core-internal-boms.version>
     </properties>
 
     <modules>
