@@ -17,7 +17,6 @@
         <powermock.version>2.0.9</powermock.version>
         <arangodb.driver.version>7.28.0</arangodb.driver.version>
         <arangodb.spring.data.version>5.1.0</arangodb.spring.data.version>
-        <jedis.client.version>7.4.1</jedis.client.version>
         <shedlock.version>7.10.1</shedlock.version>
 
         <!--Qubership's libs-->
@@ -90,16 +89,6 @@
 
             <!--Third-party libs  -->
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-dbcp2</artifactId>
-                <version>2.14.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.httpcomponents.core5</groupId>
-                <artifactId>httpcore5</artifactId>
-                <version>5.4.4</version>
-            </dependency>
-            <dependency>
                 <groupId>com.arangodb</groupId>
                 <artifactId>arangodb-java-driver</artifactId>
                 <version>${arangodb.driver.version}</version>
@@ -113,11 +102,6 @@
                 <groupId>com.github.stephenc.jcip</groupId>
                 <artifactId>jcip-annotations</artifactId>
                 <version>1.0-1</version>
-            </dependency>
-            <dependency>
-                <groupId>redis.clients</groupId>
-                <artifactId>jedis</artifactId>
-                <version>${jedis.client.version}</version>
             </dependency>
             <dependency>
                 <groupId>net.javacrumbs.shedlock</groupId>
