@@ -15,7 +15,7 @@ import com.netcracker.cloud.dbaas.client.cassandra.migration.session.SchemaMigra
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import java.util.List;
 import java.util.Optional;
@@ -111,7 +111,7 @@ public class SchemaMigrationVersionProcessor {
         //TODO should list of retryable messages be configurable
         if (
                 amazonKeyspacesSettings.enabled()
-                        && RETRYABLE_MESSAGES.stream().anyMatch(retryableMessage -> StringUtils.contains(e.getMessage(), retryableMessage))
+                        && RETRYABLE_MESSAGES.stream().anyMatch(retryableMessage -> Strings.CS.contains(e.getMessage(), retryableMessage))
         ) {
             log.warn(MIGRATION_LOG_PREFIX + "Exception caught while executing migration statement and will be retried", e);
             return true;
