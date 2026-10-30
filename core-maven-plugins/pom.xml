@@ -21,6 +21,7 @@
 
     <modules>
         <module>httproutes-generator-maven-plugin</module>
+        <module>dependency-gate-maven-plugin</module>
     </modules>
 
     <scm>

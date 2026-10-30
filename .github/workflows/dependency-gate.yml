@@ -1,0 +1,29 @@
+# Dependency gate: decides whether a dependency change (Renovate or manual) may be merged without a reviewer.
+# Maven: versions must not go past the Renovate pins of qubership-core-infra (max of the Spring Boot and Quarkus
+# BOMs), and protected branches must not depend on feature SNAPSHOT versions. The Maven adapter is
+# com.netcracker.cloud.plugins:dependency-gate-maven-plugin (core-maven-plugins in this repository).
+# Exceptions and levels: .github/dependency-gate.json. Details: tools/dependency-gate/README.md in qubership-core-infra.
+
+name: Dependency gate
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened, labeled, unlabeled ]
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+  # the plugin and the BOMs from GitHub Packages, with the workflow token
+  packages: read
+  pull-requests: write
+
+jobs:
+  dependency-gate:
+    # TODO: pin to a release SHA of qubership-core-infra once the workflow is merged there
+    uses: Netcracker/qubership-core-infra/.github/workflows/dependency-gate.yml@feature/dependency-pins-check
+    with:
+      # TODO: drop once the plugin is on main; branch snapshot from maven-deploy-branch-snapshot.yml
+      maven-plugin-version: '1.2.0-feature-dependency-pins-maven-plugin-SNAPSHOT'
