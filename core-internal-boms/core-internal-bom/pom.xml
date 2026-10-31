@@ -105,7 +105,7 @@
 
         <!-- Other compile/runtime -->
         <failsafe.version>2.4.4</failsafe.version>
-        <guava.version>33.5.0-jre</guava.version>
+        <guava.version>33.7.2-android</guava.version>
         <rxjava.version>2.2.21</rxjava.version>
         <undertow.version>2.3.27.Final</undertow.version>
         <reflections.version>0.10.2</reflections.version>
