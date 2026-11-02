@@ -19,15 +19,25 @@ Here are the steps describing how to use dbaas-client-light library:
     [dbaas-client-postgres-base](../dbaas-client-postgres-base/README.md). You can use it as a sample. 
     
     Here are client implementation steps:
-    1. Preconfigure `OkHttpClient` instance with the necessary authorization. 
-    2. Use it to create `DbaasClient` instance: 
+    1. Create `DbaasClient` instance. It authorizes its requests to DBaaS on its own, so no `OkHttpClient` and no token
+       handling is needed here:
         ```java
-        DbaasClient dbaasClient = new DbaaSClientOkHttpImpl(
-            "http://dbaas-agent:8080", // address by which DBaaS API is available
-            okHttpClient // OkHttpClient providing authorization if necessary
-        );
+        DbaasClient dbaasClient = DbaasClientFactory.newDbaasClient();
         ```
-    3. Use this `DbaasClient` to create `DatabasePool` instance: 
+       With `M2M_AUTH_MODE` set to `hybrid` or `k8s` requests carry a kubernetes service account token for DBaaS and go
+       to `api.dbaas.address` (`API_DBAAS_ADDRESS`), which `k8s` requires and `hybrid` falls back from to the agent
+       address. Otherwise, they carry a legacy token and go to `dbaas.api.address`
+       (`DBAAS_API_ADDRESS`, `http://dbaas-agent:8080` by default).
+       `DbaasClientFactory.builder()` overrides the addresses and the mode, and puts own interceptors on top of the
+       ones the library provides:
+        ```java
+        DbaasClient dbaasClient = DbaasClientFactory.builder()
+            .httpClient(builder -> builder.addInterceptor(new MyInterceptor()))
+            .build();
+        ```
+       Creating the client as `new DbaaSClientOkHttpImpl(address, okHttpClient)` stays available for the cases the
+       factory does not cover. Such an `OkHttpClient` must provide authorization itself.
+    2. Use this `DbaasClient` to create `DatabasePool` instance: 
         ```java
         DatabasePool databasePool = new DatabasePool(dbaasClient,
             null,
@@ -56,7 +66,7 @@ Here are the steps describing how to use dbaas-client-light library:
             null // ordering for PostConnectProcessors
         );
         ```
-    4. Use `DatbasePool` instance to get or create database by type and classifier. 
+    3. Use `DatbasePool` instance to get or create database by type and classifier. 
         You can use `ServiceDbaaSClassifierBuilder` for service database creation, or create your own `DbaaSClassifierBuilder`. 
         ```java
         PostgresDatabase servicePostgresDb = databasePool.getOrCreateDatabase(PostgresDBType.INSTANCE, new ServiceDbaaSClassifierBuilder(null).build());

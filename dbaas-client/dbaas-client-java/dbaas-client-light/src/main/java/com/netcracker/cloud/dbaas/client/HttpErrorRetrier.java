@@ -20,6 +20,9 @@ public class HttpErrorRetrier implements Interceptor {
     @NonNull
     private Integer sleepMultiplier;
 
+    public static HttpErrorRetrier forProvisioning() {
+        return new HttpErrorRetrier(List.of(503), 10, 2);
+    }
 
     @Override
     public Response intercept(Chain chain) throws IOException {
