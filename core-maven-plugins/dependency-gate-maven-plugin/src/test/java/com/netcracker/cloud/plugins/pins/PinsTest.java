@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -83,6 +84,9 @@ class PinsTest {
     @ParameterizedTest(name = "{0}")
     @CsvSource(delimiter = '|', textBlock = """
             unsupported condition | {"matchPackageNames": ["a:b"], "matchUpdateTypes": ["major"], "allowedVersions": "/^1.0$/"}
+            exclude condition     | {"matchPackageNames": ["a:*"], "excludePackageNames": ["a:b"], "allowedVersions": "/^1.0$/"}
+            unknown matcher       | {"matchPackageNames": ["a:b"], "matchDepPatterns": ["^a"], "allowedVersions": "/^1.0$/"}
+            versioning            | {"matchPackageNames": ["a:b"], "versioning": "loose", "allowedVersions": "/^1.0$/"}
             invalid regex         | {"matchPackageNames": ["a:b"], "allowedVersions": "/^(1.0$/"}
             unsupported flag      | {"matchPackageNames": ["a:b"], "allowedVersions": "/^1\\\\.0/s"}
             unsupported name flag | {"matchPackageNames": ["a:b", "/^a:/m"], "allowedVersions": "/^1\\\\.0$/"}
@@ -91,6 +95,20 @@ class PinsTest {
         Pins p = pins("{\"packageRules\": [" + rule + "]}");
         assertNull(p.constraintFor("a:b"));
         assertEquals(1, p.skipped().size(), p.skipped().toString());
+    }
+
+    @Test
+    void keysThatDoNotChangeAllowedVersionsKeepThePin() throws Exception {
+        Pins p = pins("""
+                {"packageRules": [{"description": "d", "matchManagers": ["maven"], "matchDatasources": ["maven"],
+                  "matchPackageNames": ["a:b"], "allowedVersions": "/^1.0$/", "enabled": true, "groupName": "g",
+                  "groupSlug": "g", "addLabels": ["l"], "labels": ["l"], "prBodyNotes": ["n"],
+                  "registryUrls": ["https://repo"], "separateMinorPatch": true},
+                  {"matchManagers": ["gomod"], "matchUpdateTypes": ["major"], "allowedVersions": "/^1.0$/",
+                  "matchPackageNames": ["a:c"]}]}""");
+        assertEquals("1.0", p.constraintFor("a:b").exact());
+        // not a Maven rule: neither a pin nor skipped
+        assertEquals(List.of(), p.skipped());
     }
 
     @ParameterizedTest(name = "{0} matches {1}: {2}")

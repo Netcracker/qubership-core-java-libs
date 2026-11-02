@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -159,6 +160,42 @@ class CheckTest {
                 "pin-exceeded|com.rabbitmq:amqp-client|5.37.0"), f.keySet());
         assertTrue(f.get("feature-snapshot|org.example:other-bom|2.0.0-feat-x-SNAPSHOT").note()
                 .contains("org.example:other:2.0.0-feat-x-SNAPSHOT"));
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @CsvSource(delimiter = '|', textBlock = """
+            managed by a BOM                  | IMPORT | managed                  | true
+            used without a version            | IMPORT | managed;used             | true
+            in the dependency tree too        | IMPORT | managed;used;tree        | true
+            managed by a parent               | PARENT | managed;tree             | true
+            only in the dependency tree       | IMPORT | tree                     | false
+            declared in the repository too    | IMPORT | managed;used;tree;declared | false
+            managed in the repository too     | IMPORT | managed;repository;tree  | false
+            managed by another BOM too        | IMPORT | managed;other;tree       | false""")
+    void versionFromFailingBomFoldsIntoItsFinding(String name, Usage.Kind kind, String usages, boolean folded)
+            throws Exception {
+        String ga = "com.rabbitmq:amqp-client";
+        String version = "5.37.0";
+        String bom = "org.springframework.boot:spring-boot-dependencies:4.1.2";
+        List<Usage> all = new ArrayList<>(List.of(declared("org.springframework.boot:spring-boot-dependencies", "4.1.2",
+                kind)));
+        for (String usage : usages.split(";")) {
+            all.add(switch (usage) {
+                case "managed" -> managedBy(ga, version, bom);
+                case "used" -> new Usage(ga, version, Usage.Kind.DEPENDENCY, Usage.Source.EFFECTIVE, bom, 40, List.of(),
+                        null, 0, List.of(bom), "app/pom.xml");
+                case "tree" -> resolved(ga, version);
+                case "declared" -> declared(ga, version, Usage.Kind.DEPENDENCY);
+                case "repository" -> Usage.of(ga, version, Usage.Kind.MANAGED, Usage.Source.EFFECTIVE, "bom/pom.xml", 10,
+                        "app/pom.xml");
+                case "other" -> managedBy(ga, version, "org.example:other-bom:1.0");
+                default -> throw new IllegalArgumentException(usage);
+            });
+        }
+        Map<String, Finding> f = evaluate(all.toArray(Usage[]::new));
+        String note = f.get("pin-exceeded|org.springframework.boot:spring-boot-dependencies|4.1.2").note();
+        assertEquals(folded, note.contains(ga + ":" + version), note);
+        assertEquals(!folded, f.containsKey(Finding.key("pin-exceeded", ga, version)), f.keySet().toString());
     }
 
     @ParameterizedTest(name = "{0}: {1}")

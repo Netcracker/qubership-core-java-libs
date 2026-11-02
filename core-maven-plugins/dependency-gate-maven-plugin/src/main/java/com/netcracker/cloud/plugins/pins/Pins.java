@@ -19,16 +19,19 @@ import java.util.regex.PatternSyntaxException;
 
 /**
  * Version pins of renovate-core-config.json: package rules that list exact GAs and an allowedVersions pattern
- * (generated as max(Spring Boot BOM, Quarkus BOM)). Pattern-only rules, such as the global SNAPSHOT ban, and rules
- * with conditions that cannot be evaluated for a GA alone are not pins.
+ * (generated as max(Spring Boot BOM, Quarkus BOM)). Pattern-only rules, such as the global SNAPSHOT ban, are not
+ * pins; rules with keys this class does not evaluate (see SUPPORTED_KEYS) are skipped.
  */
 public final class Pins {
 
-    // match* keys whose condition cannot be evaluated for a GA and a version; rules using them are skipped
-    private static final Set<String> UNSUPPORTED_MATCHERS = Set.of("matchCurrentValue", "matchCurrentVersion",
-            "matchUpdateTypes", "matchNewValue", "matchDepTypes", "matchDepNames", "matchRepositories",
-            "matchFileNames", "matchBaseBranches", "matchCategories", "matchSourceUrls", "matchCurrentAge",
-            "matchConfidence", "matchJsonata", "matchPackagePrefixes", "matchPackagePatterns");
+    /**
+     * Package rule keys that are evaluated for a GA or do not change which versions Renovate allows. Any other key
+     * ({@code match*}, {@code exclude*}, {@code versioning}, ...) may narrow or change the rule, so the rule is skipped
+     * rather than read wider than Renovate applies it.
+     */
+    private static final Set<String> SUPPORTED_KEYS = Set.of("matchPackageNames", "matchManagers", "matchDatasources",
+            "allowedVersions", "enabled", "description", "groupName", "groupSlug", "addLabels", "labels",
+            "prBodyNotes", "registryUrls", "separateMinorPatch");
 
     private static final Pattern JS_REGEX = Pattern.compile("/(.*)/([a-z]*)", Pattern.DOTALL);
 
@@ -122,20 +125,21 @@ public final class Pins {
     }
 
     private void add(int index, JsonNode rule) {
-        boolean unsupported = UNSUPPORTED_MATCHERS.stream().anyMatch(rule::has);
+        Set<String> unsupported = new TreeSet<>();
+        rule.fieldNames().forEachRemaining(unsupported::add);
+        unsupported.removeAll(SUPPORTED_KEYS);
         List<String> names = strings(rule.path("matchPackageNames"));
-        if (rule.path("enabled").isBoolean() && !rule.path("enabled").asBoolean() && !names.isEmpty() && !unsupported) {
+        if (rule.path("enabled").isBoolean() && !rule.path("enabled").asBoolean() && !names.isEmpty()
+                && unsupported.isEmpty()) {
             disabled.add(new Rule(Set.of(), positives(names, Set.of()), negatives(names), null));
             return;
         }
-        if (!rule.has("allowedVersions")) {
+        if (!rule.has("allowedVersions")
+                || !appliesToMaven(rule.path("matchManagers")) || !appliesToMaven(rule.path("matchDatasources"))) {
             return;
         }
-        if (unsupported) {
-            skipped.add("packageRules[" + index + "]: condition that cannot be evaluated for a GA");
-            return;
-        }
-        if (!appliesToMaven(rule.path("matchManagers")) || !appliesToMaven(rule.path("matchDatasources"))) {
+        if (!unsupported.isEmpty()) {
+            skipped.add("packageRules[" + index + "]: unsupported keys " + unsupported);
             return;
         }
         Set<String> exact = new TreeSet<>(names.stream().filter(Pins::isExactName).toList());

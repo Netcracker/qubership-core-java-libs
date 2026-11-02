@@ -15,15 +15,18 @@ import org.eclipse.aether.repository.Proxy;
 import org.eclipse.aether.repository.RemoteRepository;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
+import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.net.ProxySelector;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -34,7 +37,10 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.regex.MatchResult;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 abstract class AbstractPinsMojo extends AbstractMojo {
 
@@ -42,6 +48,8 @@ abstract class AbstractPinsMojo extends AbstractMojo {
             "https://raw.githubusercontent.com/Netcracker/qubership-core-infra/main/renovate-core-config.json";
 
     private static final String PROPERTY_PREFIX = "dependency-gate.";
+
+    private static final Pattern GATE_PROPERTY = Pattern.compile(Pattern.quote(PROPERTY_PREFIX) + "[A-Za-z]+");
 
     /**
      * renovate-core-config.json of qubership-core-infra: a URL or a file.
@@ -64,13 +72,14 @@ abstract class AbstractPinsMojo extends AbstractMojo {
     private static final Set<String> DISPLAY_PROPERTIES = Set.of(PROPERTY_PREFIX + "maxLocations");
 
     /**
-     * The checked pom is part of the change under review, so it must not relax its own check: every
-     * {@code dependency-gate.*} parameter, except {@link #DISPLAY_PROPERTIES}, comes only from the user properties
-     * ({@code -D}), not from the plugin {@code <configuration>} (or its {@code default-cli} execution) or the pom
-     * {@code <properties>}.
+     * The checked project is part of the change under review, so it must not relax its own check: every
+     * {@code dependency-gate.*} parameter, except {@link #DISPLAY_PROPERTIES}, comes only from {@code -D} on the
+     * command line, not from the plugin {@code <configuration>} (or its {@code default-cli} execution), the pom
+     * {@code <properties>} or {@code .mvn/maven.config}, whose {@code -D} Maven turns into user properties too.
      */
     void checkParameters() throws MojoExecutionException {
         Properties user = session.getUserProperties();
+        Set<String> mavenConfig = mavenConfigProperties(session.getRequest().getMultiModuleProjectDirectory());
         Xpp3Dom configuration = mojoExecution.getConfiguration();
         PluginParameterExpressionEvaluator evaluator = new PluginParameterExpressionEvaluator(session, mojoExecution);
         List<String> set = new ArrayList<>();
@@ -79,6 +88,10 @@ abstract class AbstractPinsMojo extends AbstractMojo {
             String property = expression.startsWith("${" + PROPERTY_PREFIX) && expression.endsWith("}")
                     ? expression.substring(2, expression.length() - 1) : null;
             if (property == null || DISPLAY_PROPERTIES.contains(property)) {
+                continue;
+            }
+            if (mavenConfig.contains(property)) {
+                set.add(property + " (set in .mvn/maven.config)");
                 continue;
             }
             // an unconfigured parameter keeps the expression of the mojo descriptor; a configured list keeps it too,
@@ -99,9 +112,28 @@ abstract class AbstractPinsMojo extends AbstractMojo {
             }
         }
         if (!set.isEmpty()) {
-            throw new MojoExecutionException("Parameters of the dependency gate are set in the pom: "
-                    + String.join(", ", set) + ". Pass them with -D only, not in the <configuration> of "
-                    + mojoExecution.getArtifactId() + " or in <properties>");
+            throw new MojoExecutionException("Parameters of the dependency gate are set in the checked project: "
+                    + String.join(", ", set) + ". Pass them with -D on the command line only, not in the "
+                    + "<configuration> of " + mojoExecution.getArtifactId() + ", <properties> or .mvn/maven.config");
+        }
+    }
+
+    /**
+     * The {@code dependency-gate.*} properties named in {@code .mvn/maven.config} (comment lines aside), in any
+     * option form ({@code -Dname=value}, {@code -D name}, {@code --define=name}).
+     */
+    static Set<String> mavenConfigProperties(File multiModuleProjectDirectory) throws MojoExecutionException {
+        Path config = multiModuleProjectDirectory == null ? null
+                : multiModuleProjectDirectory.toPath().resolve(".mvn").resolve("maven.config");
+        if (config == null || !Files.isRegularFile(config)) {
+            return Set.of();
+        }
+        try (Stream<String> lines = Files.lines(config, StandardCharsets.ISO_8859_1)) {
+            return lines.filter(line -> !line.strip().startsWith("#"))
+                    .flatMap(line -> GATE_PROPERTY.matcher(line).results()).map(MatchResult::group)
+                    .collect(Collectors.toSet());
+        } catch (IOException | UncheckedIOException e) {
+            throw new MojoExecutionException("Cannot read " + config + ": " + e.getMessage(), e);
         }
     }
 

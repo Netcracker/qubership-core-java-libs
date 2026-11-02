@@ -335,11 +335,15 @@ public final class PinsEvaluator {
     }
 
     /**
-     * The failing BOM or parent every usage of the finding comes from, or null if any usage has another origin.
+     * The failing BOM or parent the version comes from, or null if it is only in the dependency tree or any usage has
+     * another origin. The tree does not say where a version comes from: the same version a BOM manages comes from it.
      */
     private static Finding causeOf(Finding f, Map<String, Finding> causes) {
         Finding cause = null;
         for (Usage u : f.usages()) {
+            if (u.source() == Usage.Source.RESOLVED) {
+                continue;
+            }
             Finding c = u.source() == Usage.Source.EFFECTIVE && !u.via().isEmpty() ? causes.get(u.via().getFirst())
                     : null;
             if (c == null) {

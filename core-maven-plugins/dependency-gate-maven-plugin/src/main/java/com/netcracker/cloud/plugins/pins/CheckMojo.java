@@ -5,6 +5,7 @@ import org.apache.maven.RepositoryUtils;
 import org.apache.maven.model.building.ModelBuildingRequest;
 import org.apache.maven.model.building.ModelProblem;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.PluginParameterExpressionEvaluator;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -57,12 +58,14 @@ public class CheckMojo extends AbstractPinsMojo {
      * Where to write the findings (findings.v1). Default: {@code dependency-gate/maven-pins.json} in the build
      * directory of the project, or in {@code target} of the current directory when there is no pom.
      */
+    // read from the user properties (findingsPath), as the pom may set it
     @Parameter(property = "dependency-gate.findings")
     File findingsFile;
 
     /**
      * {@code head}: the change under review; {@code base}: its base, which the gate uses as the baseline.
      */
+    // read from the user properties (execute), as the pom may set it
     @Parameter(property = "dependency-gate.revision", defaultValue = "head")
     String revision;
 
@@ -119,28 +122,32 @@ public class CheckMojo extends AbstractPinsMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
-        if (!FindingsFile.REVISIONS.contains(revision)) {
-            throw new MojoExecutionException("revision must be one of " + FindingsFile.REVISIONS + ", not " + revision);
-        }
+        // the file goes where the gate expects it even when the pom sets these parameters and the check fails
+        String requested = session.getUserProperties().getProperty("dependency-gate.revision", "head");
+        String fileRevision = FindingsFile.REVISIONS.contains(requested) ? requested : "head";
         String tool = plugin.getArtifactId() + " " + plugin.getVersion();
         Path output = findingsPath();
         Result result;
         try {
             checkParameters();
+            if (!fileRevision.equals(requested)) {
+                throw new MojoExecutionException("revision must be one of " + FindingsFile.REVISIONS + ", not "
+                        + requested);
+            }
             if (skip) {
                 getLog().info("Skipping the dependency pins check");
                 return;
             }
             result = check();
         } catch (MojoExecutionException | RuntimeException e) {
-            write(FindingsFile.error(tool, revision, e.getMessage()), output);
+            write(FindingsFile.error(tool, fileRevision, e.getMessage()), output);
             throw e;
         }
         log(result.findings(), maxLocations, getLog()::info);
         String reason = result.incomplete().isEmpty() ? null
                 : "incomplete dependency tree, transitive findings may be missing: "
                 + String.join("; ", result.incomplete());
-        write(FindingsFile.ok(tool, revision, result.findings(), reason), output);
+        write(FindingsFile.ok(tool, fileRevision, result.findings(), reason), output);
         getLog().info(result.findings().size() + " finding(s) written to " + output
                 + "; the dependency gate decides what they mean");
     }
@@ -150,8 +157,7 @@ public class CheckMojo extends AbstractPinsMojo {
         List<Pattern> excludes = readExcludes(excludesFile);
         Pins rules = loadPins();
         List<MavenProject> projects = projects();
-        List<MavenProject> checked = projects.stream()
-                .filter(p -> !excluded(collector.relative(p.getFile().toPath()), excludes)).toList();
+        List<MavenProject> checked = checkedProjects(projects, collector, excludes);
 
         collector.collect(projects, checked);
         List<String> incomplete = new ArrayList<>();
@@ -169,11 +175,14 @@ public class CheckMojo extends AbstractPinsMojo {
     }
 
     /**
-     * The project's build directory is not interpolated without a pom, so the default is resolved here.
+     * {@code findings} given with {@code -D}, relative to the base directory as Maven resolves a file parameter. The
+     * project's build directory is not interpolated without a pom, so the default is resolved here.
      */
     private Path findingsPath() {
-        if (findingsFile != null) {
-            return findingsFile.toPath();
+        String findings = session.getUserProperties().getProperty("dependency-gate.findings");
+        if (findings != null) {
+            return new PluginParameterExpressionEvaluator(session, mojoExecution)
+                    .alignToBaseDirectory(new File(findings)).toPath();
         }
         MavenProject project = session.getCurrentProject();
         Path target = project != null && project.getFile() != null ? Path.of(project.getBuild().getDirectory())
@@ -209,7 +218,9 @@ public class CheckMojo extends AbstractPinsMojo {
     }
 
     private List<MavenProject> projects() throws MojoExecutionException {
-        if (poms == null || poms.isEmpty()) {
+        List<File> files = poms == null ? List.of()
+                : poms.stream().map(f -> f.isDirectory() ? new File(f, "pom.xml") : f).toList();
+        if (files.isEmpty() || isWholeReactor(files)) {
             List<MavenProject> reactor = session.getProjects();
             if (reactor.isEmpty() || reactor.getFirst().getFile() == null) {
                 throw new MojoExecutionException("No pom.xml to check: run in a Maven project or pass "
@@ -217,7 +228,6 @@ public class CheckMojo extends AbstractPinsMojo {
             }
             return reactor;
         }
-        List<File> files = poms.stream().map(f -> f.isDirectory() ? new File(f, "pom.xml") : f).toList();
         List<ProjectBuildingResult> results;
         try {
             results = projectBuilder.build(files, true, buildingRequest());
@@ -248,6 +258,19 @@ public class CheckMojo extends AbstractPinsMojo {
     }
 
     /**
+     * {@code poms} names the root of the whole current reactor (such as {@code .}): Maven has already built it, with
+     * its modules resolved against each other.
+     */
+    private boolean isWholeReactor(List<File> files) {
+        MavenProject top = session.getTopLevelProject();
+        List<MavenProject> all = session.getAllProjects();
+        return files.size() == 1 && top != null && top.getFile() != null
+                && all != null && session.getProjects().size() == all.size()
+                && files.getFirst().toPath().toAbsolutePath().normalize()
+                .equals(top.getFile().toPath().toAbsolutePath().normalize());
+    }
+
+    /**
      * Java regexes of repository-relative pom paths, one per line; blank lines are ignored.
      */
     static List<Pattern> readExcludes(File excludesFile) throws MojoExecutionException {
@@ -264,6 +287,11 @@ public class CheckMojo extends AbstractPinsMojo {
 
     static boolean excluded(String relativePomPath, List<Pattern> excludes) {
         return excludes.stream().anyMatch(rx -> rx.matcher(relativePomPath).find());
+    }
+
+    static List<MavenProject> checkedProjects(List<MavenProject> projects, UsageCollector collector,
+                                              List<Pattern> excludes) {
+        return projects.stream().filter(p -> !excluded(collector.relative(p.getFile().toPath()), excludes)).toList();
     }
 
     /**
