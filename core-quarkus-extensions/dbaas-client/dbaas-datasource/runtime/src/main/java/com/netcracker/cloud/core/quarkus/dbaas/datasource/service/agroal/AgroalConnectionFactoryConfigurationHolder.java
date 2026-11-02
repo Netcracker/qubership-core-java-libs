@@ -30,6 +30,7 @@ class AgroalConnectionFactoryConfigurationHolder implements AgroalConnectionFact
     Collection<Object> recoveryCredentials = new ArrayList<>();
     Collection<Object> credentials = new ArrayList<>();
     Duration loginTimeout = Duration.ZERO;
+    Duration networkTimeout = Duration.ZERO;
     boolean readOnly = false;
 
     // Here is a list of changed default values
@@ -54,6 +55,11 @@ class AgroalConnectionFactoryConfigurationHolder implements AgroalConnectionFact
     @Override
     public Duration loginTimeout() {
         return loginTimeout;
+    }
+
+    @Override
+    public Duration networkTimeout() {
+        return networkTimeout;
     }
 
     @Override
