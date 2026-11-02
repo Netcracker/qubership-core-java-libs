@@ -46,6 +46,21 @@ class DbaaSMetricsRegistrarTest {
         verify(metricsProvider, times(1)).registerMetrics(metricProperties);
     }
 
+    @Test
+    void testConflictingMetricTagsDoNotFailTheCaller() throws MetricsRegistrationException {
+        MetricsProvider metricsProvider = mock(MetricsProvider.class);
+        when(metricsProvider.getSupportedDatabaseType()).thenReturn(TestDBType.INSTANCE.getDatabaseClass());
+        doThrow(new IllegalArgumentException("Prometheus requires that all meters with the same name have the same set of tag keys"))
+                .when(metricsProvider).registerMetrics(any());
+
+        DbaaSMetricsRegistrar metricsRegistrar = new DbaaSMetricsRegistrar(List.of(metricsProvider));
+        DatabaseMetricProperties metricProperties = getTestDatabaseMetricProperties();
+        assertDoesNotThrow(() -> {
+            metricsRegistrar.registerMetrics(TestDBType.INSTANCE, metricProperties);
+        });
+        verify(metricsProvider, times(1)).registerMetrics(metricProperties);
+    }
+
     private DatabaseMetricProperties getTestDatabaseMetricProperties() {
         SortedMap<String, Object> classifier = new TreeMap<>();
         classifier.put(SCOPE, SERVICE);

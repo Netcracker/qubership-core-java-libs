@@ -29,7 +29,9 @@ public class DbaaSMetricsRegistrar {
         } else {
             try {
                 metricsProvider.registerMetrics(metricProperties);
-            } catch (MetricsRegistrationException e) {
+            } catch (MetricsRegistrationException | IllegalArgumentException e) {
+                // Prometheus in Quarkus 3.34+ throws IllegalArgumentException when one metric name gets different tag keys.
+                // Tags depend on the classifier, so this must not fail the database connection.
                 log.error("Failed to register metrics for database", e);
             }
         }
