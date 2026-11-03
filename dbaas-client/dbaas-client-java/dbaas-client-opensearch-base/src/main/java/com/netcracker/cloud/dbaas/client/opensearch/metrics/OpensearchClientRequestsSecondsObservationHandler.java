@@ -65,7 +65,7 @@ public class OpensearchClientRequestsSecondsObservationHandler implements Observ
                     .register(meterRegistry)
                     .record(Duration.ofMillis(requestDurationInMillis));
             } catch (IllegalArgumentException e) {
-                // Prometheus in Quarkus 3.34+ throws it when one metric name gets different tag keys: not a reason to fail the request
+                // DbaasMetricTagsFilter prevents it, unless another MeterFilter accepts the meter first. Metrics must not fail the request.
                 log.warn("Failed to record metric {} with tags {}", OpensearchMetricsProvider.REQUESTS_SECONDS_METRIC_NAME, tags, e);
                 return;
             }

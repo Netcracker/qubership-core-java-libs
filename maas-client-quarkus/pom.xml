@@ -54,7 +54,7 @@
 
 		<maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
 		<jacoco.plugin.version>0.8.7</jacoco.plugin.version>
-		<jandex-maven-plugin.version>3.5.3</jandex-maven-plugin.version>
+		<jandex-maven-plugin.version>3.6.0</jandex-maven-plugin.version>
 		<sonar.coverage.jacoco.xmlReportPaths>
 			${project.basedir}/../../maas-client-quarkus-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
 		</sonar.coverage.jacoco.xmlReportPaths>
