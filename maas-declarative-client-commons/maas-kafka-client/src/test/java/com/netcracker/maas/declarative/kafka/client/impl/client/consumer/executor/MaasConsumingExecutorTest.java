@@ -693,4 +693,21 @@ class MaasConsumingExecutorTest {
             executor.close();
         }
     }
+
+    @Test
+    void errorFromConsumerCreationEscapesTheLoop() {
+        var consumerCreatorService = mock(KafkaClientCreationService.class);
+        when(consumerCreatorService.createKafkaConsumer(any(), any(), any(), any(), any(), any()))
+                .thenThrow(new NoSuchMethodError("BGKafkaConsumer.setPartitionsAssignedListener"));
+
+        var executor = new MaasConsumingExecutor(ctx,
+                (exception, errorRecord, handledRecords) -> {},
+                consumerCreatorService,
+                List.of(),
+                new InMemoryBlueGreenStatePublisher());
+
+        executor.start();
+        assertThrows(NoSuchMethodError.class, executor::run);
+        executor.close();
+    }
 }
