@@ -1,13 +1,19 @@
 package com.netcracker.cloud.dbaas.client;
 
 import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.matchers.Times;
+import org.mockserver.verify.VerificationTimes;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -18,8 +24,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.mockserver.integration.ClientAndServer.startClientAndServer;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 
 public class HttpErrorRetrierTest {
+    private static final String PATH = "/api/v3/dbaas/postgresql/physical_databases";
+
     private Request request;
     private Interceptor.Chain mockChain;
     private AtomicInteger failNumber;
@@ -92,12 +103,34 @@ public class HttpErrorRetrierTest {
         assertEquals(503, actualResponse.code());
     }
 
+    @Test
+    public void retriesResponseWithBodyThroughRealChain() throws IOException {
+        try (ClientAndServer server = startClientAndServer()) {
+            server.when(request().withPath(PATH), Times.exactly(1))
+                    .respond(response().withStatusCode(503).withBody("{\"message\":\"aggregator is not ready\"}"));
+            server.when(request().withPath(PATH)).respond(response().withStatusCode(200).withBody("ready"));
+
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(new HttpErrorRetrier(Collections.singletonList(503), 3, 1))
+                    .build();
+            Request realRequest = new Request.Builder().get()
+                    .url("http://localhost:" + server.getLocalPort() + PATH).build();
+
+            try (Response response = client.newCall(realRequest).execute()) {
+                assertEquals(200, response.code());
+                assertEquals("ready", response.body().string());
+            }
+            server.verify(request().withPath(PATH), VerificationTimes.exactly(2));
+        }
+    }
+
     private Response buildResponse(int statusCode) {
         return new Response.Builder()
                 .request(request)
                 .protocol(Protocol.HTTP_1_1)
                 .message("test message")
                 .code(statusCode)
+                .body(ResponseBody.create(MediaType.get("application/json"), "{\"message\":\"aggregator\"}"))
                 .build();
     }
 }

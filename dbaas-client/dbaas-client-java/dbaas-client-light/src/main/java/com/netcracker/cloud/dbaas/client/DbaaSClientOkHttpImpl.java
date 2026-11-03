@@ -18,7 +18,6 @@ import okhttp3.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -66,10 +65,8 @@ public class DbaaSClientOkHttpImpl implements DbaasClient {
 
     public static OkHttpClient buildDefaultClient() {
         return new OkHttpClient.Builder()
-                .addInterceptor(new HttpErrorRetrier(
-                        Collections.singletonList(503),
-                        10,
-                        2)).build();
+                .addInterceptor(HttpErrorRetrier.forProvisioning())
+                .build();
     }
 
     @Override
