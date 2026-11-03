@@ -40,6 +40,7 @@ public class HttpErrorRetrier implements Interceptor {
                 return response;
             }
             sleepSeconds = sleepMultiplier * sleepSeconds;
+            response.close();
             response = chain.proceed(request);
         }
         return response;
