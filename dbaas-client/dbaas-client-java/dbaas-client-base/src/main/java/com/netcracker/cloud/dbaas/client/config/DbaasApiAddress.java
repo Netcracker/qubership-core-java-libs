@@ -5,12 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 
-/**
- * The addresses to talk to the DBaaS API with, resolved for an {@link M2MAuthMode}.
- *
- * @param url      where the client sends its requests
- * @param agentUrl where requests carrying a legacy token go
- */
 @Slf4j
 public record DbaasApiAddress(String url, String agentUrl) {
 
@@ -20,11 +14,6 @@ public record DbaasApiAddress(String url, String agentUrl) {
     public static final String DBAAS_ADDRESS_PROPERTY = "api.dbaas.address";
     public static final String DBAAS_ADDRESS_ENV = "API_DBAAS_ADDRESS";
 
-    /**
-     * Takes both addresses from the configuration.
-     *
-     * @throws IllegalStateException if the M2M auth mode is k8s and no DBaaS address is configured
-     */
     public static DbaasApiAddress resolve(M2MAuthMode mode) {
         return resolve(mode, null, null);
     }
