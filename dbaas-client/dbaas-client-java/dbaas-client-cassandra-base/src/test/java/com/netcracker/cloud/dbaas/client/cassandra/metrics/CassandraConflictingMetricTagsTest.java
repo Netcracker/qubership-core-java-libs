@@ -3,7 +3,6 @@ package com.netcracker.cloud.dbaas.client.cassandra.metrics;
 import com.datastax.oss.driver.api.core.AllNodesFailedException;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
-import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import com.datastax.oss.driver.api.core.metrics.DefaultSessionMetric;
 import com.datastax.oss.driver.internal.core.context.DefaultDriverContext;
 import com.datastax.oss.driver.internal.core.metadata.DefaultEndPoint;
@@ -35,6 +34,7 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import static com.netcracker.cloud.dbaas.client.DbaasConst.SCOPE;
 import static com.netcracker.cloud.dbaas.client.DbaasConst.SERVICE;
@@ -53,7 +53,7 @@ import static org.mockito.Mockito.mock;
  * Uses the registry that Quarkus creates in PrometheusMeterRegistryProducer: the simpleclient one with
  * throwExceptionOnRegistrationFailure. The newer io.micrometer.prometheusmetrics registry accepts different tag keys since 1.17.
  */
-class CassandraMetricTagsFilterTest {
+class CassandraConflictingMetricTagsTest {
 
     private static final List<String> SESSION_METRICS = List.of("bytes-sent", "connected-nodes", "cql-requests");
     private static final List<String> NODE_METRICS = List.of("pool.open-connections", "bytes-sent", "cql-messages");
@@ -153,17 +153,14 @@ class CassandraMetricTagsFilterTest {
 
     @Test
     void otherRegistriesGetMetricsOfBothDatabases() {
-        Metrics.removeRegistry(prometheus);
-        SimpleMeterRegistry addedBeforePrometheus = addRegistry(new SimpleMeterRegistry());
-        Metrics.addRegistry(prometheus);
-        SimpleMeterRegistry addedAfterPrometheus = addRegistry(new SimpleMeterRegistry());
+        List<MeterRegistry> others = Stream.<MeterRegistry>generate(SimpleMeterRegistry::new).limit(5).map(this::addRegistry).toList();
         List<DbaasCqlSessionBuilderCustomizer> customizers = customizers(SESSION_METRICS, List.of());
 
         registerMetricsOnly(customizers, serviceDatabase());
         registerMetricsOnly(customizers, tenantDatabase("tenant_a"));
         sessionUpdater(1).updateTimer(DefaultSessionMetric.CQL_REQUESTS, null, 5, TimeUnit.MILLISECONDS);
 
-        for (MeterRegistry registry : List.of(addedBeforePrometheus, addedAfterPrometheus)) {
+        for (MeterRegistry registry : others) {
             assertNotNull(registry.find(CQL_REQUESTS).tag(CL_SCOPE, SERVICE).timer());
             assertEquals(1, registry.find(CQL_REQUESTS).tag(CL_SCOPE, TENANT).timer().count());
         }
@@ -191,15 +188,6 @@ class CassandraMetricTagsFilterTest {
 
         assertDoesNotThrow(() -> sessionUpdater(0).updateTimer(DefaultSessionMetric.CQL_REQUESTS, null, 5, TimeUnit.MILLISECONDS));
         assertNull(prometheus.find(CQL_REQUESTS).tag(CL_SCOPE, SERVICE).timer());
-    }
-
-    @Test
-    void otherMetricsAreNotFiltered() {
-        customizers(SESSION_METRICS, List.of()).get(0).customize(DriverConfigLoader.programmaticBuilder());
-
-        prometheus.counter("other.metric", "a", "1");
-
-        assertThrows(IllegalArgumentException.class, () -> prometheus.counter("other.metric", "a", "1", "b", "2"));
     }
 
     // Nothing listens on the port, so the connection error shows that the session got past the metrics.

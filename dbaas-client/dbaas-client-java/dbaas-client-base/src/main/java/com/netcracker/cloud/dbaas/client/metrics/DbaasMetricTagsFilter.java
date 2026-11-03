@@ -1,4 +1,4 @@
-package com.netcracker.cloud.dbaas.client.cassandra.metrics;
+package com.netcracker.cloud.dbaas.client.metrics;
 
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -9,6 +9,7 @@ import io.micrometer.core.instrument.config.MeterFilterReply;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -16,38 +17,37 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * Keeps a cassandra meter out of the Prometheus registry when its name is already registered there with other tag keys.
+ * Keeps a DBaaS client meter out of the Prometheus registry when its name is already registered there with other tag keys.
  * <p>
- * Prometheus in Quarkus 3.34+ throws IllegalArgumentException in this case, and the tags depend on the classifier. The driver
- * registers meters while it creates a session, so the exception would fail the session creation, or leave it hanging forever
- * for node metrics. Denying one meter in one registry leaves other meters and other registries working.
+ * Tags of these meters depend on the database classifier, and Prometheus in Quarkus 3.34+ throws IllegalArgumentException
+ * on different tag keys. Denying one meter in one registry leaves other meters and other registries working.
  */
 @Slf4j
-public class CassandraMetricTagsFilter implements MeterFilter {
+public class DbaasMetricTagsFilter implements MeterFilter {
 
     // The newer io.micrometer.prometheusmetrics registry accepts different tag keys since Micrometer 1.17, so it must keep them
     private static final String STRICT_REGISTRY_CLASS = "io.micrometer.prometheus.PrometheusMeterRegistry";
-    private static final String METRIC_PREFIX = "cassandra.";
+    private static final List<String> METRIC_PREFIXES = List.of("agroal.", "cassandra.", "opensearch_client_requests_seconds");
     private static final Set<MeterRegistry> FILTERED_REGISTRIES = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
     private final MeterRegistry registry;
     private final Set<String> reportedMeters = ConcurrentHashMap.newKeySet();
 
-    private CassandraMetricTagsFilter(MeterRegistry registry) {
+    private DbaasMetricTagsFilter(MeterRegistry registry) {
         this.registry = registry;
     }
 
     public static void applyTo(MeterRegistry registry) {
         if (registry instanceof CompositeMeterRegistry composite) {
-            composite.getRegistries().forEach(CassandraMetricTagsFilter::applyTo);
+            composite.getRegistries().forEach(DbaasMetricTagsFilter::applyTo);
         } else if (STRICT_REGISTRY_CLASS.equals(registry.getClass().getName()) && FILTERED_REGISTRIES.add(registry)) {
-            registry.config().meterFilter(new CassandraMetricTagsFilter(registry));
+            registry.config().meterFilter(new DbaasMetricTagsFilter(registry));
         }
     }
 
     @Override
     public MeterFilterReply accept(Meter.Id id) {
-        if (!id.getName().startsWith(METRIC_PREFIX)) {
+        if (METRIC_PREFIXES.stream().noneMatch(id.getName()::startsWith)) {
             return MeterFilterReply.NEUTRAL;
         }
         Set<String> tagKeys = tagKeys(id);

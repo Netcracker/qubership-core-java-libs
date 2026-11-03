@@ -29,7 +29,7 @@
         <compiler-plugin.version>3.16.0</compiler-plugin.version>
         <source-plugin.version>3.4.0</source-plugin.version>
 
-        <jandex.version>3.5.3</jandex.version>
+        <jandex-maven-plugin.version>3.6.0</jandex-maven-plugin.version>
         <curator.version>5.1.0</curator.version>
 
         <cloud-core.maas-declarative-client-commons.version>6.4.0-SNAPSHOT</cloud-core.maas-declarative-client-commons.version>
@@ -199,7 +199,7 @@
                 <plugin>
                     <groupId>io.smallrye</groupId>
                     <artifactId>jandex-maven-plugin</artifactId>
-                    <version>${jandex.version}</version>
+                    <version>${jandex-maven-plugin.version}</version>
                     <executions>
                         <execution>
                             <id>make-index</id>
