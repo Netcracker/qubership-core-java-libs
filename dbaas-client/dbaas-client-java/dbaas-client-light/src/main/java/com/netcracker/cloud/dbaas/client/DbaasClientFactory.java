@@ -1,7 +1,6 @@
 package com.netcracker.cloud.dbaas.client;
 
 import com.netcracker.cloud.dbaas.client.config.DbaasApiAddress;
-import com.netcracker.cloud.security.core.auth.DummyM2MManager;
 import com.netcracker.cloud.security.core.auth.M2MManager;
 import com.netcracker.cloud.security.core.utils.k8s.AudienceName;
 import com.netcracker.cloud.security.core.utils.k8s.M2MAuthMode;
@@ -12,17 +11,11 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 
-import java.util.Comparator;
-import java.util.ServiceLoader;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
- * Builds a {@link DbaasClient} that authorizes its requests on its own. With {@code M2M_AUTH_MODE} set to hybrid or
- * k8s they carry a kubernetes service account token for DBaaS and go to
- * {@value DbaasApiAddress#DBAAS_ADDRESS_PROPERTY}, required by k8s and fallen back from to
- * {@value DbaasApiAddress#AGENT_ADDRESS_PROPERTY} by hybrid. Otherwise, they carry a legacy token and go to that agent
- * address.
+ * Builds a {@link DbaasClient} that authorizes its own requests, as {@code M2M_AUTH_MODE} tells it to.
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -116,15 +109,7 @@ public final class DbaasClientFactory {
             if (authMode == M2MAuthMode.K8S) {
                 return null;
             }
-            M2MManager manager = ServiceLoader.load(M2MManager.class).stream()
-                    .map(ServiceLoader.Provider::get)
-                    .max(Comparator.comparingInt(M2MManager::priority))
-                    .orElseGet(() -> {
-                        log.warn("No {} service found, the dummy token is used instead. Consider registering a real"
-                                + " implementation in production instead.", M2MManager.class.getName());
-                        return new DummyM2MManager();
-                    });
-            log.info("DBaaS legacy token is provided by {}", manager.getClass().getSimpleName());
+            M2MManager manager = M2MManager.loadPreferred();
             return () -> manager.getToken().getTokenValue();
         }
     }
