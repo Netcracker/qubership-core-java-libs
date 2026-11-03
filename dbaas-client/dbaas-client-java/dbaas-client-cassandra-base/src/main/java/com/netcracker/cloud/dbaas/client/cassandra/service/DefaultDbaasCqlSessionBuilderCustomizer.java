@@ -11,7 +11,9 @@ import com.netcracker.cloud.dbaas.client.cassandra.entity.DbaasCassandraProperti
 import com.netcracker.cloud.dbaas.client.cassandra.entity.metrics.MetricConfigurationParameters;
 import com.netcracker.cloud.dbaas.client.cassandra.entity.metrics.NodeMetricsConfiguration;
 import com.netcracker.cloud.dbaas.client.cassandra.entity.metrics.SessionMetricsConfiguration;
+import com.netcracker.cloud.dbaas.client.cassandra.metrics.CassandraMetricTagsFilter;
 import com.netcracker.cloud.dbaas.client.cassandra.metrics.DbaasTaggingMetricIdGenerator;
+import io.micrometer.core.instrument.Metrics;
 import jakarta.annotation.Priority;
 
 import java.time.Duration;
@@ -92,6 +94,7 @@ public class DefaultDbaasCqlSessionBuilderCustomizer implements DbaasCqlSessionB
     }
 
     private void customizeMetrics(ProgrammaticDriverConfigLoaderBuilder configLoader) {
+        CassandraMetricTagsFilter.applyTo(Metrics.globalRegistry);
         configLoader.withClass(DefaultDriverOption.METRICS_FACTORY_CLASS, MicrometerMetricsFactory.class);
         configLoader.withClass(DefaultDriverOption.METRICS_ID_GENERATOR_CLASS, DbaasTaggingMetricIdGenerator.class);
         configLoader.withString(DefaultDriverOption.METRICS_ID_GENERATOR_PREFIX, "cassandra");
