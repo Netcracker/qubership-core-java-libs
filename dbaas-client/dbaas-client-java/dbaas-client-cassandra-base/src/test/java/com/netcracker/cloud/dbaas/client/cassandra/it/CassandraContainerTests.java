@@ -42,6 +42,7 @@ class CassandraContainerTests {
 
     @AfterAll
     static void tearDown() {
+        Metrics.globalRegistry.clear();
         if (CassandraTestContainer.getInstance().isRunning()) {
             CassandraTestContainer.getInstance().stop();
         }

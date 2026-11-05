@@ -4,6 +4,7 @@ import com.netcracker.cloud.dbaas.client.entity.database.PostgresDatabase;
 import com.netcracker.cloud.dbaas.client.entity.database.type.PostgresDBType;
 import com.netcracker.cloud.dbaas.client.exceptions.MetricsRegistrationException;
 import com.netcracker.cloud.dbaas.client.metrics.DatabaseMetricProperties;
+import com.netcracker.cloud.dbaas.client.metrics.DbaasMetricTagsFilter;
 import com.netcracker.cloud.dbaas.client.metrics.MetricsProvider;
 import io.agroal.api.AgroalDataSource;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -24,6 +25,7 @@ public class PostgresMicrometerMetricsProvider implements MetricsProvider<Postgr
             AgroalDataSource dataSource = (AgroalDataSource) databaseMetricProperties.getExtraParameters().get(DATASOURCE_PARAMETER);
             MeterBinder meterBinder = new AgroalDataSourceMetricsBinder(dataSource, databaseMetricProperties.getDatabaseName(),
                     databaseMetricProperties.getMetricTags().entrySet().stream().map(tag -> Tag.of(tag.getKey(), tag.getValue())).toList());
+            DbaasMetricTagsFilter.applyTo(meterRegistry);
             meterBinder.bindTo(meterRegistry);
         } catch (ClassCastException e) {
             throw new MetricsRegistrationException("Unable to get postgres datasource instance for metric registration", e);
