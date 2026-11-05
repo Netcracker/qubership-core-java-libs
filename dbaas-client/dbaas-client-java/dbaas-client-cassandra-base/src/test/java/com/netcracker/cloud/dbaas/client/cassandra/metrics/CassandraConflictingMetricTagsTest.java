@@ -15,6 +15,7 @@ import com.netcracker.cloud.dbaas.client.cassandra.service.CassandraSessionBuild
 import com.netcracker.cloud.dbaas.client.cassandra.service.DbaasCqlSessionBuilderCustomizer;
 import com.netcracker.cloud.dbaas.client.cassandra.service.DefaultDbaasCqlSessionBuilderCustomizer;
 import com.netcracker.cloud.dbaas.client.metrics.DbaaSMetricsRegistrar;
+import com.netcracker.cloud.dbaas.client.metrics.DbaasMetricTagsFilter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -71,6 +72,7 @@ class CassandraConflictingMetricTagsTest {
 
     @BeforeEach
     void setUp() throws IOException {
+        Metrics.globalRegistry.clear();
         prometheus = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
         prometheus.throwExceptionOnRegistrationFailure();
         // On a service the filter is added when the registry already has meters
@@ -224,6 +226,7 @@ class CassandraConflictingMetricTagsTest {
 
     private <T extends MeterRegistry> T addRegistry(T registry) {
         registries.add(registry);
+        DbaasMetricTagsFilter.applyTo(registry);
         Metrics.addRegistry(registry);
         return registry;
     }
