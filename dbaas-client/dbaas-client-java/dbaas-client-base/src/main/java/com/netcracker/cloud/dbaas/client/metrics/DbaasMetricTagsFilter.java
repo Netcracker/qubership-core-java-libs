@@ -40,8 +40,15 @@ public class DbaasMetricTagsFilter implements MeterFilter {
     public static void applyTo(MeterRegistry registry) {
         if (registry instanceof CompositeMeterRegistry composite) {
             composite.getRegistries().forEach(DbaasMetricTagsFilter::applyTo);
-        } else if (STRICT_REGISTRY_CLASS.equals(registry.getClass().getName()) && FILTERED_REGISTRIES.add(registry)) {
-            registry.config().meterFilter(new DbaasMetricTagsFilter(registry));
+            return;
+        }
+        if (!STRICT_REGISTRY_CLASS.equals(registry.getClass().getName())) {
+            return;
+        }
+        synchronized (FILTERED_REGISTRIES) {
+            if (FILTERED_REGISTRIES.add(registry)) {
+                registry.config().meterFilter(new DbaasMetricTagsFilter(registry));
+            }
         }
     }
 
