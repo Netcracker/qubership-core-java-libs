@@ -1,0 +1,80 @@
+# AGENTS.md
+
+This file provides guidance to AI agents when working in this repository.
+
+## Repository Overview
+
+Maven monorepo of 23 Java library modules for cloud-native microservices on Kubernetes.
+Java 21, groupId `com.netcracker.cloud`, distributed via GitHub Maven Packages.
+
+## Module Map
+
+| Module | Purpose |
+|--------|---------|
+| `core-microservice-dependencies` | Central BOM (`cloud-core-java-bom`) for dependency versions |
+| `core-springboot-starter` | Spring Boot parent POM aggregating microservice essentials |
+| `core-utils` | TLS config and Kubernetes projected-volume token utilities |
+| `core-error-handling` | Error-code-based exception hierarchy with REST layer support |
+| `core-context-propagation` | Propagates execution context across HTTP/messaging boundaries |
+| `core-context-propagation-quarkus` | Quarkus variant of context propagation |
+| `core-microservice-framework` | Spring microservice scaffolding (routing, security, M2M RestClient) |
+| `core-microservice-framework-extensions` | SpringDoc, health indicators, metrics extensions |
+| `core-rest-libraries` | WebClient utilities, route registration, config-server loader, security |
+| `core-restclient` | Abstraction API over WebClient (preferred) / RestTemplate (deprecated) |
+| `core-mongo-evolution` | MongoDB schema migration tool (analogous to Flyway) |
+| `core-process-orchestrator` | Persistent task scheduling with dependency management |
+| `core-blue-green-state-monitor` | Consul-based blue/green deployment state monitoring |
+| `core-blue-green-state-monitor-quarkus` | Quarkus variant of blue/green monitoring |
+| `core-junit-k8s-extension` | JUnit 5 extension for Kubernetes integration tests |
+| `core-quarkus-extensions` | Quarkus extensions: context, security, logging, DBaaS, MaaS, routes |
+| `dbaas-client` | Database-as-a-Service client (PostgreSQL, MongoDB, Cassandra, OpenSearch, ClickHouse, ArangoDB, Redis) |
+| `maas-client` | Messaging-as-a-Service core client (Kafka + RabbitMQ, framework-agnostic) |
+| `maas-client-spring` | Spring Boot MaaS integration (Kafka + RabbitMQ) |
+| `maas-client-quarkus` | Quarkus MaaS integration |
+| `maas-declarative-client-commons` | Declarative Kafka client common utilities |
+| `maas-declarative-client-spring` | Spring declarative Kafka client |
+| `maas-declarative-client-quarkus` | Quarkus declarative Kafka client |
+
+## Build & Test
+
+```bash
+# Use -B -ntp -q to suppress progress/download noise; drop -q to diagnose failures
+mvn verify -B -ntp -q -T 1C                        # full parallel build + tests
+mvn verify -B -ntp -q -pl <module> -am             # module + its transitive deps from root
+mvn verify -B -ntp -q                              # from a module directory
+mvn test -B -ntp -q -Dtest=ClassName               # single test class
+mvn test -B -ntp -q -Dtest=ClassName#methodName    # single test method
+mvn verify -B -ntp -q -DskipTests                  # compile only, skip tests
+mvn deploy -B -ntp -q -T 1C                        # build and publish to GitHub Packages
+```
+
+## Code Conventions
+
+- Java 21, UTF-8, 2-space indent (enforced by `.editorconfig` present in each module)
+- Lombok: `@Data`, `@Builder`, `@Slf4j` — avoid `@SneakyThrows`
+- No Spring/Quarkus imports in pure-Java core modules (`core-utils`, `core-process-orchestrator`, `maas-client/client`)
+- RestTemplate sub-modules are deprecated — new features go to WebClient equivalents only
+
+## Dependency Management
+
+- `cloud-core-java-bom` (`core-microservice-dependencies/cloud-core-java-bom/pom.xml`) is an external public BOM — it imports internal sub-BOMs (dbaas-client, rest-libraries, maas-client, etc.) and pins their versions. Do not add arbitrary third-party deps here; version-pin those inside the relevant sub-BOM.
+- New Quarkus extensions must also be registered in `core-quarkus-extensions/cloud-core-quarkus-bom/cloud-core-quarkus-bom-publish/pom.xml`
+- New modules inherit from the nearest `*-parent` POM and import `cloud-core-java-bom` via `<dependencyManagement>`
+
+## CI / Commit Rules
+
+- Commit messages must follow Conventional Commits (enforced by `.github/workflows/pr-conventional-commits.yaml`)
+- PRs trigger: `mvn verify -T 1C` + SonarCloud (`.github/workflows/maven-verify.yml`)
+- Merges to main trigger: `mvn deploy -T 1C` with GPG signing (`.github/workflows/maven-deploy.yml`)
+
+## Architecture Patterns
+
+- **Spring vs Quarkus**: parallel implementations share a pure-Java core (e.g. `blue-green-state-monitor-java` + Spring module + Quarkus module)
+- **BOM hierarchy**: new Spring modules import `cloud-core-java-bom` via `<dependencyManagement>`; new Quarkus modules use `cloud-core-quarkus-bom-publish`. Neither BOM accepts arbitrary third-party deps directly — version-pin those inside the appropriate sub-BOM.
+- **Jandex index**: `core-context-propagation` uses Jandex for provider discovery — run `mvn generate-sources` after adding a new context provider
+- **Lombok**: delombok sources generated by `lombok-maven-plugin` during build
+
+## Docker / Testcontainers
+
+Required for integration tests in: `core-blue-green-state-monitor`, `dbaas-client`, `maas-declarative-client-commons`.
+Use `mvn verify -DskipTests` to skip those tests when Docker is unavailable.
