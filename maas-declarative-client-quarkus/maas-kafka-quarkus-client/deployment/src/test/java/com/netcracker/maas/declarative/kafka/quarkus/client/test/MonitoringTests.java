@@ -8,6 +8,7 @@ import com.netcracker.maas.declarative.kafka.client.api.model.MaasKafkaProducerC
 import com.netcracker.maas.declarative.kafka.client.api.model.MaasProducerRecord;
 import com.netcracker.maas.declarative.kafka.client.api.model.definition.MaasKafkaConsumerDefinition;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.search.MeterNotFoundException;
 import jakarta.inject.Inject;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serializer;
@@ -48,6 +49,7 @@ public class MonitoringTests extends AbstractMaasKafkaTest {
             assertNotNull(registry.getMeters());
             assertFalse(registry.getMeters().isEmpty());
             waitAtMost(Duration.ofSeconds(MSG_WAIT_TIME_SEC))
+                    .ignoreException(MeterNotFoundException.class)
                     .untilAsserted(() -> assertThat(this.registry.get("kafka.producer.record.send.total").functionCounter().count())
                             .isGreaterThanOrEqualTo(1));
         }
@@ -69,6 +71,7 @@ public class MonitoringTests extends AbstractMaasKafkaTest {
             assertNotNull(registry.getMeters());
             assertFalse(registry.getMeters().isEmpty());
             waitAtMost(Duration.ofSeconds(MSG_WAIT_TIME_SEC))
+                    .ignoreException(MeterNotFoundException.class)
                     .untilAsserted(() -> assertThat(this.registry.get("kafka.consumer.fetch.manager.records.consumed.total").functionCounter().count())
                             .isGreaterThanOrEqualTo(1));
         }

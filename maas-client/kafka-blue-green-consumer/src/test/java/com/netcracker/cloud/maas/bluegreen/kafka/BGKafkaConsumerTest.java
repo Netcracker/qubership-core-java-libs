@@ -381,15 +381,24 @@ class BGKafkaConsumerTest {
         try (BGKafkaConsumerImpl<String, String> consumerActive = new BGKafkaConsumerImpl<>(BGKafkaConsumerConfig.builder(connectionProperties,
                         PRICES_TOPIC, M2M_TOKEN_SUPPLIER, trackerActive)
                 .deserializers(new StringDeserializer(), new StringDeserializer()).build())) {
-            // explicitly define types to prevent generics misconfigurations
-            var records = consumerActive.poll(POLL_TIMEOUT).get();
-            assertEquals(3, records.getBatch().size());
+            // a single poll may return records of only one partition, so accumulate until all records arrive
+            int received = 0;
+            var position = new HashMap<TopicPartition, OffsetAndMetadata>();
+            long deadline = System.nanoTime() + Duration.ofSeconds(60).toNanos();
+            while (received < 3 && System.nanoTime() < deadline) {
+                var records = consumerActive.poll(POLL_TIMEOUT);
+                if (records.isPresent()) {
+                    received += records.get().getBatch().size();
+                    position.putAll(records.get().getCommitMarker().getPosition());
+                }
+            }
+            assertEquals(3, received);
             assertEquals(
                     Map.of(
                             new TopicPartition(PRICES_TOPIC, 0), new OffsetAndMetadata(1),
                             new TopicPartition(PRICES_TOPIC, 1), new OffsetAndMetadata(2)
                     ),
-                    records.getCommitMarker().getPosition());
+                    position);
         }
     }
 
