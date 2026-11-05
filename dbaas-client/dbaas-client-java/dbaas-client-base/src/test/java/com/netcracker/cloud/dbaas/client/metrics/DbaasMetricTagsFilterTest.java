@@ -95,6 +95,19 @@ class DbaasMetricTagsFilterTest {
         assertNull(prometheus.find(METER).tag(SCOPE_TAG, "tenant").counter());
     }
 
+    // CompositeMeterRegistry.add syncs existing meters onto the new child; without the filter that throws on Prometheus
+    @Test
+    void addingPrometheusToCompositeWithConflictingMetersDoesNotFail() {
+        CompositeMeterRegistry composite = new CompositeMeterRegistry();
+        registerService(composite, METER);
+        registerTenant(composite, METER, "tenant_a");
+
+        DbaasMetricTagsFilter.applyTo(prometheus);
+        assertDoesNotThrow(() -> composite.add(prometheus));
+        assertNotNull(prometheus.find(METER).tag(SCOPE_TAG, "service").counter());
+        assertNull(prometheus.find(METER).tag(SCOPE_TAG, "tenant").counter());
+    }
+
     @Test
     void registryWithoutTagKeysCheckIsNotFiltered() {
         SimpleMeterRegistry registry = new SimpleMeterRegistry();
