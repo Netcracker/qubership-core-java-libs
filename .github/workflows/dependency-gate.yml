@@ -3,6 +3,8 @@
 name: Dependency gate
 
 on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
   push:
     branches: [ test/dependencies_gate ]
   workflow_dispatch:
