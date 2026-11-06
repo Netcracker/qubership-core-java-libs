@@ -51,11 +51,6 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <artifactId>rest-server</artifactId>
-                <groupId>${project.groupId}</groupId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
                 <artifactId>routes-registrator</artifactId>
                 <groupId>${project.groupId}</groupId>
                 <version>${project.version}</version>

@@ -123,11 +123,6 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <artifactId>dbaas-client-subscriber</artifactId>
-                <groupId>${project.groupId}</groupId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
                 <artifactId>dbaas-client-test-bom</artifactId>
                 <groupId>${project.groupId}</groupId>
                 <version>${project.version}</version>
