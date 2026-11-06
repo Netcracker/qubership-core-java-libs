@@ -45,6 +45,18 @@ public class DefaultDbaasCqlSessionBuilderCustomizerTest {
     }
 
     @Test
+    public void testMetricsAreNotConfiguredWhenEnabledIsNull() {
+        DbaasCassandraProperties properties = new DbaasCassandraProperties();
+        properties.getMetrics().setEnabled(null);
+        ProgrammaticDriverConfigLoaderBuilder configLoader = DriverConfigLoader.programmaticBuilder();
+
+        new DefaultDbaasCqlSessionBuilderCustomizer(properties).customize(configLoader);
+
+        assertFalse(configLoader.build().getInitialConfig().getDefaultProfile()
+                .getString(DefaultDriverOption.METRICS_FACTORY_CLASS).contains("Micrometer"));
+    }
+
+    @Test
     public void testCassandraDriverOption_resolveContactPoints() {
         DbaasCassandraProperties dbaasCassandraProperties = new DbaasCassandraProperties();
         ProgrammaticDriverConfigLoaderBuilder configLoader = DriverConfigLoader.programmaticBuilder();
