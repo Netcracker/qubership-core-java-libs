@@ -34,6 +34,7 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
     public static final String PROP_CONSUL_M2M_ENABLED = "spring.cloud.consul.config.m2m.enabled";
     static final String ENV_NAMESPACE = "NAMESPACE";
     static final String ENV_CLOUD_NAMESPACE = "CLOUD_NAMESPACE";
+    static final String BOOTSTRAP_M2M_MANAGER_BEAN = "consulBootstrapM2MManager";
 
     private final Log log;
 
@@ -65,8 +66,10 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
         if (resolverContext.getBootstrapContext().isRegistered(M2MManager.class)) {
             // The bean phase (startup token and scheduled relogins) must use the same M2M manager as this phase:
             // without it the bean phase falls back to a dummy manager and sends "dummy" as the bearer token.
-            registerAndPromoteBean(resolverContext, M2MManager.class,
-                    BootstrapRegistry.InstanceSupplier.of(resolverContext.getBootstrapContext().get(M2MManager.class)));
+            // Promoted when the bootstrap context closes, so the login itself never asks the registry for it.
+            resolverContext.getBootstrapContext().addCloseListener(event -> event.getApplicationContext()
+                    .getBeanFactory()
+                    .registerSingleton(BOOTSTRAP_M2M_MANAGER_BEAN, event.getBootstrapContext().get(M2MManager.class)));
         }
         Supplier<String> m2mTokenSupplier = () ->
                 resolverContext.getBootstrapContext().get(M2MManager.class).getToken().getTokenValue();
