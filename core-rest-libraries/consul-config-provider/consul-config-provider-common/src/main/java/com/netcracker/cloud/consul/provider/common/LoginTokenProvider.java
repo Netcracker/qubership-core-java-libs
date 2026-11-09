@@ -17,6 +17,7 @@ import java.time.OffsetDateTime;
 public class LoginTokenProvider implements ConsulTokenProvider {
 
     private static final Logger log = LoggerFactory.getLogger(LoginTokenProvider.class);
+    static final String ACL_DISABLED_MESSAGE = "ACL support disabled";
 
     private final ConsulClient client;
     private final ConsulLoginCredentials credentials;
@@ -29,8 +30,13 @@ public class LoginTokenProvider implements ConsulTokenProvider {
     }
 
     /**
-     * @throws IOException on a non-2xx answer or a successful answer with an empty body; a non-2xx message carries
-     *         the response code, and a {@code 403} message names what could have refused the login
+     * {@inheritDoc}
+     *
+     * <p>A Consul with ACLs disabled answers the login with {@code 401} and {@value #ACL_DISABLED_MESSAGE}, and
+     * accepts requests without a token, so that answer gives an empty token that never expires.
+     *
+     * @throws IOException on another non-2xx answer or a successful answer with an empty body; a non-2xx message
+     *         carries the response code, and a {@code 403} message names what could have refused the login
      * @throws com.jayway.jsonpath.PathNotFoundException when the answer carries no {@code SecretID}; retrying that
      *         does not help
      */
@@ -38,6 +44,10 @@ public class LoginTokenProvider implements ConsulTokenProvider {
     public Token getToken() throws IOException {
         ConsulClientResponse response = client.login(credentials);
         String responseBody = response.getBodyJson();
+        if (response.getCode() == 401 && responseBody != null && ACL_DISABLED_MESSAGE.equals(responseBody.trim())) {
+            log.info("Consul ACLs are disabled: working without a Consul token");
+            return new Token("", null);
+        }
         if (response.getCode() != 200) {
             String reason = response.getCode() == 403
                     ? "consul refused the login (missing auth method, unmatched binding rule or wrong audience)"
