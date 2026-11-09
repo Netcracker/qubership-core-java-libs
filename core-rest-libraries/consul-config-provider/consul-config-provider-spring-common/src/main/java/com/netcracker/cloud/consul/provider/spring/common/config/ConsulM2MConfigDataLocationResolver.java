@@ -62,6 +62,12 @@ public abstract class ConsulM2MConfigDataLocationResolver extends ConsulConfigDa
         ConsulLoginProperties login = binder.bind(ConsulLoginProperties.PREFIX, ConsulLoginProperties.class)
                 .orElseGet(ConsulLoginProperties::new);
         ConsulProperties properties = resolverContext.getBootstrapContext().get(ConsulProperties.class);
+        if (resolverContext.getBootstrapContext().isRegistered(M2MManager.class)) {
+            // The bean phase (startup token and scheduled relogins) must use the same M2M manager as this phase:
+            // without it the bean phase falls back to a dummy manager and sends "dummy" as the bearer token.
+            registerAndPromoteBean(resolverContext, M2MManager.class,
+                    BootstrapRegistry.InstanceSupplier.of(resolverContext.getBootstrapContext().get(M2MManager.class)));
+        }
         Supplier<String> m2mTokenSupplier = () ->
                 resolverContext.getBootstrapContext().get(M2MManager.class).getToken().getTokenValue();
         String consulAddress = Utils.formatConsulAddress(properties);

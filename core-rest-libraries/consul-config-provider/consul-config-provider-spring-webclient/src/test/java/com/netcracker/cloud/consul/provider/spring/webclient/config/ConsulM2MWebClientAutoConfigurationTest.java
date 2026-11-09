@@ -3,12 +3,16 @@ package com.netcracker.cloud.consul.provider.spring.webclient.config;
 import com.netcracker.cloud.consul.provider.common.ConsulLoginMode;
 import com.netcracker.cloud.consul.provider.common.TokenStorageFactory;
 import com.netcracker.cloud.consul.provider.spring.common.config.ConsulLoginProperties;
-import com.netcracker.cloud.security.common.reactive.M2MManager;
+import com.netcracker.cloud.security.core.auth.DummyM2MManager;
+import com.netcracker.cloud.security.core.auth.M2MManager;
+import com.netcracker.cloud.security.core.auth.Token;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.cloud.consul.ConsulProperties;
+
+import java.time.Instant;
 
 /**
  * Covers the wiring this module owns. How the login properties themselves turn into options is checked once, in
@@ -53,5 +57,19 @@ class ConsulM2MWebClientAutoConfigurationTest {
         }
 
         Mockito.verifyNoInteractions(m2MManager);
+    }
+
+    @Test
+    void dummyManagerIsRefusedInsteadOfSendingItsToken() {
+        Assertions.assertThrows(IllegalStateException.class,
+                () -> ConsulM2MWebClientAutoConfiguration.m2mTokenSupplier(new DummyM2MManager()).get());
+    }
+
+    @Test
+    void realManagerTokenIsSentAsTheBearer() {
+        M2MManager real = () -> new Token("Bearer", "real-m2m-token", Instant.now(), Instant.now().plusSeconds(60));
+
+        Assertions.assertEquals("real-m2m-token",
+                ConsulM2MWebClientAutoConfiguration.m2mTokenSupplier(real).get());
     }
 }
