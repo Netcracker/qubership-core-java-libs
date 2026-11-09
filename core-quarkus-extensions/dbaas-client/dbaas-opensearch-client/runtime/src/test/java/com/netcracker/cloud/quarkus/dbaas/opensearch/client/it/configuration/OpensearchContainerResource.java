@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class OpensearchContainerResource implements QuarkusTestResourceLifecycleManager {
 
-    private static final DockerImageName OPENSEARCH_IMAGE = DockerImageName.parse("opensearchproject/opensearch:1.2.4");
+    private static final DockerImageName OPENSEARCH_IMAGE = DockerImageName.parse("opensearchproject/opensearch:3.5.0");
 
     public static final int OPENSEARCH_PORT = 9200;
 
