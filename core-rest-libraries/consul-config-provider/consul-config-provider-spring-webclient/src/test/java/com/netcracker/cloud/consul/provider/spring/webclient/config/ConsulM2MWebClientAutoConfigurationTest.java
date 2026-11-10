@@ -65,4 +65,13 @@ class ConsulM2MWebClientAutoConfigurationTest {
         Assertions.assertEquals("real-m2m-token",
                 ConsulM2MWebClientAutoConfiguration.m2mTokenSupplier(real).get());
     }
+
+    @Test
+    void fallbackManagerIsTheLoadPreferredOne() {
+        M2MManager fallback = new ConsulM2MWebClientAutoConfiguration().m2MManager();
+
+        Assertions.assertNotNull(fallback);
+        Assertions.assertNotNull(fallback.getToken());
+        Assertions.assertEquals(M2MManager.loadPreferred().getClass(), fallback.getClass());
+    }
 }
