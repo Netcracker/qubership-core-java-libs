@@ -32,8 +32,8 @@ public class LoginTokenProvider implements ConsulTokenProvider {
     /**
      * {@inheritDoc}
      *
-     * <p>A Consul with ACLs disabled answers the login with {@code 401} and {@value #ACL_DISABLED_MESSAGE}, and
-     * accepts requests without a token, so that answer gives an empty token that never expires.
+     * <p>Returns an empty token that never expires when Consul answers the login with {@code 401} and the body
+     * {@value #ACL_DISABLED_MESSAGE}: such a Consul has ACLs disabled and accepts requests without a token.
      *
      * @throws IOException on another non-2xx answer or a successful answer with an empty body; a non-2xx message
      *         carries the response code, and a {@code 403} message names what could have refused the login
