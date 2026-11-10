@@ -6,7 +6,6 @@ import com.netcracker.cloud.consul.provider.spring.common.SpringTokenStorageFact
 import com.netcracker.cloud.consul.provider.spring.common.config.ConsulLoginProperties;
 import com.netcracker.cloud.consul.provider.spring.common.Utils;
 import com.netcracker.cloud.restclient.webclient.MicroserviceWebClient;
-import com.netcracker.cloud.security.core.auth.DummyM2MManager;
 import com.netcracker.cloud.security.core.auth.M2MManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -47,22 +46,14 @@ public class ConsulM2MWebClientAutoConfiguration {
                 .build();
     }
 
-    /**
-     * The bearer of the m2m login. A {@link DummyM2MManager} is refused: its token is the literal {@code dummy}, which
-     * Consul rejects as a malformed JWT, so the relogin would fail with a misleading error.
-     */
     static Supplier<String> m2mTokenSupplier(M2MManager m2MManager) {
-        return () -> {
-            if (m2MManager instanceof DummyM2MManager) {
-                throw new IllegalStateException("no M2MManager is registered: the consul m2m login needs a real M2M token");
-            }
-            return m2MManager.getToken().getTokenValue();
-        };
+        return () -> m2MManager.getToken().getTokenValue();
     }
 
+    // Choose the highest priority implementation registered via ServiceLoader and log a warning for dummy
     @Bean
     @ConditionalOnMissingBean(M2MManager.class)
     public M2MManager m2MManager() {
-        return new DummyM2MManager();
+        return M2MManager.loadPreferred();
     }
 }

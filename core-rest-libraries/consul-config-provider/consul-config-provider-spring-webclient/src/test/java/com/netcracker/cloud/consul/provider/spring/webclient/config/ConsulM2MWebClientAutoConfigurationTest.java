@@ -3,7 +3,6 @@ package com.netcracker.cloud.consul.provider.spring.webclient.config;
 import com.netcracker.cloud.consul.provider.common.ConsulLoginMode;
 import com.netcracker.cloud.consul.provider.common.TokenStorageFactory;
 import com.netcracker.cloud.consul.provider.spring.common.config.ConsulLoginProperties;
-import com.netcracker.cloud.security.core.auth.DummyM2MManager;
 import com.netcracker.cloud.security.core.auth.M2MManager;
 import com.netcracker.cloud.security.core.auth.Token;
 import org.junit.jupiter.api.Assertions;
@@ -57,12 +56,6 @@ class ConsulM2MWebClientAutoConfigurationTest {
         }
 
         Mockito.verifyNoInteractions(m2MManager);
-    }
-
-    @Test
-    void dummyManagerIsRefusedInsteadOfSendingItsToken() {
-        Assertions.assertThrows(IllegalStateException.class,
-                () -> ConsulM2MWebClientAutoConfiguration.m2mTokenSupplier(new DummyM2MManager()).get());
     }
 
     @Test
