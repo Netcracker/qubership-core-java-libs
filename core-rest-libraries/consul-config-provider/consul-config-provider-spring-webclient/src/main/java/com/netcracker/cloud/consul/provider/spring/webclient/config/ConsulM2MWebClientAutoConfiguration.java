@@ -21,7 +21,6 @@ import java.util.function.Supplier;
 @Configuration
 @EnableConfigurationProperties(ConsulLoginProperties.class)
 @ConditionalOnConsulEnabled
-//@EnableReactiveM2MManager
 @ConditionalOnProperty(value = "spring.cloud.consul.config.m2m.enabled", havingValue = "true", matchIfMissing = true)
 public class ConsulM2MWebClientAutoConfiguration {
 
