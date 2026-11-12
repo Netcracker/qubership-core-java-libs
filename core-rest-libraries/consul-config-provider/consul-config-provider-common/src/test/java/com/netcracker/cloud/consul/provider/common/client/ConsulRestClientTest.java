@@ -5,12 +5,14 @@ import com.netcracker.cloud.restclient.HttpMethod;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import com.netcracker.cloud.restclient.entity.RestClientResponseEntity;
 import com.netcracker.cloud.restclient.exception.MicroserviceRestClientException;
+import com.netcracker.cloud.restclient.exception.MicroserviceRestClientResponseException;
 import com.netcracker.cloud.consul.provider.common.ConsulLoginCredentials;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -94,6 +96,35 @@ class ConsulRestClientTest {
         IOException thrown = Assertions.assertThrows(IOException.class,
                 () -> consulClient.login(credentials("core-k8s", "my-secret-bearer-token")));
         Assertions.assertSame(cause, thrown.getCause());
+    }
+
+    @Test
+    void loginByCredentialsReturnsAnErrorAnswerAsTheResponse() throws IOException {
+        MicroserviceRestClient restClient = Mockito.mock(MicroserviceRestClient.class);
+        Mockito.when(restClient.doRequest(Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.eq(String.class)))
+                .thenThrow(new MicroserviceRestClientResponseException("Request failed with status 401", 401,
+                        "ACL support disabled".getBytes(StandardCharsets.UTF_8), Map.of()));
+
+        ConsulClient consulClient = new ConsulRestClient(restClient, "consul:8301", () -> "");
+        ConsulClientResponse consulResponse = consulClient.login(credentials("core-k8s", "my-secret-bearer-token"));
+
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(401, consulResponse.getCode()),
+                () -> Assertions.assertEquals("ACL support disabled", consulResponse.getBodyJson()));
+    }
+
+    @Test
+    void loginByCredentialsReturnsAnErrorAnswerWithoutABodyAsTheResponse() throws IOException {
+        MicroserviceRestClient restClient = Mockito.mock(MicroserviceRestClient.class);
+        Mockito.when(restClient.doRequest(Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.eq(String.class)))
+                .thenThrow(new MicroserviceRestClientResponseException("Request failed with status 503", 503, null, Map.of()));
+
+        ConsulClient consulClient = new ConsulRestClient(restClient, "consul:8301", () -> "");
+        ConsulClientResponse consulResponse = consulClient.login(credentials("core-k8s", "my-secret-bearer-token"));
+
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(503, consulResponse.getCode()),
+                () -> Assertions.assertNull(consulResponse.getBodyJson()));
     }
 
     @Test
