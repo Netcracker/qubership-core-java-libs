@@ -58,7 +58,6 @@
             <plugin>
                 <groupId>io.smallrye</groupId>
                 <artifactId>jandex-maven-plugin</artifactId>
-                <version>${jandex-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>make-index</id>

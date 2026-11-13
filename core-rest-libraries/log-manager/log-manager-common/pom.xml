@@ -11,7 +11,7 @@
     <artifactId>log-manager-common</artifactId>
 
     <properties>
-        <jboss.version>3.2.1.Final</jboss.version>
+        <jboss.version>3.2.2.Final</jboss.version>
         <mockito-inline.version>5.2.0</mockito-inline.version>
     </properties>
 

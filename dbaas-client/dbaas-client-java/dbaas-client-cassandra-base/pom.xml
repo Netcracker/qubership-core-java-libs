@@ -46,6 +46,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus-simpleclient</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.netcracker.cloud.security.core.utils</groupId>
             <artifactId>tls-utils</artifactId>
         </dependency>

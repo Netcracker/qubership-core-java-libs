@@ -60,9 +60,15 @@ public class OpensearchClientRequestsSecondsObservationHandler implements Observ
             var tags = collectMetricTags(context);
             var requestDurationInMillis = endTimeInMillis - startTimeInMillis;
 
-            requestsSecondsBaseMetricBuilder.tags(tags)
-                .register(meterRegistry)
-                .record(Duration.ofMillis(requestDurationInMillis));
+            try {
+                requestsSecondsBaseMetricBuilder.tags(tags)
+                    .register(meterRegistry)
+                    .record(Duration.ofMillis(requestDurationInMillis));
+            } catch (IllegalArgumentException e) {
+                // DbaasMetricTagsFilter prevents it, unless another MeterFilter accepts the meter first. Metrics must not fail the request.
+                log.warn("Failed to record metric {} with tags {}", OpensearchMetricsProvider.REQUESTS_SECONDS_METRIC_NAME, tags, e);
+                return;
+            }
 
             if (log.isDebugEnabled()) {
                 log.debug("Recorded {} millis to metric {} with tags {}",
