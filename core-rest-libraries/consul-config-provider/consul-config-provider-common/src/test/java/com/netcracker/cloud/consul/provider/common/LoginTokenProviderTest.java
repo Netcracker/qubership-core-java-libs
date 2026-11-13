@@ -83,6 +83,25 @@ class LoginTokenProviderTest {
     }
 
     @Test
+    void aConsulWithAclsDisabledGivesAnEmptyTokenWithoutExpiration() throws IOException {
+        when(consulClient.login(any(ConsulLoginCredentials.class)))
+                .thenReturn(new ConsulClientResponse("ACL support disabled", 401));
+
+        Token token = tokenProvider.getToken();
+
+        assertEquals("", token.getSecretId());
+        assertNull(token.getExpirationTime());
+    }
+
+    @Test
+    void anotherUnauthorizedAnswerFailsWithIOException() throws IOException {
+        when(consulClient.login(any(ConsulLoginCredentials.class)))
+                .thenReturn(new ConsulClientResponse("ACL not found", 401));
+
+        assertThrows(IOException.class, () -> tokenProvider.getToken());
+    }
+
+    @Test
     void nonSuccessCodeIsReportedWhenResponseBodyIsEmpty() throws IOException {
         when(consulClient.login(any(ConsulLoginCredentials.class)))
                 .thenReturn(new ConsulClientResponse("", 403));
