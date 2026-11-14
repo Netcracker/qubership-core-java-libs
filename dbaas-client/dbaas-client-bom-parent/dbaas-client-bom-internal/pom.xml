@@ -17,7 +17,7 @@
         <powermock.version>2.0.9</powermock.version>
         <arangodb.driver.version>7.28.0</arangodb.driver.version>
         <arangodb.spring.data.version>5.1.0</arangodb.spring.data.version>
-        <shedlock.version>7.10.1</shedlock.version>
+        <shedlock.version>7.11.0</shedlock.version>
 
         <!--Qubership's libs-->
         <cloud-core.core-internal-boms.version>1.2.0-SNAPSHOT</cloud-core.core-internal-boms.version>
