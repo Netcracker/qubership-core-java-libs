@@ -6,6 +6,15 @@ Generates Helm-ready Gateway API `HTTPRoute` manifests for Istio from Spring con
 `route-registration-common-spring`'s own `RouteAnnotationProcessor`, so the generated manifest matches exactly
 what the service registers at runtime.
 
+**This artifact is Spring-only.** Quarkus services must use
+`com.netcracker.cloud.plugins:httproutes-generator-maven-plugin` instead. After scanning every reactor module,
+this plugin fails the build when scanned classes carry `jakarta.ws.rs.Path`/`javax.ws.rs.Path` markers and no
+Spring `@RestController`/`@Controller` markers, logging:
+
+`Spring was not found. Please use httproutes-generator-maven-plugin for Quarkus service.`
+
+When both framework marker kinds appear in the reactor, the build continues.
+
 ## Coordinates and configuration
 
 ```xml
@@ -60,6 +69,14 @@ Each `<label>` entry has a `<key>` and `<value>` child, which allows label names
   </label>
 </labels>
 ```
+
+## Framework guard
+
+Reactor-wide, the plugin records Quarkus markers (`@Path` on the class or a method) and Spring markers
+(`@RestController`, `@Controller`) only among scanned reactor-module classes in `packages`. After all modules
+are scanned, it fails only when Quarkus markers are present and Spring markers are not. Only scanned classes are
+checked, so a JAX-RS API jar pulled in transitively does not trigger a false failure when the service module
+still has Spring controllers.
 
 ## Route collection matches `route-registration-common-spring`
 
@@ -236,8 +253,8 @@ reachable from the public gateway.
 ## Migrating from `httproutes-generator-maven-plugin`
 
 Spring services previously used `com.netcracker.cloud.plugins:httproutes-generator-maven-plugin`. That artifact
-is now Quarkus-only and fails the build if it detects a Spring `@RestController`/`@Controller` class among the
-scanned classes. Switch the plugin `artifactId`:
+is now Quarkus-only and fails the build when the reactor has only Spring controller markers among scanned
+classes. Switch the plugin `artifactId`:
 
 ```diff
  <plugin>

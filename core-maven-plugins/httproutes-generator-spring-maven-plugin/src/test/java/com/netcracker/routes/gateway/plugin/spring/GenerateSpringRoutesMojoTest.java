@@ -6,6 +6,7 @@ import com.netcracker.cloud.routesregistration.common.gateway.route.RouteType;
 import com.netcracker.cloud.routesregistration.common.spring.gateway.route.RouteAnnotationProcessor;
 import com.netcracker.cloud.routesregistration.common.spring.gateway.route.RouteFormatter;
 import com.netcracker.routes.gateway.plugin.RouteGenerationException;
+import com.netcracker.routes.gateway.plugin.FrameworkMismatch;
 import com.netcracker.routes.gateway.plugin.SourcedRoute;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -127,6 +129,42 @@ class GenerateSpringRoutesMojoTest {
         String yaml = renderWithoutTempFile("com.netcracker.routes.gateway.plugin.springgatewaymapping");
         assertFalse(yaml.contains("java-annotations-facade"));
         assertFalse(yaml.contains("/gw17"));
+    }
+
+    @Test
+    void quarkusGuardFailsWithExplicitMessage() {
+        MojoExecutionException ex = assertThrows(MojoExecutionException.class,
+                () -> renderWithoutTempFile("com.netcracker.routes.gateway.plugin.jaxrsguard"));
+        assertEquals(FrameworkMismatch.SPRING_NOT_FOUND_MESSAGE, ex.getMessage());
+    }
+
+    @Test
+    void springWebMixedDoesNotFailFrameworkMismatch(@TempDir Path tempDir) throws Exception {
+        render(tempDir, "com.netcracker.routes.gateway.plugin.springwebmixed");
+    }
+
+    @Test
+    void reactorWideJaxRsApiAndSpringServiceDoesNotFail(@TempDir Path tempDir) throws Exception {
+        Path apiOut = tempDir.resolve("api-classes");
+        Path serviceOut = tempDir.resolve("service-classes");
+        copyPackage(apiOut, "com.netcracker.routes.gateway.plugin.jaxrsguard");
+        copyPackage(serviceOut, "com.netcracker.routes.gateway.plugin.spring");
+
+        GenerateSpringRoutesMojo mojo = new GenerateSpringRoutesMojo();
+        MavenProject executing = testProjectWithBasedir(tempDir);
+        setField(mojo, "reactorProjects", List.of(moduleProject(apiOut), moduleProject(serviceOut)));
+        setField(mojo, "project", executing);
+        setField(mojo, "packages", new String[]{
+                "com.netcracker.routes.gateway.plugin.jaxrsguard",
+                "com.netcracker.routes.gateway.plugin.spring"
+        });
+        setField(mojo, "servicePort", 8080);
+        setField(mojo, "backendRefVal", "{{ .Values.SERVICE_NAME }}");
+        setField(mojo, "outputFile", "output.yaml");
+        mojo.execute();
+
+        String yaml = Files.readString(tempDir.resolve("output.yaml"));
+        assertTrue(yaml.contains("value: /api/v1/test1"));
     }
 
     @Test
@@ -259,6 +297,25 @@ class GenerateSpringRoutesMojoTest {
         MavenProject project = new TestMavenProject();
         project.getBuild().setOutputDirectory(TEST_CLASSES.getAbsolutePath());
         return project;
+    }
+
+    private MavenProject moduleProject(Path outputDirectory) {
+        MavenProject project = new TestMavenProject();
+        project.getBuild().setOutputDirectory(outputDirectory.toAbsolutePath().toString());
+        return project;
+    }
+
+    private static void copyPackage(Path destOutput, String pkg) throws Exception {
+        Path rel = Path.of("", pkg.split("\\."));
+        Path from = TEST_CLASSES.toPath().resolve(rel);
+        Path to = destOutput.resolve(rel);
+        try (Stream<Path> files = Files.walk(from)) {
+            for (Path file : files.filter(Files::isRegularFile).toList()) {
+                Path target = to.resolve(from.relativize(file));
+                Files.createDirectories(target.getParent());
+                Files.copy(file, target);
+            }
+        }
     }
 
     private static class TestMavenProject extends MavenProject {

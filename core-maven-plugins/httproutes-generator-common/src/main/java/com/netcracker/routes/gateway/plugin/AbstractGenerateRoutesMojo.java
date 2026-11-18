@@ -32,15 +32,23 @@ public abstract class AbstractGenerateRoutesMojo extends AbstractMojo {
     @Parameter
     protected List<Label> labels = Collections.emptyList();
 
+    protected boolean sawSpringMarkers;
+    protected boolean sawQuarkusMarkers;
+
     protected abstract List<SourcedRoute> collect(MavenProject module) throws Exception;
+
+    protected abstract void assertFramework() throws RouteGenerationException;
 
     @Override
     public void execute() throws MojoExecutionException {
         try {
+            sawSpringMarkers = false;
+            sawQuarkusMarkers = false;
             List<SourcedRoute> allRoutes = new ArrayList<>();
             for (MavenProject module : reactorProjects) {
                 allRoutes.addAll(collect(module));
             }
+            assertFramework();
             Rules.checkNoPlaceholders(allRoutes);
             List<Rule> gatewayRules = allRoutes.stream()
                     .filter(route -> route.entry().getType() != RouteType.FACADE)
@@ -55,6 +63,7 @@ public abstract class AbstractGenerateRoutesMojo extends AbstractMojo {
             HttpRouteRenderer renderer = new HttpRouteRenderer(backendRefVal, servicePort, labelsAsMap());
             writeOutputFile(renderer.render(gatewayRoots, facadeRoots));
         } catch (RouteGenerationException e) {
+            getLog().error(e.getMessage());
             throw new MojoExecutionException(e.getMessage(), e);
         } catch (Exception e) {
             throw new MojoExecutionException("Failed to generate HTTP routes: " + e.getMessage(), e);

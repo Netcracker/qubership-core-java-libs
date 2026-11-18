@@ -23,7 +23,7 @@ Access to the public gateway is therefore controlled by AuthorizationPolicy CRs,
   - A new `httproutes-generator-spring-maven-plugin` is added for Spring.
   - A new `httproutes-generator-common` jar holds the shared logic: parameters, root reduction, rendering and file writing.
 
-  Spring services must switch to the Spring artifact. The Quarkus plugin fails the build when it runs on a Spring module.
+  Spring services must switch to the Spring artifact. Each plugin fails the build when the reactor has only the other framework's markers among scanned classes, with an explicit Maven error line naming the correct `artifactId`.
 - **BREAKING**: Routes are collected with the runtime libraries' own logic, so class inheritance, interfaces, `@Routes`, `@FacadeRoute`, `@Route(gateways)` and facade path mappings behave exactly as at runtime.
   - Spring uses `RouteAnnotationProcessor` (and its helpers) from `route-registration-common-spring`.
   - Quarkus uses `RoutesRegistrationProcessor` from `routes-registrator-deployment`.

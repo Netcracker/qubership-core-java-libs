@@ -6,8 +6,13 @@ Generates Helm-ready Gateway API `HTTPRoute` manifests for Istio from Quarkus/JA
 `RoutesRegistrationProcessor`, so the generated manifest matches exactly what the service registers at runtime.
 
 **This artifact is Quarkus-only.** Spring services must use
-`com.netcracker.cloud.plugins:httproutes-generator-spring-maven-plugin` instead; this plugin fails the build
-when it detects a Spring `@RestController`/`@Controller` class among the scanned classes.
+`com.netcracker.cloud.plugins:httproutes-generator-spring-maven-plugin` instead. After scanning every reactor
+module, this plugin fails the build when scanned classes carry Spring `@RestController`/`@Controller` markers and
+no `jakarta.ws.rs.Path`/`javax.ws.rs.Path` markers, logging:
+
+`Quarkus was not found. Please use httproutes-generator-spring-maven-plugin for Spring service.`
+
+When both framework marker kinds appear in the reactor (for example `quarkus-spring-web`), the build continues.
 
 ## Coordinates and configuration
 
@@ -104,17 +109,14 @@ routes to a composite gateway name (not the service's own) to get matching outpu
 - `quarkus.index-dependency` configuration is not read. Only compile-classpath jars/directories with
   `META-INF/jandex.idx` or `META-INF/beans.xml` are indexed, per Quarkus' default rule.
 
-## Spring guard
+## Framework guard
 
-If any scanned class (a reactor-module class in `packages`) carries Spring's `@RestController` or
-`@Controller`, the build fails with a message pointing to
-`httproutes-generator-spring-maven-plugin`. Only classes this plugin actually scans are checked, so a Spring
-jar pulled in transitively by a Quarkus service does not trigger a false failure.
+Reactor-wide, the plugin records Spring markers (`@RestController`, `@Controller`) and Quarkus markers
+(`@Path` on the class or a method) only among scanned reactor-module classes in `packages`. After all modules
+are scanned, it fails only when Spring markers are present and Quarkus markers are not. Only scanned classes are
+checked, so a Spring jar pulled in transitively does not trigger a false failure.
 
-A Quarkus service using the `quarkus-spring-web` compatibility layer (Spring `@RestController` annotations on
-Quarkus resources) is also rejected by this guard. `routes-registrator` reads only `@Path`, so such classes
-would produce a `/` root and fail the build anyway — the error message names both plugins so the owner can see
-which one actually applies.
+A `quarkus-spring-web` module where scanned classes carry both marker kinds does not fail this guard.
 
 ## Gateway and facade groups, and root reduction
 

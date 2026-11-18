@@ -11,11 +11,23 @@ Two Maven plugins SHALL be provided, both with the goal `generate-routes`, aggre
 - `com.netcracker.cloud.plugins:httproutes-generator-maven-plugin` for Quarkus;
 - `com.netcracker.cloud.plugins:httproutes-generator-spring-maven-plugin` for Spring.
 
-Both SHALL produce output in the same format for equivalent routes. The Quarkus plugin SHALL fail the build, with a message naming the Spring plugin, when any scanned class (a reactor-module class in the configured `packages`) is annotated with Spring `@RestController` or `@Controller`.
+Both SHALL produce output in the same format for equivalent routes. Across every reactor module, each plugin SHALL track framework markers only among scanned classes (reactor-module classes in the configured `packages`):
+- **Spring markers:** class-level `@RestController` or `@Controller`;
+- **Quarkus markers:** `jakarta.ws.rs.Path` or `javax.ws.rs.Path` on the class or any of its methods.
 
-#### Scenario: Quarkus plugin on a Spring module
-- **WHEN** `httproutes-generator-maven-plugin` runs on a reactor in which a module has a class in the configured `packages` annotated with `@RestController`
-- **THEN** the build fails with a message telling the user to use `httproutes-generator-spring-maven-plugin`
+After scanning the full reactor, the Quarkus plugin SHALL fail the build when Spring markers are present and Quarkus markers are not, logging and surfacing: `Quarkus was not found. Please use httproutes-generator-spring-maven-plugin for Spring service.` The Spring plugin SHALL fail the build when Quarkus markers are present and Spring markers are not, logging and surfacing: `Spring was not found. Please use httproutes-generator-maven-plugin for Quarkus service.` When both marker kinds appear anywhere in the reactor, or only the plugin's own markers appear, the build SHALL continue. When neither appears, the build SHALL also continue (empty output is allowed).
+
+#### Scenario: Quarkus plugin on a Spring-only reactor
+- **WHEN** `httproutes-generator-maven-plugin` runs on a reactor whose scanned classes carry Spring markers and no Quarkus `@Path` markers
+- **THEN** the build fails with `Quarkus was not found. Please use httproutes-generator-spring-maven-plugin for Spring service.`
+
+#### Scenario: Spring plugin on a Quarkus-only reactor
+- **WHEN** `httproutes-generator-spring-maven-plugin` runs on a reactor whose scanned classes carry Quarkus `@Path` markers and no Spring controller markers
+- **THEN** the build fails with `Spring was not found. Please use httproutes-generator-maven-plugin for Quarkus service.`
+
+#### Scenario: Mixed framework markers in one reactor
+- **WHEN** either plugin runs on a reactor where scanned classes include both Spring controller markers and Quarkus `@Path` markers (for example a `quarkus-spring-web` module)
+- **THEN** the build does not fail for framework mismatch
 
 #### Scenario: Same goal and parameters
 - **WHEN** a pom configures either plugin with `<goal>generate-routes</goal>` and any of `packages`, `servicePort`, `outputFile`, `backendRefVal`, `labels`

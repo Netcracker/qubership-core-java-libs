@@ -69,6 +69,7 @@ Paths are relative to the repo root. "Build plugins" means `mvn -f core-maven-pl
 - [x] 4.1 Implement `GenerateSpringRoutesMojo` in `core-maven-plugins/httproutes-generator-spring-maven-plugin` (design D3):
   - list class names with the common `classNames` helper;
   - load them with `Class.forName(name, false, loader)` through a `URLClassLoader` over the output directory plus `getCompileClasspathElements()`, with the plugin class loader as parent. A load failure fails the build, naming the class;
+  - record reactor-wide Spring and Quarkus framework markers for every scanned class; after all modules, fail when Quarkus markers are present and Spring markers are absent with `Spring was not found. Please use httproutes-generator-maven-plugin for Quarkus service.`;
   - select candidates (concrete, `AnnotatedElementUtils.isAnnotated(c, Component.class)`, and `RouteAnnotationProcessorUtil.isAnnotatedWithRoute || isAnnotatedWithFacadeRoute`);
   - collect with `new RouteAnnotationProcessor(throwingFormatter, null, new RouteHostMapping())`, after setting `microserviceName` to the sentinel `"{{ .Values.SERVICE_NAME }}"` by reflection, then `scanForRoutes(c)`. Rethrow its exceptions with the class name.
 
@@ -118,7 +119,7 @@ Paths are relative to the repo root. "Build plugins" means `mvn -f core-maven-pl
 
 - [x] 5.1 Implement `GenerateQuarkusRoutesMojo` in `core-maven-plugins/httproutes-generator-maven-plugin` (design D4):
   - build the Jandex index from the module output plus the compile-classpath jars and directories that contain `META-INF/jandex.idx` (read) or `META-INF/beans.xml` (indexed), combined with `CompositeIndex`;
-  - fail if any class from `classNames` is annotated with Spring `@Controller` or `@RestController`, with a message naming `httproutes-generator-spring-maven-plugin`;
+  - record reactor-wide Spring and Quarkus framework markers from `classNames`; after all modules, fail when Spring markers are present and Quarkus markers are absent with `Quarkus was not found. Please use httproutes-generator-spring-maven-plugin for Spring service.`;
   - take candidates from `new RoutesRegistrationProcessor().collectClassesWithRoutes(index)`, filtered to the module's `classNames`;
   - collect with `collectRoutesForClass(index, ci, "{{ .Values.SERVICE_NAME }}", new RouteHostMapping()).build()`.
 

@@ -3,6 +3,7 @@ package com.netcracker.routes.gateway.plugin.quarkus;
 import com.netcracker.cloud.quarkus.routesregistration.deployment.RoutesRegistrationProcessor;
 import com.netcracker.cloud.routesregistration.common.annotation.processing.RouteHostMapping;
 import com.netcracker.cloud.routesregistration.common.gateway.route.RouteEntry;
+import com.netcracker.routes.gateway.plugin.FrameworkMismatch;
 import com.netcracker.routes.gateway.plugin.SourcedRoute;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -104,10 +105,39 @@ class GenerateQuarkusRoutesMojoTest {
     }
 
     @Test
-    void springGuardFailsNamingSpringPlugin() {
+    void springGuardFailsWithExplicitMessage() {
         MojoExecutionException ex = assertThrows(MojoExecutionException.class,
                 () -> renderIsolated("com.netcracker.quarkusfixtures.springguard"));
-        assertTrue(ex.getMessage().contains("httproutes-generator-spring-maven-plugin"));
+        assertEquals(FrameworkMismatch.QUARKUS_NOT_FOUND_MESSAGE, ex.getMessage());
+    }
+
+    @Test
+    void springWebMixedDoesNotFailFrameworkMismatch(@TempDir Path tempDir) throws Exception {
+        render(tempDir, "com.netcracker.quarkusfixtures.springwebmixed");
+    }
+
+    @Test
+    void reactorWideSpringModuleAndQuarkusModuleDoesNotFail(@TempDir Path tempDir) throws Exception {
+        Path springOut = tempDir.resolve("spring-classes");
+        Path quarkusOut = tempDir.resolve("quarkus-classes");
+        copyPackage(springOut, "com.netcracker.quarkusfixtures.springguard");
+        copyPackage(quarkusOut, "com.netcracker.routes.gateway.plugin");
+
+        GenerateQuarkusRoutesMojo mojo = new GenerateQuarkusRoutesMojo();
+        MavenProject executing = testProjectWithBasedir(tempDir);
+        setField(mojo, "reactorProjects", List.of(moduleProject(springOut), moduleProject(quarkusOut)));
+        setField(mojo, "project", executing);
+        setField(mojo, "packages", new String[]{
+                "com.netcracker.quarkusfixtures.springguard",
+                "com.netcracker.routes.gateway.plugin"
+        });
+        setField(mojo, "servicePort", 8080);
+        setField(mojo, "backendRefVal", "{{ .Values.SERVICE_NAME }}");
+        setField(mojo, "outputFile", "output.yaml");
+        mojo.execute();
+
+        String yaml = Files.readString(tempDir.resolve("output.yaml"));
+        assertTrue(yaml.contains("value: /api/v1/test1"));
     }
 
     @Test
@@ -213,6 +243,25 @@ class GenerateQuarkusRoutesMojoTest {
         MavenProject project = new TestMavenProject();
         project.getBuild().setOutputDirectory(TEST_CLASSES.getAbsolutePath());
         return project;
+    }
+
+    private MavenProject moduleProject(Path outputDirectory) {
+        MavenProject project = new TestMavenProject();
+        project.getBuild().setOutputDirectory(outputDirectory.toAbsolutePath().toString());
+        return project;
+    }
+
+    private static void copyPackage(Path destOutput, String pkg) throws Exception {
+        Path rel = Path.of("", pkg.split("\\."));
+        Path from = TEST_CLASSES.toPath().resolve(rel);
+        Path to = destOutput.resolve(rel);
+        try (Stream<Path> files = Files.walk(from)) {
+            for (Path file : files.filter(Files::isRegularFile).toList()) {
+                Path target = to.resolve(from.relativize(file));
+                Files.createDirectories(target.getParent());
+                Files.copy(file, target);
+            }
+        }
     }
 
     private MavenProject testProjectWithBasedir(Path basedir) throws Exception {

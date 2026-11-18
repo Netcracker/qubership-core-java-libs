@@ -4,6 +4,7 @@ import com.netcracker.cloud.quarkus.routesregistration.deployment.RoutesRegistra
 import com.netcracker.cloud.routesregistration.common.annotation.processing.RouteHostMapping;
 import com.netcracker.cloud.routesregistration.common.gateway.route.RouteEntry;
 import com.netcracker.routes.gateway.plugin.AbstractGenerateRoutesMojo;
+import com.netcracker.routes.gateway.plugin.FrameworkMismatch;
 import com.netcracker.routes.gateway.plugin.RouteGenerationException;
 import com.netcracker.routes.gateway.plugin.Rules;
 import com.netcracker.routes.gateway.plugin.SourcedRoute;
@@ -17,6 +18,7 @@ import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexReader;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Indexer;
+import org.jboss.jandex.MethodInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,8 +41,17 @@ import java.util.zip.ZipFile;
 public class GenerateQuarkusRoutesMojo extends AbstractGenerateRoutesMojo {
 
     private static final String MICROSERVICE_NAME_SENTINEL = "{{ .Values.SERVICE_NAME }}";
-    private static final String SPRING_REST_CONTROLLER = "org.springframework.web.bind.annotation.RestController";
-    private static final String SPRING_CONTROLLER = "org.springframework.stereotype.Controller";
+    private static final DotName SPRING_REST_CONTROLLER = DotName.createSimple(FrameworkMismatch.SPRING_REST_CONTROLLER);
+    private static final DotName SPRING_CONTROLLER = DotName.createSimple(FrameworkMismatch.SPRING_CONTROLLER);
+    private static final DotName JAKARTA_WS_RS_PATH = DotName.createSimple(FrameworkMismatch.JAKARTA_WS_RS_PATH);
+    private static final DotName JAVAX_WS_RS_PATH = DotName.createSimple(FrameworkMismatch.JAVAX_WS_RS_PATH);
+
+    @Override
+    protected void assertFramework() {
+        if (sawSpringMarkers && !sawQuarkusMarkers) {
+            throw new RouteGenerationException(FrameworkMismatch.QUARKUS_NOT_FOUND_MESSAGE);
+        }
+    }
 
     @Override
     protected List<SourcedRoute> collect(MavenProject module) throws Exception {
@@ -51,7 +62,7 @@ public class GenerateQuarkusRoutesMojo extends AbstractGenerateRoutesMojo {
         }
 
         IndexView index = buildIndex(module, outputDirectory);
-        checkNotSpring(index, classNames);
+        recordFrameworkMarkers(index, classNames);
 
         RoutesRegistrationProcessor processor = new RoutesRegistrationProcessor();
         java.util.Map<String, ClassInfo> classesWithRoutes = processor.collectClassesWithRoutes(index);
@@ -68,6 +79,33 @@ public class GenerateQuarkusRoutesMojo extends AbstractGenerateRoutesMojo {
             }
         }
         return routes;
+    }
+
+    private void recordFrameworkMarkers(IndexView index, List<String> classNames) {
+        for (String className : classNames) {
+            ClassInfo classInfo = index.getClassByName(DotName.createSimple(className));
+            if (classInfo == null) {
+                continue;
+            }
+            if (classInfo.hasAnnotation(SPRING_REST_CONTROLLER) || classInfo.hasAnnotation(SPRING_CONTROLLER)) {
+                sawSpringMarkers = true;
+            }
+            if (hasJaxRsPath(classInfo)) {
+                sawQuarkusMarkers = true;
+            }
+        }
+    }
+
+    private boolean hasJaxRsPath(ClassInfo classInfo) {
+        if (classInfo.hasAnnotation(JAKARTA_WS_RS_PATH) || classInfo.hasAnnotation(JAVAX_WS_RS_PATH)) {
+            return true;
+        }
+        for (MethodInfo method : classInfo.methods()) {
+            if (method.hasAnnotation(JAKARTA_WS_RS_PATH) || method.hasAnnotation(JAVAX_WS_RS_PATH)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private IndexView buildIndex(MavenProject module, File outputDirectory) throws Exception {
@@ -138,16 +176,5 @@ public class GenerateQuarkusRoutesMojo extends AbstractGenerateRoutesMojo {
             }
         }
         return indexer.complete();
-    }
-
-    private void checkNotSpring(IndexView index, List<String> classNames) {
-        for (String className : classNames) {
-            ClassInfo classInfo = index.getClassByName(DotName.createSimple(className));
-            if (classInfo != null && (classInfo.hasAnnotation(DotName.createSimple(SPRING_REST_CONTROLLER))
-                    || classInfo.hasAnnotation(DotName.createSimple(SPRING_CONTROLLER)))) {
-                throw new RouteGenerationException(
-                        "Class " + className + " is a Spring controller; use httproutes-generator-spring-maven-plugin instead");
-            }
-        }
     }
 }

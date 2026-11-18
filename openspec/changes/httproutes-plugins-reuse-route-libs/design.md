@@ -85,6 +85,7 @@ For each module:
    - `formatter` is a `RouteFormatter` whose `StringValueResolver` throws, naming the placeholder, so any `${...}` fails the build (spec: placeholders).
    - The private `microserviceName` field, normally injected through `@Value`, is set once by reflection to a non-empty sentinel (D9). This is the only reflection in the plugin. It needs no library change.
    - Exceptions from `scanForRoutes` are rethrown with the class name added, so library errors (including the placeholder error) name the class.
+5. **Framework guard (reactor-wide):** for every loaded scanned class, record Spring markers (`@RestController`/`@Controller`) and Quarkus markers (`jakarta.ws.rs.Path` or `javax.ws.rs.Path` on the class or a method) by annotation type name so the plugin needs no JAX-RS dependency. After all modules, fail only when Quarkus markers are present and Spring markers are absent: log `Spring was not found. Please use httproutes-generator-maven-plugin for Quarkus service.`
 
 ### D4. Quarkus collector: reuse `RoutesRegistrationProcessor`
 Library change (only this): in `core-quarkus-extensions/routes-registrator/deployment/.../RoutesRegistrationProcessor.java`, make two methods `public` instead of `private`:
@@ -99,7 +100,7 @@ For each module:
    - Combine them with `CompositeIndex.create(moduleIndex, depIndexes…)`.
 2. **Select candidates:** `new RoutesRegistrationProcessor().collectClassesWithRoutes(index)`, keeping only the names `classNames` returned for the module.
 3. **Collect:** for each candidate, `collectRoutesForClass(index, ci, SENTINEL, new RouteHostMapping()).build()`. `ClassRoutesBuilder.build()` is already public.
-4. **Spring guard:** if any class from `classNames` (module classes in `packages`) is annotated with `org.springframework.stereotype.Controller` or `org.springframework.web.bind.annotation.RestController` in the module index, fail with "use httproutes-generator-spring-maven-plugin". Only scanned classes are checked, so a Spring jar that a Quarkus service pulls in transitively does not cause a false failure.
+4. **Framework guard (reactor-wide):** while scanning, set Spring markers when a class from `classNames` has `@Controller` or `@RestController`, and Quarkus markers when it has `jakarta.ws.rs.Path` or `javax.ws.rs.Path` on the class or a method. After all modules are scanned, fail only when Spring markers are present and Quarkus markers are absent: log `Quarkus was not found. Please use httproutes-generator-spring-maven-plugin for Spring service.` Only scanned classes are checked, so a Spring jar pulled in transitively does not cause a false failure. A `quarkus-spring-web` module that carries both marker kinds does not fail.
 
 The plugin depends on `com.netcracker.cloud.quarkus:routes-registrator-deployment`. This brings Quarkus deployment artifacts and Jandex into the plugin class path only.
 *Alternative:* copy the about 40 lines of Jandex lookup into the plugin to avoid the dependency and the visibility change. Rejected because behavior must come from the library itself.
@@ -204,8 +205,9 @@ Notes:
 - [Bean detection approximates component scanning] → Documented under non-goals.
 - [Routes that the old plugin produced from class-level paths now come from all endpoints] → Reduction keeps the output small. Inconsistent nested rewrites become extra rules rather than regexes.
 - [Services with a class-level `@Route` and no class-level path, or with paths starting with a template, now fail the build with `/`] → BREAKING, listed in the proposal. The error names the class. The README explains how to add a class-level path.
-- [Spring services keep using `httproutes-generator-maven-plugin` after upgrading] → The Quarkus plugin fails when module classes carry `@RestController`/`@Controller`, with a message pointing to the Spring artifact.
-- [A Quarkus service using the `quarkus-spring-web` compatibility layer (Spring `@RestController` on Quarkus) is rejected by the Spring guard] → `routes-registrator` reads only `@Path`, so such classes yield `/` roots and would fail anyway. The error message names both plugins, so the owner can see which one applies.
+- [Spring services keep using `httproutes-generator-maven-plugin` after upgrading] → The Quarkus plugin fails when the reactor has Spring controller markers and no Quarkus `@Path` markers, with `Quarkus was not found. Please use httproutes-generator-spring-maven-plugin for Spring service.`
+- [Spring plugin bound on a Quarkus service] → The Spring plugin fails when the reactor has Quarkus `@Path` markers and no Spring controller markers, with `Spring was not found. Please use httproutes-generator-maven-plugin for Quarkus service.`
+- [A Quarkus service using the `quarkus-spring-web` compatibility layer (both `@RestController` and `@Path` on scanned classes)] → Both marker kinds are present reactor-wide, so neither plugin fails for framework mismatch; the bound plugin proceeds.
 - [The aggregator mojo now resolves every reactor module's compile dependencies. Sibling modules that are not yet built in the same session cannot be resolved] → This is the same constraint as today: the plugin must run after the scanned modules compile, e.g. bound in the last module of the reactor. The README states it.
 - [A misspelled name in `HTTPROUTES_GENERATOR_GATEWAYS`] → Gateway API reports it in the HTTPRoute `status.parents` conditions. The README lists the default names.
 - [Services that relied on the old `{{ .Values.DEPLOYMENT_RESOURCE_NAME }}` default] → They set `<backendRefVal>` explicitly. The README calls this out.

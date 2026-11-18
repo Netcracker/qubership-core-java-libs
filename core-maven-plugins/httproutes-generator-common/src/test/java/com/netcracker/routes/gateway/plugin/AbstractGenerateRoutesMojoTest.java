@@ -115,5 +115,9 @@ class AbstractGenerateRoutesMojoTest {
         protected List<SourcedRoute> collect(MavenProject module) {
             return routes;
         }
+
+        @Override
+        protected void assertFramework() {
+        }
     }
 }
