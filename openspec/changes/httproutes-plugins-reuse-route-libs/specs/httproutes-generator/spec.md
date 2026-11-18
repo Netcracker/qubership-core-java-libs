@@ -165,24 +165,32 @@ A root's timeout SHALL be the maximum positive timeout among the rules it absorb
 - **WHEN** the gateway group has `/gw` → `/gw` and the facade group has `/gw` → `/svc`
 - **THEN** the build succeeds, and each group keeps its own `/gw` root
 
-### Requirement: Facade roots kept only when needed
-After reduction, a facade-group root SHALL be rendered only if its match differs from its rewrite target, or if its timeout is greater than 120000 ms (the 2-minute default). Every other facade root SHALL be dropped.
+### Requirement: Facade group rendered all-or-nothing
+After reduction, the facade group SHALL be rendered as a whole or not at all:
+- if at least one facade root has a match that differs from its rewrite target, or a timeout greater than 120000 ms (the 2-minute default), then **every** facade root SHALL be rendered, each with its own rewrite and timeout;
+- otherwise no facade root SHALL be rendered.
+
+Reason: in Istio ambient mode, once an HTTPRoute is attached to a service's waypoint, every request to that service that matches no rule gets a 404. Rendering only some facade roots would break the facade routes that were left out.
 
 #### Scenario: Facade root with rewrite
-- **WHEN** a facade root matches `/test/sleep` and rewrites to `/sleep`
+- **WHEN** the only facade root matches `/test/sleep` and rewrites to `/sleep`
 - **THEN** it is rendered in the facade HTTPRoute
 
 #### Scenario: Facade root with long timeout
-- **WHEN** a facade root `/api/v1/reports` has no rewrite and a timeout of 300000 ms
+- **WHEN** the only facade root `/api/v1/reports` has no rewrite and a timeout of 300000 ms
 - **THEN** it is rendered in the facade HTTPRoute with `timeouts.request: 5m`
 
-#### Scenario: Facade root with nothing to change
-- **WHEN** a facade root `/class/path/to/method/path/to` has no rewrite and a timeout of 10000 ms
-- **THEN** it is not rendered
+#### Scenario: One facade root that needs it renders the whole group
+- **WHEN** the facade roots are `/test/sleep` → `/sleep` and `/api/v1/plain` with no rewrite and a timeout of 10000 ms
+- **THEN** both are rendered in the facade HTTPRoute: `/test/sleep` rewritten to `/sleep`, and `/api/v1/plain` with no filter and `timeouts.request: 10s`
+
+#### Scenario: Facade group with nothing to change
+- **WHEN** every facade root has no rewrite and a timeout of at most 120000 ms, for example the only facade root `/class/path/to/method/path/to` at 10000 ms
+- **THEN** no facade root is rendered, and no facade HTTPRoute is generated
 
 #### Scenario: Timeout exactly two minutes
-- **WHEN** a facade root has no rewrite and a timeout of exactly 120000 ms
-- **THEN** it is not rendered
+- **WHEN** the only facade root has no rewrite and a timeout of exactly 120000 ms
+- **THEN** no facade HTTPRoute is generated
 
 ### Requirement: Gateway HTTPRoute
 The plugins SHALL render the gateway-group roots into one HTTPRoute (`apiVersion: gateway.networking.k8s.io/v1`) named `{{ .Values.SERVICE_NAME }}-java-annotations`.
@@ -224,7 +232,7 @@ Every rule SHALL have one backendRef: `group: ""`, `kind: Service`, `name` = the
 - **THEN** no `-java-annotations` gateway HTTPRoute is generated
 
 ### Requirement: Facade HTTPRoute
-The plugins SHALL render the facade roots that pass the "kept only when needed" rule into a separate HTTPRoute named `{{ .Values.SERVICE_NAME }}-java-annotations-facade`. It SHALL have a single parentRef: `group: ""`, `kind: Service`, `name: {{ .Values.SERVICE_NAME }}`. The `HTTPROUTES_GENERATOR_GATEWAYS` value SHALL NOT affect it. Each rule SHALL have the same backendRef as gateway rules, and rules SHALL be ordered by match path in lexical order. Facade routes SHALL never appear in the gateway HTTPRoute. The facade HTTPRoute SHALL be omitted when it has no rules.
+When the "all-or-nothing" rule renders the facade group, the plugins SHALL render all its roots into a separate HTTPRoute named `{{ .Values.SERVICE_NAME }}-java-annotations-facade`. It SHALL have a single parentRef: `group: ""`, `kind: Service`, `name: {{ .Values.SERVICE_NAME }}`. The `HTTPROUTES_GENERATOR_GATEWAYS` value SHALL NOT affect it. Each rule SHALL have the same backendRef as gateway rules, and rules SHALL be ordered by match path in lexical order. Facade routes SHALL never appear in the gateway HTTPRoute. The facade HTTPRoute SHALL be omitted when it has no rules.
 
 #### Scenario: Facade parentRef
 - **WHEN** at least one facade rule is rendered, and the chart is rendered with `HTTPROUTES_GENERATOR_GATEWAYS: internet-gateway`
@@ -235,8 +243,8 @@ The plugins SHALL render the facade roots that pass the "kept only when needed" 
 - **THEN** the facade HTTPRoute has a rule matching `/facade` rewritten to `/svc`, and the gateway HTTPRoute has no rule for it
 
 #### Scenario: Gateway mapping does not apply to facade
-- **WHEN** a Spring controller has `@RequestMapping("/svc")`, `@GatewayRequestMapping("/gw")` and `@Route(RouteType.FACADE)` with no timeout
-- **THEN** its facade root `/svc` has no rewrite and is not rendered, so no facade HTTPRoute is generated for it
+- **WHEN** a Spring controller has `@RequestMapping("/svc")`, `@GatewayRequestMapping("/gw")` and `@Route(RouteType.FACADE)` with no timeout, and it is the only facade route
+- **THEN** its facade root `/svc` has no rewrite, so no facade HTTPRoute is generated
 
 ### Requirement: Output file format
 The plugins SHALL write the file at `outputFile`, resolved against the base directory of the executing project, creating parent directories as needed. The file SHALL start with the "THIS FILE WAS AUTOMATICALLY GENERATED — DO NOT EDIT" header. All resources SHALL be wrapped in `{{- if eq .Values.SERVICE_MESH_TYPE "Istio" }}` … `{{- end }}`. Each HTTPRoute's labels SHALL be the configured `labels` when any are set. Otherwise they SHALL be the default set: `app.kubernetes.io/name`, `app.kubernetes.io/part-of`, `app.kubernetes.io/managed-by`, `deployment.netcracker.com/sessionId`, `deployer.cleanup/allow: "true"`, `app.kubernetes.io/processed-by-operator: istiod`. Running a plugin twice on the same classes SHALL produce byte-identical output.

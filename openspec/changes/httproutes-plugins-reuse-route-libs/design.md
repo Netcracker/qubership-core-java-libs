@@ -118,7 +118,13 @@ Group by `RouteEntry.getType() == RouteType.FACADE`. The libraries already map:
 - `gateways` = `public-gateway-service`, `private-gateway-service`, `internal-gateway-service` to PUBLIC, PRIVATE, INTERNAL;
 - `gateways` = the microservice name or any composite gateway name to FACADE.
 
-So the plugin never inspects `gateways` itself. After reduction, a facade root is kept only if `!match.equals(target) || timeout > 120_000`. The constant `DEFAULT_FACADE_TIMEOUT_MS = 120_000` lives next to the filter.
+So the plugin never inspects `gateways` itself.
+
+After reduction, the facade filter is all-or-nothing: if `anyMatch(r -> !r.match().equals(r.target()) || r.timeout() > 120_000)`, every facade root is kept; otherwise the facade group is cleared. The constant `DEFAULT_FACADE_TIMEOUT_MS = 120_000` lives next to the filter.
+
+*Why not filter per root:* in Istio ambient, an HTTPRoute whose parentRef is the service is applied by the service's waypoint, and the waypoint returns 404 for every request that matches no rule. If only the facade roots that rewrite or extend the timeout were rendered, every other facade route of the service would start returning 404. When no root needs anything, dropping the whole group keeps the service free of a waypoint route, as before. Reduction inside the facade group is still safe: a rule is only absorbed when the root's prefix serves it with the same target, so no facade request loses its match.
+
+*Alternative:* render the facade group whenever it is non-empty. Rejected because most services would then get a waypoint HTTPRoute that changes nothing.
 
 ### D7. Gateway parentRefs resolved by Helm
 The gateway HTTPRoute's `parentRefs` is a constant Helm snippet emitted by the renderer, not data computed at build time. There is no `gateways` Maven parameter. The snippet:
@@ -145,7 +151,7 @@ Assumption: the plugins cannot know the real microservice name at build time, so
 
 ### D10. Tests
 - **common:**
-  - unit tests for prefix-rule conversion, reduction (every spec scenario under "Prefix rules" and "Root reduction"), the facade filter, and the renderer (parentRefs snippet, backendRef, facade isolation, labels, determinism, no regex);
+  - unit tests for prefix-rule conversion, reduction (every spec scenario under "Prefix rules" and "Root reduction"), the all-or-nothing facade filter (including a mixed group where one rewrite root brings in the plain roots), and the renderer (parentRefs snippet, backendRef, facade isolation, labels, determinism, no regex);
   - a mojo test with a stub `collect` for the empty-output case and error wrapping.
 - **spring plugin:**
   - Move the existing `SpringTestController*` fixtures. Add fixtures for the spec scenarios: abstract base plus concrete subclass, path override, `@Gateway` ignored, repeated `@Route`, `@FacadeGatewayRequestMapping`, `@Route(gateways = "private-gateway-service")`, `@Route(gateways = "my-composite-gateway")`, a `${}` placeholder, and a class-level `@Route` without a path (fails).
@@ -154,7 +160,8 @@ Assumption: the plugins cannot know the real microservice name at build time, so
     - Spring1 → `/api/v1/test1`, `/api/v1/test2` at 250s;
     - Spring2 → `/test1`, `/test2`;
     - Spring3 → `/class/path/from` and `/class/path/from2` → `/class/path/to`, plus four nested roots, because the method-level `@GatewayRequestMapping` changes the suffix: `/class/path/from{,2}/method/path/from{,2}` → `/class/path/to/method/path/to`;
-    - Spring8 → gateway `/class/path/from` → `/class/path/to` at 20s, and no facade root (no rewrite, 10s ≤ 2m);
+    - Spring8 scanned on its own → gateway `/class/path/from` → `/class/path/to` at 20s, and no facade HTTPRoute (its only facade root has no rewrite, 10s ≤ 2m);
+    - Spring8 together with the `@FacadeGatewayRequestMapping("/facade")` fixture → the facade HTTPRoute has `/facade` → `/svc` and also Spring8's plain facade root at 10s;
     - the Spring6 base → `/custom/test1` → `/api/v1/test4/test1`.
 - **quarkus plugin:**
   - Move the existing `QuarkusTestController*` fixtures. Copy the library's `resource/hierarchy` fixtures (`Case1`–`Case3`, `ICase1`–`ICase3`) and assert the roots match the runtime processor's output for the same classes. Add `@GatewayRequestMapping` ignored, `@FacadeGateway`, and the Spring guard.

@@ -45,7 +45,11 @@ Access to the public gateway is therefore controlled by AuthorizationPolicy CRs,
   - `internal-gateway-service` is rendered as a `Service` parentRef (group `""`). Every other name is rendered as a `Gateway` parentRef (group `gateway.networking.k8s.io`).
 
   The per-type HTTPRoutes `-java-annotations-public`, `-private` and `-internal` are no longer generated.
-- FACADE stays a separate CR. Facade roots are rendered into `{{ .Values.SERVICE_NAME }}-java-annotations-facade`, with the single parentRef Service `{{ .Values.SERVICE_NAME }}`. A facade root is kept only if it rewrites its prefix to a different prefix, or if its timeout is longer than the 2-minute default.
+- FACADE stays a separate CR. Facade roots are rendered into `{{ .Values.SERVICE_NAME }}-java-annotations-facade`, with the single parentRef Service `{{ .Values.SERVICE_NAME }}`. The facade group is all-or-nothing:
+  - if no facade root rewrites its prefix and none has a timeout longer than the 2-minute default, no facade HTTPRoute is generated;
+  - otherwise **all** facade roots are rendered.
+
+  In Istio ambient, once a service has a waypoint HTTPRoute, every request to that service that matches no rule gets a 404. A facade HTTPRoute with only some of the routes would therefore break the rest.
 - **BREAKING**: The default of `backendRefVal` changes from `{{ .Values.DEPLOYMENT_RESOURCE_NAME }}` to `{{ .Values.SERVICE_NAME }}`. Services can still override it with `<backendRefVal>`.
 - Unchanged:
   - the parameters `packages`, `servicePort`, `outputFile` and `labels`;

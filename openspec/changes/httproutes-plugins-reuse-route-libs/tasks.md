@@ -37,7 +37,7 @@ Paths are relative to the repo root. "Build plugins" means `mvn -f core-maven-pl
 ## 2. Common: prefix rules, root reduction, facade filter
 
 - [ ] 2.1 Add `SourcedRoute(String className, RouteEntry entry)`, `Rule(match, target, timeout, Set<String> sources)` and the `classNames(outputDirectory, packages)` helper (design D2) to common. Implement the RouteEntry → Rule conversion per the spec requirement "Prefix rules without regex": normalize, cut at the first `{`/`*` segment, check the tail matches ignoring variable names, check the target has no templates, and fail naming the class and the route. Also implement the `${` check from the spec requirement "Unresolvable placeholders fail the build". Verify with `RulesTest`, which covers every scenario of those two requirements, the normalization of `api//x/` → `/api/x`, and `classNames` (package filtering, nested classes included, non-class files ignored).
-- [ ] 2.2 Implement the per-group reduction (design D5): ascending segment count, absorption by the longest ancestor root with max timeout, inconsistent nested rules kept as their own roots, a conflict error naming the match, and an error for a `/` root naming its source classes. Also implement the facade filter (design D6: rewrite, or timeout > `120_000`). Verify with `RootReductionTest`, which covers every scenario of the spec requirements "Root reduction" and "Facade roots kept only when needed", including "Timeout exactly two minutes".
+- [ ] 2.2 Implement the per-group reduction (design D5): ascending segment count, absorption by the longest ancestor root with max timeout, inconsistent nested rules kept as their own roots, a conflict error naming the match, and an error for a `/` root naming its source classes. Also implement the all-or-nothing facade filter (design D6): keep every facade root if any root rewrites or has a timeout > `120_000`, otherwise clear the group. Verify with `RootReductionTest`, which covers every scenario of the spec requirements "Root reduction" and "Facade group rendered all-or-nothing", including "One facade root that needs it renders the whole group" and "Timeout exactly two minutes".
 
 ## 3. Common: renderer and mojo pipeline
 
@@ -53,7 +53,7 @@ Paths are relative to the repo root. "Build plugins" means `mvn -f core-maven-pl
 - [ ] 3.2 Implement `AbstractGenerateRoutesMojo.execute()` (design D2):
   1. collect per reactor module;
   2. split into the gateway and facade groups by `RouteType.FACADE`;
-  3. convert to rules, reduce each group, filter the facade group;
+  3. convert to rules, reduce each group, apply the all-or-nothing facade filter;
   4. render, add the header and the Istio guard;
   5. write `outputFile`, creating parent directories.
 
@@ -61,6 +61,7 @@ Paths are relative to the repo root. "Build plugins" means `mvn -f core-maven-pl
   - the empty output (header plus empty guard only);
   - one gateway and one facade route written correctly;
   - PUBLIC/PRIVATE/INTERNAL entries landing in the gateway group and FACADE entries in the facade group (spec "Route types share one HTTPRoute" and "Only facade routes");
+  - a facade group with one rewrite entry and one plain entry rendering both, and a facade group with only plain entries rendering no facade HTTPRoute;
   - a `/` root failing with the class name.
 
 ## 4. Spring plugin
@@ -88,7 +89,8 @@ Paths are relative to the repo root. "Build plugins" means `mvn -f core-maven-pl
   - Spring1 → `/api/v1/test1`, `/api/v1/test2` at 250s;
   - Spring2 → `/test1`, `/test2`;
   - Spring3 → `/class/path/from` and `/class/path/from2` → `/class/path/to`, plus the four nested roots `/class/path/from{,2}/method/path/from{,2}` → `/class/path/to/method/path/to`;
-  - Spring8 → gateway `/class/path/from` → `/class/path/to` at 20s, and no facade HTTPRoute;
+  - Spring8 scanned on its own → gateway `/class/path/from` → `/class/path/to` at 20s, and no facade HTTPRoute;
+  - Spring8 together with the `@FacadeGatewayRequestMapping("/facade")` fixture → the facade HTTPRoute contains `/facade` → `/svc` and also Spring8's plain facade root at 10s;
   - the Spring6 base → `/custom/test1` → `/api/v1/test4/test1`, and nothing from the un-annotated subclass.
 
   For each fixture class, the test also checks parity: the routes the plugin collects equal `new RouteAnnotationProcessor(...).scanForRoutes(c)` called directly. The test also writes the full output for the successful fixtures to `target/httproutes-test/annotations-httproutes.yaml`, which task 6.2 uses. Verify that the tests pass.
@@ -98,7 +100,7 @@ Paths are relative to the repo root. "Build plugins" means `mvn -f core-maven-pl
   - that routes follow `route-registration-common-spring` exactly (inheritance, `@GatewayRequestMapping`/`@FacadeGatewayRequestMapping`, `@Gateway` not read), and that plugin and library versions should be kept aligned;
   - candidate rules and their non-goals;
   - the gateway/facade groups and the root reduction, with an example;
-  - the facade "needed only if" rule (rewrite, or timeout > 2m);
+  - the all-or-nothing facade rule: if any facade root rewrites or has a timeout > 2m, all facade roots are rendered, otherwise none. Include the reason: an Istio ambient waypoint HTTPRoute returns 404 for every request to the service that matches no rule;
   - build failures (`/` root, `${}`, inexpressible rewrite, conflicts);
   - `@Route(hosts)` is ignored (no `hostnames` in the HTTPRoutes);
   - `HTTPROUTES_GENERATOR_GATEWAYS` (list or comma string; unset/empty means `public-gateway`, `private-gateway`, `internal-gateway-service`, with Service/Gateway kinds), with an example of each form;
@@ -125,7 +127,7 @@ Paths are relative to the repo root. "Build plugins" means `mvn -f core-maven-pl
   - a `@Path("/base")` base with a method `@Route` and a subclass without `@Route`;
   - `@GatewayRequestMapping("/gw")` on a Quarkus resource;
   - `@FacadeGateway` + `@Route(FACADE)`;
-  - a facade resource without a rewrite and with a 300000 ms timeout;
+  - a facade resource without a rewrite and with a 300000 ms timeout, in its own package, so it can be scanned without other facade fixtures;
   - a `@RestController` class in its own package (e.g. `...plugin.quarkus.springguard`), which the other tests leave out of `packages`, for the Spring guard.
 
   The `@GatewayRequestMapping` fixture needs `route-registration-common-spring` on the test classpath (task 1.2). Verify that the test sources compile in the next test run.
@@ -133,7 +135,8 @@ Paths are relative to the repo root. "Build plugins" means `mvn -f core-maven-pl
   - Quarkus1 → `/api/v1/test1` at 250s;
   - Quarkus2 → `/test1`;
   - Quarkus3 → `/class/path/from` → `/class/path/to`, plus the nested roots `/class/path/from/method/path/from` and `/class/path/from/method/path/from2`, both → `/class/path/to/method/path/to` (the method-level `@Gateway` changes the suffix, so they are not absorbed);
-  - Quarkus4 → `/test/sleep` → `/sleep`.
+  - Quarkus4 → `/test/sleep` → `/sleep`;
+  - the `@FacadeGateway` + `@Route(FACADE)` fixture scanned on its own renders its rewritten facade root, and scanned together with a plain facade fixture (no rewrite, timeout ≤ 2m) renders both facade roots.
 
   For each fixture class, the test also checks parity: the plugin's collected routes equal the routes from calling `collectRoutesForClass(...).build()` directly. Verify that the tests pass.
 - [ ] 5.4 Rewrite `core-maven-plugins/httproutes-generator-maven-plugin/README.md` the same way as task 4.4, adapted for Quarkus:
