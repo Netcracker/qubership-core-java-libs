@@ -36,6 +36,8 @@ For each candidate, the collected routes (from path, to path, route type, timeou
 
 `@Gateway` SHALL have no effect in the Spring plugin, because the library does not read it.
 
+The plugin calls the library with a build-time sentinel in place of the real microservice name (`${cloud.microservice.name}`), since that value is only known at runtime. `@Route(gateways)` naming the microservice's own name is therefore always resolved as a composite gateway (its "from" path comes from `@GatewayRequestMapping`, or the route's own path if that is absent), never as the library's legacy "own name" case (whose "from" path would instead come from `@FacadeGatewayRequestMapping`). A route still lands in the facade group either way, but the "from" path can differ for a service that combines its own name with a facade-specific mapping.
+
 #### Scenario: Concrete subclass inherits annotations
 - **WHEN** an abstract class has `@RequestMapping("/api/v1/base")` and a method `@PostMapping("/items")` with `@Route`, and a concrete subclass is annotated only with `@RestController`
 - **THEN** the subclass contributes the route `/api/v1/base/items`, and the abstract class contributes nothing by itself
@@ -63,6 +65,8 @@ Candidate classes SHALL be those that `routes-registrator-deployment`'s `RoutesR
 - method `@Path` resolved on the method or the same method in the hierarchy.
 
 `@GatewayRequestMapping` SHALL have no effect in the Quarkus plugin, because the library does not read it.
+
+The plugin calls the library with a build-time sentinel in place of the real microservice name, for the same reason and with the same consequence as the Spring plugin (see the Spring requirement above): `@Route(gateways)` naming the microservice's own name is always resolved as a composite gateway, using `@Gateway`/the route's own path rather than `@FacadeGateway`.
 
 #### Scenario: Interface path wins over superclass path
 - **WHEN** `Case1 extends Case3 implements ICase1`, where `Case3` has `@Path("/x-case3")`, `ICase1` has `@Path("/x-icase1")`, and `Case1` declares `@Route` and no `@Path` of its own

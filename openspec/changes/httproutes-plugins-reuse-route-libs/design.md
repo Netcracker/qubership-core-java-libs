@@ -145,9 +145,14 @@ The facade HTTPRoute is a separate resource. It keeps a plain Jackson-rendered s
 - Removed: the regex conversion, the banner, the specificity sort, and the per-type grouping.
 
 ### D9. Microservice name sentinel
-Both libraries require a non-empty microservice name. They use it only to treat `@Route(gateways = <own name>)` as facade and to reject `hosts` on it. Every non-border gateway name already ends up in the facade group (D6), so the name cannot change grouping. The plugins pass the constant `"{{ .Values.SERVICE_NAME }}"`. No real gateway can carry that name, so it never matches a user value.
+Both libraries require a non-empty microservice name. `ClassRoutesSet.addRoutesBasedOnGateways` branches on it: when a `gateways` value equals the real microservice name, it resolves the route's incoming ("from") path from the facade mapping (`@FacadeGatewayRequestMapping`/`@FacadeGateway`, `classWideFacadePathsFrom`); otherwise — border name or not — it resolves the path from the ordinary gateway mapping (`@GatewayRequestMapping`/`@Gateway`, `classWideGatewayPathsFrom`). Either way the route is typed `FACADE` (or the matching border type), so grouping (D6) never depends on this branch. The plugins pass the constant `"{{ .Values.SERVICE_NAME }}"`. No real gateway can carry that name, so it never matches a user value.
 
-Assumption: the plugins cannot know the real microservice name at build time, so a `gateways` value equal to it is treated as a composite gateway. It still lands in the facade group, so the output is the same. The one consequence is that the libraries' check "`hosts` is not allowed with the microservice's own gateway name" is not repeated by the plugins. `hosts` combined with a border gateway is still rejected, because that check runs inside the library code the plugins call.
+Assumption: the plugins cannot know the real microservice name at build time, so a `gateways` value equal to it is always treated as a composite gateway, never as the legacy "own name" case. Consequences:
+- **Grouping is unaffected**: the route still lands in the facade group either way, since both branches produce type `FACADE` (D6).
+- **The incoming path can differ** for a service that still uses the legacy "own name" convention together with a facade-specific mapping: at runtime such a route resolves its "from" path via `@FacadeGatewayRequestMapping`/`@FacadeGateway`; the plugins always resolve it via the ordinary gateway mapping (or the route's own path, if no gateway mapping is set) instead. A service relying on this specific combination gets a different "from" path out of the plugin than what it registers at runtime, and must switch to a composite gateway name (not its own) or drop the facade-specific mapping to get matching output.
+- The library's check "`hosts` is not allowed with the microservice's own gateway name" is not repeated by the plugins for this reason. `hosts` combined with a border gateway is still rejected, because that check runs inside the library code the plugins call.
+
+This is a deliberate, inherent limitation — not a defect to fix in code — because the real microservice name is a runtime property value, unavailable during the Maven build.
 
 ### D10. Tests
 - **common:**

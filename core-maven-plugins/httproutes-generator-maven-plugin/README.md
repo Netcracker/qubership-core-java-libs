@@ -87,6 +87,16 @@ it does not read that Spring-specific annotation — it is read by the Spring pl
 plugin's version and `routes-registrator-deployment`'s version aligned (both come from this monorepo), so
 collected routes never drift from what the service actually registers.
 
+**One deliberate exception: the service's own name in `@Route(gateways = ...)`.** The library resolves a
+route's incoming path differently depending on whether a named gateway equals the real microservice name
+(resolved via `@FacadeGateway`) or not (resolved via `@Gateway`). Since the plugin runs at build time, it
+cannot know the real microservice name, so it always calls the library with a sentinel that cannot match any
+real name — every explicitly named gateway other than the three border names is therefore always resolved as a
+composite gateway, never as the library's legacy "own name" case. The route still lands in the facade group
+either way (grouping is unaffected), but a service that still combines its own name with a `@FacadeGateway`
+override will get a different incoming path from the plugin than what it registers at runtime. Switch such
+routes to a composite gateway name (not the service's own) to get matching output.
+
 ### Candidate selection: non-goals
 
 - Routes from controllers that live in dependency jars are never collected; only reactor-module classes in

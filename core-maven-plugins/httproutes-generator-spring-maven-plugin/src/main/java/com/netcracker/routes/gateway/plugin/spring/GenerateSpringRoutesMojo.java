@@ -44,19 +44,20 @@ public class GenerateSpringRoutesMojo extends AbstractGenerateRoutesMojo {
             return List.of();
         }
 
-        ClassLoader loader = buildClassLoader(module, outputDirectory);
-        List<SourcedRoute> routes = new ArrayList<>();
-        for (String className : classNames) {
-            Class<?> candidate = loadClass(className, loader);
-            if (!isCandidate(candidate)) {
-                continue;
+        try (URLClassLoader loader = buildClassLoader(module, outputDirectory)) {
+            List<SourcedRoute> routes = new ArrayList<>();
+            for (String className : classNames) {
+                Class<?> candidate = loadClass(className, loader);
+                if (!isCandidate(candidate)) {
+                    continue;
+                }
+                routes.addAll(collectFromClass(candidate));
             }
-            routes.addAll(collectFromClass(candidate));
+            return routes;
         }
-        return routes;
     }
 
-    private ClassLoader buildClassLoader(MavenProject module, File outputDirectory) throws Exception {
+    private URLClassLoader buildClassLoader(MavenProject module, File outputDirectory) throws Exception {
         List<URL> urls = new ArrayList<>();
         urls.add(outputDirectory.toURI().toURL());
         for (Object element : module.getCompileClasspathElements()) {

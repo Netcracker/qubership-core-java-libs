@@ -21,6 +21,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -113,26 +116,51 @@ class GenerateQuarkusRoutesMojoTest {
     }
 
     @Test
-    void collectedRoutesMatchLibraryDirectly() throws Exception {
+    void collectedRoutesMatchLibraryExactly() throws Exception {
+        String pkg = "com.netcracker.routes.gateway.plugin";
         GenerateQuarkusRoutesMojo mojo = new GenerateQuarkusRoutesMojo();
-        setField(mojo, "packages", new String[]{"com.netcracker.routes.gateway.plugin"});
+        setField(mojo, "packages", new String[]{pkg});
         List<SourcedRoute> collected = mojo.collect(testProject());
 
         IndexView index = buildTestIndex();
         RoutesRegistrationProcessor processor = new RoutesRegistrationProcessor();
-        var classesWithRoutes = processor.collectClassesWithRoutes(index);
+        Map<String, ClassInfo> classesWithRoutes = processor.collectClassesWithRoutes(index);
+        Set<String> expectedCandidates = classesWithRoutes.keySet().stream()
+                .filter(name -> name.equals(pkg) || name.startsWith(pkg + "."))
+                .collect(Collectors.toSet());
 
-        for (SourcedRoute sourcedRoute : collected) {
-            ClassInfo classInfo = classesWithRoutes.get(sourcedRoute.className());
-            List<RouteEntry> direct = processor.collectRoutesForClass(index, classInfo, "{{ .Values.SERVICE_NAME }}", new RouteHostMapping()).build();
-            assertTrue(direct.contains(sourcedRoute.entry()),
-                    "Collected route " + sourcedRoute.entry() + " for " + sourcedRoute.className() + " not found in direct library scan");
+        Set<String> actualCandidates = collected.stream().map(SourcedRoute::className).collect(Collectors.toSet());
+        assertEquals(expectedCandidates, actualCandidates, "Candidate class set differs from an independent scan");
+
+        Map<String, List<SourcedRoute>> actualByClass = collected.stream().collect(Collectors.groupingBy(SourcedRoute::className));
+        for (String className : expectedCandidates) {
+            ClassInfo classInfo = classesWithRoutes.get(className);
+            List<RouteEntry> expected = processor.collectRoutesForClass(index, classInfo, "{{ .Values.SERVICE_NAME }}", new RouteHostMapping()).build();
+            List<RouteEntry> actual = actualByClass.get(className).stream().map(SourcedRoute::entry).toList();
+            assertEquals(sortedStrings(expected), sortedStrings(actual), "Route entries differ for " + className);
         }
     }
 
+    private List<String> sortedStrings(List<RouteEntry> entries) {
+        return entries.stream().map(RouteEntry::toString).sorted().toList();
+    }
+
     private IndexView buildTestIndex() throws Exception {
+        List<IndexView> indexes = new ArrayList<>();
+        indexes.add(indexDirectory(TEST_CLASSES));
+        for (String element : System.getProperty("java.class.path").split(File.pathSeparator)) {
+            if (!element.contains("route-registration-common")) {
+                continue;
+            }
+            File file = new File(element);
+            indexes.add(file.isDirectory() ? indexDirectory(file) : indexJar(new java.util.zip.ZipFile(file)));
+        }
+        return CompositeIndex.create(indexes);
+    }
+
+    private IndexView indexDirectory(File directory) throws Exception {
         Indexer indexer = new Indexer();
-        try (Stream<Path> files = Files.walk(TEST_CLASSES.toPath())) {
+        try (Stream<Path> files = Files.walk(directory.toPath())) {
             for (Path classFile : files.filter(Files::isRegularFile)
                     .filter(p -> p.getFileName().toString().endsWith(".class"))
                     .toList()) {
@@ -141,14 +169,7 @@ class GenerateQuarkusRoutesMojoTest {
                 }
             }
         }
-        List<IndexView> indexes = new ArrayList<>();
-        indexes.add(indexer.complete());
-        for (String element : System.getProperty("java.class.path").split(File.pathSeparator)) {
-            if (element.contains("route-registration-common")) {
-                indexes.add(indexJar(new java.util.zip.ZipFile(element)));
-            }
-        }
-        return CompositeIndex.create(indexes);
+        return indexer.complete();
     }
 
     private IndexView indexJar(java.util.zip.ZipFile zip) throws Exception {

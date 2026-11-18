@@ -20,6 +20,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -167,22 +170,53 @@ class GenerateSpringRoutesMojoTest {
     }
 
     @Test
-    void collectedRoutesMatchLibraryDirectly() throws Exception {
+    void collectedRoutesMatchLibraryExactly() throws Exception {
+        String pkg = "com.netcracker.routes.gateway.plugin.spring";
         GenerateSpringRoutesMojo mojo = new GenerateSpringRoutesMojo();
-        setField(mojo, "packages", new String[]{"com.netcracker.routes.gateway.plugin.spring"});
-        MavenProject module = testProject();
-        List<SourcedRoute> collected = mojo.collect(module);
+        setField(mojo, "packages", new String[]{pkg});
+        List<SourcedRoute> collected = mojo.collect(testProject());
 
-        for (SourcedRoute sourcedRoute : collected) {
-            Class<?> clazz = Class.forName(sourcedRoute.className());
-            RouteFormatter formatter = new RouteFormatter();
-            formatter.setEmbeddedValueResolver(passthroughResolver());
-            RouteAnnotationProcessor processor = new RouteAnnotationProcessor(formatter, null, new RouteHostMapping());
-            setField(processor, "microserviceName", "{{ .Values.SERVICE_NAME }}");
-            List<RouteEntry> direct = new ArrayList<>(processor.scanForRoutes(clazz));
-            assertTrue(direct.contains(sourcedRoute.entry()),
-                    "Collected route " + sourcedRoute.entry() + " for " + clazz.getName() + " not found in direct library scan");
+        Set<String> expectedCandidates = independentlyFindCandidates(pkg);
+        Set<String> actualCandidates = collected.stream().map(SourcedRoute::className).collect(Collectors.toSet());
+        assertEquals(expectedCandidates, actualCandidates, "Candidate class set differs from an independent scan");
+
+        Map<String, List<SourcedRoute>> actualByClass = collected.stream().collect(Collectors.groupingBy(SourcedRoute::className));
+        for (String className : expectedCandidates) {
+            Class<?> clazz = Class.forName(className);
+            List<RouteEntry> expected = new ArrayList<>(scanDirectly(clazz));
+            List<RouteEntry> actual = actualByClass.get(className).stream().map(SourcedRoute::entry).toList();
+            assertEquals(sortedStrings(expected), sortedStrings(actual), "Route entries differ for " + className);
         }
+    }
+
+    private Set<String> independentlyFindCandidates(String pkg) throws Exception {
+        Set<String> candidates = new java.util.HashSet<>();
+        for (String className : com.netcracker.routes.gateway.plugin.Rules.classNames(TEST_CLASSES, new String[]{pkg})) {
+            Class<?> clazz = Class.forName(className);
+            if (clazz.isInterface() || java.lang.reflect.Modifier.isAbstract(clazz.getModifiers())) {
+                continue;
+            }
+            if (!org.springframework.core.annotation.AnnotatedElementUtils.isAnnotated(clazz, org.springframework.stereotype.Component.class)) {
+                continue;
+            }
+            if (com.netcracker.cloud.routesregistration.common.spring.gateway.route.RouteAnnotationProcessorUtil.isAnnotatedWithRoute(clazz)
+                    || com.netcracker.cloud.routesregistration.common.spring.gateway.route.RouteAnnotationProcessorUtil.isAnnotatedWithFacadeRoute(clazz)) {
+                candidates.add(className);
+            }
+        }
+        return candidates;
+    }
+
+    private List<RouteEntry> scanDirectly(Class<?> clazz) throws Exception {
+        RouteFormatter formatter = new RouteFormatter();
+        formatter.setEmbeddedValueResolver(passthroughResolver());
+        RouteAnnotationProcessor processor = new RouteAnnotationProcessor(formatter, null, new RouteHostMapping());
+        setField(processor, "microserviceName", "{{ .Values.SERVICE_NAME }}");
+        return new ArrayList<>(processor.scanForRoutes(clazz));
+    }
+
+    private List<String> sortedStrings(List<RouteEntry> entries) {
+        return entries.stream().map(RouteEntry::toString).sorted().toList();
     }
 
     private List<SourcedRoute> collect(String... packages) throws Exception {
