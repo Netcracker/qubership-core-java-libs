@@ -1,0 +1,9 @@
+package com.netcracker.quarkusfixtures.springguard;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping(path = "/guard")
+public class SpringGuardController {
+}
