@@ -15,7 +15,7 @@
         <dependency>
             <groupId>com.netcracker.cloud</groupId>
             <artifactId>route-registration-common</artifactId>
-            <version>7.6.0-SNAPSHOT</version>
+            <version>7.6.0</version>
         </dependency>
         <dependency>
             <groupId>jakarta.ws.rs</groupId>

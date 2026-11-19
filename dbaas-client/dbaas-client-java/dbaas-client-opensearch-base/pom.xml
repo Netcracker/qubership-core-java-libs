@@ -3,7 +3,7 @@
     <parent>
         <artifactId>dbaas-client-java-parent</artifactId>
         <groupId>com.netcracker.cloud</groupId>
-        <version>9.3.0-SNAPSHOT</version>
+        <version>9.3.1-SNAPSHOT</version>
         <relativePath>./../dbaas-client-java-parent</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>org.opensearch.client</groupId>
             <artifactId>opensearch-java</artifactId>
-            <version>3.10.0</version>
+            <version>3.11.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.httpcomponents.core5</groupId>
@@ -33,6 +33,11 @@
                     <artifactId>httpclient5</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <!-- opensearch-java 3.11+ BulkStreamingRequest/Response implement Publisher, but the artifact does not declare reactive-streams -->
+        <dependency>
+            <groupId>org.reactivestreams</groupId>
+            <artifactId>reactive-streams</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
