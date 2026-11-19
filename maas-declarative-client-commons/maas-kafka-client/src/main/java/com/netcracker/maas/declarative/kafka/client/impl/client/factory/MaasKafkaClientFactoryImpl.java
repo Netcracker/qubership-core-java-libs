@@ -47,6 +47,7 @@ public class MaasKafkaClientFactoryImpl implements MaasKafkaClientFactory {
     private final List<ConsumerRecordFilter> recordFilters;
     private final BlueGreenStatePublisher statePublisher;
     private final Lazy<ScheduledExecutorService> sharedConsumerExecutorServiceHolder;
+    private final Long sendSyncTimeoutMs;
 
     public MaasKafkaClientFactoryImpl(
             InternalTenantService tenantService,
@@ -61,7 +62,8 @@ public class MaasKafkaClientFactoryImpl implements MaasKafkaClientFactory {
             KafkaClientCreationService kafkaClientCreationService,
             List<Long> awaitAfterErrorOccurred,
             List<ConsumerRecordFilter> recordFilters,
-            BlueGreenStatePublisher statePublisher
+            BlueGreenStatePublisher statePublisher,
+            Long sendSyncTimeoutMs
     ) {
         this.tenantService = tenantService;
         this.topicCredentialsExtractor = topicCredentialsExtractor;
@@ -75,6 +77,7 @@ public class MaasKafkaClientFactoryImpl implements MaasKafkaClientFactory {
         this.awaitAfterErrorOccurred = awaitAfterErrorOccurred;
         this.recordFilters = recordFilters;
         this.statePublisher = statePublisher;
+        this.sendSyncTimeoutMs = sendSyncTimeoutMs;
         this.sharedConsumerExecutorServiceHolder = new Lazy<>(() ->
                 Executors.newScheduledThreadPool(threadPoolSize, createThreadFactory("maas-kafka-exec-%s")));
     }
@@ -128,10 +131,10 @@ public class MaasKafkaClientFactoryImpl implements MaasKafkaClientFactory {
                 acceptableTenants,
                 contextPropagationService,
                 maasKafkaClientStateChangeNotificationService,
-                kafkaClientCreationService
+                kafkaClientCreationService,
+                sendSyncTimeoutMs
         );
     }
-
 
     private static List<String> prepareTenants(List<String> acceptableTenants) {
         if (!acceptableTenants.isEmpty()) {

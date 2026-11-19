@@ -117,7 +117,8 @@ class MaasKafkaClientTest {
                         new ContextPropagationFilter(new DefaultContextPropagationServiceImpl()),
                         new TracingFilter(tracingService)
                 ),
-                inMemoryBlueGreenStatePublisher
+                inMemoryBlueGreenStatePublisher,
+                null
         );
 
 
