@@ -34,6 +34,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- opensearch-java 3.11+ BulkStreamingRequest/Response implement Publisher, but the artifact does not declare reactive-streams -->
+        <dependency>
+            <groupId>org.reactivestreams</groupId>
+            <artifactId>reactive-streams</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
