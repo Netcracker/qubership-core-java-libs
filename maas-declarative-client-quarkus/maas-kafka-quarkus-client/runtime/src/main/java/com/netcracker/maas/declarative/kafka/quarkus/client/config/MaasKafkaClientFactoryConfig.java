@@ -62,7 +62,8 @@ public class MaasKafkaClientFactoryConfig {
                 kafkaClientCreationService,
                 maasKafkaProps.awaitItmeoutAfterError.orElse(DEFAULT_AWAIT_TIME_LIST),
                 consumerRecordFilters.stream().toList(),
-                statePublisher
+                statePublisher,
+                maasKafkaProps.sendSyncTimeoutMs.orElse(null)
         );
     }
 

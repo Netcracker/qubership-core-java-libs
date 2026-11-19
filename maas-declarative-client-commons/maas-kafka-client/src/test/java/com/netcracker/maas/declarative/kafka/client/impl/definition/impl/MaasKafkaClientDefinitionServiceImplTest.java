@@ -95,6 +95,7 @@ class MaasKafkaClientDefinitionServiceImplTest {
                 ),
                 def.getClientConfig()
             );
+        assertNull(def.getSendSyncTimeoutMs());
         assertEquals(Map.of("abc", "cde",
                 "max.compaction.lag.ms", "10000"), def.getTopic().getConfigs());
     }
