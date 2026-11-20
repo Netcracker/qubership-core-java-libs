@@ -22,7 +22,9 @@
         <cloud-core.core-error-handling.version>4.2.11</cloud-core.core-error-handling.version>
 
         <!-- Dev tools -->
-        <freemarker.version>2.3.34</freemarker.version>
+        <freemarker.version>2.3.35</freemarker.version>
+        <!-- Published dbaas-client 9.1.15 still brings the driver at 4.19.2. Import the BOM so every module converges on 4.19.4. -->
+        <cassandra-driver.version>4.19.4</cassandra-driver.version>
 
         <!-- Align various dependencies that are not really part of the bom-->
         <jsoup.version>1.22.2</jsoup.version>
@@ -35,6 +37,13 @@
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-quarkus-internal-bom</artifactId>
                 <version>1.0.8</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cassandra</groupId>
+                <artifactId>java-driver-bom</artifactId>
+                <version>${cassandra-driver.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

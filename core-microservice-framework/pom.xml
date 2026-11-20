@@ -18,6 +18,7 @@
     </licenses>
 
     <properties>
+        <lombok.version>1.18.48</lombok.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>21</java.version>
         <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
@@ -53,7 +54,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.46</version>
+                            <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
