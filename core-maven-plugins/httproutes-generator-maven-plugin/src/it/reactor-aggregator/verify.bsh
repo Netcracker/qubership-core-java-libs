@@ -1,0 +1,14 @@
+import java.io.File;
+import java.nio.file.Files;
+
+File output = new File(basedir, "aggregator/gateway-httproutes.yaml");
+if (!output.isFile()) {
+    throw new RuntimeException("Expected output file not found: " + output);
+}
+
+String content = new String(Files.readAllBytes(output.toPath()));
+if (!content.contains("/base-it")) {
+    throw new RuntimeException("Generated output does not contain the cross-module route /base-it:\n" + content);
+}
+
+return true;

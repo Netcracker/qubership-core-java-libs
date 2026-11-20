@@ -75,7 +75,7 @@ public class RoutesRegistrationProcessor {
         LOGGER.info("End registerRoutes()");
     }
 
-    private Map<String, ClassInfo> collectClassesWithRoutes(IndexView index) {
+    public Map<String, ClassInfo> collectClassesWithRoutes(IndexView index) {
         final Map<String, ClassInfo> classesWithRoutes = collectClassesWithAnnotationOfAnyLevel(index, ROUTE);
         classesWithRoutes.putAll(collectClassesWithAnnotationOfAnyLevel(index, ROUTES));
         classesWithRoutes.putAll(collectClassesWithAnnotationOfAnyLevel(index, FACADE_ROUTE));
@@ -103,7 +103,7 @@ public class RoutesRegistrationProcessor {
         return classesWithRoutes;
     }
 
-    private ClassRoutesBuilder collectRoutesForClass(IndexView index, ClassInfo classInfo, String microserviceName, RouteHostMapping routeHostMapping) {
+    public ClassRoutesBuilder collectRoutesForClass(IndexView index, ClassInfo classInfo, String microserviceName, RouteHostMapping routeHostMapping) {
         ClassRoutesBuilder classRoutesBuilder = new ClassRoutesBuilder(microserviceName, routeHostMapping);
 
         // collect information about routes based on class-level annotations

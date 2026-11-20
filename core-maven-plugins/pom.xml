@@ -20,7 +20,9 @@
     </licenses>
 
     <modules>
+        <module>httproutes-generator-common</module>
         <module>httproutes-generator-maven-plugin</module>
+        <module>httproutes-generator-spring-maven-plugin</module>
     </modules>
 
     <scm>
