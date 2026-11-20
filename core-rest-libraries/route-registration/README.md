@@ -310,3 +310,31 @@ public class IngressRoutesController {
 There are several restrictions on using custom hosts:
 *  Don't use mixed facade and border gateways in one annotation if you used custom hosts. Split it into two annotations.
 *  If you have several facade routes and use hosts field in the @Route annotation, make sure all your routes use this field or have you set the default mapping in application.yml/application.properties 
+
+###### 9. Forbidding gateway paths for the Istio HTTPRoute generator (optional)
+
+`@ForbiddenRoute` (`com.netcracker.cloud.routesregistration.common.annotation.ForbiddenRoute`) is used **only** by the
+[httproutes-generator-maven-plugin](../../core-maven-plugins/httproutes-generator-maven-plugin/README.md), which turns it into
+Istio `AuthorizationPolicy` DENY rules. The legacy runtime route registration ignores this annotation: the routes it registers
+are the same with or without it.
+
+The annotation marks the gateway path of a class or method as forbidden on the listed external gateways. Each value names one
+gateway and does not imply the wider ones: `PUBLIC` is the public gateway and `PRIVATE` the private gateway. `INTERNAL` and
+`FACADE` are not supported. The gateway path is resolved the same way as for `@Route` (request mappings,
+`@Gateway` and `@GatewayRequestMapping`). A class-level `@ForbiddenRoute` forbids only the class-level gateway path, and it
+does not need a `@Route` on the same element.
+
+```java
+@RestController
+@RequestMapping("/api/v1/svc/resource")
+@Route(RouteType.PUBLIC)
+public class ResourceController {
+
+    @GetMapping("/{id}/internal-api")
+    @Route(RouteType.INTERNAL)
+    @ForbiddenRoute({RouteType.PUBLIC, RouteType.PRIVATE})
+    public ResponseEntity<?> internalApi(@PathVariable String id) {
+        //...
+    }
+}
+```
