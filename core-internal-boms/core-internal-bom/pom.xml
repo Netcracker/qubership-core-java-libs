@@ -86,6 +86,8 @@
         <mongo-java-server.version>1.47.0</mongo-java-server.version>
         <hibernate-validator.version>8.0.3.Final</hibernate-validator.version>
         <docker-java.version>3.7.1</docker-java.version>
+        <!-- Spring Boot 4.0.9: 4.19.4. Quarkus does not manage it. The BOM keeps core, query-builder and metrics on one version. -->
+        <cassandra-driver.version>4.19.4</cassandra-driver.version>
     </properties>
 
     <dependencyManagement>
@@ -110,6 +112,13 @@
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers-bom</artifactId>
                 <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cassandra</groupId>
+                <artifactId>java-driver-bom</artifactId>
+                <version>${cassandra-driver.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
