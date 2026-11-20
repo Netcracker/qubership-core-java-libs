@@ -34,6 +34,9 @@ public class MaasKafkaProps {
     @ConfigProperty(name = MaasKafkaCommonConstants.CONSUMER_AWAIT_TIMEOUT_AFTER_ERROR)
     Optional<List<Long>> awaitItmeoutAfterError;
 
+    @ConfigProperty(name = MaasKafkaCommonConstants.SEND_SYNC_TIMEOUT_MS)
+    Optional<Long> sendSyncTimeoutMs;
+
     // tracing props
     @ConfigProperty(name = "maas.tracing.kafka.enabled", defaultValue = "true")
     Boolean tracingEnabled;
