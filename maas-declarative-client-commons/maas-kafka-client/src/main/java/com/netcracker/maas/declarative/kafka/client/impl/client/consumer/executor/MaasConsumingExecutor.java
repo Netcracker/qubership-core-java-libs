@@ -146,6 +146,9 @@ public class MaasConsumingExecutor implements Runnable {
                     LOG.error("Error consume records. Close current consumer and reschedule consuming with increased timeout", e);
                     safe(() -> consumer.release()); // force consumer recreate
                     rescheduleTimeoutValueProvider.incrementInterval();
+                } catch (Error e) {
+                    LOG.error("Error consume records", e);
+                    throw e;
                 } finally {
                     var timeout = rescheduleTimeoutValueProvider.getTimeAwaitValue();
                     LOG.debug("Reschedule run after: {}ms", timeout);
