@@ -28,7 +28,7 @@
         <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
 
         <kafka-clients.version>4.2.0</kafka-clients.version>
-        <cloud-core.maas-client.version>12.2.13</cloud-core.maas-client.version>
+        <cloud-core.maas-client.version>12.2.14</cloud-core.maas-client.version>
     </properties>
 
 
@@ -48,7 +48,7 @@
             <dependency>
                 <groupId>com.netcracker.cloud</groupId>
                 <artifactId>core-internal-bom</artifactId>
-                <version>1.0.8</version>
+                <version>1.0.9</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
