@@ -2,6 +2,7 @@ package com.netcracker.maas.declarative.kafka.quarkus.client.config;
 
 import com.netcracker.cloud.maas.client.api.kafka.KafkaMaaSClient;
 import com.netcracker.cloud.maas.client.impl.ApiUrlProvider;
+import com.netcracker.cloud.maas.client.impl.Env;
 import com.netcracker.cloud.maas.client.impl.apiversion.ServerApiVersion;
 import com.netcracker.cloud.maas.client.impl.http.HttpClient;
 import com.netcracker.cloud.maas.client.impl.kafka.KafkaMaaSClientImpl;
@@ -14,7 +15,6 @@ import com.netcracker.maas.declarative.kafka.client.impl.topic.provider.impl.Maa
 import io.quarkus.arc.DefaultBean;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 
 @Singleton
@@ -22,12 +22,14 @@ public class MaasKafkaProdClientConfig {
 
     @Singleton
     @Produces
-    KafkaMaaSClient kafkaMaaSClient(MaasKafkaProps props, M2MManager m2mManager) {
-        HttpClient httpClient = HttpClient.getM2mClient(() -> m2mManager.getToken().getTokenValue());
+    KafkaMaaSClient kafkaMaaSClient(M2MManager m2mManager) {
+        String maasApiUrl = Env.apiUrl();
+        HttpClient maasHttpClient = HttpClient.getMaasClient(() -> m2mManager.getToken().getTokenValue());
+        HttpClient m2mHttpClient = HttpClient.getM2mClient(() -> m2mManager.getToken().getTokenValue());
         return new KafkaMaaSClientImpl(
-                httpClient,
-                () -> new TenantManagerConnectorImpl(httpClient),
-                new ApiUrlProvider(new ServerApiVersion(httpClient, props.maasAgentUrl), props.maasAgentUrl)
+                maasHttpClient,
+                () -> new TenantManagerConnectorImpl(m2mHttpClient),
+                new ApiUrlProvider(new ServerApiVersion(maasHttpClient, maasApiUrl), maasApiUrl)
         );
     }
 
