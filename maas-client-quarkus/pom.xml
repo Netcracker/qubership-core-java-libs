@@ -24,6 +24,7 @@
     </modules>
 
 	<properties>
+		<lombok.version>1.18.48</lombok.version>
 		<maven.compiler.release>21</maven.compiler.release>
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
@@ -117,7 +118,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.46</version>
+                            <version>${lombok.version}</version>
                         </path>
 					    </annotationProcessorPaths>
 					</configuration>
