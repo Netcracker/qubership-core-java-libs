@@ -61,6 +61,9 @@ fail until the `TokenStorage` bean obtains one. The bean is stricter — a login
 startup. The ConfigData phase takes the namespace from the `cloud.microservice.namespace` system property, or from
 `NAMESPACE` or `CLOUD_NAMESPACE`; the `TokenStorage` bean takes it from `NAMESPACE` alone.
 
+A Consul with its ACL system disabled answers the login with `401` and the body `ACL support disabled`. In every mode
+the client then works without a token and logs `Consul ACLs are disabled: working without a Consul token`.
+
 The default is the auth method the platform registers. Set `consul.auth.method` only if your Consul names it
 differently.
 

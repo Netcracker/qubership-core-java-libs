@@ -102,6 +102,14 @@ class LoginTokenProviderTest {
     }
 
     @Test
+    void theAclsDisabledBodyWithAnotherCodeFailsWithIOException() throws IOException {
+        when(consulClient.login(any(ConsulLoginCredentials.class)))
+                .thenReturn(new ConsulClientResponse("ACL support disabled", 403));
+
+        assertThrows(IOException.class, () -> tokenProvider.getToken());
+    }
+
+    @Test
     void nonSuccessCodeIsReportedWhenResponseBodyIsEmpty() throws IOException {
         when(consulClient.login(any(ConsulLoginCredentials.class)))
                 .thenReturn(new ConsulClientResponse("", 403));
