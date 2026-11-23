@@ -9,11 +9,11 @@ import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LongRunningTask extends AbstractProcessTask {
-    private static final Logger log = LoggerFactory.getLogger(LongRunningTask.class);
+public class OneSecondTask extends AbstractProcessTask {
+    private static final Logger log = LoggerFactory.getLogger(OneSecondTask.class);
 
-    public LongRunningTask() {
-        super(LongRunningTask.class.getName());
+    public OneSecondTask() {
+        super(OneSecondTask.class.getName());
     }
 
 
