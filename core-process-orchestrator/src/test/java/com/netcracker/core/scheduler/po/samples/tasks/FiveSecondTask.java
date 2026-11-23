@@ -6,9 +6,9 @@ import com.netcracker.core.scheduler.po.context.TaskExecutionContext;
 import com.netcracker.core.scheduler.po.task.templates.AbstractProcessTask;
 import lombok.SneakyThrows;
 
-public class SyncTimeoutTask extends AbstractProcessTask {
-    public SyncTimeoutTask() {
-        super(SyncTimeoutTask.class.getName());
+public class FiveSecondTask extends AbstractProcessTask {
+    public FiveSecondTask() {
+        super(FiveSecondTask.class.getName());
     }
 
     @SneakyThrows
