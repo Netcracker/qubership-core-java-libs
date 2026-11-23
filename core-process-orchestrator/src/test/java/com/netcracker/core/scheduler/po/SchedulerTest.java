@@ -313,7 +313,7 @@ class SchedulerTest {
     @Test
     void terminateSyncTimeout() {
         ProcessDefinition testProcess = new ProcessDefinition("SyncTest");
-        NamedTask task = new NamedTask(LongRunningTask.class.getName(), LongRunningTask.class.getName(), 1L);
+        NamedTask task = new NamedTask(SyncTimeoutTask.class.getName(), SyncTimeoutTask.class.getName(), 1L);
         testProcess.addTask(task);
         ProcessInstanceImpl instance = orchestrator.createProcess(testProcess);
         orchestrator.startProcess(instance);
