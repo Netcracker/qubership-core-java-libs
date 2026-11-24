@@ -1,10 +1,10 @@
-# Spec Delta
+# httproutes-generator Specification
 
 ## Purpose
 
-Generate Helm-ready Gateway API HTTPRoute manifests for Istio from annotated Spring and Quarkus controllers. Routes are collected exactly as the runtime route-registration libraries collect them. They are then reduced to a minimal set of prefix ("root") rules: one HTTPRoute for all API gateways and one separate facade HTTPRoute. Access restrictions are left to AuthorizationPolicy CRs.
+Generate Helm-ready Gateway API HTTPRoute manifests for Istio from annotated Spring and Quarkus controllers. Routes are collected exactly as the runtime route-registration libraries collect them. They are then reduced to a minimal set of prefix ("root") rules, rendered as gateway HTTPRoutes shared by all API gateways and separate facade HTTPRoutes, each HTTPRoute holding at most 16 rules. Access restrictions are left to AuthorizationPolicy CRs.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Framework-specific plugins
 Two Maven plugins SHALL be provided, both with the goal `generate-routes`, aggregator mode, default phase `process-classes`, and the same parameters (`packages`, `servicePort`, `outputFile`, `backendRefVal`, `labels`):
@@ -208,12 +208,31 @@ Reason: in Istio ambient mode, once an HTTPRoute is attached to a service's wayp
 - **WHEN** the only facade root has no rewrite and a timeout of exactly 120000 ms
 - **THEN** no facade HTTPRoute is generated
 
+### Requirement: HTTPRoute rule limit
+Every generated HTTPRoute SHALL contain at most 16 rules, the Gateway API limit for `spec.rules`. The roots of a group SHALL be ordered by match path in lexical order and then split, in that order, into consecutive chunks of 16. The first chunk SHALL use the group's base name. Each further chunk SHALL be a separate HTTPRoute named `<base name>-2`, `<base name>-3`, and so on. Every chunk SHALL carry the same labels, `parentRefs` and backendRefs as the first one. In the output file, all gateway HTTPRoutes SHALL come before all facade HTTPRoutes, separated by `---`.
+
+#### Scenario: Sixteen rules fit in one HTTPRoute
+- **WHEN** the gateway group has exactly 16 roots
+- **THEN** a single `-java-annotations` HTTPRoute with 16 rules is generated, and no `-java-annotations-2` HTTPRoute
+
+#### Scenario: Seventeen rules split into two HTTPRoutes
+- **WHEN** the gateway group has 17 roots
+- **THEN** `-java-annotations` holds the 16 lexically first roots, `-java-annotations-2` holds the last one, and both carry the `HTTPROUTES_GENERATOR_GATEWAYS` parentRefs and the labels
+
+#### Scenario: Facade overflow
+- **WHEN** the facade group is rendered with 17 roots
+- **THEN** `-java-annotations-facade` holds 16 rules, `-java-annotations-facade-2` holds one, and each has the single parentRef Service `{{ .Values.SERVICE_NAME }}`
+
+#### Scenario: Output order with overflow in both groups
+- **WHEN** both groups have 17 rendered roots
+- **THEN** the file contains, in this order, `-java-annotations`, `-java-annotations-2`, `-java-annotations-facade`, `-java-annotations-facade-2`
+
 ### Requirement: Gateway HTTPRoute
-The plugins SHALL render the gateway-group roots into one HTTPRoute (`apiVersion: gateway.networking.k8s.io/v1`) named `{{ .Values.SERVICE_NAME }}-java-annotations`.
+The plugins SHALL render the gateway-group roots into HTTPRoutes (`apiVersion: gateway.networking.k8s.io/v1`) with the base name `{{ .Values.SERVICE_NAME }}-java-annotations`, split according to the HTTPRoute rule limit.
 
-Its `parentRefs` SHALL be resolved by Helm at deploy time from the optional value `HTTPROUTES_GENERATOR_GATEWAYS`, which may be a YAML list of gateway names or a comma-separated string. Names SHALL be trimmed, and blank entries skipped. When the value is unset or empty, the gateways SHALL be `public-gateway`, `private-gateway`, `internal-gateway-service`, in that order. The name `internal-gateway-service` SHALL be rendered as `group: ""`, `kind: Service`. Every other name SHALL be rendered as `group: gateway.networking.k8s.io`, `kind: Gateway`.
+The `parentRefs` of every gateway HTTPRoute SHALL be resolved by Helm at deploy time from the optional value `HTTPROUTES_GENERATOR_GATEWAYS`, which may be a YAML list of gateway names or a comma-separated string. Names SHALL be trimmed, and blank entries skipped. When the value is unset or empty, the gateways SHALL be `public-gateway`, `private-gateway`, `internal-gateway-service`, in that order. The name `internal-gateway-service` SHALL be rendered as `group: ""`, `kind: Service`. Every other name SHALL be rendered as `group: gateway.networking.k8s.io`, `kind: Gateway`.
 
-Every rule SHALL have one backendRef: `group: ""`, `kind: Service`, `name` = the `backendRefVal` parameter, `port` = `servicePort`, `weight: 1`. The `backendRefVal` default SHALL be `{{ .Values.SERVICE_NAME }}`. Rules SHALL be ordered by match path in lexical order. The HTTPRoute SHALL be omitted when it has no rules.
+Every rule SHALL have one backendRef: `group: ""`, `kind: Service`, `name` = the `backendRefVal` parameter, `port` = `servicePort`, `weight: 1`. The `backendRefVal` default SHALL be `{{ .Values.SERVICE_NAME }}`. Rules SHALL be ordered by match path in lexical order. No gateway HTTPRoute SHALL be generated when the group has no roots.
 
 #### Scenario: Default backendRef
 - **WHEN** the plugin runs without a `backendRefVal` parameter
@@ -241,18 +260,18 @@ Every rule SHALL have one backendRef: `group: ""`, `kind: Service`, `name` = the
 
 #### Scenario: Route types share one HTTPRoute
 - **WHEN** one controller has `@Route(RouteType.INTERNAL)` and another has `@Route(RouteType.PUBLIC)`
-- **THEN** both controllers' roots appear in the `-java-annotations` HTTPRoute, and no `-java-annotations-public`, `-private` or `-internal` HTTPRoute is generated
+- **THEN** both controllers' roots appear in the gateway HTTPRoute(s) (`-java-annotations`, plus `-java-annotations-2`… on overflow), and no `-java-annotations-public`, `-private` or `-internal` HTTPRoute is generated
 
 #### Scenario: Only facade routes
 - **WHEN** every collected route is in the facade group
 - **THEN** no `-java-annotations` gateway HTTPRoute is generated
 
 ### Requirement: Facade HTTPRoute
-When the "all-or-nothing" rule renders the facade group, the plugins SHALL render all its roots into a separate HTTPRoute named `{{ .Values.SERVICE_NAME }}-java-annotations-facade`. It SHALL have a single parentRef: `group: ""`, `kind: Service`, `name: {{ .Values.SERVICE_NAME }}`. The `HTTPROUTES_GENERATOR_GATEWAYS` value SHALL NOT affect it. Each rule SHALL have the same backendRef as gateway rules, and rules SHALL be ordered by match path in lexical order. Facade routes SHALL never appear in the gateway HTTPRoute. The facade HTTPRoute SHALL be omitted when it has no rules.
+When the "all-or-nothing" rule renders the facade group, the plugins SHALL render all its roots into separate HTTPRoutes with the base name `{{ .Values.SERVICE_NAME }}-java-annotations-facade`, split according to the HTTPRoute rule limit. Each facade HTTPRoute SHALL have a single parentRef: `group: ""`, `kind: Service`, `name: {{ .Values.SERVICE_NAME }}`. The `HTTPROUTES_GENERATOR_GATEWAYS` value SHALL NOT affect them. Each rule SHALL have the same backendRef as gateway rules, and rules SHALL be ordered by match path in lexical order. Facade routes SHALL never appear in a gateway HTTPRoute. No facade HTTPRoute SHALL be generated when no facade root is rendered.
 
 #### Scenario: Facade parentRef
 - **WHEN** at least one facade rule is rendered, and the chart is rendered with `HTTPROUTES_GENERATOR_GATEWAYS: internet-gateway`
-- **THEN** the facade HTTPRoute has exactly one parentRef, Service `{{ .Values.SERVICE_NAME }}` with group `""`
+- **THEN** every facade HTTPRoute has exactly one parentRef, Service `{{ .Values.SERVICE_NAME }}` with group `""`
 
 #### Scenario: Facade path mapping
 - **WHEN** a Spring controller has `@RequestMapping("/svc")`, `@FacadeGatewayRequestMapping("/facade")` and `@Route(RouteType.FACADE)`

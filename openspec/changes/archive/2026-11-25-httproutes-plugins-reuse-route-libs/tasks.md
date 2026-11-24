@@ -41,7 +41,7 @@ Paths are relative to the repo root. "Build plugins" means `mvn -f core-maven-pl
 
 ## 3. Common: renderer and mojo pipeline
 
-- [x] 3.1 Implement the renderer (design D7, D8): small records, Jackson with `NON_NULL`/`NON_EMPTY`, the gateway HTTPRoute `{{ .Values.SERVICE_NAME }}-java-annotations` whose parentRefs is the constant `HTTPROUTES_GENERATOR_GATEWAYS` Helm snippet, the facade HTTPRoute `-java-annotations-facade` with the single Service `{{ .Values.SERVICE_NAME }}` parentRef, backendRef `backendRefVal`, `formatDuration`, default/custom labels, and omission of an empty HTTPRoute. Verify with `HttpRouteRendererTest`. It asserts:
+- [x] 3.1 Implement the renderer (design D7, D8): insertion-ordered maps, Jackson with `NON_NULL`, the gateway HTTPRoute `{{ .Values.SERVICE_NAME }}-java-annotations` whose parentRefs is the constant `HTTPROUTES_GENERATOR_GATEWAYS` Helm snippet, the facade HTTPRoute `-java-annotations-facade` with the single Service `{{ .Values.SERVICE_NAME }}` parentRef, backendRef `backendRefVal`, `formatDuration`, default/custom labels, and omission of an empty HTTPRoute. Verify with `HttpRouteRendererTest`. It asserts:
   - the exact snippet text, including the default list and the Service/Gateway mapping;
   - backendRef names for the default and a custom value;
   - facade rules only in the facade resource, and no `HTTPROUTES_GENERATOR_GATEWAYS` reference in it;
@@ -52,10 +52,11 @@ Paths are relative to the repo root. "Build plugins" means `mvn -f core-maven-pl
   - byte-identical output when rendering twice.
 - [x] 3.2 Implement `AbstractGenerateRoutesMojo.execute()` (design D2):
   1. collect per reactor module;
-  2. split into the gateway and facade groups by `RouteType.FACADE`;
-  3. convert to rules, reduce each group, apply the all-or-nothing facade filter;
-  4. render, add the header and the Istio guard;
-  5. write `outputFile`, creating parent directories.
+  2. run the framework guard on the `sawSpringMarkers`/`sawQuarkusMarkers` flags and `isQuarkus()`, using the `FrameworkMismatch` messages; check for `${`;
+  3. split into the gateway and facade groups by `RouteType.FACADE`;
+  4. convert to rules, reduce each group, apply the all-or-nothing facade filter;
+  5. render, add the header and the Istio guard;
+  6. write `outputFile`, creating parent directories.
 
   Wrap all failures in `MojoExecutionException`. Verify with `AbstractGenerateRoutesMojoTest`, using a stub subclass whose `collect` returns fixed `RouteEntry`s. It covers:
   - the empty output (header plus empty guard only);
@@ -69,7 +70,7 @@ Paths are relative to the repo root. "Build plugins" means `mvn -f core-maven-pl
 - [x] 4.1 Implement `GenerateSpringRoutesMojo` in `core-maven-plugins/httproutes-generator-spring-maven-plugin` (design D3):
   - list class names with the common `classNames` helper;
   - load them with `Class.forName(name, false, loader)` through a `URLClassLoader` over the output directory plus `getCompileClasspathElements()`, with the plugin class loader as parent. A load failure fails the build, naming the class;
-  - record reactor-wide Spring and Quarkus framework markers for every scanned class; after all modules, fail when Quarkus markers are present and Spring markers are absent with `Spring was not found. Please use httproutes-generator-maven-plugin for Quarkus service.`;
+  - record reactor-wide Spring and Quarkus framework markers for every scanned class in the inherited `sawSpringMarkers`/`sawQuarkusMarkers` flags (`isQuarkus()` returns `false`); the common guard (task 3.2) then fails when Quarkus markers are present and Spring markers are absent with `Spring was not found. Please use httproutes-generator-maven-plugin for Quarkus service.`;
   - select candidates (concrete, `AnnotatedElementUtils.isAnnotated(c, Component.class)`, and `RouteAnnotationProcessorUtil.isAnnotatedWithRoute || isAnnotatedWithFacadeRoute`);
   - collect with `new RouteAnnotationProcessor(throwingFormatter, null, new RouteHostMapping())`, after setting `microserviceName` to the sentinel `"{{ .Values.SERVICE_NAME }}"` by reflection, then `scanForRoutes(c)`. Rethrow its exceptions with the class name.
 
@@ -119,7 +120,7 @@ Paths are relative to the repo root. "Build plugins" means `mvn -f core-maven-pl
 
 - [x] 5.1 Implement `GenerateQuarkusRoutesMojo` in `core-maven-plugins/httproutes-generator-maven-plugin` (design D4):
   - build the Jandex index from the module output plus the compile-classpath jars and directories that contain `META-INF/jandex.idx` (read) or `META-INF/beans.xml` (indexed), combined with `CompositeIndex`;
-  - record reactor-wide Spring and Quarkus framework markers from `classNames`; after all modules, fail when Spring markers are present and Quarkus markers are absent with `Quarkus was not found. Please use httproutes-generator-spring-maven-plugin for Spring service.`;
+  - record reactor-wide Spring and Quarkus framework markers from `classNames` in the inherited `sawSpringMarkers`/`sawQuarkusMarkers` flags (`isQuarkus()` returns `true`); the common guard (task 3.2) then fails when Spring markers are present and Quarkus markers are absent with `Quarkus was not found. Please use httproutes-generator-spring-maven-plugin for Spring service.`;
   - take candidates from `new RoutesRegistrationProcessor().collectClassesWithRoutes(index)`, filtered to the module's `classNames`;
   - collect with `collectRoutesForClass(index, ci, "{{ .Values.SERVICE_NAME }}", new RouteHostMapping()).build()`.
 
@@ -156,4 +157,6 @@ Paths are relative to the repo root. "Build plugins" means `mvn -f core-maven-pl
   - the output parses as YAML (e.g. `kubectl apply --dry-run=client -f -`);
   - the facade HTTPRoute is unchanged across all four renders.
 - [x] 6.3 Confirm the versions: `git diff main -- core-maven-plugins/pom.xml core-maven-plugins/httproutes-generator-maven-plugin/pom.xml` shows no project `<version>` change, and the new modules use `1.2.0-SNAPSHOT`. Confirm that the plugin modules declare no dependency `<version>` (the same check as task 1.2). Confirm the only change outside `core-maven-plugins` and `openspec` is the two-modifier diff from task 1.1: `git diff --stat main -- core-rest-libraries core-quarkus-extensions` lists only `RoutesRegistrationProcessor.java`.
-- [x] 6.4 Run `find core-maven-plugins/*/src/main/java -name '*.java' | xargs wc -l` and confirm the sizes against the design goals: common around 200 lines, each plugin around 60–80. If the total is clearly above that, simplify before finishing.
+- [x] 6.4 Run `find core-maven-plugins/*/src/main/java -name '*.java' | xargs wc -l` and confirm the sizes against the revised design goal: common about 540 lines, each plugin a single mojo of about 140–150 lines (Spring 137, Quarkus 153). If the total is clearly above that, simplify before finishing.
+- [x] 6.5 Split each group's HTTPRoute at 16 rules (design D8, spec requirement "HTTPRoute rule limit"): in `HttpRouteRenderer`, add `MAX_RULES_PER_ROUTE = 16`, cut the lexically sorted roots into chunks, name chunk N > 1 `<base>-N`, give every chunk the same labels, parentRefs and backendRefs, and write gateway chunks before facade chunks. Update both READMEs ("Gateway `HTTPRoute`" and "Facade `HTTPRoute`" sections). Verify with the `HttpRouteRendererTest` split tests (16, 17 and 33 gateway rules, 17 facade rules, overflow in both groups) and `AbstractGenerateRoutesMojoTest.moreThanSixteenGatewayRootsSplitAcrossTwoHttpRoutes`.
+- [x] 6.6 Keep the `maven-invoker-plugin` ITs `src/it/reactor-aggregator` and `src/it/reactor-aggregator-parallel` (`-T 4`) in the Quarkus plugin (design D10). Verify that "Build plugins" runs both and that `verify.bsh` finds `/base-it` in `aggregator/gateway-httproutes.yaml`.

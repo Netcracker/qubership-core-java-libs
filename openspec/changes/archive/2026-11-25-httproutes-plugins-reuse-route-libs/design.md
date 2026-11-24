@@ -29,7 +29,7 @@ Constraints:
 **Goals:**
 - Collect routes by calling the libraries' own code. Add no annotation-reading logic beyond picking candidate classes.
 - Keep a single shared implementation of root reduction, rendering and file writing.
-- Keep each framework plugin around 60–80 lines and the common module around 200 lines.
+- Keep the plugin code small: each framework plugin is a single mojo class of about 140–150 lines, and the common module is about 540 lines over nine small classes. The original targets, 60–80 and 200 lines, did not cover the framework guard, the Jandex dependency indexing, error messages naming classes, or the 16-rule split.
 
 **Non-Goals:**
 - Routes from controllers that live in dependency jars. Candidates are reactor-module classes only. Dependency jars are used only to resolve supertypes and annotations.
@@ -57,17 +57,23 @@ The existing artifact keeps its coordinates and becomes the Quarkus plugin, so Q
 ### D2. Common module: abstract mojo plus pipeline
 `AbstractGenerateRoutesMojo extends AbstractMojo`:
 - **Parameters:** `reactorProjects`, `project`, `packages`, `servicePort`, `outputFile`, `backendRefVal` (default `{{ .Values.SERVICE_NAME }}`), `labels` (and the `Label` class).
-- **One abstract method:** `List<SourcedRoute> collect(MavenProject module) throws Exception`, where `SourcedRoute(String className, RouteEntry entry)`.
-- **One helper:** `classNames(File outputDirectory, String[] packages)` walks the `.class` files of a module's output directory and returns the names in `packages`. Both collectors use it, so no classpath-scanning library is needed (ClassGraph is dropped).
+- **Two abstract methods:**
+  - `List<SourcedRoute> collect(MavenProject module) throws Exception`, where `SourcedRoute(String className, RouteEntry entry)`;
+  - `boolean isQuarkus()`, which tells the shared framework guard which plugin is running.
+- **Shared state and constants:**
+  - the protected flags `sawSpringMarkers` and `sawQuarkusMarkers`, which the collectors set while scanning (D3, D4) and `execute()` resets at the start of each run;
+  - `MICROSERVICE_NAME_SENTINEL = "{{ .Values.SERVICE_NAME }}"` (D9), used by both collectors;
+  - `FrameworkMismatch` holds both error messages, the plugin `artifactId`s, and the marker annotation names (`RestController`, `Controller`, `jakarta.ws.rs.Path`, `javax.ws.rs.Path`) as strings, so common needs no Spring or JAX-RS dependency.
+- **One helper:** `Rules.classNames(File outputDirectory, String[] packages)` walks the `.class` files of a module's output directory and returns the names in `packages`. Both collectors use it, so no classpath-scanning library is needed (ClassGraph is dropped).
 - **`execute()`:**
   1. For each reactor module, call `collect`.
-  2. Check for `${`.
-  3. Group by `entry.getType() == FACADE`.
-  4. Turn each route into a prefix rule (D5).
+  2. Run the framework guard: the Quarkus plugin fails when `sawSpringMarkers && !sawQuarkusMarkers`, and the Spring plugin fails when `sawQuarkusMarkers && !sawSpringMarkers`, with the matching `FrameworkMismatch` message.
+  3. Check for `${`.
+  4. Partition by `entry.getType() == FACADE`, turning each route into a prefix rule (D5).
   5. Reduce each group (D5), then filter facade roots (D6).
   6. Render (D7, D8), add the header and the Istio guard, and write the file.
 
-  Library and validation errors become `MojoExecutionException`.
+  Validation errors are `RouteGenerationException`s. They are logged at error level and rethrown as `MojoExecutionException` with the same message. Any other exception becomes `MojoExecutionException("Failed to generate HTTP routes: …")`.
 
 Concrete mojos add `@Mojo(name = "generate-routes", defaultPhase = PROCESS_CLASSES, aggregator = true, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)`. They inherit the parameters. maven-plugin-plugin generates the descriptor from parent-class annotations in a dependency jar when the common jar is a dependency. Task 1.3 checks this first.
 *Alternative:* duplicate the parameters in each mojo. Kept as a fallback if descriptor inheritance fails.
@@ -80,12 +86,12 @@ For each module:
    - `!isInterface && !isAbstract`;
    - `AnnotatedElementUtils.isAnnotated(c, Component.class)`. This uses "get" semantics, i.e. direct or meta-annotation only, like component scanning;
    - `RouteAnnotationProcessorUtil.isAnnotatedWithRoute(c) || isAnnotatedWithFacadeRoute(c)`, the library's own public check.
-4. **Collect:** `new RouteAnnotationProcessor(formatter, null, new RouteHostMapping())`, then `scanForRoutes(c)`.
+4. **Collect:** `new RouteAnnotationProcessor(formatter, null, new RouteHostMapping())`, created lazily for the first candidate and reused, then `scanForRoutes(c)`.
    - `scanForRoutes(Class)` is public and does not use the `ApplicationContext`.
    - `formatter` is a `RouteFormatter` whose `StringValueResolver` throws, naming the placeholder, so any `${...}` fails the build (spec: placeholders).
    - The private `microserviceName` field, normally injected through `@Value`, is set once by reflection to a non-empty sentinel (D9). This is the only reflection in the plugin. It needs no library change.
    - Exceptions from `scanForRoutes` are rethrown with the class name added, so library errors (including the placeholder error) name the class.
-5. **Framework guard (reactor-wide):** for every loaded scanned class, record Spring markers (`@RestController`/`@Controller`) and Quarkus markers (`jakarta.ws.rs.Path` or `javax.ws.rs.Path` on the class or a method) by annotation type name so the plugin needs no JAX-RS dependency. After all modules, fail only when Quarkus markers are present and Spring markers are absent: log `Spring was not found. Please use httproutes-generator-maven-plugin for Quarkus service.`
+5. **Framework markers:** for every loaded scanned class, set `sawSpringMarkers` when `AnnotatedElementUtils.hasAnnotation` finds `@RestController` or `@Controller`, and set `sawQuarkusMarkers` when `jakarta.ws.rs.Path` or `javax.ws.rs.Path` is on the class or one of its declared methods. JAX-RS annotations are compared by type name, so the plugin needs no JAX-RS dependency. The collector only records the markers. The common guard (D2) fails after all modules, with `Spring was not found. Please use httproutes-generator-maven-plugin for Quarkus service.`
 
 ### D4. Quarkus collector: reuse `RoutesRegistrationProcessor`
 Library change (only this): in `core-quarkus-extensions/routes-registrator/deployment/.../RoutesRegistrationProcessor.java`, make two methods `public` instead of `private`:
@@ -100,7 +106,7 @@ For each module:
    - Combine them with `CompositeIndex.create(moduleIndex, depIndexes…)`.
 2. **Select candidates:** `new RoutesRegistrationProcessor().collectClassesWithRoutes(index)`, keeping only the names `classNames` returned for the module.
 3. **Collect:** for each candidate, `collectRoutesForClass(index, ci, SENTINEL, new RouteHostMapping()).build()`. `ClassRoutesBuilder.build()` is already public.
-4. **Framework guard (reactor-wide):** while scanning, set Spring markers when a class from `classNames` has `@Controller` or `@RestController`, and Quarkus markers when it has `jakarta.ws.rs.Path` or `javax.ws.rs.Path` on the class or a method. After all modules are scanned, fail only when Spring markers are present and Quarkus markers are absent: log `Quarkus was not found. Please use httproutes-generator-spring-maven-plugin for Spring service.` Only scanned classes are checked, so a Spring jar pulled in transitively does not cause a false failure. A `quarkus-spring-web` module that carries both marker kinds does not fail.
+4. **Framework markers:** for each class from `classNames` found in the index, set `sawSpringMarkers` when it has `@Controller` or `@RestController`, and `sawQuarkusMarkers` when it has `jakarta.ws.rs.Path` or `javax.ws.rs.Path` on the class or a method. The collector only records the markers. The common guard (D2) fails after all modules are scanned, with `Quarkus was not found. Please use httproutes-generator-spring-maven-plugin for Spring service.` Only scanned classes are checked, so a Spring jar pulled in transitively does not cause a false failure. A `quarkus-spring-web` module that carries both marker kinds does not fail.
 
 The plugin depends on `com.netcracker.cloud.quarkus:routes-registrator-deployment`. This brings Quarkus deployment artifacts and Jandex into the plugin class path only.
 *Alternative:* copy the about 40 lines of Jandex lookup into the plugin to avoid the dependency and the visibility change. Rejected because behavior must come from the library itself.
@@ -128,21 +134,23 @@ After reduction, the facade filter is all-or-nothing: if `anyMatch(r -> !r.match
 *Alternative:* render the facade group whenever it is non-empty. Rejected because most services would then get a waypoint HTTPRoute that changes nothing.
 
 ### D7. Gateway parentRefs resolved by Helm
-The gateway HTTPRoute's `parentRefs` is a constant Helm snippet emitted by the renderer, not data computed at build time. There is no `gateways` Maven parameter. The snippet:
-1. reads `.Values.HTTPROUTES_GENERATOR_GATEWAYS`, applying `default "public-gateway,private-gateway,internal-gateway-service"`. `default` treats an unset value, `""` and an empty list as empty;
-2. splits a string value with `splitList ","` and leaves a list value as is;
+Every gateway HTTPRoute's `parentRefs` (including overflow chunks, D8) is the same constant Helm snippet emitted by the renderer, not data computed at build time. There is no `gateways` Maven parameter. The snippet:
+1. reads `.Values.HTTPROUTES_GENERATOR_GATEWAYS`, applying `default (list "public-gateway" "private-gateway" "internal-gateway-service")`. `default` treats an unset value, `""` and an empty list as empty;
+2. when `kindIs "string"`, splits the value with `splitList ","`; a list value is used as is;
 3. loops with `range`, `trim`s each name and skips blank names;
 4. emits `group: ""`/`kind: Service` for `internal-gateway-service`, and `group: gateway.networking.k8s.io`/`kind: Gateway` for every other name.
 
-The facade HTTPRoute is a separate resource. It keeps a plain Jackson-rendered single `ParentRef("", "Service", "{{ .Values.SERVICE_NAME }}")` and never reads the value.
+The facade HTTPRoutes are separate resources. Each keeps a plain Jackson-rendered single parentRef `group: ""`, `kind: Service`, `name: {{ .Values.SERVICE_NAME }}` and never reads the value.
 
-### D8. Renderer: small records plus Jackson
-- Keep Jackson YAML with `NON_NULL` and `NON_EMPTY` inclusion, so that empty `filters` and absent `timeouts` disappear.
-- Use about six tiny records, in field order: `Resource`, `Meta`, `Spec`, `ParentRef`, `Rule`, `Backend`.
-- For the gateway HTTPRoute, `Spec.parentRefs` holds a placeholder string. After serialization, the placeholder line is replaced with the D7 snippet, indented the way Jackson indents sequences.
+### D8. Renderer: ordered maps plus Jackson
+- Jackson YAML with `NON_NULL` inclusion, `MINIMIZE_QUOTES`, and no document-start marker.
+- Resources are built from insertion-ordered `LinkedHashMap`s (an `orderedMap(k, v, …)` helper) instead of record types, which keeps the renderer short. Key order is therefore the insertion order. `Map.of` is used only for single-key maps.
+- A rule's `filters` key is added only when the match differs from the target, and `timeouts` only when the timeout is positive, so neither needs `NON_EMPTY`.
+- Labels are written through a `TreeMap`, so their order is deterministic.
+- For gateway HTTPRoutes, `spec.parentRefs` holds a placeholder string. After serialization, the placeholder line is replaced with the D7 snippet, indented the way Jackson indents sequences.
 - The backendRef name is `backendRefVal`.
-- Use `Map.of` only for single-key maps, to keep key order deterministic.
-- Keep `formatDuration` as is. Rule order comes from the `TreeMap`.
+- `formatDuration` is unchanged.
+- **16-rule split:** Gateway API limits `HTTPRoute.spec.rules` to 16 items (`MAX_RULES_PER_ROUTE = 16`). Each group's roots are sorted lexically by match and cut into chunks of 16. Chunk 1 uses the base name, and chunk N > 1 uses `<base>-N`. Every chunk gets the same labels, parentRefs and backendRefs. All gateway chunks are written before all facade chunks, joined by `---`. The split does not change routing: Gateway API merges the rules of every HTTPRoute attached to the same parent and picks the longest `PathPrefix` across them. For facade routes, the waypoint therefore still sees the complete facade rule set (D6).
 - Removed: the regex conversion, the banner, the specificity sort, and the per-type grouping.
 
 ### D9. Microservice name sentinel
@@ -158,7 +166,8 @@ This is a deliberate, inherent limitation — not a defect to fix in code — be
 ### D10. Tests
 - **common:**
   - unit tests for prefix-rule conversion, reduction (every spec scenario under "Prefix rules" and "Root reduction"), the all-or-nothing facade filter (including a mixed group where one rewrite root brings in the plain roots), and the renderer (parentRefs snippet, backendRef, facade isolation, labels, determinism, no regex);
-  - a mojo test with a stub `collect` for the empty-output case and error wrapping.
+  - the 16-rule split in `HttpRouteRendererTest`: 16 gateway rules give one HTTPRoute; 17 give two, sorted lexically, both with the snippet and labels; 33 give three; 17 facade rules give `-facade` and `-facade-2`, each with the Service parentRef; with overflow in both groups the order is gateway, gateway-2, facade, facade-2, and the output is deterministic;
+  - a mojo test with a stub `collect` for the empty-output case, error wrapping, and 18 gateway roots written as two HTTPRoutes inside a single Istio guard.
 - **spring plugin:**
   - Move the existing `SpringTestController*` fixtures. Add fixtures for the spec scenarios: abstract base plus concrete subclass, path override, `@Gateway` ignored, repeated `@Route`, `@FacadeGatewayRequestMapping`, `@Route(gateways = "private-gateway-service")`, `@Route(gateways = "my-composite-gateway")`, a `${}` placeholder, and a class-level `@Route` without a path (fails).
   - Run the collector on `target/test-classes` with the test classpath.
@@ -173,7 +182,9 @@ This is a deliberate, inherent limitation — not a defect to fix in code — be
   - Move the existing `QuarkusTestController*` fixtures. Copy the library's `resource/hierarchy` fixtures (`Case1`–`Case3`, `ICase1`–`ICase3`) and assert the roots match the runtime processor's output for the same classes. Add `@GatewayRequestMapping` ignored, `@FacadeGateway`, and the Spring guard.
   - Quarkus3 → `/class/path/from` → `/class/path/to`, plus two nested roots `/class/path/from/method/path/from{,2}` → `/class/path/to/method/path/to` (method-level `@Gateway`).
   - Quarkus4 (`@Gateway("test/sleep")`, `@Path("/sleep")`, class-level `@Route(PUBLIC)`) → gateway root `/test/sleep` → `/sleep`.
-- **integration:** a descriptor check (inherited parameters present in both plugins), and `helm template` of the generated snippet.
+- **integration:**
+  - a descriptor check (inherited parameters present in both plugins), and `helm template` of the generated snippet;
+  - `maven-invoker-plugin` ITs in the Quarkus plugin (`src/it/reactor-aggregator`, and `reactor-aggregator-parallel` run with `-T 4`). Each is a multi-module reactor where the resource in `service` inherits from a class in `api`, and the plugin is bound in the last module (`aggregator`). `verify.bsh` checks that `aggregator/gateway-httproutes.yaml` contains the cross-module route `/base-it`. This covers aggregator mode, compile-classpath resolution of sibling modules, and `threadSafe` parallel builds.
 
 ### D11. Dependency management (existing BOMs only)
 No new BOM or parent module. Each module pom declares its own `cloud-core.*.version` properties, as today's plugin pom already does. The release automation rewrites them wherever they appear. Each module then imports existing BOMs in `<dependencyManagement>` and lists repo dependencies without `<version>`.

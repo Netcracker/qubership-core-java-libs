@@ -40,12 +40,13 @@ Access to the public gateway is therefore controlled by AuthorizationPolicy CRs,
   - a route cannot be expressed as a prefix rewrite;
   - the same prefix maps to different targets.
 - **BREAKING**: No `RegularExpression` matches are ever generated. Every match is `PathPrefix`. A path is cut before its first segment containing `{`/`*`. The "MANUAL REVIEW REQUIRED" banner is removed.
-- Gateway roots are rendered into one HTTPRoute, `{{ .Values.SERVICE_NAME }}-java-annotations`. Its parentRefs come from the optional Helm value `{{ .Values.HTTPROUTES_GENERATOR_GATEWAYS }}` (a list or a comma-separated string of gateway names), resolved at deploy time.
+- Every generated HTTPRoute holds at most 16 rules, the Gateway API limit. A group with more roots is split, in lexical order of the match, into overflow HTTPRoutes named `<base>-2`, `<base>-3`, and so on.
+- Gateway roots are rendered into `{{ .Values.SERVICE_NAME }}-java-annotations` (plus overflow HTTPRoutes). Their parentRefs come from the optional Helm value `{{ .Values.HTTPROUTES_GENERATOR_GATEWAYS }}` (a list or a comma-separated string of gateway names), resolved at deploy time.
   - When the value is unset or empty, the gateways are `public-gateway`, `private-gateway` and `internal-gateway-service`.
   - `internal-gateway-service` is rendered as a `Service` parentRef (group `""`). Every other name is rendered as a `Gateway` parentRef (group `gateway.networking.k8s.io`).
 
   The per-type HTTPRoutes `-java-annotations-public`, `-private` and `-internal` are no longer generated.
-- FACADE stays a separate CR. Facade roots are rendered into `{{ .Values.SERVICE_NAME }}-java-annotations-facade`, with the single parentRef Service `{{ .Values.SERVICE_NAME }}`. The facade group is all-or-nothing:
+- FACADE stays a separate CR. Facade roots are rendered into `{{ .Values.SERVICE_NAME }}-java-annotations-facade` (plus overflow HTTPRoutes), each with the single parentRef Service `{{ .Values.SERVICE_NAME }}`. The facade group is all-or-nothing:
   - if no facade root rewrites its prefix and none has a timeout longer than the 2-minute default, no facade HTTPRoute is generated;
   - otherwise **all** facade roots are rendered.
 
@@ -67,6 +68,7 @@ Access to the public gateway is therefore controlled by AuthorizationPolicy CRs,
   - splitting routes into the gateway and facade groups, and reducing each group to roots;
   - build failures;
   - the Helm-resolved gateway parentRefs, the backendRef and timeouts;
+  - the 16-rule limit per HTTPRoute and overflow naming;
   - the output file format.
 
 ### Modified Capabilities
@@ -81,7 +83,7 @@ Access to the public gateway is therefore controlled by AuthorizationPolicy CRs,
   - `core-maven-plugins/pom.xml` lists the new modules.
   - In `core-quarkus-extensions/routes-registrator/deployment`, two methods of `RoutesRegistrationProcessor` become `public`.
 - Release order: `core-quarkus-extensions` (for the visibility change) must be released before the plugins.
-- Generated manifests: services that regenerate get at most two HTTPRoutes (gateway and facade) instead of up to four. Helm upgrade removes the old `-public`/`-private`/`-internal` HTTPRoutes because they are no longer in the chart. Rule sets now follow the runtime libraries exactly. Routes the old plugin derived differently (inheritance, facade mappings, `@Gateway` vs `@GatewayRequestMapping`) change accordingly.
+- Generated manifests: services that regenerate get one gateway HTTPRoute and at most one facade HTTPRoute instead of up to four per-type HTTPRoutes, plus overflow HTTPRoutes only when a group has more than 16 roots. Helm upgrade removes the old `-public`/`-private`/`-internal` HTTPRoutes because they are no longer in the chart. Rule sets now follow the runtime libraries exactly. Routes the old plugin derived differently (inheritance, facade mappings, `@Gateway` vs `@GatewayRequestMapping`) change accordingly.
 - Operational dependency: public-gateway exposure now relies on the Cloud-Core deny-unless-permit AuthorizationPolicy and on per-service allow policies written by hand. The plugins do not generate either.
 - Plugin API: `backendRefVal` keeps working but now defaults to `{{ .Values.SERVICE_NAME }}`. No Maven parameter is added or removed. Charts get a new optional value, `HTTPROUTES_GENERATOR_GATEWAYS`. Spring services change the plugin `artifactId`.
 - Version: minor bump only. All plugin modules are `1.2.0-SNAPSHOT`, the next minor after the released `1.1.9`.
