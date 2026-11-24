@@ -102,6 +102,116 @@ class HttpRouteRendererTest {
         assertEquals(first, second);
     }
 
+    @Test
+    void sixteenGatewayRulesFitInSingleHttpRoute() {
+        HttpRouteRenderer renderer = new HttpRouteRenderer("svc", 8080, Map.of());
+        String yaml = renderer.render(numberedRules("/gw", 16, false), List.of());
+        String[] docs = splitDocs(yaml);
+        assertEquals(1, docs.length);
+        assertTrue(docs[0].contains("name: \"{{ .Values.SERVICE_NAME }}-java-annotations\""));
+        assertFalse(yaml.contains("-java-annotations-2"));
+        assertEquals(16, count(docs[0], "type: PathPrefix"));
+    }
+
+    @Test
+    void seventeenGatewayRulesSplitIntoTwoHttpRoutesSortedLexically() {
+        HttpRouteRenderer renderer = new HttpRouteRenderer("svc", 8080, Map.of());
+        List<Rule> reversed = numberedRules("/gw", 17, false).reversed();
+        String yaml = renderer.render(reversed, List.of());
+        String[] docs = splitDocs(yaml);
+
+        assertEquals(2, docs.length);
+        assertTrue(docs[0].contains("name: \"{{ .Values.SERVICE_NAME }}-java-annotations\""));
+        assertEquals(16, count(docs[0], "type: PathPrefix"));
+        assertTrue(docs[0].contains("value: /gw-01"));
+        assertTrue(docs[0].contains("value: /gw-16"));
+        assertFalse(docs[0].contains("value: /gw-17"));
+        assertTrue(docs[0].contains(HttpRouteRenderer.HTTPROUTES_GENERATOR_GATEWAYS_SNIPPET));
+        assertTrue(docs[0].contains("app.kubernetes.io/name"));
+
+        assertTrue(docs[1].contains("name: \"{{ .Values.SERVICE_NAME }}-java-annotations-2\""));
+        assertEquals(1, count(docs[1], "type: PathPrefix"));
+        assertTrue(docs[1].contains("value: /gw-17"));
+        assertTrue(docs[1].contains(HttpRouteRenderer.HTTPROUTES_GENERATOR_GATEWAYS_SNIPPET));
+        assertTrue(docs[1].contains("app.kubernetes.io/name"));
+    }
+
+    @Test
+    void thirtyThreeGatewayRulesSplitIntoThreeHttpRoutes() {
+        HttpRouteRenderer renderer = new HttpRouteRenderer("svc", 8080, Map.of());
+        String yaml = renderer.render(numberedRules("/gw", 33, false), List.of());
+        String[] docs = splitDocs(yaml);
+
+        assertEquals(3, docs.length);
+        assertTrue(docs[0].contains("name: \"{{ .Values.SERVICE_NAME }}-java-annotations\""));
+        assertEquals(16, count(docs[0], "type: PathPrefix"));
+        assertTrue(docs[1].contains("name: \"{{ .Values.SERVICE_NAME }}-java-annotations-2\""));
+        assertEquals(16, count(docs[1], "type: PathPrefix"));
+        assertTrue(docs[2].contains("name: \"{{ .Values.SERVICE_NAME }}-java-annotations-3\""));
+        assertEquals(1, count(docs[2], "type: PathPrefix"));
+        assertTrue(docs[2].contains("value: /gw-33"));
+    }
+
+    @Test
+    void seventeenFacadeRulesSplitIntoTwoHttpRoutes() {
+        HttpRouteRenderer renderer = new HttpRouteRenderer("svc", 8080, Map.of());
+        String yaml = renderer.render(List.of(), numberedRules("/facade", 17, true));
+        String[] docs = splitDocs(yaml);
+
+        assertEquals(2, docs.length);
+        assertFalse(yaml.contains("HTTPROUTES_GENERATOR_GATEWAYS"));
+
+        assertTrue(docs[0].contains("name: \"{{ .Values.SERVICE_NAME }}-java-annotations-facade\""));
+        assertEquals(16, count(docs[0], "type: PathPrefix"));
+        assertTrue(docs[0].contains("group: \"\"\n    kind: Service\n    name: \"{{ .Values.SERVICE_NAME }}\""));
+
+        assertTrue(docs[1].contains("name: \"{{ .Values.SERVICE_NAME }}-java-annotations-facade-2\""));
+        assertEquals(1, count(docs[1], "type: PathPrefix"));
+        assertTrue(docs[1].contains("value: /facade-17"));
+        assertTrue(docs[1].contains("group: \"\"\n    kind: Service\n    name: \"{{ .Values.SERVICE_NAME }}\""));
+    }
+
+    @Test
+    void mixedOverflowGatewayAndFacadeRoutesAreSeparatedAndDeterministic() {
+        HttpRouteRenderer renderer = new HttpRouteRenderer("svc", 8080, Map.of());
+        List<Rule> gateway = numberedRules("/gw", 17, false);
+        List<Rule> facade = numberedRules("/facade", 17, true);
+        String first = renderer.render(gateway, facade);
+        String second = renderer.render(gateway, facade);
+        assertEquals(first, second);
+
+        String[] docs = splitDocs(first);
+        assertEquals(4, docs.length);
+        assertTrue(docs[0].contains("name: \"{{ .Values.SERVICE_NAME }}-java-annotations\""));
+        assertTrue(docs[1].contains("name: \"{{ .Values.SERVICE_NAME }}-java-annotations-2\""));
+        assertTrue(docs[2].contains("name: \"{{ .Values.SERVICE_NAME }}-java-annotations-facade\""));
+        assertTrue(docs[3].contains("name: \"{{ .Values.SERVICE_NAME }}-java-annotations-facade-2\""));
+    }
+
+    private List<Rule> numberedRules(String prefix, int count, boolean rewrite) {
+        return java.util.stream.IntStream.rangeClosed(1, count)
+                .mapToObj(i -> {
+                    String match = String.format("%s-%02d", prefix, i);
+                    String target = rewrite ? String.format("/svc-%02d", i) : match;
+                    return rule(match, target, 0);
+                })
+                .toList();
+    }
+
+    private String[] splitDocs(String yaml) {
+        return yaml.split("(?m)^---\\R");
+    }
+
+    private int count(String text, String sub) {
+        int count = 0;
+        int idx = 0;
+        while ((idx = text.indexOf(sub, idx)) != -1) {
+            count++;
+            idx += sub.length();
+        }
+        return count;
+    }
+
     private Rule rule(String match, String target, long timeout) {
         return new Rule(match, target, timeout, Set.of("com.example.Controller"));
     }

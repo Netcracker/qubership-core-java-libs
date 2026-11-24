@@ -30,14 +30,14 @@ public final class Rules {
         return collapsed;
     }
 
-    private static String[] segments(String normalized) {
+    static String[] segments(String normalized) {
         if (normalized.equals("/")) {
             return new String[0];
         }
         return normalized.substring(1).split("/");
     }
 
-    private static String join(String[] segments, int fromInclusive, int toExclusive) {
+    static String join(String[] segments, int fromInclusive, int toExclusive) {
         if (fromInclusive >= toExclusive) {
             return "/";
         }

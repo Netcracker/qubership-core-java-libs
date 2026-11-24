@@ -16,16 +16,18 @@ public final class RootReducer {
 
     public static List<Rule> reduce(List<Rule> rules) {
         List<Rule> sorted = new ArrayList<>(rules);
-        sorted.sort(Comparator.comparingInt(RootReducer::segmentCount).thenComparing(Rule::match));
+        sorted.sort(Comparator.comparingInt((Rule r) -> Rules.segments(r.match()).length).thenComparing(Rule::match));
 
         TreeMap<String, Rule> roots = new TreeMap<>();
         for (Rule rule : sorted) {
-            String[] ruleSegments = segments(rule.match());
+            String[] ruleSegments = Rules.segments(rule.match());
             String candidate = null;
+            int candidateLen = -1;
             for (int len = ruleSegments.length; len >= 0; len--) {
-                String ancestor = join(ruleSegments, len);
+                String ancestor = Rules.join(ruleSegments, 0, len);
                 if (roots.containsKey(ancestor)) {
                     candidate = ancestor;
+                    candidateLen = len;
                     break;
                 }
             }
@@ -36,14 +38,7 @@ public final class RootReducer {
             }
 
             Rule existing = roots.get(candidate);
-            String suffix;
-            if (candidate.equals(rule.match())) {
-                suffix = "";
-            } else if (candidate.equals("/")) {
-                suffix = rule.match();
-            } else {
-                suffix = rule.match().substring(candidate.length());
-            }
+            String suffix = candidateLen == ruleSegments.length ? "" : Rules.join(ruleSegments, candidateLen, ruleSegments.length);
             String computedTarget = suffix.isEmpty() ? existing.target() : Rules.normalize(existing.target() + suffix);
 
             if (computedTarget.equals(rule.target())) {
@@ -72,23 +67,5 @@ public final class RootReducer {
         boolean anyNeedsRendering = facadeRoots.stream()
                 .anyMatch(r -> !r.match().equals(r.target()) || r.timeout() > DEFAULT_FACADE_TIMEOUT_MS);
         return anyNeedsRendering ? facadeRoots : List.of();
-    }
-
-    private static int segmentCount(Rule rule) {
-        return segments(rule.match()).length;
-    }
-
-    private static String[] segments(String match) {
-        if (match.equals("/")) {
-            return new String[0];
-        }
-        return match.substring(1).split("/");
-    }
-
-    private static String join(String[] segments, int count) {
-        if (count == 0) {
-            return "/";
-        }
-        return "/" + String.join("/", java.util.Arrays.asList(segments).subList(0, count));
     }
 }

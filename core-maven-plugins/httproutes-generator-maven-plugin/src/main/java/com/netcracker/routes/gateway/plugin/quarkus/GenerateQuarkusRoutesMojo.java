@@ -5,7 +5,6 @@ import com.netcracker.cloud.routesregistration.common.annotation.processing.Rout
 import com.netcracker.cloud.routesregistration.common.gateway.route.RouteEntry;
 import com.netcracker.routes.gateway.plugin.AbstractGenerateRoutesMojo;
 import com.netcracker.routes.gateway.plugin.FrameworkMismatch;
-import com.netcracker.routes.gateway.plugin.RouteGenerationException;
 import com.netcracker.routes.gateway.plugin.Rules;
 import com.netcracker.routes.gateway.plugin.SourcedRoute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -18,7 +17,6 @@ import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexReader;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Indexer;
-import org.jboss.jandex.MethodInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -40,17 +39,14 @@ import java.util.zip.ZipFile;
 )
 public class GenerateQuarkusRoutesMojo extends AbstractGenerateRoutesMojo {
 
-    private static final String MICROSERVICE_NAME_SENTINEL = "{{ .Values.SERVICE_NAME }}";
     private static final DotName SPRING_REST_CONTROLLER = DotName.createSimple(FrameworkMismatch.SPRING_REST_CONTROLLER);
     private static final DotName SPRING_CONTROLLER = DotName.createSimple(FrameworkMismatch.SPRING_CONTROLLER);
     private static final DotName JAKARTA_WS_RS_PATH = DotName.createSimple(FrameworkMismatch.JAKARTA_WS_RS_PATH);
     private static final DotName JAVAX_WS_RS_PATH = DotName.createSimple(FrameworkMismatch.JAVAX_WS_RS_PATH);
 
     @Override
-    protected void assertFramework() {
-        if (sawSpringMarkers && !sawQuarkusMarkers) {
-            throw new RouteGenerationException(FrameworkMismatch.QUARKUS_NOT_FOUND_MESSAGE);
-        }
+    protected boolean isQuarkus() {
+        return true;
     }
 
     @Override
@@ -65,17 +61,15 @@ public class GenerateQuarkusRoutesMojo extends AbstractGenerateRoutesMojo {
         recordFrameworkMarkers(index, classNames);
 
         RoutesRegistrationProcessor processor = new RoutesRegistrationProcessor();
-        java.util.Map<String, ClassInfo> classesWithRoutes = processor.collectClassesWithRoutes(index);
+        Map<String, ClassInfo> classesWithRoutes = processor.collectClassesWithRoutes(index);
 
         List<SourcedRoute> routes = new ArrayList<>();
         for (String className : classNames) {
             ClassInfo classInfo = classesWithRoutes.get(className);
-            if (classInfo == null) {
-                continue;
-            }
-            List<RouteEntry> entries = processor.collectRoutesForClass(index, classInfo, MICROSERVICE_NAME_SENTINEL, new RouteHostMapping()).build();
-            for (RouteEntry entry : entries) {
-                routes.add(new SourcedRoute(className, entry));
+            if (classInfo != null) {
+                for (RouteEntry entry : processor.collectRoutesForClass(index, classInfo, MICROSERVICE_NAME_SENTINEL, new RouteHostMapping()).build()) {
+                    routes.add(new SourcedRoute(className, entry));
+                }
             }
         }
         return routes;
@@ -90,22 +84,11 @@ public class GenerateQuarkusRoutesMojo extends AbstractGenerateRoutesMojo {
             if (classInfo.hasAnnotation(SPRING_REST_CONTROLLER) || classInfo.hasAnnotation(SPRING_CONTROLLER)) {
                 sawSpringMarkers = true;
             }
-            if (hasJaxRsPath(classInfo)) {
+            if (classInfo.hasAnnotation(JAKARTA_WS_RS_PATH) || classInfo.hasAnnotation(JAVAX_WS_RS_PATH)
+                    || classInfo.methods().stream().anyMatch(m -> m.hasAnnotation(JAKARTA_WS_RS_PATH) || m.hasAnnotation(JAVAX_WS_RS_PATH))) {
                 sawQuarkusMarkers = true;
             }
         }
-    }
-
-    private boolean hasJaxRsPath(ClassInfo classInfo) {
-        if (classInfo.hasAnnotation(JAKARTA_WS_RS_PATH) || classInfo.hasAnnotation(JAVAX_WS_RS_PATH)) {
-            return true;
-        }
-        for (MethodInfo method : classInfo.methods()) {
-            if (method.hasAnnotation(JAKARTA_WS_RS_PATH) || method.hasAnnotation(JAVAX_WS_RS_PATH)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private IndexView buildIndex(MavenProject module, File outputDirectory) throws Exception {
@@ -128,10 +111,7 @@ public class GenerateQuarkusRoutesMojo extends AbstractGenerateRoutesMojo {
                     return new IndexReader(in).read();
                 }
             }
-            if (new File(element, "META-INF/beans.xml").exists()) {
-                return indexDirectory(element);
-            }
-            return null;
+            return new File(element, "META-INF/beans.xml").exists() ? indexDirectory(element) : null;
         }
         if (!element.getName().endsWith(".jar") || !element.isFile()) {
             return null;
@@ -143,11 +123,8 @@ public class GenerateQuarkusRoutesMojo extends AbstractGenerateRoutesMojo {
                     return new IndexReader(in).read();
                 }
             }
-            if (zip.getEntry("META-INF/beans.xml") != null) {
-                return indexJar(zip);
-            }
+            return zip.getEntry("META-INF/beans.xml") != null ? indexJar(zip) : null;
         }
-        return null;
     }
 
     private IndexView indexDirectory(File directory) throws IOException {
@@ -166,13 +143,9 @@ public class GenerateQuarkusRoutesMojo extends AbstractGenerateRoutesMojo {
 
     private IndexView indexJar(ZipFile zip) throws IOException {
         Indexer indexer = new Indexer();
-        var entries = zip.entries();
-        while (entries.hasMoreElements()) {
-            ZipEntry entry = entries.nextElement();
-            if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
-                try (InputStream in = zip.getInputStream(entry)) {
-                    indexer.index(in);
-                }
+        for (ZipEntry entry : zip.stream().filter(e -> !e.isDirectory() && e.getName().endsWith(".class")).toList()) {
+            try (InputStream in = zip.getInputStream(entry)) {
+                indexer.index(in);
             }
         }
         return indexer.complete();

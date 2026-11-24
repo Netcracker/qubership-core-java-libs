@@ -84,6 +84,25 @@ class AbstractGenerateRoutesMojoTest {
         assertTrue(ex.getMessage().contains("com.example.RootController"));
     }
 
+    @Test
+    void moreThanSixteenGatewayRootsSplitAcrossTwoHttpRoutes(@TempDir Path tempDir) throws Exception {
+        List<SourcedRoute> routes = java.util.stream.IntStream.rangeClosed(1, 18)
+                .mapToObj(i -> {
+                    String path = String.format("/api-%02d", i);
+                    return route("com.example.Controller" + i, path, path, RouteType.PUBLIC, null);
+                })
+                .toList();
+        String content = run(tempDir, routes);
+        assertEquals(1, content.split("\\{\\{- if eq \\.Values\\.SERVICE_MESH_TYPE \"Istio\" \\}\\}", -1).length - 1);
+        assertTrue(content.endsWith("{{- end }}\n"));
+        assertEquals(2, content.split("kind: HTTPRoute", -1).length - 1);
+        assertTrue(content.contains("name: \"{{ .Values.SERVICE_NAME }}-java-annotations\""));
+        assertTrue(content.contains("name: \"{{ .Values.SERVICE_NAME }}-java-annotations-2\""));
+        assertTrue(content.contains("\n---\n"));
+        assertTrue(content.contains("value: /api-01"));
+        assertTrue(content.contains("value: /api-18"));
+    }
+
     private SourcedRoute route(String className, String from, String to, RouteType type, Long timeout) {
         return new SourcedRoute(className, RouteEntry.builder().from(from).to(to).type(type).timeout(timeout).build());
     }
@@ -117,7 +136,8 @@ class AbstractGenerateRoutesMojoTest {
         }
 
         @Override
-        protected void assertFramework() {
+        protected boolean isQuarkus() {
+            return false;
         }
     }
 }

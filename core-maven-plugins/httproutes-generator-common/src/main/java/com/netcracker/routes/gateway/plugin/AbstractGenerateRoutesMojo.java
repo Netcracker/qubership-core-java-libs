@@ -14,8 +14,20 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public abstract class AbstractGenerateRoutesMojo extends AbstractMojo {
+
+    protected static final String MICROSERVICE_NAME_SENTINEL = "{{ .Values.SERVICE_NAME }}";
+
+    private static final String FILE_HEADER = """
+            # -----------------------------------------------------------------------------
+            # THIS FILE WAS AUTOMATICALLY GENERATED — DO NOT EDIT.
+            # Any changes will be overwritten during the next build.
+            # Modify source annotations and regenerate using route generation maven plugin.
+            # -----------------------------------------------------------------------------
+
+            """;
 
     @Parameter(defaultValue = "${reactorProjects}", readonly = true, required = true)
     protected List<MavenProject> reactorProjects;
@@ -37,7 +49,7 @@ public abstract class AbstractGenerateRoutesMojo extends AbstractMojo {
 
     protected abstract List<SourcedRoute> collect(MavenProject module) throws Exception;
 
-    protected abstract void assertFramework() throws RouteGenerationException;
+    protected abstract boolean isQuarkus();
 
     @Override
     public void execute() throws MojoExecutionException {
@@ -50,23 +62,27 @@ public abstract class AbstractGenerateRoutesMojo extends AbstractMojo {
             }
             assertFramework();
             Rules.checkNoPlaceholders(allRoutes);
-            List<Rule> gatewayRules = allRoutes.stream()
-                    .filter(route -> route.entry().getType() != RouteType.FACADE)
-                    .map(Rules::toRule)
-                    .toList();
-            List<Rule> facadeRules = allRoutes.stream()
-                    .filter(route -> route.entry().getType() == RouteType.FACADE)
-                    .map(Rules::toRule)
-                    .toList();
-            List<Rule> gatewayRoots = RootReducer.reduce(gatewayRules);
-            List<Rule> facadeRoots = RootReducer.applyFacadeFilter(RootReducer.reduce(facadeRules));
-            HttpRouteRenderer renderer = new HttpRouteRenderer(backendRefVal, servicePort, labelsAsMap());
-            writeOutputFile(renderer.render(gatewayRoots, facadeRoots));
+            Map<Boolean, List<Rule>> grouped = allRoutes.stream().collect(Collectors.partitioningBy(
+                    route -> route.entry().getType() == RouteType.FACADE,
+                    Collectors.mapping(Rules::toRule, Collectors.toList())));
+            List<Rule> gatewayRoots = RootReducer.reduce(grouped.get(false));
+            List<Rule> facadeRoots = RootReducer.applyFacadeFilter(RootReducer.reduce(grouped.get(true)));
+            String yaml = new HttpRouteRenderer(backendRefVal, servicePort, labelsAsMap()).render(gatewayRoots, facadeRoots);
+            writeOutputFile(yaml);
         } catch (RouteGenerationException e) {
             getLog().error(e.getMessage());
             throw new MojoExecutionException(e.getMessage(), e);
         } catch (Exception e) {
             throw new MojoExecutionException("Failed to generate HTTP routes: " + e.getMessage(), e);
+        }
+    }
+
+    private void assertFramework() {
+        if (isQuarkus() && sawSpringMarkers && !sawQuarkusMarkers) {
+            throw new RouteGenerationException(FrameworkMismatch.QUARKUS_NOT_FOUND_MESSAGE);
+        }
+        if (!isQuarkus() && sawQuarkusMarkers && !sawSpringMarkers) {
+            throw new RouteGenerationException(FrameworkMismatch.SPRING_NOT_FOUND_MESSAGE);
         }
     }
 
@@ -86,21 +102,6 @@ public abstract class AbstractGenerateRoutesMojo extends AbstractMojo {
     private void writeOutputFile(String yaml) throws IOException {
         Path file = project.getBasedir().toPath().resolve(outputFile);
         Files.createDirectories(file.getParent());
-        Files.writeString(file, prependHeader(wrapWithIstioGuard(yaml)));
-    }
-
-    private String prependHeader(String content) {
-        return """
-                # -----------------------------------------------------------------------------
-                # THIS FILE WAS AUTOMATICALLY GENERATED — DO NOT EDIT.
-                # Any changes will be overwritten during the next build.
-                # Modify source annotations and regenerate using route generation maven plugin.
-                # -----------------------------------------------------------------------------
-
-                """ + content;
-    }
-
-    private String wrapWithIstioGuard(String content) {
-        return "{{- if eq .Values.SERVICE_MESH_TYPE \"Istio\" }}\n" + content + "{{- end }}\n";
+        Files.writeString(file, FILE_HEADER + "{{- if eq .Values.SERVICE_MESH_TYPE \"Istio\" }}\n" + yaml + "{{- end }}\n");
     }
 }

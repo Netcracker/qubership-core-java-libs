@@ -166,8 +166,13 @@ and the facade `HTTPRoute` is attached to a `Service`, not a `Gateway`.
 
 ## Gateway `HTTPRoute` and `HTTPROUTES_GENERATOR_GATEWAYS`
 
-Gateway-group roots are rendered into a single `HTTPRoute` named `{{ .Values.SERVICE_NAME }}-java-annotations`.
-Its `parentRefs` are resolved by Helm at deploy time from the optional chart value
+Gateway-group roots are rendered into `HTTPRoute` CR(s) of at most 16 rules each (the Gateway API / Istio
+Ambient limit per `HTTPRoute`), ordered lexically by match path:
+- the first CR is named `{{ .Values.SERVICE_NAME }}-java-annotations`;
+- additional overflow CRs (when there are more than 16 rules) are named
+  `{{ .Values.SERVICE_NAME }}-java-annotations-2`, `-3`, and so on.
+
+Each gateway `HTTPRoute`'s `parentRefs` are resolved by Helm at deploy time from the optional chart value
 `HTTPROUTES_GENERATOR_GATEWAYS`:
 
 - when unset or empty, the gateways are `public-gateway`, `private-gateway` and `internal-gateway-service`, in
@@ -191,8 +196,10 @@ longer generated: every non-facade route shares the single `-java-annotations` `
 
 ## Facade `HTTPRoute`
 
-When rendered, the facade group becomes its own `HTTPRoute`, `{{ .Values.SERVICE_NAME }}-java-annotations-facade`,
-with a single `parentRef`: `group: ""`, `kind: Service`, `name: {{ .Values.SERVICE_NAME }}`.
+When rendered, the facade group becomes its own `HTTPRoute` CR(s) of at most 16 rules each, ordered lexically
+by match path: `{{ .Values.SERVICE_NAME }}-java-annotations-facade` for the first 16 rules, and
+`{{ .Values.SERVICE_NAME }}-java-annotations-facade-2`, `-3`, and so on for overflow rules. Each facade CR has
+a single `parentRef`: `group: ""`, `kind: Service`, `name: {{ .Values.SERVICE_NAME }}`.
 `HTTPROUTES_GENERATOR_GATEWAYS` has no effect on it.
 
 ## No regex matches
