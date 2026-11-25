@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud.plugins</groupId>
     <artifactId>httproutes-generator-spring-maven-plugin</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <properties>
