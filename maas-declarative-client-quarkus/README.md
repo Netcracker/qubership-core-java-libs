@@ -492,10 +492,56 @@ public class SomeClass {
 | maas.kafka.acceptable-tenants        | String  | false     |                        | List tenants for using in multitenant environment (dev only) |
 | maas.kafka.consumer-thread-pool-size | Integer | false     | 2                      | The number of threads in pool for kafka consumers            |
 | maas.kafka.consumer-pool-duration    | Integer | false     | 4000                   | Common consumer pool timeout in milliseconds                 |
-| maas.kafka.send-sync-timeout-ms      | Long    | false     | `delivery.timeout.ms` + 5000 (Kafka default 120000 → 125000) | Optional MaaS override for `sendSync` wait after `Producer.send` returns (not a Kafka producer property). If unset, derived from producer `delivery.timeout.ms` (+ 5s slack), floored at 1000 ms. Per-call alternative: `sendSync(record, Duration)`. |
+| maas.kafka.send-sync-timeout-ms      | Long    | false     | `delivery.timeout.ms` + 5000 (Kafka default 120000 → 125000) | Optional MaaS override for the no-arg `sendSync` wait after `Producer.send` returns (not a Kafka producer property). If unset, derived from producer `delivery.timeout.ms` + 5s slack, floored at 1000 ms. An explicit value must be at least `delivery.timeout.ms` + 5000; a shorter value is rejected. A timeout means the caller stopped waiting, not that the record was dropped: it can still be acknowledged later, and retrying on this exception can publish a duplicate. The timeout and a definite Kafka rejection both throw `MaasKafkaException`; use the cause (`TimeoutException` vs the Kafka exception) to tell them apart. Per-call wait: `sendSync(record, Duration)` (at least 1 ms, no 1s floor). |
 | maas.agent.url                       | String  | false     | `http://maas-agent:8080` | Contains maas agent url                                      |
 | quarkus.jaeger.propagation           | String  | false     | b3                     | Context propagation type                                     |
 | maas.tenant-manager.url              | String  | false     | tenant-manager:8080    | Contains Tenant Manager url                                  |
+
+### Choosing `sendSync` or `sendAsync`
+
+`sendAsync` submits the record and returns a `CompletableFuture`. It does not apply `maas.kafka.send-sync-timeout-ms`. If Kafka never calls back, that future stays incomplete. Kafka's own `delivery.timeout.ms` is what eventually fails the produce inside the client.
+
+Bound the wait in one of two places:
+
+- `sendSync`, when this thread must learn the outcome before it continues. The no-arg method waits for `maas.kafka.send-sync-timeout-ms` (or `delivery.timeout.ms` + 5s). `sendSync(record, Duration)` waits only for that duration. A missing callback is logged as `No Kafka ack within ... ms`. A Kafka rejection is logged once at WARN on this thread.
+- `sendAsync` plus a deadline on the future, when this thread must not block. Call `sendAsync(record).orTimeout(timeout, unit)` or `sendAsync(record).get(timeout, unit)`. The library does not apply a timeout and does not log a missing callback or a Kafka rejection on this path. Handle the failed future yourself. A failure before the record is submitted is still logged (`Failed to submit record to Kafka`).
+
+`orTimeout` leaves this thread free. A missing callback completes the future with `TimeoutException`. A Kafka rejection is the error passed to the callback. Neither call cancels the produce.
+
+```java
+MaasProducerRecord<String, String> record =
+        new MaasProducerRecord<>(null, key, payload, null, null);
+
+producer.sendAsync(record)
+        .orTimeout(5, TimeUnit.SECONDS)
+        .whenComplete((metadata, error) -> {
+            if (error == null) {
+                return;
+            }
+            if (error instanceof TimeoutException) {
+                log.warn("No Kafka ack within 5s, key={}", key);
+                return;
+            }
+            log.warn("Kafka send failed, key={}, cause={}", key, error.toString());
+        });
+```
+
+`get` blocks the caller until the outcome or the deadline. A Kafka rejection is wrapped in `ExecutionException`.
+
+```java
+try {
+    RecordMetadata metadata = producer.sendAsync(record).get(5, TimeUnit.SECONDS);
+} catch (TimeoutException e) {
+    log.warn("No Kafka ack within 5s, key={}", key);
+} catch (ExecutionException e) {
+    log.warn("Kafka send failed, key={}, cause={}", key, e.getCause().toString());
+} catch (InterruptedException e) {
+    Thread.currentThread().interrupt();
+    throw e;
+}
+```
+
+Use `sendSync` for a result or an error on the same call. Use `sendAsync` when completion is handled later. In both places a timeout means the caller stopped waiting, not that the record was dropped. Retrying after a timeout can publish a duplicate.
 
 ### Producer config properties:
 

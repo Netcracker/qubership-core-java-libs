@@ -322,7 +322,7 @@ public class MaasKafkaProducerImpl extends MaasKafkaCommonClient implements Maas
 
             Producer<K, V> prod = resolveProducer(tenant);
             ProducerRecord<K, V> producerRecord = buildRecord(topic, record);
-            doSend(prod, producerRecord, tenant, future);
+            doSend(prod, producerRecord, future);
         } catch (Exception e) {
             LOG.error("Failed to submit record to Kafka: topic={}, tenant={}, key={}",
                     topicName, tenant, record.getKey(), e);
@@ -333,7 +333,8 @@ public class MaasKafkaProducerImpl extends MaasKafkaCommonClient implements Maas
 
     @Override
     public <K, V> RecordMetadata sendSync(MaasProducerRecord<K, V> record) {
-        return awaitDelivery(sendAsync(record), record, resolveSendSyncTimeoutMs());
+        long timeoutMs = resolveSendSyncTimeoutMs();
+        return awaitDelivery(sendAsync(record), record, timeoutMs);
     }
 
     @Override
@@ -341,7 +342,11 @@ public class MaasKafkaProducerImpl extends MaasKafkaCommonClient implements Maas
         if (timeout == null || timeout.isNegative() || timeout.isZero()) {
             throw new IllegalArgumentException("timeout must be positive");
         }
-        return awaitDelivery(sendAsync(record), record, Math.max(timeout.toMillis(), MIN_SEND_SYNC_TIMEOUT_MS));
+        long timeoutMs = timeout.toMillis();
+        if (timeoutMs < 1) {
+            throw new IllegalArgumentException("timeout must be at least 1 ms");
+        }
+        return awaitDelivery(sendAsync(record), record, timeoutMs);
     }
 
     @Override
@@ -400,13 +405,11 @@ public class MaasKafkaProducerImpl extends MaasKafkaCommonClient implements Maas
     }
 
     private <K, V> void doSend(Producer<K, V> prod, ProducerRecord<K, V> producerRecord,
-                               String tenant, CompletableFuture<RecordMetadata> future) {
+                               CompletableFuture<RecordMetadata> future) {
         long startNanos = System.nanoTime();
         Callback contextAware = new ContextAwareCallback((md, ex) -> {
             long tookMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNanos);
             if (ex != null) {
-                LOG.error("Kafka delivery failed: topic={}, partition={}, key={}, tenant={}, tookMs={}",
-                        producerRecord.topic(), producerRecord.partition(), producerRecord.key(), tenant, tookMs, ex);
                 future.completeExceptionally(ex);
             } else {
                 if (tookMs > SLOW_SEND_WARN_MS) {
@@ -451,14 +454,16 @@ public class MaasKafkaProducerImpl extends MaasKafkaCommonClient implements Maas
             throw new MaasKafkaException("No Kafka ack within " + waitedMs + " ms", e);
         } catch (ExecutionException e) {
             Throwable cause = e.getCause() != null ? e.getCause() : e;
+            LOG.warn("Kafka delivery failed: key={}, cause={}", record.getKey(), cause.toString());
             throw new MaasKafkaException("Kafka send failed: " + cause.getMessage(), cause);
         }
     }
 
     /**
-     * Resolve wall-clock bound for {@link #sendSync(MaasProducerRecord)} after {@code Producer.send} returns.
-     * Order: {@link MaasKafkaProducerDefinition#getSendSyncTimeoutMs()}, else {@code delivery.timeout.ms + slack},
-     * floored at 1s.
+     * Resolve wall-clock bound for {@link #sendSync(MaasProducerRecord)} before {@code Producer.send}.
+     * Order: {@link MaasKafkaProducerDefinition#getSendSyncTimeoutMs()}, else the global property,
+     * else {@code delivery.timeout.ms + slack}. An override shorter than {@code delivery.timeout.ms + slack}
+     * is rejected. The derived value is floored at 1s.
      */
     long resolveSendSyncTimeoutMs() {
         Long override = getDefinition().getSendSyncTimeoutMs() != null
@@ -466,11 +471,17 @@ public class MaasKafkaProducerImpl extends MaasKafkaCommonClient implements Maas
                 : globalSendSyncTimeoutMs;
         long deliveryTimeoutMs = readLongClientConfigOrDefault(
                 ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, DEFAULT_DELIVERY_TIMEOUT_MS);
+        long minimum = deliveryTimeoutMs + SEND_SYNC_TIMEOUT_SLACK_MS;
         long resolved;
         if (override != null) {
+            if (override < minimum) {
+                throw new MaasKafkaException("sendSync timeout " + override
+                        + " ms is below delivery.timeout.ms + " + SEND_SYNC_TIMEOUT_SLACK_MS
+                        + " ms (" + minimum + ")");
+            }
             resolved = override;
         } else {
-            resolved = deliveryTimeoutMs + SEND_SYNC_TIMEOUT_SLACK_MS;
+            resolved = minimum;
         }
         resolved = Math.max(resolved, MIN_SEND_SYNC_TIMEOUT_MS);
         if (sendSyncTimeoutLogged.compareAndSet(false, true)) {

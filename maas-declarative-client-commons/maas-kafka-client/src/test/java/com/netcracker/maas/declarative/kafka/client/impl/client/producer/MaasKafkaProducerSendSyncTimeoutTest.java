@@ -55,6 +55,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MaasKafkaProducerSendSyncTimeoutTest {
@@ -110,17 +112,18 @@ class MaasKafkaProducerSendSyncTimeoutTest {
     void sendSyncTimesOutWhenKafkaNeverCompletesCallback() {
         doAnswer(invocation -> null).when(kafkaProducer).send(any(), any());
 
-        long overrideMs = 200L;
-        MaasKafkaProducer producer = activatedProducer(overrideMs, Map.of());
+        long requestedMs = 200L;
+        MaasKafkaProducer producer = activatedProducer(null, Map.of());
 
         long started = System.nanoTime();
         MaasKafkaException ex = assertThrows(MaasKafkaException.class, () ->
-                producer.sendSync(new MaasProducerRecord<>(null, "key-1", "payload", null, null)));
+                producer.sendSync(new MaasProducerRecord<>(null, "key-1", "payload", null, null),
+                        Duration.ofMillis(requestedMs)));
         long elapsedMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started);
 
         assertInstanceOf(TimeoutException.class, ex.getCause());
-        assertTrue(elapsedMs >= overrideMs, "elapsedMs=" + elapsedMs);
-        assertTrue(elapsedMs < 5_000, "should fail quickly, elapsedMs=" + elapsedMs);
+        assertTrue(elapsedMs >= requestedMs, "elapsedMs=" + elapsedMs);
+        assertTrue(elapsedMs < 750, "elapsedMs=" + elapsedMs);
     }
 
     @Test
@@ -140,7 +143,7 @@ class MaasKafkaProducerSendSyncTimeoutTest {
 
         assertInstanceOf(TimeoutException.class, ex.getCause());
         assertTrue(elapsedMs >= 250, "elapsedMs=" + elapsedMs);
-        assertTrue(elapsedMs < 5_000, "should fail quickly, elapsedMs=" + elapsedMs);
+        assertTrue(elapsedMs < 750, "elapsedMs=" + elapsedMs);
     }
 
     @Test
@@ -170,8 +173,19 @@ class MaasKafkaProducerSendSyncTimeoutTest {
 
     @Test
     void resolveSendSyncTimeoutAppliesFloor() {
-        MaasKafkaProducerImpl producer = (MaasKafkaProducerImpl) activatedProducer(50L, Map.of());
+        MaasKafkaProducerImpl producer = (MaasKafkaProducerImpl) activatedProducer(null, Map.of(
+                ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, -10_000
+        ));
         assertEquals(MaasKafkaProducerImpl.MIN_SEND_SYNC_TIMEOUT_MS, producer.resolveSendSyncTimeoutMs());
+    }
+
+    @Test
+    void shortOverrideBelowDeliveryPlusSlackIsRejected() {
+        MaasKafkaProducer producer = activatedProducer(50L, Map.of());
+        MaasKafkaException ex = assertThrows(MaasKafkaException.class, () ->
+                producer.sendSync(new MaasProducerRecord<>(null, "k", "v", null, null)));
+        assertTrue(ex.getMessage().contains("below delivery.timeout.ms"), ex.getMessage());
+        verify(kafkaProducer, never()).send(any(), any());
     }
 
     @Test
@@ -199,7 +213,7 @@ class MaasKafkaProducerSendSyncTimeoutTest {
     @Test
     void sendSyncPropagatesSubmitFailure() {
         doThrow(new RuntimeException("buffer full")).when(kafkaProducer).send(any(), any());
-        MaasKafkaProducer producer = activatedProducer(200L, Map.of());
+        MaasKafkaProducer producer = activatedProducer(null, Map.of());
         MaasKafkaException ex = assertThrows(MaasKafkaException.class, () ->
                 producer.sendSync(new MaasProducerRecord<>(null, "key-submit", "payload", null, null)));
         assertInstanceOf(RuntimeException.class, ex.getCause());
@@ -214,19 +228,25 @@ class MaasKafkaProducerSendSyncTimeoutTest {
                 producer.sendSync(new MaasProducerRecord<>(null, "k", "v", null, null), Duration.ZERO));
         assertThrows(IllegalArgumentException.class, () ->
                 producer.sendSync(new MaasProducerRecord<>(null, "k", "v", null, null), Duration.ofMillis(-1)));
+        assertThrows(IllegalArgumentException.class, () ->
+                producer.sendSync(new MaasProducerRecord<>(null, "k", "v", null, null), Duration.ofNanos(500_000)));
     }
 
     @Test
     void globalSendSyncTimeoutFromFactoryIsUsedWhenDefinitionUnset() {
         kafkaClientFactory = factoryWithGlobalSendSyncTimeout(77_000L);
-        MaasKafkaProducerImpl producer = (MaasKafkaProducerImpl) activatedProducer(null, Map.of());
+        MaasKafkaProducerImpl producer = (MaasKafkaProducerImpl) activatedProducer(null, Map.of(
+                ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 10_000
+        ));
         assertEquals(77_000L, producer.resolveSendSyncTimeoutMs());
     }
 
     @Test
     void definitionSendSyncTimeoutOverridesGlobalFactoryValue() {
         kafkaClientFactory = factoryWithGlobalSendSyncTimeout(77_000L);
-        MaasKafkaProducerImpl producer = (MaasKafkaProducerImpl) activatedProducer(12_000L, Map.of());
+        MaasKafkaProducerImpl producer = (MaasKafkaProducerImpl) activatedProducer(12_000L, Map.of(
+                ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 1_000
+        ));
         assertEquals(12_000L, producer.resolveSendSyncTimeoutMs());
     }
 

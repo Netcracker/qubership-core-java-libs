@@ -23,7 +23,11 @@ public interface MaasKafkaProducer extends MaasKafkaClient {
     TopicAddress getTopic();
 
     /**
-     * Asynchronously send a record to a topic and returns {@code CompletableFuture<RecordMetadata>}
+     * Asynchronously send a record to a topic and returns {@code CompletableFuture<RecordMetadata>}.
+     * This method does not apply a wait timeout. If Kafka never calls back, the future stays incomplete
+     * until the caller stops waiting ({@code orTimeout} or {@code get(timeout, unit)}) or until Kafka's
+     * {@code delivery.timeout.ms} fails the produce. Use {@link #sendSync(MaasProducerRecord)} when this
+     * thread must block for the outcome.
      *
      * @param record maas kafka producer record
      * @param <K> key value type
@@ -44,9 +48,11 @@ public interface MaasKafkaProducer extends MaasKafkaClient {
 
     /**
      * Synchronously send a record to a topic and wait for broker ack up to the given timeout.
+     * The wait is {@code timeout.toMillis()} with no configured minimum other than 1 ms.
+     * A positive duration that truncates to 0 ms is rejected.
      *
      * @param record  maas kafka producer record
-     * @param timeout maximum time to wait for delivery ack after the record is submitted
+     * @param timeout maximum time to wait for delivery ack after the record is submitted; at least 1 ms
      * @param <K>     key value type
      * @param <V>     value value type
      * @return recorded meta data
