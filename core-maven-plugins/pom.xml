@@ -4,7 +4,7 @@
 
     <groupId>com.netcracker.cloud.plugins</groupId>
     <artifactId>core-maven-plugins</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -20,7 +20,9 @@
     </licenses>
 
     <modules>
+        <module>httproutes-generator-common</module>
         <module>httproutes-generator-maven-plugin</module>
+        <module>httproutes-generator-spring-maven-plugin</module>
     </modules>
 
     <scm>
