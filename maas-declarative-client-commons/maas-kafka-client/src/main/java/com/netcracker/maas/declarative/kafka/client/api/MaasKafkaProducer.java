@@ -38,6 +38,9 @@ public interface MaasKafkaProducer extends MaasKafkaClient {
 
     /**
      * Synchronously send a record to a topic and wait for broker ack using the configured send-sync timeout.
+     * Failures are thrown as {@code MaasKafkaException}. {@code getCause()} is the Kafka exception,
+     * {@code TimeoutException}, or {@code InterruptedException} directly, not an {@code ExecutionException}.
+     * An interrupt restores the interrupt flag before the exception is thrown.
      *
      * @param record maas kafka producer record
      * @param <K> key value type
@@ -50,6 +53,9 @@ public interface MaasKafkaProducer extends MaasKafkaClient {
      * Synchronously send a record to a topic and wait for broker ack up to the given timeout.
      * The wait is {@code timeout.toMillis()} with no configured minimum other than 1 ms.
      * A positive duration that truncates to 0 ms is rejected.
+     * Failures are thrown as {@code MaasKafkaException}. {@code getCause()} is the Kafka exception,
+     * {@code TimeoutException}, or {@code InterruptedException} directly, not an {@code ExecutionException}.
+     * An interrupt restores the interrupt flag before the exception is thrown.
      *
      * @param record  maas kafka producer record
      * @param timeout maximum time to wait for delivery ack after the record is submitted; at least 1 ms

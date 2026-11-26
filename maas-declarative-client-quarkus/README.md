@@ -543,6 +543,8 @@ try {
 
 Use `sendSync` for a result or an error on the same call. Use `sendAsync` when completion is handled later. In both places a timeout means the caller stopped waiting, not that the record was dropped. Retrying after a timeout can publish a duplicate.
 
+`sendSync` throws `MaasKafkaException`, which still extends `RuntimeException`. `getCause()` is the Kafka exception, `TimeoutException`, or `InterruptedException` directly. It is not wrapped in `ExecutionException`. Callers that cast `getCause()` to `ExecutionException` need to use the cause as-is. If the waiting thread is interrupted, the interrupt flag is restored before `MaasKafkaException` is thrown.
+
 ### Producer config properties:
 
 | Name                                                                                                  | Type    | Mandatory | Default value | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
