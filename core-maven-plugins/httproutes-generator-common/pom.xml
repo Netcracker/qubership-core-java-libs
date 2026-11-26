@@ -8,8 +8,8 @@
     <packaging>jar</packaging>
 
     <properties>
-        <cloud-core.core-rest-libraries.version>7.6.2</cloud-core.core-rest-libraries.version>
-        <cloud-core.core-internal-boms.version>1.2.2</cloud-core.core-internal-boms.version>
+        <cloud-core.core-rest-libraries.version>7.6.3-SNAPSHOT</cloud-core.core-rest-libraries.version>
+        <cloud-core.core-internal-boms.version>1.2.3-SNAPSHOT</cloud-core.core-internal-boms.version>
     </properties>
 
     <dependencyManagement>
