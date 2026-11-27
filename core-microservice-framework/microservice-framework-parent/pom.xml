@@ -27,7 +27,7 @@
         <lombok.version>1.18.42</lombok.version>
         <testcontainers.version>1.21.4</testcontainers.version>
         <jackson.version>2.20.1</jackson.version>
-        <microservice.dependencies.version>11.2.9</microservice.dependencies.version>
+        <microservice.dependencies.version>11.2.10</microservice.dependencies.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.basedir}/../microservice-framework-report-aggregate/target/site/jacoco-aggregate/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
