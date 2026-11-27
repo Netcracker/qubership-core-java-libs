@@ -24,11 +24,12 @@ to the `kubernetes` way later, and nothing ever moves it back.
 | `consul.auth.fallback-recheck-interval` | `CONSUL_AUTH_FALLBACK_RECHECK_INTERVAL` | duration                      | `5h`                           | same, and only in `hybrid` mode                   |
 
 When `consul.auth.mode` is unset or empty, the mode is taken from the `M2M_AUTH_MODE` environment variable, so one
-variable sets the M2M calls and the Consul login together, and `CONSUL_AUTH_MODE` overrides it for the Consul login
-alone. With neither set the mode is `legacy`, which logs in the `m2m` way only. To move a service to the `kubernetes`
-way, set `CONSUL_AUTH_MODE` or `M2M_AUTH_MODE` to `hybrid` or `k8s`. If you switch `M2M_AUTH_MODE` to `hybrid` or
-`k8s` before the Consul auth method below is configured, set `CONSUL_AUTH_MODE=legacy` to keep the Consul login on
-`m2m`.
+variable sets the M2M calls and the Consul login together. With neither set the mode is `legacy`, which logs in the
+`m2m` way only. To move a service to the `kubernetes` way, set `M2M_AUTH_MODE` to `hybrid` or `k8s`. Until Consul has
+the auth method below, use `hybrid`: its login falls back to `m2m`.
+
+`CONSUL_AUTH_MODE` overrides `M2M_AUTH_MODE` for the Consul login alone. Set it only to test the Consul login.
+`M2M_AUTH_MODE=k8s` together with `CONSUL_AUTH_MODE=legacy` is not supported.
 
 In `hybrid` mode the `kubernetes` way is tried first. If it fails, the pod falls back to the
 `m2m` way and logs the reason, the Consul response code, and a truncated response body in a single `INFO` record. That
@@ -59,6 +60,9 @@ does not: the ConfigData phase logs one `ERROR` record and the application start
 fail until the `TokenStorage` bean obtains one. The bean is stricter — a login failure its retries do not fix ends the
 startup. The ConfigData phase takes the namespace from the `cloud.microservice.namespace` system property, or from
 `NAMESPACE` or `CLOUD_NAMESPACE`; the `TokenStorage` bean takes it from `NAMESPACE` alone.
+
+A Consul with its ACL system disabled answers the login with `401` and the body `ACL support disabled`. In every mode
+the client then works without a token and logs `Consul ACLs are disabled: working without a Consul token`.
 
 The default is the auth method the platform registers. Set `consul.auth.method` only if your Consul names it
 differently.

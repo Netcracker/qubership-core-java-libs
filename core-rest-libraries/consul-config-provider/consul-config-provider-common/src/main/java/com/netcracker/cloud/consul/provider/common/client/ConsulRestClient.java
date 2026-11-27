@@ -6,6 +6,7 @@ import com.netcracker.cloud.restclient.HttpMethod;
 import com.netcracker.cloud.restclient.MicroserviceRestClient;
 import com.netcracker.cloud.restclient.entity.RestClientResponseEntity;
 import com.netcracker.cloud.restclient.exception.MicroserviceRestClientException;
+import com.netcracker.cloud.restclient.exception.MicroserviceRestClientResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +57,9 @@ public class ConsulRestClient implements ConsulClient {
     public ConsulClientResponse login(ConsulLoginCredentials credentials) throws IOException {
         try {
             return login(credentials.getAuthMethod(), credentials.getBearerToken());
+        } catch (MicroserviceRestClientResponseException e) {
+            String body = e.getResponseBody() == null ? null : e.getResponseBodyAsString();
+            return new ConsulClientResponse(body, e.getHttpStatus());
         } catch (MicroserviceRestClientException e) {
             // Retries and their backoff act on IOException only, so a transport failure must reach the caller as one:
             // otherwise a single dropped connection sticks the pod to the m2m auth method until it restarts.

@@ -64,7 +64,8 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
      * Returns a token from the kubernetes way once it is confirmed. Otherwise probes that way — on the first call, and
      * after that whenever the recheck interval has passed since the last failure — and serves the m2m way in between.
      * The probe spends fewer attempts than the scheduler so that an unmigrated pod pays little for it. Any {@link Exception} out of the kubernetes way means the m2m way for now;
-     * an {@link Error} passes through untouched.
+     * an {@link Error} passes through untouched. An empty token, which a Consul with ACLs disabled gives, does not
+     * confirm the kubernetes way.
      */
     @Override
     public synchronized Token getToken() throws IOException {
@@ -74,7 +75,9 @@ final class KubernetesWithM2MFallbackTokenProvider implements ConsulTokenProvide
         if (recheckIsDue()) {
             try {
                 Token token = probeKubernetesWay();
-                confirmKubernetesWay();
+                if (token.getSecretId() != null && !token.getSecretId().isEmpty()) {
+                    confirmKubernetesWay();
+                }
                 return token;
             } catch (Exception e) {
                 fallBack(e);
