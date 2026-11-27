@@ -29,7 +29,7 @@ public class KafkaTest {
     public static String bootstrapServers;
 
     @Container
-    static KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0"))
+    static KafkaContainer kafkaContainer = new KafkaContainerStartedAfterScript(DockerImageName.parse("confluentinc/cp-kafka:7.4.0"))
             .withKraft();
 
     @BeforeAll

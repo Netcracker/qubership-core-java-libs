@@ -1,5 +1,6 @@
 package com.netcracker.maas.declarative.kafka.client.api;
 
+import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.netcracker.cloud.bluegreen.api.model.BlueGreenState;
 import com.netcracker.cloud.bluegreen.api.model.NamespaceVersion;
 import com.netcracker.cloud.bluegreen.api.model.State;
@@ -50,11 +51,13 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.testcontainers.containers.Container.ExecResult;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -74,7 +77,7 @@ import static org.mockito.Mockito.*;
 class MaasKafkaClientTest {
 
     @Container
-    private static final KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:6.2.1"));
+    private static final KafkaContainer kafka = new KafkaContainerStartedAfterScript(DockerImageName.parse("confluentinc/cp-kafka:6.2.1"));
 
     public static final String EN_US = "en_US";
     public static final String TEST_TENANT = "test-tenant";
@@ -505,5 +508,36 @@ class MaasKafkaClientTest {
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         return properties;
+    }
+
+    /**
+     * Testcontainers 1.21.4 starts Kafka by executing {@code /tmp/testcontainers_start.sh} as soon as the file
+     * exists. On a busy runner the copy is still in progress, the script is busy, and the container exits 126.
+     * The sentinel is created only after the copy returns.
+     */
+    private static final class KafkaContainerStartedAfterScript extends KafkaContainer {
+        private static final String SCRIPT = "/tmp/testcontainers_start.sh";
+        private static final String READY = SCRIPT + ".ready";
+
+        private KafkaContainerStartedAfterScript(DockerImageName image) {
+            super(image);
+            withCommand("-c", "while [ ! -f " + READY + " ]; do sleep 0.1; done; " + SCRIPT);
+        }
+
+        @Override
+        protected void containerIsStarting(InspectContainerResponse containerInfo) {
+            super.containerIsStarting(containerInfo);
+            try {
+                ExecResult result = execInContainer("touch", READY);
+                if (result.getExitCode() != 0) {
+                    throw new IllegalStateException("touch " + READY + " failed: " + result.getStderr());
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(e);
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
+        }
     }
 }
