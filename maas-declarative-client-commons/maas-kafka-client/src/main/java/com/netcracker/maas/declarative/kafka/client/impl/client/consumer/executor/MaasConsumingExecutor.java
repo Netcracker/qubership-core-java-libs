@@ -145,11 +145,11 @@ public class MaasConsumingExecutor implements Runnable {
                 } catch (LinkageError e) {
                     // A classpath mismatch such as NoSuchMethodError does not recover on retry.
                     LOG.error("Fatal linkage error consuming records. Close current consumer and stop consuming loop", e);
-                    safe(() -> consumer.release());
+                    safe(consumer::release);
                     return;
                 } catch (Exception e) {
                     LOG.error("Error consume records. Close current consumer and reschedule consuming with increased timeout", e);
-                    safe(() -> consumer.release()); // force consumer recreate
+                    safe(consumer::release); // force consumer recreate
                     rescheduleTimeoutValueProvider.incrementInterval();
                 }
                 var timeout = rescheduleTimeoutValueProvider.getTimeAwaitValue();
