@@ -3,6 +3,8 @@ package com.netcracker.cloud.maas.client.quarkus;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.QuarkusTestProfile;
 import io.quarkus.test.junit.TestProfile;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import com.netcracker.cloud.bluegreen.api.service.BlueGreenStatePublisher;
 import com.netcracker.cloud.bluegreen.impl.service.InMemoryBlueGreenStatePublisher;
@@ -28,6 +30,17 @@ class MaasLocalDevConfigTest {
 @QuarkusTest
 @TestProfile(MaasLocalDevConfigEnabledTest.EnabledProfile.class)
 class MaasLocalDevConfigEnabledTest extends BaseMaasLocalDevConfigTest {
+
+    // the publisher reads the namespace with System.getProperty, which getConfigOverrides() does not set
+    @BeforeAll
+    static void setNamespace() {
+        System.setProperty("cloud.microservice.namespace", BaseTestProfile.NAMESPACE);
+    }
+
+    @AfterAll
+    static void clearNamespace() {
+        System.clearProperty("cloud.microservice.namespace");
+    }
 
     @Test
     void testBlueGreenStatePublisherProducedWhenPropertyEnabled() {
@@ -78,7 +91,7 @@ abstract class BaseMaasLocalDevConfigTest {
 }
 
 abstract class BaseTestProfile implements QuarkusTestProfile {
-    private static final String NAMESPACE = "test-namespace";
+    static final String NAMESPACE = "test-namespace";
 
     protected Map<String, String> createConfigOverrides(boolean enabled) {
         return Map.of(

@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.netcracker.cloud.quarkus</groupId>
         <artifactId>pod-secrets-config-source-parent</artifactId>
-        <version>10.4.0-SNAPSHOT</version>
+        <version>10.4.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -58,7 +58,6 @@
             <plugin>
                 <groupId>io.smallrye</groupId>
                 <artifactId>jandex-maven-plugin</artifactId>
-                <version>${jandex-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>make-index</id>

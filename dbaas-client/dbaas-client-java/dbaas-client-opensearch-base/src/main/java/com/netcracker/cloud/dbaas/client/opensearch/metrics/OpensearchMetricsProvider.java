@@ -2,6 +2,7 @@ package com.netcracker.cloud.dbaas.client.opensearch.metrics;
 
 import com.netcracker.cloud.dbaas.client.exceptions.MetricsRegistrationException;
 import com.netcracker.cloud.dbaas.client.metrics.DatabaseMetricProperties;
+import com.netcracker.cloud.dbaas.client.metrics.DbaasMetricTagsFilter;
 import com.netcracker.cloud.dbaas.client.metrics.MetricsProvider;
 import com.netcracker.cloud.dbaas.client.opensearch.entity.DbaasOpensearchMetricsProperties;
 import com.netcracker.cloud.dbaas.client.opensearch.entity.OpensearchDBType;
@@ -50,6 +51,8 @@ public class OpensearchMetricsProvider implements MetricsProvider<OpensearchInde
             .get(HTTP_CLIENT_BUILDER);
 
         if (httpClientBuilder != null) {
+            DbaasMetricTagsFilter.applyTo(meterRegistry);
+
             var observationRegistry = ObservationRegistry.create();
 
             observationRegistry.observationConfig().observationHandler(

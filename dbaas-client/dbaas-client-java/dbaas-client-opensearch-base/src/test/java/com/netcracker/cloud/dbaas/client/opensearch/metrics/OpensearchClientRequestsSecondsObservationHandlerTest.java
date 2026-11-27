@@ -69,6 +69,20 @@ class OpensearchClientRequestsSecondsObservationHandlerTest {
     }
 
     @Test
+    void testOnStopDoesNotFailWhenMetricTagsConflict() {
+        Mockito.doReturn(System.currentTimeMillis())
+            .when(mockApacheHttpClientContext).get(
+                OpensearchClientRequestsSecondsObservationHandler.START_TIME_IN_MILLIS
+            );
+        Mockito.doThrow(new IllegalArgumentException("Prometheus requires that all meters with the same name have the same set of tag keys"))
+            .when(spyRequestSecondsBaseMetricBuilder).register(spyMeterRegistry);
+
+        Assertions.assertDoesNotThrow(() -> opensearchClientRequestsSecondsObservationHandler.onStop(mockApacheHttpClientContext));
+
+        Mockito.verify(spyRequestSecondsBaseMetricBuilder).register(spyMeterRegistry);
+    }
+
+    @Test
     void testOnStopWhenStartTimeInMillisIsAbsentInContext() {
         opensearchClientRequestsSecondsObservationHandler.onStop(mockApacheHttpClientContext);
 

@@ -6,8 +6,7 @@ import com.netcracker.cloud.consul.provider.spring.common.SpringTokenStorageFact
 import com.netcracker.cloud.consul.provider.spring.common.config.ConsulLoginProperties;
 import com.netcracker.cloud.consul.provider.spring.common.Utils;
 import com.netcracker.cloud.restclient.webclient.MicroserviceWebClient;
-import com.netcracker.cloud.security.common.reactive.DummyM2MManager;
-import com.netcracker.cloud.security.common.reactive.M2MManager;
+import com.netcracker.cloud.security.core.auth.M2MManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.consul.ConditionalOnConsulEnabled;
@@ -17,10 +16,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.function.Supplier;
+
 @Configuration
 @EnableConfigurationProperties(ConsulLoginProperties.class)
 @ConditionalOnConsulEnabled
-//@EnableReactiveM2MManager
 @ConditionalOnProperty(value = "spring.cloud.consul.config.m2m.enabled", havingValue = "true", matchIfMissing = true)
 public class ConsulM2MWebClientAutoConfiguration {
 
@@ -41,13 +41,18 @@ public class ConsulM2MWebClientAutoConfiguration {
         return loginProperties.toOptionsBuilder()
                 .consulUrl(Utils.formatConsulAddress(consulProperties))
                 .namespace(namespace)
-                .m2mSupplier(() -> m2MManager.getToken().block().getTokenValue())
+                .m2mSupplier(m2mTokenSupplier(m2MManager))
                 .build();
     }
 
+    static Supplier<String> m2mTokenSupplier(M2MManager m2MManager) {
+        return () -> m2MManager.getToken().getTokenValue();
+    }
+
+    // Choose the highest priority implementation registered via ServiceLoader and log a warning for dummy
     @Bean
     @ConditionalOnMissingBean(M2MManager.class)
     public M2MManager m2MManager() {
-        return new DummyM2MManager();
+        return M2MManager.loadPreferred();
     }
 }

@@ -88,7 +88,8 @@ class MaasKafkaProducerDeactivationTest {
                 List.of(1000L),
                 List.of(new ContextPropagationFilter(new DefaultContextPropagationServiceImpl()),
                         new TracingFilter(mock(TracingService.class))),
-                new InMemoryBlueGreenStatePublisher("test_namespace"));
+                new InMemoryBlueGreenStatePublisher("test_namespace"),
+                null);
     }
 
     @Test

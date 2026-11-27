@@ -4,22 +4,36 @@
 
     <groupId>com.netcracker.cloud.plugins</groupId>
     <artifactId>httproutes-generator-maven-plugin</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.3-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <properties>
-        <cloud-core.core-rest-libraries.version>7.6.0-SNAPSHOT</cloud-core.core-rest-libraries.version>
-        <cloud-core.core-internal-boms.version>1.2.0-SNAPSHOT</cloud-core.core-internal-boms.version>
+        <cloud-core.core-quarkus-extensions.version>10.4.3-SNAPSHOT</cloud-core.core-quarkus-extensions.version>
+        <cloud-core.core-rest-libraries.version>7.6.3-SNAPSHOT</cloud-core.core-rest-libraries.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.netcracker.cloud</groupId>
-                <artifactId>core-spring-internal-bom</artifactId>
-                <version>${cloud-core.core-internal-boms.version}</version>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>cloud-core-quarkus-bom-internal</artifactId>
+                <version>${cloud-core.core-quarkus-extensions.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.netcracker.cloud</groupId>
+                <artifactId>rest-libraries-bom</artifactId>
+                <version>${cloud-core.core-rest-libraries.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- No existing internal BOM manages routes-registrator-deployment; pin it here the same way
+                 maas-client-quarkus pins other Quarkus-extension artifacts. -->
+            <dependency>
+                <groupId>com.netcracker.cloud.quarkus</groupId>
+                <artifactId>routes-registrator-deployment</artifactId>
+                <version>${cloud-core.core-quarkus-extensions.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -27,21 +41,24 @@
     <dependencies>
         <!-- Qubership dependencies -->
         <dependency>
-            <groupId>com.netcracker.cloud</groupId>
-            <artifactId>route-registration-common</artifactId>
-            <version>${cloud-core.core-rest-libraries.version}</version>
+            <groupId>com.netcracker.cloud.plugins</groupId>
+            <artifactId>httproutes-generator-common</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.netcracker.cloud</groupId>
-            <artifactId>route-registration-common-spring</artifactId>
-            <version>${cloud-core.core-rest-libraries.version}</version>
+            <groupId>com.netcracker.cloud.quarkus</groupId>
+            <artifactId>routes-registrator-deployment</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.smallrye</groupId>
+            <artifactId>jandex</artifactId>
         </dependency>
 
         <!-- 3rd party dependencies -->
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
-            <version>3.9.12</version>
+            <version>3.9.16</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -52,26 +69,9 @@
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
-            <artifactId>maven-project</artifactId>
-            <version>2.2.1</version>
+            <artifactId>maven-core</artifactId>
+            <version>3.10.2</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.ws.rs</groupId>
-            <artifactId>jakarta.ws.rs-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.classgraph</groupId>
-            <artifactId>classgraph</artifactId>
-            <version>4.8.199</version>
         </dependency>
 
         <!-- Test dependencies -->
@@ -81,8 +81,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
+            <groupId>com.netcracker.cloud</groupId>
+            <artifactId>route-registration-common-spring</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -105,10 +105,31 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.16.0</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <release>21</release>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-invoker-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <projectsDirectory>src/it</projectsDirectory>
+                    <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+                    <localRepositoryPath>${settings.localRepository}</localRepositoryPath>
+                    <postBuildHookScript>verify</postBuildHookScript>
+                    <streamLogsOnFailures>true</streamLogsOnFailures>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>install</goal>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

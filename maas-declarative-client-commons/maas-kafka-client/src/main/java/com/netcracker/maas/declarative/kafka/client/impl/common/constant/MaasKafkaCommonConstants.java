@@ -22,6 +22,12 @@ public interface MaasKafkaCommonConstants {
 
     String CONSUMER_AWAIT_TIMEOUT_AFTER_ERROR = "maas.kafka.consumer-await-timeout-after-error";
 
+    /**
+     * Optional global override for {@code sendSync} wait after {@code Producer.send} returns.
+     * Not a Kafka producer property. If unset, timeout is derived from {@code delivery.timeout.ms}.
+     */
+    String SEND_SYNC_TIMEOUT_MS = "maas.kafka.send-sync-timeout-ms";
+
     String MAAS_AGENT_URL = "maas.agent.url";
     String MAAS_AGENT_URL_DEFAULT_VALUE = "http://maas-agent:8080";
 

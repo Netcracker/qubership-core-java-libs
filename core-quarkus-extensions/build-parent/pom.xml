@@ -5,7 +5,7 @@
     <parent>
         <artifactId>cloud-core-quarkus</artifactId>
         <groupId>com.netcracker.cloud.quarkus</groupId>
-        <version>10.4.0-SNAPSHOT</version>
+        <version>10.4.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>build-parent</artifactId>
@@ -32,9 +32,9 @@
          -->
         <supported-maven-versions>[3.6.2,)</supported-maven-versions>
 
-        <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
+        <maven-enforcer-plugin.version>3.7.0</maven-enforcer-plugin.version>
         <jacoco.plugin.version>0.8.7</jacoco.plugin.version>
-        <jandex-maven-plugin.version>3.5.3</jandex-maven-plugin.version>
+        <jandex-maven-plugin.version>3.6.0</jandex-maven-plugin.version>
     </properties>
 
     <profiles>

@@ -29,7 +29,9 @@ public class DbaaSMetricsRegistrar {
         } else {
             try {
                 metricsProvider.registerMetrics(metricProperties);
-            } catch (MetricsRegistrationException e) {
+            } catch (MetricsRegistrationException | IllegalArgumentException e) {
+                // DbaasMetricTagsFilter prevents IllegalArgumentException on different tag keys, unless another MeterFilter
+                // accepts the meter first. Metrics must not fail the database connection.
                 log.error("Failed to register metrics for database", e);
             }
         }
