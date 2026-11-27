@@ -1,6 +1,7 @@
 package com.netcracker.cloud.maas.bluegreen.kafka.impl;
 
 import com.netcracker.cloud.bluegreen.impl.service.InMemoryBlueGreenStatePublisher;
+import com.netcracker.cloud.maas.bluegreen.kafka.util.KafkaContainerStartedAfterScript;
 import com.netcracker.cloud.maas.client.impl.Env;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
@@ -50,7 +51,7 @@ class DefaultKafkaConsumerTest {
     Properties producerProps;
 
     @Container
-    KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0")).withKraft();
+    KafkaContainer kafkaContainer = new KafkaContainerStartedAfterScript(DockerImageName.parse("confluentinc/cp-kafka:7.4.0")).withKraft();
 
     @BeforeEach
     void setupKafka() {

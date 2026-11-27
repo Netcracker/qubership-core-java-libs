@@ -62,7 +62,7 @@ class KafkaStreamsIntTest {
     static String APP_ID = "words.count.app";
 
     @Container
-    KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0")
+    KafkaContainer kafkaContainer = new KafkaContainerStartedAfterScript(DockerImageName.parse("confluentinc/cp-kafka:7.4.0")
             .asCompatibleSubstituteFor("confluentinc/cp-kafka")).withKraft();
 
     Admin admin;

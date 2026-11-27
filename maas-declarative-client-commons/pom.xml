@@ -31,6 +31,7 @@
         <kafka-blue-green-consumer.version>11.2.7</kafka-blue-green-consumer.version>
 
         <mockito.version>5.21.0</mockito.version>
+        <testcontainers.version>1.21.4</testcontainers.version>
         <security-common-authentication.version>5.1.33</security-common-authentication.version>
     </properties>
 
@@ -48,6 +49,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-clients</artifactId>

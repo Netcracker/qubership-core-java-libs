@@ -7,12 +7,24 @@ import java.util.Map;
 
 public class MaasKafkaProducerDefinition extends MaasKafkaCommonClientDefinition {
 
+    private final Long sendSyncTimeoutMs;
+
     private MaasKafkaProducerDefinition(
             MaasTopicDefinition topic,
             boolean isTenant,
-            Map<String, Object> producerConfig
+            Map<String, Object> producerConfig,
+            Long sendSyncTimeoutMs
     ) {
         super(topic, isTenant, producerConfig);
+        this.sendSyncTimeoutMs = sendSyncTimeoutMs;
+    }
+
+    /**
+     * Optional override for {@code sendSync} wait after {@code Producer.send} returns.
+     * When null, timeout is derived from Kafka {@code delivery.timeout.ms}.
+     */
+    public Long getSendSyncTimeoutMs() {
+        return sendSyncTimeoutMs;
     }
 
     // Definition builder
@@ -22,6 +34,7 @@ public class MaasKafkaProducerDefinition extends MaasKafkaCommonClientDefinition
         private MaasTopicDefinition topic;
         private boolean isTenant;
         private Map<String, Object> producerConfig;
+        private Long sendSyncTimeoutMs;
 
         private Builder() {
         }
@@ -30,6 +43,7 @@ public class MaasKafkaProducerDefinition extends MaasKafkaCommonClientDefinition
             this.topic = producerDefinition.getTopic();
             this.isTenant = producerDefinition.isTenant();
             this.producerConfig = producerDefinition.getClientConfig();
+            this.sendSyncTimeoutMs = producerDefinition.getSendSyncTimeoutMs();
         }
 
         public Builder setTopic(MaasTopicDefinition topic) {
@@ -47,6 +61,11 @@ public class MaasKafkaProducerDefinition extends MaasKafkaCommonClientDefinition
             return this;
         }
 
+        public Builder setSendSyncTimeoutMs(Long sendSyncTimeoutMs) {
+            this.sendSyncTimeoutMs = sendSyncTimeoutMs;
+            return this;
+        }
+
         public MaasKafkaProducerDefinition build() {
             if (topic == null) {
                 throw new MaasKafkaProducerDefinitionBuildException(String.format(ERROR_MESSAGE_TEMPLATE, "topic"));
@@ -55,7 +74,8 @@ public class MaasKafkaProducerDefinition extends MaasKafkaCommonClientDefinition
             return new MaasKafkaProducerDefinition(
                     topic,
                     isTenant,
-                    producerConfig
+                    producerConfig,
+                    sendSyncTimeoutMs
             );
         }
 

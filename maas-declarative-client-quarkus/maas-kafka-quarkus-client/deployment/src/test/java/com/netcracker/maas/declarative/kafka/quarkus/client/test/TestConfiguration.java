@@ -13,7 +13,7 @@ import java.util.Map;
 public class TestConfiguration implements QuarkusTestResourceLifecycleManager {
 
     @Container
-    private static final KafkaContainer KAFKA_CONTAINER = new KafkaContainer(DockerImageName.parse("apache/kafka"));
+    private static final KafkaContainer KAFKA_CONTAINER = new KafkaContainerStartedAfterScript(DockerImageName.parse("apache/kafka"));
 
     @Override
     public Map<String, String> start() {

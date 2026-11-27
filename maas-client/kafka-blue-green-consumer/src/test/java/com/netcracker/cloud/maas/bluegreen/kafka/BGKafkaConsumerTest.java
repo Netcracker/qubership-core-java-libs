@@ -9,6 +9,7 @@ import com.netcracker.cloud.maas.bluegreen.kafka.impl.AdminAdapterImpl;
 import com.netcracker.cloud.maas.bluegreen.kafka.impl.BGKafkaConsumerConfig;
 import com.netcracker.cloud.maas.bluegreen.kafka.impl.BGKafkaConsumerImpl;
 import com.netcracker.cloud.maas.bluegreen.kafka.impl.OffsetsIndexer;
+import com.netcracker.cloud.maas.bluegreen.kafka.util.KafkaContainerStartedAfterScript;
 import com.netcracker.cloud.maas.client.impl.Env;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
@@ -59,7 +60,7 @@ class BGKafkaConsumerTest {
     private Duration POLL_TIMEOUT = Duration.ofSeconds(10);
 
     @Container
-    KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0")).withKraft();
+    KafkaContainer kafkaContainer = new KafkaContainerStartedAfterScript(DockerImageName.parse("confluentinc/cp-kafka:7.4.0")).withKraft();
 
     Admin admin;
     String bootstrapServers;

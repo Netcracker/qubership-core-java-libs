@@ -2,7 +2,7 @@ quarkus:
   application:
     name: test-app
   http:
-    test-port: 9015
+    test-port: 0
   devservices:
     enabled: false
   rest-client:

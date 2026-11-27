@@ -17,6 +17,7 @@
     <properties>
         <lombok.version>1.18.42</lombok.version>
         <quarkus.version>3.27.1</quarkus.version>
+        <testcontainers.version>1.21.4</testcontainers.version>
         <maven.compiler.release>17</maven.compiler.release>
     </properties>
 
@@ -37,6 +38,14 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Before quarkus-bom: cause it brings not consistent Testcontainers 1.21.3 -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- Quarkus Extensions Dependencies are coming from quarkus-bom-deployment (that also imports quarkus-bom) -->
             <dependency>
                 <groupId>io.quarkus.platform</groupId>

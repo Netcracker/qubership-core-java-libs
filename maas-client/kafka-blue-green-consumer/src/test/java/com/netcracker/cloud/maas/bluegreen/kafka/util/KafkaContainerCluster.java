@@ -52,7 +52,7 @@ public class KafkaContainerCluster implements Startable {
             zookeeper.start();
         }
         this.brokers = IntStream.range(0, brokersNum).mapToObj(brokerNum -> {
-                    KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag(confluentPlatformVersion))
+                    KafkaContainer kafkaContainer = new KafkaContainerStartedAfterScript(DockerImageName.parse("confluentinc/cp-kafka").withTag(confluentPlatformVersion))
                             .withNetwork(this.network)
                             .withNetworkAliases("broker-" + brokerNum)
                             .withClusterId(clusterId)

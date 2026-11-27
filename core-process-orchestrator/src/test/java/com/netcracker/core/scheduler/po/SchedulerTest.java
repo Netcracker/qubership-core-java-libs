@@ -124,7 +124,7 @@ class SchedulerTest {
     @Test
     void terminateSyncTest() {
         ProcessDefinition testProcess = new ProcessDefinition("SyncTest");
-        testProcess.addTask(LongRunningTask.class);
+        testProcess.addTask(OneSecondTask.class);
         ProcessInstanceImpl instance = orchestrator.createProcess(testProcess);
         orchestrator.startProcess(instance);
         orchestrator.terminateProcess(instance.getId());
@@ -138,7 +138,7 @@ class SchedulerTest {
     void terminateSyncTestMulti() {
         ProcessDefinition testProcess = new ProcessDefinition("SyncTest");
         for (int i = 0; i < 20; i++) {
-            testProcess.addTask(new NamedTask(LongRunningTask.class, String.format("Task %d", i)));
+            testProcess.addTask(new NamedTask(OneSecondTask.class, String.format("Task %d", i)));
         }
         ProcessInstanceImpl instance = orchestrator.createProcess(testProcess);
         orchestrator.startProcess(instance);
@@ -152,7 +152,7 @@ class SchedulerTest {
     @Test
     void terminateSyncWithRetryTest() {
         ProcessDefinition testProcess = new ProcessDefinition("SyncTest");
-        testProcess.addTask(LongRunningTask.class);
+        testProcess.addTask(OneSecondTask.class);
         ProcessInstanceImpl instance = orchestrator.createProcess(testProcess);
         orchestrator.startProcess(instance);
         orchestrator.terminateProcess(instance.getId());
@@ -273,7 +273,7 @@ class SchedulerTest {
     @Test
     void terminateSyncTimeout() {
         ProcessDefinition testProcess = new ProcessDefinition("SyncTest");
-        NamedTask task = new NamedTask(LongRunningTask.class.getName(), LongRunningTask.class.getName(), 1L);
+        NamedTask task = new NamedTask(FiveSecondTask.class.getName(), FiveSecondTask.class.getName(), 1L);
         testProcess.addTask(task);
         ProcessInstanceImpl instance = orchestrator.createProcess(testProcess);
         orchestrator.startProcess(instance);

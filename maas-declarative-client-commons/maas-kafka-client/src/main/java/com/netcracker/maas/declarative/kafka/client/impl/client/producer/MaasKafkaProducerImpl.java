@@ -20,7 +20,9 @@ import com.netcracker.maas.declarative.kafka.client.impl.client.notification.api
 import com.netcracker.maas.declarative.kafka.client.impl.common.cred.extractor.api.InternalMaasTopicCredentialsExtractor;
 import com.netcracker.maas.declarative.kafka.client.impl.tenant.api.InternalTenantService;
 import com.netcracker.maas.declarative.kafka.client.impl.tracing.TracingService;
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.header.Headers;
@@ -29,6 +31,7 @@ import org.apache.kafka.common.serialization.Serializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +39,9 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 import static com.netcracker.maas.declarative.kafka.client.impl.Utils.safe;
@@ -45,6 +51,17 @@ public class MaasKafkaProducerImpl extends MaasKafkaCommonClient implements Maas
 
     private static final String SASL_CONFIG = "sasl.jaas.config";
     private static final String HIDDEN_STR = "[hidden]";
+
+    /** Kafka default for {@link ProducerConfig#DELIVERY_TIMEOUT_MS_CONFIG}. */
+    static final long DEFAULT_DELIVERY_TIMEOUT_MS = 120_000L;
+
+    /** Extra slack on top of delivery.timeout.ms when deriving sendSync wait. */
+    static final long SEND_SYNC_TIMEOUT_SLACK_MS = 5_000L;
+
+    /** Floor so a misconfigured timeout cannot be zero or negative. */
+    static final long MIN_SEND_SYNC_TIMEOUT_MS = 1_000L;
+
+    private static final long SLOW_SEND_WARN_MS = 5_000L;
 
     // Non tenant
     private Producer producer;
@@ -59,6 +76,12 @@ public class MaasKafkaProducerImpl extends MaasKafkaCommonClient implements Maas
     private Function<ProducerRecord, ProducerRecord> handler = Function.identity();
 
     private final ContextPropagationService contextPropagationService;
+    private final AtomicBoolean sendSyncTimeoutLogged = new AtomicBoolean(false);
+    /** Global {@code maas.kafka.send-sync-timeout-ms}; definition override wins when set. */
+    private final Long globalSendSyncTimeoutMs;
+
+    // for test purposes
+    private final KafkaClientCreationService kafkaClientCreationService;
 
     public MaasKafkaProducerImpl(
             MaasKafkaProducerCreationRequest creationRequest,
@@ -68,7 +91,8 @@ public class MaasKafkaProducerImpl extends MaasKafkaCommonClient implements Maas
             List<String> acceptableTenants,
             ContextPropagationService contextPropagationService,
             MaasKafkaClientStateChangeNotificationService maasKafkaClientStateChangeNotificationService,
-            KafkaClientCreationService kafkaClientCreationService
+            KafkaClientCreationService kafkaClientCreationService,
+            Long globalSendSyncTimeoutMs
     ) {
         super(
                 tenantService,
@@ -84,11 +108,8 @@ public class MaasKafkaProducerImpl extends MaasKafkaCommonClient implements Maas
         this.handler = creationRequest.getHandler();
         this.contextPropagationService = contextPropagationService;
         this.kafkaClientCreationService = kafkaClientCreationService;
+        this.globalSendSyncTimeoutMs = globalSendSyncTimeoutMs;
     }
-
-    // for test purposes
-
-    private final KafkaClientCreationService kafkaClientCreationService;
 
     protected MaasKafkaProducerImpl(
             InternalTenantService tenantService,
@@ -114,6 +135,7 @@ public class MaasKafkaProducerImpl extends MaasKafkaCommonClient implements Maas
         );
         this.contextPropagationService = contextPropagationService;
         this.kafkaClientCreationService = kafkaClientCreationService;
+        this.globalSendSyncTimeoutMs = null;
     }
 
     @Override
@@ -291,64 +313,40 @@ public class MaasKafkaProducerImpl extends MaasKafkaCommonClient implements Maas
     @Override
     public <K, V> CompletableFuture<RecordMetadata> sendAsync(MaasProducerRecord<K, V> record) {
         CompletableFuture<RecordMetadata> future = new CompletableFuture<>();
+        String topicName = null;
+        String tenant = null;
         try {
-            TopicAddress prodTopic = this.getTopic();
-            Producer prod;
+            TopicAddress topic = resolveTopic();
+            topicName = topic.getTopicName();
+            tenant = clientDefinition.isTenant() ? TenantContext.get() : null;
 
-            LOG.debug("Sending record {}", record);
-
-            if (prodTopic != null) {
-                Headers headers = record.getHeaders() != null
-                        ? record.getHeaders()
-                        : new RecordHeaders();
-
-
-                ProducerRecord producerRecord = handler.apply(new ProducerRecord(
-                        prodTopic.getTopicName(),
-                        record.getPartition(),
-                        record.getTimestamp(),
-                        record.getKey(),
-                        record.getValue(),
-                        headers
-                ));
-
-                contextPropagationService.populateDataToHeaders(producerRecord);
-
-                if (clientDefinition.isTenant()) {
-                    prod = producerMap.computeIfAbsent(TenantContext.get(), (key) -> {
-                        // to prevent NPE
-                        throw new MaasKafkaException("No producer for Tenant " + key);
-                    });
-                } else {
-                    prod = producer;
-                }
-
-                prod.send(producerRecord, new ContextAwareCallback((md, ex) -> {
-                    if (ex != null) {
-                        future.completeExceptionally(ex);
-                    } else {
-                        future.complete(md);
-                    }
-                }
-                ));
-            } else {
-                throw new MaasKafkaNoResourceException("No valid topic");
-            }
-        } catch (Throwable throwable) {
-            future.completeExceptionally(throwable);
+            Producer<K, V> prod = resolveProducer(tenant);
+            ProducerRecord<K, V> producerRecord = buildRecord(topic, record);
+            doSend(prod, producerRecord, future);
+        } catch (Exception e) {
+            LOG.error("Failed to submit record to Kafka: topic={}, tenant={}, key={}",
+                    topicName, tenant, record.getKey(), e);
+            future.completeExceptionally(e);
         }
-
         return future;
     }
 
     @Override
     public <K, V> RecordMetadata sendSync(MaasProducerRecord<K, V> record) {
-        try {
-            return sendAsync(record).get();
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.error(e.getMessage(), e);
-            throw new RuntimeException(e);
+        long timeoutMs = resolveSendSyncTimeoutMs();
+        return awaitDelivery(sendAsync(record), record, timeoutMs);
+    }
+
+    @Override
+    public <K, V> RecordMetadata sendSync(MaasProducerRecord<K, V> record, Duration timeout) {
+        if (timeout == null || timeout.isNegative() || timeout.isZero()) {
+            throw new IllegalArgumentException("timeout must be positive");
         }
+        long timeoutMs = timeout.toMillis();
+        if (timeoutMs < 1) {
+            throw new IllegalArgumentException("timeout must be at least 1 ms");
+        }
+        return awaitDelivery(sendAsync(record), record, timeoutMs);
     }
 
     @Override
@@ -364,6 +362,157 @@ public class MaasKafkaProducerImpl extends MaasKafkaCommonClient implements Maas
     @Override
     public MaasKafkaProducerDefinition getDefinition() {
         return (MaasKafkaProducerDefinition) clientDefinition;
+    }
+
+    private TopicAddress resolveTopic() {
+        TopicAddress resolved = this.getTopic();
+        if (resolved == null) {
+            throw new MaasKafkaNoResourceException("No valid topic");
+        }
+        return resolved;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <K, V> Producer<K, V> resolveProducer(String tenant) {
+        if (!clientDefinition.isTenant()) {
+            return (Producer<K, V>) producer;
+        }
+        if (tenant == null || tenant.isEmpty()) {
+            throw new MaasKafkaException("Tenant context is empty for tenant-aware producer");
+        }
+        Producer<K, V> prod = (Producer<K, V>) producerMap.get(tenant);
+        if (prod == null) {
+            throw new MaasKafkaException("No producer for tenant " + tenant
+                    + ", known tenants: " + producerMap.keySet());
+        }
+        return prod;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <K, V> ProducerRecord<K, V> buildRecord(TopicAddress topic, MaasProducerRecord<K, V> record) {
+        Headers headers = record.getHeaders() != null ? record.getHeaders() : new RecordHeaders();
+        ProducerRecord<K, V> producerRecord = (ProducerRecord<K, V>) handler.apply(new ProducerRecord<>(
+                topic.getTopicName(),
+                record.getPartition(),
+                record.getTimestamp(),
+                record.getKey(),
+                record.getValue(),
+                headers));
+        contextPropagationService.populateDataToHeaders(producerRecord);
+        LOG.debug("Sending record to topic={}, partition={}, key={}",
+                producerRecord.topic(), producerRecord.partition(), producerRecord.key());
+        return producerRecord;
+    }
+
+    private <K, V> void doSend(Producer<K, V> prod, ProducerRecord<K, V> producerRecord,
+                               CompletableFuture<RecordMetadata> future) {
+        long startNanos = System.nanoTime();
+        Callback contextAware = new ContextAwareCallback((md, ex) -> {
+            long tookMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNanos);
+            if (ex != null) {
+                future.completeExceptionally(ex);
+            } else {
+                if (tookMs > SLOW_SEND_WARN_MS) {
+                    LOG.warn("Slow Kafka delivery: topic={}, partition={}, offset={}, tookMs={}",
+                            md.topic(), md.partition(), md.offset(), tookMs);
+                }
+                future.complete(md);
+            }
+        });
+
+        // Future must complete even if ContextAwareCallback fails before calling the delegate
+        prod.send(producerRecord, (md, ex) -> {
+            try {
+                contextAware.onCompletion(md, ex);
+            } catch (Throwable t) {
+                LOG.error("Kafka callback failed: topic={}, key={}", producerRecord.topic(), producerRecord.key(), t);
+                future.completeExceptionally(t);
+            } finally {
+                if (!future.isDone()) {
+                    future.completeExceptionally(new IllegalStateException(
+                            "Kafka callback finished without completing future", ex));
+                }
+            }
+        });
+    }
+
+    private RecordMetadata awaitDelivery(CompletableFuture<RecordMetadata> future,
+                                         MaasProducerRecord<?, ?> record,
+                                         long timeoutMs) {
+        long startNanos = System.nanoTime();
+        try {
+            return future.get(timeoutMs, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOG.warn("Interrupted while waiting for Kafka ack, key={}", record.getKey());
+            throw new MaasKafkaException("Interrupted while waiting for Kafka ack", e);
+        } catch (TimeoutException e) {
+            long waitedMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNanos);
+            Long deliveryTimeoutMs = readOptionalLongClientConfig(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG);
+            LOG.error("No Kafka ack within {} ms (configuredTimeoutMs={}, delivery.timeout.ms={}), key={}",
+                    waitedMs, timeoutMs, deliveryTimeoutMs, record.getKey());
+            throw new MaasKafkaException("No Kafka ack within " + waitedMs + " ms", e);
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause() != null ? e.getCause() : e;
+            LOG.warn("Kafka delivery failed: key={}, cause={}", record.getKey(), cause.toString());
+            throw new MaasKafkaException("Kafka send failed: " + cause.getMessage(), cause);
+        }
+    }
+
+    /**
+     * Resolve wall-clock bound for {@link #sendSync(MaasProducerRecord)} before {@code Producer.send}.
+     * Order: {@link MaasKafkaProducerDefinition#getSendSyncTimeoutMs()}, else the global property,
+     * else {@code delivery.timeout.ms + slack}. An override shorter than {@code delivery.timeout.ms + slack}
+     * is rejected. The derived value is floored at 1s.
+     */
+    long resolveSendSyncTimeoutMs() {
+        Long override = getDefinition().getSendSyncTimeoutMs() != null
+                ? getDefinition().getSendSyncTimeoutMs()
+                : globalSendSyncTimeoutMs;
+        long deliveryTimeoutMs = readLongClientConfigOrDefault(
+                ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, DEFAULT_DELIVERY_TIMEOUT_MS);
+        long minimum = deliveryTimeoutMs + SEND_SYNC_TIMEOUT_SLACK_MS;
+        long resolved;
+        if (override != null) {
+            if (override < minimum) {
+                throw new MaasKafkaException("sendSync timeout " + override
+                        + " ms is below delivery.timeout.ms + " + SEND_SYNC_TIMEOUT_SLACK_MS
+                        + " ms (" + minimum + ")");
+            }
+            resolved = override;
+        } else {
+            resolved = minimum;
+        }
+        resolved = Math.max(resolved, MIN_SEND_SYNC_TIMEOUT_MS);
+        if (sendSyncTimeoutLogged.compareAndSet(false, true)) {
+            LOG.info("Resolved sendSync timeout: configuredTimeoutMs={}, delivery.timeout.ms={}, override={}",
+                    resolved, deliveryTimeoutMs, override);
+        }
+        return resolved;
+    }
+
+    private long readLongClientConfigOrDefault(String key, long defaultValue) {
+        Long value = readOptionalLongClientConfig(key);
+        return value != null ? value : defaultValue;
+    }
+
+    private Long readOptionalLongClientConfig(String key) {
+        Map<String, Object> config = clientDefinition.getClientConfig();
+        if (config == null || !config.containsKey(key) || config.get(key) == null) {
+            return null;
+        }
+        Object value = config.get(key);
+        if (value instanceof Number number) {
+            return number.longValue();
+        }
+        if (value instanceof String str) {
+            try {
+                return Long.parseLong(str.trim());
+            } catch (NumberFormatException e) {
+                throw new MaasKafkaException("Invalid numeric config for " + key + ": " + value, e);
+            }
+        }
+        throw new MaasKafkaException("Unsupported config type for " + key + ": " + value.getClass().getName());
     }
 
     private Producer createKafkaProducer(Map<String, Object> config) {
