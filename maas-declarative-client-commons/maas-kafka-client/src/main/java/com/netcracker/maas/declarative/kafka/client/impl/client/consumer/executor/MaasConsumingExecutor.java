@@ -142,18 +142,19 @@ public class MaasConsumingExecutor implements Runnable {
                 try {
                     consume(consumer.getOrCreateInstance());
                     rescheduleTimeoutValueProvider.resetAwaitTimeValues();
+                } catch (LinkageError e) {
+                    // A classpath mismatch such as NoSuchMethodError does not recover on retry.
+                    LOG.error("Fatal linkage error consuming records. Close current consumer and stop consuming loop", e);
+                    safe(() -> consumer.release());
+                    return;
                 } catch (Exception e) {
                     LOG.error("Error consume records. Close current consumer and reschedule consuming with increased timeout", e);
                     safe(() -> consumer.release()); // force consumer recreate
                     rescheduleTimeoutValueProvider.incrementInterval();
-                } catch (Error e) {
-                    LOG.error("Error consume records", e);
-                    throw e;
-                } finally {
-                    var timeout = rescheduleTimeoutValueProvider.getTimeAwaitValue();
-                    LOG.debug("Reschedule run after: {}ms", timeout);
-                    context.getExecutorService().schedule(this, timeout, TimeUnit.MILLISECONDS);
                 }
+                var timeout = rescheduleTimeoutValueProvider.getTimeAwaitValue();
+                LOG.debug("Reschedule run after: {}ms", timeout);
+                context.getExecutorService().schedule(this, timeout, TimeUnit.MILLISECONDS);
             }
             default -> {
                 var errorMsg = "Unknown state enum value: " + state;
