@@ -40,6 +40,12 @@ public class MaasKafkaProps {
             + "}")
     List<Long> awaitTimeoutAfterError;
 
+    @Value("${"
+            + MaasKafkaCommonConstants.SEND_SYNC_TIMEOUT_MS + ":"
+            + "#{null}"
+            + "}")
+    Long sendSyncTimeoutMs;
+
 
     public List<String> getAcceptableTenants() {
         if (acceptableTenants == null) {
