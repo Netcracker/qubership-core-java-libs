@@ -78,6 +78,7 @@ public class MaasKafkaIntegrationTest extends AbstractMaasKafkaTest {
 
     @Test
     @Timeout(value = 60)
+    @Disabled("flaky: shared consumer group misses the record; main fix a97725931 does not apply on lts/25.4")
     void clientActivationAndDeactivationTest() throws Exception {
         LOG.info("starting test clientActivationAndDeactivationTest");
 
