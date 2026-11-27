@@ -890,4 +890,29 @@ class MaasConsumingExecutorTest {
             executor.close();
         }
     }
+
+    @Test
+    void linkageErrorStopsTheConsumingLoop() {
+        var consumerCreatorService = mock(KafkaClientCreationService.class);
+        when(consumerCreatorService.createKafkaConsumer(any(), any(), any(), any(), any(), any()))
+                .thenThrow(new NoSuchMethodError("BGKafkaConsumer.setPartitionsAssignedListener"));
+
+        var executor = new MaasConsumingExecutor(ctx,
+                (exception, errorRecord, handledRecords) -> {
+                },
+                consumerCreatorService,
+                List.of(),
+                new InMemoryBlueGreenStatePublisher());
+
+        try {
+            executor.start();
+            executor.init();
+            verify(consumerCreatorService, timeout(10_000).times(1))
+                    .createKafkaConsumer(any(), any(), any(), any(), any(), any());
+            verify(consumerCreatorService, after(500).times(1))
+                    .createKafkaConsumer(any(), any(), any(), any(), any(), any());
+        } finally {
+            executor.close();
+        }
+    }
 }
