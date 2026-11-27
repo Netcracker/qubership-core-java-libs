@@ -32,7 +32,7 @@
         <jandex.version>3.5.3</jandex.version>
         <curator.version>5.1.0</curator.version>
 
-        <testcontainers.version>1.18.3</testcontainers.version>
+        <testcontainers.version>1.21.4</testcontainers.version>
         <assertj-core.version>3.27.6</assertj-core.version>
 
         <maas-declarative-kafka-client.version>5.2.9-SNAPSHOT</maas-declarative-kafka-client.version>
@@ -51,6 +51,14 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Before quarkus-bom: its Testcontainers 1.21.3 speaks Docker API 1.32, which Docker 29 on ubuntu-latest rejects. -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>io.quarkus</groupId>
                 <artifactId>quarkus-bom</artifactId>

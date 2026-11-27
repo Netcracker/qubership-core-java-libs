@@ -29,7 +29,6 @@
         <jakarta-annotation.version>3.0.0</jakarta-annotation.version>
         <flyway.version>10.22.0</flyway.version>
         <shedlock.version>5.16.0</shedlock.version>
-        <testcontainers.version>1.21.3</testcontainers.version>
 
         <!--Qubership's libs-->
         <rest-libraries.version>6.2.9</rest-libraries.version>
